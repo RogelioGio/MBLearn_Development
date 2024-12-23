@@ -1,0 +1,30 @@
+/* Text Fonts */
+@font-face {
+    font-family: Gilroy-Regular;
+    src: url('./assets/font/Gilroy-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* Header Font */
+@font-face {
+    font-family: Gilroy-Bold;
+    src: url('./assets/font/Gilroy-Bold.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+:root{
+    /*Colors*/
+    --Primary-Color: hsl(218,97%,26%);
+    --Darker-Primary-Color: hsl(218,97%,20%);
+    --Unactive-Color: hsl(0,0%,40%);
+    --White: hsl(0,0%,100%);
+    --Black: hsl(0,0%,0%);
+
+    --DashboardBackground-Color: hsl(0,0%,90%);
+
+    /* Font */
+    --textFont: 'Gilroy-Regular', sans-serif;
+    --headerFont: 'Gilroy-Bold', sans-serif;
+}
