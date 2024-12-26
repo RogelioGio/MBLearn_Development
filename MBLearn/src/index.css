@@ -2,3 +2,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+    /* Navigation Icon Class */
+    .icon {
+        @apply flex text-unactive text-lg cursor-pointer hover:text-primary transition-all ease-in-out;
+    }
+    .icon-name{
+        @apply absolute w-auto left-16 z-10 bg-unactive text-white p-1 rounded-md text-sm scale-0;
+    }
+}

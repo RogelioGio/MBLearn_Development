@@ -17,14 +17,14 @@ export default function Login() {
         {/* Login Front-end */}
         <form action="" className='flex flex-col'>
             <div className='mb-5'>
-                <label for="Email" className='font-text text-sm text-primary'>Email Address or Employee ID</label>
+                <label htmlFor="Email" className='font-text text-sm text-primary'>Email Address or Employee ID</label>
                 <div className='border-b-[1px] h-[1.8rem] border-b-primary flex items-center place-content-between'>
                     <input type="email" name="Email" required className='w-[90%] border-none'/>
                     <FontAwesomeIcon icon={faUser} className='text-primary h-5' />
                 </div>
             </div>
             <div className='mb-5'>
-                <label for="Password" className='font-text text-sm text-primary'>Password</label>
+                <label htmlFor="Password" className='font-text text-sm text-primary'>Password</label>
                 <div className='border-b-[1px] h-[1.8rem] border-b-primary flex items-center place-content-between'>
                     <input type="password" name="Password" required className='w-[90%] border-none'/>
                     <FontAwesomeIcon icon={faKey} className='text-primary h-5' />
@@ -32,7 +32,7 @@ export default function Login() {
             </div>
             <div className='flex items-center gap-2 mb-10'>
                 <input type="checkbox" name="remember" id="remember"/>
-                <label for="remember" className='text-primary text-sm font-text'>Remember Me</label>
+                <label htmlFor="remember" className='text-primary text-sm font-text'>Remember Me</label>
             </div>
             {/* this need to rebuilt */}
             <input type="submit" value="LOGIN" className='border bg-primary rounded-md font-header text-sm text-white p-3'/>

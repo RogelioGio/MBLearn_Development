@@ -25,6 +25,7 @@ export default {
         colors:{
             primary: 'var(--Primary-Color)',
             secodary: 'var(--Darker-Primary-Color)',
+            background: 'var(--Background-Color)',
             unactive: 'var(--Unactive-Color)',
             white: 'var(--White)',
             black: 'var(--Black)',

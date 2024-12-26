@@ -11,7 +11,7 @@ export default function DefaultLayout() {
     // }
 
     return (
-        <div>
+        <div className='bg-background'>
             <Outlet/>
         </div>
     )

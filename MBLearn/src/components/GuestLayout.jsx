@@ -3,33 +3,50 @@ import { Outlet } from 'react-router-dom'
 import { useStateContext } from '../contexts/ContextProvider';
 import { Navigate } from 'react-router-dom';
 
+//Background Images
+import LoginBackground from '../assets/Login_Background.png';
+import LoginBackground1 from '../assets/Login_Background1.png';
+import LoginBackground2 from '../assets/Login_Background2.png';
+
+const backgrounds = [LoginBackground, LoginBackground1, LoginBackground2];
+
 //Login Page Layout
 export default function GuestLayout() {
     const [backgroundIndex, setBackgroundIndex] = useState(0);
     const [fade, setFade] = useState(false);
 
-    //background array
-    const backgrounds = ["bg-[url('./assets/Login_Background.png')]", "bg-[url('./assets/Login_Background1.png')]", "bg-[url('./assets/Login_Background2.png')]"]
-
     useEffect(() => {
         //Change the title of the page
         document.title = "MBLearn | Login";
 
+        const preloadNextImage = (index) => {
+            const img = new Image();
+            img.src = backgrounds[index];
+        };
+
+
         //The slideshow background image
-        const changebackground = () => {
+        const changeBackground = () => {
             setFade(false);
             setTimeout(() => {
-                setBackgroundIndex((prev) => (prev + 1) % backgrounds.length);
-                setFade(true); //fade-in
+                const nextIndex = (backgroundIndex + 1) % backgrounds.length;
+                setBackgroundIndex(nextIndex);
+                setFade(true);
+
+                // Preload the next image
+                preloadNextImage(nextIndex);
             }, 500);
 
         };
 
         //duration of the slideshow
-        const interval = setInterval(changebackground, 20000);
-        return () => clearInterval(interval);
+        const interval = setInterval(changeBackground, 20000);
 
-    }, [backgrounds.length]);
+        // Preload the first image
+        preloadNextImage(0);
+
+        return () => clearInterval(interval);
+    }, [backgroundIndex]);
 
 
 
