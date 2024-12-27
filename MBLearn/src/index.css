@@ -9,6 +9,11 @@
         @apply flex text-unactive text-lg cursor-pointer hover:text-primary transition-all ease-in-out;
     }
     .icon-name{
-        @apply absolute w-auto left-16 z-10 bg-unactive text-white p-1 rounded-md text-sm scale-0;
+        @apply absolute w-auto left-16 z-10 bg-tertiary text-white p-2 rounded-md text-xs scale-0 font-text;
+    }
+
+    /* Profile sub-menu */
+    .profile-menu-item {
+        @apply flex items-center place-content-between gap-4 font-text text-unactive min-w-max cursor-pointer hover:text-white transition-all ease-in-out;
     }
 }
