@@ -6,9 +6,10 @@ export default function DefaultLayout() {
     const { user, token } = useStateContext();
 
     //funtion to check if the user is logged in
-    // if(!token){
-    //     return <Navigate to="/login"/>
-    // }
+    if(!token){
+        return <Navigate to="/login"/>
+
+    }
 
     return (
         <div className='bg-background'>

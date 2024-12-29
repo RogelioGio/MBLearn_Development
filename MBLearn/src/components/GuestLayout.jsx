@@ -12,6 +12,13 @@ const backgrounds = [LoginBackground, LoginBackground1, LoginBackground2];
 
 //Login Page Layout
 export default function GuestLayout() {
+    //Check if the user is logged in
+    const {token} = useStateContext();
+    if(token){
+        return <Navigate to="/"/>
+    }
+
+
     const [backgroundIndex, setBackgroundIndex] = useState(0);
     const [fade, setFade] = useState(false);
 
@@ -47,14 +54,6 @@ export default function GuestLayout() {
 
         return () => clearInterval(interval);
     }, [backgroundIndex]);
-
-
-
-    //Check if the user is logged in
-    // const {token} = useStateContext();
-    // if(token){
-    //     return <Navigate to="/"/>
-    // }
 
     return (
         <div className="w-full h-screen flex items-center justify-center">

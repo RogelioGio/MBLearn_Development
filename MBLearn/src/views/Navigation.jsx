@@ -2,6 +2,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBell, faBook, faBookBookmark, faBookOpen, faBookOpenReader, faChartGantt, faChartPie, faGear, faGears, faGraduationCap, faHouse, faMedal, faPersonCirclePlus, faRightFromBracket, faUser, faUserGroup, faUserLock, } from '@fortawesome/free-solid-svg-icons'
 import Small_Logo from '../assets/Small_Logo.svg'
 import { icon, text } from '@fortawesome/fontawesome-svg-core';
+import { useStateContext } from '../contexts/ContextProvider';
+import axiosClient from '../axios-client';
+
 
 
 //Icon props
@@ -13,8 +16,8 @@ const Icons = ({icon, text}) => (
 );
 
 //Profile props
-const ProfileIcons = ({text ,icon}) => (
-    <div className='profile-menu-item py-2 px-2'>
+const ProfileIcons = ({text, icon, onClick}) => (
+    <div className='profile-menu-item py-2 px-2' onClick={onClick}>
         <p className='text-xs'>{text}</p>
         <p className='text-xl'>{icon}</p>
     </div>
@@ -22,7 +25,7 @@ const ProfileIcons = ({text ,icon}) => (
 
 //Rolebased Navigations
 const navItems = {
-    systemAdmin: [
+    "system-admin": [
         {icon:faHouse, text:"Home"},
         {icon:faBook, text:"Course List Maintenance"},
         {icon:faUserGroup, text:"User Management Maintenance"},
@@ -31,13 +34,13 @@ const navItems = {
         {icon:faChartPie, text:"System-Level Reports"},
         {icon:faChartGantt, text:"Activity Logs"},
     ],
-    courseAdmin: [
+    "course-admin": [
         {icon:faHouse, text:"Home"},
         {icon:faBookBookmark, text:"Assigened Courses"},
         {icon:faPersonCirclePlus, text:"Enroll Trainee"},
         {icon:faChartPie, text:"Course Reports"},
     ],
-    learner: [
+    "learner": [
         {icon:faHouse, text:"Home"},
         {icon:faBook, text:"My Courses"},
         {icon:faMedal, text:"Certificates"},
@@ -47,23 +50,32 @@ const navItems = {
 
 //Profile Setting per role
 const profileItems = {
-    systemAdmin: [
+    "system-admin": [
         {text:"Login as Course Admin", icon:faBookOpenReader},
         {text:"Login as Learner", icon:faGraduationCap}
     ],
-    courseAdmin: [
+    "course-admin": [
         {text:"Login as Learner", icon:faGraduationCap}
     ]
 }
 
 export default  function Navigation(){
     //Role-based Navigation
-    const role = null
+    const {role, setToken, setUser} = useStateContext();
     const Items = navItems[role]||[];
-    const ProfileItems = profileItems[role]||[];
+    const PItems = profileItems[role]||[];
+
+    //Logout Function
+    const onLogout = (ev) => {
+    axiosClient.post('/logout').then(() => {
+        setUser({});
+        setToken(null);
+        localStorage.removeItem("ACCESS_TOKEN")
+    })
+}
 
     return (
-        <div className="flex flex-col items-center h-screen w-100% border-2 border-red-950 place-content-between py-2">
+        <div className="flex flex-col items-center h-screen w-100% border-2 place-content-between py-2">
             <div className='flex flex-col place-content-between h-full bg-white py-5 px-2 shadow-lg m-1 border-r rounded-full'>
                 <ul className='flex flex-col gap-4 justify-center items-center p-[0.625rem]'>
                     <li><img src={Small_Logo} alt="" className='h-[1.875rem]'/></li>
@@ -80,16 +92,16 @@ export default  function Navigation(){
                     <li className='inline-block relative w-auto group'>
                         <img src="" alt="" className='border-2 border-red-400 w-8 h-8 rounded-full'/>
                         {/* Profile */}
-                        <div className='bg-tertiary p-4 rounded-md absolute left-9 min-w-max bottom-0 flex flex-row scale-0 hover:scale-100 group-hover:scale-100'>
+                        <div className='bg-tertiary p-4 rounded-md absolute left-9 min-w-max bottom-0 flex flex-row scale-100 group-hover:scale-100'>
                             <ul>
                                 {
-                                    ProfileItems.map((role, item) => (
-                                        <li key={item}>
+                                    PItems.map((role, index) => (
+                                        <li key={index}>
                                             <ProfileIcons text={role.text} icon={<FontAwesomeIcon icon={role.icon}/>}/>
                                         </li>
                                     ))
                                 }
-                                <ProfileIcons text={"Logout"} icon={<FontAwesomeIcon icon={faRightFromBracket}/>}/>
+                                <ProfileIcons text={"Logout"} icon={<FontAwesomeIcon icon={faRightFromBracket}/>} onClick={onLogout}/>
                                 <li><div className='bg-white h-[1px]'></div></li>
                                 <ProfileIcons text={"View Profile"} icon={<FontAwesomeIcon icon={faUser}/>}/>
                             </ul>

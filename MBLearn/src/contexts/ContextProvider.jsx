@@ -3,14 +3,17 @@ import { createContext, useContext, useState } from "react";
 const StateContext = createContext({
     user: null,
     token: null,
+    role: null,
     setUser: () => {},
     setToken: () => {},
+    setRole: () => {},
 });
 
 //passing information into layouts
 export const ContextProvider = ({ children }) => {
-    const [user, setUser] = useState({}); // for getting the current username
-    //const [token, _setToken] = useState(null);
+    const [user, setUser] = useState({});
+    const [token, _setToken] = useState(localStorage.getItem('ACCESS_TOKEN'));
+    const [role, setRole] = useState("system-admin");
 
     // for Authentication and PageLoading token in logging in
     const setToken = (token) => {
@@ -25,9 +28,11 @@ export const ContextProvider = ({ children }) => {
         //passing information into the layouts and components
         <StateContext.Provider value={{
             user,
-           // token,
+            token,
+            role,
             setUser,
             setToken,
+            setRole,
             }}>
 
             {children}

@@ -7,12 +7,11 @@ import DefaultLayout from "./components/DefaultLayout";
 import GuestLayout from "./components/GuestLayout";
 
 const router = createBrowserRouter([
-    //Dashboard and Role Base routing Layout,Route and Components
+
+    //Authenticated routes
     {
         path: "/",
-        element: <DefaultLayout/>,
-
-        //must be put an role based access control here
+        element: <DefaultLayout />,
         children: [
             {
                 path: "/systemadmin",
@@ -25,21 +24,22 @@ const router = createBrowserRouter([
             {
                 path: "/learner",
                 element: <Learner />
-            },
+            }
         ]
     },
 
-    //Login Page Layout,Route and Components
+
+    //Login route
     {
         path: "/",
-        element: <GuestLayout/>,
-        children:[
+        element: <GuestLayout />,
+        children: [
             {
                 path: "/login",
                 element: <Login/>
             },
         ]
-    },
+    }
 
 
 ]);
