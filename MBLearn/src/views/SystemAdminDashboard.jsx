@@ -8,22 +8,22 @@ import { Helmet } from "react-helmet";
 
 
 export default function SystemAdminDashboard() {
-    const { user, setUser } = useStateContext();
+    const {user, setUser} = useStateContext();
     useEffect(() => {
-        axiosClient.get('/user').then(({ data }) => {
-            setUser(data);
-        })
-    }, []);
+        axiosClient.get('/user').then(({data}) => {
+            setUser(data)
+        });
+    }), [];
 
-    return (
+    return(
         <div className="flex flex-col flex-start h-full w-full">
-            <Helmet>
-                {/* Title of the mark-up */}
+            <Helmet>{/* Title of the mark-up */}
                 <title>MBLearn | System Admin Dashboard</title>
             </Helmet>
 
-                <h1 className="p-3 m-3 text-primary text-4xl font-header">Good Day! {user}</h1>
-                <div className="h-full w-full grid grid-cols-5">
+            <h1 className="p-3 m-3 text-primary text-4xl font-header">Good Day! {user.name}</h1>
+
+            <div className="h-full w-full grid grid-cols-5">
                     <div className="flex flex-col justify-start border-2 col-span-4 gap-4">
                         {/* TODO: Will be reuseable component soon */}
                         <div className="bg-white w-full h-1/4 shadow-md rounded-xl flex justify-center items-center">
@@ -36,7 +36,8 @@ export default function SystemAdminDashboard() {
                     </div>
                     <div className="flex justify-center items-center border-2">Side</div>
                 </div>
+
         </div>
-    )
+    );
 
 }
