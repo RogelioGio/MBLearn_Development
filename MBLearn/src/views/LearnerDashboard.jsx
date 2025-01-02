@@ -1,7 +1,13 @@
-export default function LearnerDashboard() { // This is a functional component named LearnerDashboard
-    return ( // Returns some JSX code
-        <div className="flex flex-col items-center justify-center h-screen"> {/* A div with some classes */}
-            <h1>Learner Dashboard</h1> {/* A heading */}
+import React from 'react';
+import Navigation from './Navigation';
+
+export default function LearnerDashboard() {
+    return (
+        <div className="flex flex-row items-center h-screen ">
+            <Navigation/>
+            <div className="flex flex-col flex-start h-full">
+                <h1 className="p-3 m-3 text-primary text-4xl font-header">Good Day! {user}</h1>
+            </div>
         </div>
     );
 }

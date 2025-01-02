@@ -6,7 +6,7 @@
 @layer components {
     /* Navigation Icon Class */
     .icon {
-        @apply flex text-unactive text-lg cursor-pointer hover:text-primary transition-all ease-in-out;
+        @apply flex text-unactive text-lg hover:text-xl cursor-pointer hover:text-primary transition-all ease-in-out;
     }
     .icon-name{
         @apply absolute w-auto left-16 z-10 bg-tertiary text-white p-2 rounded-md text-xs scale-0 font-text;
