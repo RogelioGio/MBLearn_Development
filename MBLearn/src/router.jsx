@@ -1,11 +1,14 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import Login from "./views/Login";
-import SystemAdminDashboard from "./views/SystemAdminDashboard";
-import CourseAdminDashboard from "./views/CourseAdminDashboard";
-import Learner from "./views/LearnerDashboard";
 import DefaultLayout from "./components/DefaultLayout";
 import GuestLayout from "./components/GuestLayout";
 import NotFound from "./views/NotFound";
+import CourseListMaintenance from "./views/CourseListMaintenance";
+import SystemAdmin from "./views/SystemAdmin";
+import Dashboard from "./views/Dashboard";
+import CourseAdmin from "./views/CourseAdmin";
+import Learner from "./views/Learner";
+import UserManagementMaintenance from "./views/UserManagementMaintenance";
 
 
 const router = createBrowserRouter([
@@ -17,21 +20,53 @@ const router = createBrowserRouter([
         children: [
             {
                 path: "/systemadmin",
-                element: <SystemAdminDashboard/>,
+                element: <SystemAdmin/>,
+                children: [
+                    {
+                        path: "/systemadmin",
+                        element: <Navigate to="/systemadmin/dashboard" />
+                    },
+                    {
+                        path: "dashboard",
+                        element: <Dashboard/>
+                    },
+                    {
+                        path: "courselistmaintenance",
+                        element: <CourseListMaintenance/>
+                    },
+                    {
+                        path: "usermanagementmaintenance",
+                        element: <UserManagementMaintenance/>
+                    },
+                ]
             },
             {
                 path:"/courseadmin",
-                element:
-                    <CourseAdminDashboard/>
+                element: <CourseAdmin/>,
+                children: [
+                    {
+                        path: "/courseadmin",
+                        element: <Navigate to="/courseadmin/dashboard" />
+                    },
+                    {
+                        path: "dashboard",
+                        element: <Dashboard/>
+                    }
+                ]
             },
             {
                 path:"/learner",
-                element:
-                        <Learner/>
-            },
-            {
-                path: "/404-not-found",
-                element: <NotFound/>
+                element: <Learner/>,
+                children: [
+                    {
+                        path: "/learner",
+                        element: <Navigate to="/learner/dashboard" />
+                    },
+                    {
+                        path: "dashboard",
+                        element: <Dashboard/>
+                    }
+                ]
             },
         ]
     },

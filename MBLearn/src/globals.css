@@ -17,12 +17,15 @@
 :root{
     /*Colors*/
     --Primary-Color: hsl(218,97%,26%);
+    --Primary-Color-Hover: hsl(218, 97%, 33%);
     --Darker-Primary-Color: hsl(218,97%,20%);
     --Unactive-Color: hsl(0,0%,40%);
     --Darker-Unactive-Color: hsl(0, 0%, 20%);
     --White: hsl(0,0%,100%);
     --Black: hsl(0,0%,0%);
     --Background-Color: hsl(0,0%,95%);
+    --Secondary-Background-Color: hsl(210, 12%, 98%);
+    --Divider: hsl(218,15%,75%);
 
     --DashboardBackground-Color: hsl(0,0%,90%);
 

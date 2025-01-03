@@ -24,12 +24,15 @@ export default {
         },
         colors:{
             primary: 'var(--Primary-Color)',
+            primaryhover: 'var(--Primary-Color-Hover)',
             secodary: 'var(--Darker-Primary-Color)',
             tertiary: 'var(--Darker-Unactive-Color)',
             background: 'var(--Background-Color)',
+            secondarybackground: 'var(--Secondary-Background-Color)',
             unactive: 'var(--Unactive-Color)',
             white: 'var(--White)',
             black: 'var(--Black)',
+            divider: 'var(--Divider)',
         }
     },
   },

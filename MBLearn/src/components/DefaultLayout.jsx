@@ -23,6 +23,7 @@ export default function DefaultLayout() {
         return <Navigate to="/login" />
     }
 
+
     return (
         <div className='flex flex-row items-center h-screen bg-background'>
             <Navigation />

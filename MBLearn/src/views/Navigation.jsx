@@ -4,14 +4,17 @@ import Small_Logo from '../assets/Small_Logo.svg'
 import axiosClient from '../axios-client';
 import { useEffect } from 'react';
 import { useStateContext } from '../contexts/ContextProvider';
-import { Link, Links, useNavigate } from 'react-router-dom';
+import { Link, Links, NavLink, useNavigate } from 'react-router-dom';
 
 //Icon props
-const Icons = ({icon, text}) => (
+const Icons = ({icon, text, to}) => (
+    <NavLink to={to}>
         <div className='icon group'>
             <p>{icon}</p>
             <p className='icon-name group-hover:scale-100'>{text}</p>
         </div>
+    </NavLink>
+
 )
 
 
@@ -27,12 +30,12 @@ const ProfileIcons = ({text ,icon, onClick}) => (
 const navItems = {
     "system_admin": [
         {icon:faHouse, text:"Home", to:'/systemadmin'},
-        {icon:faBook, text:"Course List Maintenance", to:'courselistmaintenance'},
-        {icon:faUserGroup, text:"User Management Maintenance", to:'usermanagmentmaintenance'},
-        {icon:faUserLock, text:"User Accounts Maintenance", to:'useraccountsmaintenance'},
-        {icon:faGears, text:"System Configuration Maintenance", to:'systemconfigurationmaintenance'},
-        {icon:faChartPie, text:"System-Level Reports", to:'systemlevelreports'},
-        {icon:faChartGantt, text:"Activity Logs", to:'activitylogs'},
+        {icon:faBook, text:"Course List Maintenance", to:"/systemadmin/courselistmaintenance"},
+        {icon:faUserGroup, text:"User Management Maintenance", to:"/systemadmin/usermanagementmaintenance"},
+        {icon:faUserLock, text:"User Accounts Maintenance", to:"/systemadmin/useraccountsmaintenance"},
+        {icon:faGears, text:"System Configuration Maintenance", to:"/systemadmin/systemconfigurationmaintenance"},
+        {icon:faChartPie, text:"System-Level Reports", to:"/systemadmin/systemlevelreports"},
+        {icon:faChartGantt, text:"Activity Logs", to:"/systemadmin/activitylogs"},
     ],
     "course_admin": [
         {icon:faHouse, text:"Home"},
@@ -100,7 +103,8 @@ export default function Navigation() {
                         Items.map((role, index) => (
                             <li key={index}><Icons
                                                     icon={<FontAwesomeIcon icon={role.icon}/>}
-                                                    text={role.text}/>
+                                                    text={role.text}
+                                                    to={role.to}/>
                             </li>
                         ))
                     }
