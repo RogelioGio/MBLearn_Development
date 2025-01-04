@@ -4,11 +4,11 @@ import DefaultLayout from "./components/DefaultLayout";
 import GuestLayout from "./components/GuestLayout";
 import NotFound from "./views/NotFound";
 import CourseListMaintenance from "./views/CourseListMaintenance";
-import SystemAdmin from "./views/SystemAdmin";
-import Dashboard from "./views/Dashboard";
-import CourseAdmin from "./views/CourseAdmin";
-import Learner from "./views/Learner";
 import UserManagementMaintenance from "./views/UserManagementMaintenance";
+import Dashboard from "./views/Dashboard";
+import SystemAdmin from "./components/SystemAdmin";
+import CourseAdmin from "./components/CourseAdmin";
+import Learner from "./components/Learner";
 
 
 const router = createBrowserRouter([
