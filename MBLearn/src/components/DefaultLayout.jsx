@@ -23,6 +23,20 @@ export default function DefaultLayout() {
         return <Navigate to="/login" />
     }
 
+    if (!role) {
+        return <div>Loading...</div>; // Optionally show a loader or skeleton screen
+    }
+
+    if(location.pathname === '/'){
+        if(role === 'system_admin'){
+                return <Navigate to='/systemadmin/dashboard' />
+        }else if(role === 'course_admin'){
+                return <Navigate to='/courseadmin/dashboard' />
+        } else if(role === 'learner'){
+                return <Navigate to='/learner/dashboard' />
+        }
+    }
+
 
     return (
         <div className='flex flex-row items-center h-screen bg-background'>
