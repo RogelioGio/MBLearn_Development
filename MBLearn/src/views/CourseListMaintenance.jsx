@@ -75,14 +75,15 @@ const [isOpen, setIsOpen] = useState(false);
 //Selected Course to display
 const [selectedCourse, setSelectedCourse] = useState(null)
 
+//Modal Open and Close Function
 const OpenDialog = (course) => {
     setIsOpen(true)
     setSelectedCourse(course)
 }
-
 const CloseDialog = () => {
     setIsOpen(false)
 }
+
 
     return (
         <div className='grid  grid-cols-4 grid-rows-[6.25rem_auto] h-full w-full'>
