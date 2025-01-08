@@ -19,9 +19,11 @@ export const ContextProvider = ({ children }) => {
     const [token, _setToken] = useState(localStorage.getItem('ACCESS_TOKEN'));
     const [role, setRole] = useState({});
     const [profileUrl, setProfileUrl] = useState({});
+    const [tokenTimeoutId, setTokenTimeoutId] = useState(null);
 
     // for Authentication and PageLoading token in logging in
     const setToken = (token) => {
+
         _setToken(token);
         if (token) {
             localStorage.setItem('ACCESS_TOKEN', token)

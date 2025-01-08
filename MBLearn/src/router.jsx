@@ -10,6 +10,9 @@ import Dashboard from "./views/Dashboard";
 import SystemAdmin from "./components/SystemAdmin";
 import CourseAdmin from "./components/CourseAdmin";
 import Learner from "./components/Learner";
+import SystemConfiguration from "./views/SystemConfigurationMaintenance";
+import ActivityLog from "./views/ActivityLog";
+import SystemLevelReports from "./views/SystemLevelReports";
 
 
 const router = createBrowserRouter([
@@ -42,6 +45,18 @@ const router = createBrowserRouter([
                     {
                         path: "useraccountsmaintenance",
                         element: <UserAccountSecurityMaintenance/>
+                    },
+                    {
+                        path: "systemconfigurationmaintenance",
+                        element: <SystemConfiguration/>
+                    },
+                    {
+                        path: "systemlevelreports",
+                        element: <SystemLevelReports/>
+                    },
+                    {
+                        path: "activitylogs",
+                        element: <ActivityLog/>
                     },
                 ]
             },
