@@ -25,6 +25,7 @@ export default {
         colors:{
             primary: 'var(--Primary-Color)',
             primaryhover: 'var(--Primary-Color-Hover)',
+            secondaryprimary: 'var(--Secondary-Primary-Color)',
             secodary: 'var(--Darker-Primary-Color)',
             tertiary: 'var(--Darker-Unactive-Color)',
             background: 'var(--Background-Color)',

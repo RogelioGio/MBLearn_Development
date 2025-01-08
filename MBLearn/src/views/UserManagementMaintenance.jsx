@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import Navigation from './Navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChevronDown, faChevronLeft, faChevronRight, faChevronUp, faSearch, faUserPlus } from '@fortawesome/free-solid-svg-icons';
+import { faChevronDown, faChevronLeft, faChevronRight, faChevronUp, faFilter, faSearch, faTrash, faTrashCan, faUser, faUserPen, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { Menu, MenuButton, MenuItem, MenuItems, Disclosure, DisclosureButton, DisclosurePanel, Dialog, DialogBackdrop, DialogPanel, DialogTitle} from '@headlessui/react';
+import User from '../modalsandprops/UserEntryProp';
+import UserEntryModal from '../modalsandprops/UserEntryModal';
 
 //User Filter
 const Userfilter = [
@@ -40,9 +42,23 @@ const Userfilter = [
     },
 ]
 
+
 export default function UserManagementMaintenance() {
+
+    //Modal State mounting
+    const [isOpen, setIsOpen] = useState(false);
+
+    //Modal Open and Close Function
+    const OpenDialog = () => {
+        setIsOpen(true)
+    }
+    const CloseDialog = () => {
+        setIsOpen(false)
+    }
+
+
     return (
-        <div className='grid  grid-cols-4 grid-rows-[6.25rem_min-content_auto_min-content] h-full w-full'>
+        <div className='grid  grid-cols-4 grid-rows-[6.25rem_min-content_auto_auto_min-content] h-full w-full'>
             <Helmet>
                 {/* Title of the mark-up */}
                 <title>MBLearn | User Management Maintenance</title>
@@ -75,81 +91,35 @@ export default function UserManagementMaintenance() {
 
 
             {/* User Filter */}
-            <div className='row-start-3 col-start-4 px-5 py-2'>
-                <div className='w-full bg-divider h-[1px] rounded-full'></div>
-                <form>
-                    {Userfilter.map((section)=>(
-                        <Disclosure key={section.id} as="div" className='border-b border-divider py-6'>
-                            <h3 className='-my-3 flow-root font-text text-primary'>
-                                <DisclosureButton className='group flex w-full justify-between py-3 text-sm hover:text-primary transition-all ease-in-out'>
-                                    <span>{section.name}</span>
-                                    <span className='ml-6 flex items-center'>
-                                        <FontAwesomeIcon icon={faChevronUp} className='group-data-[open]:hidden'/>
-                                        <FontAwesomeIcon icon={faChevronDown} className='group-[&:not([data-open])]:hidden'/>
-                                    </span>
-                                    </DisclosureButton>
-                            </h3>
-                            <DisclosurePanel className='pt-6'>
-                                <div className='space-y-4'>
-                                    {section.option.map((option, optionIdx) => (
-                                        <div key={option.value} className='flex gap-4'>
-                                            <div className='flex h-5 shrink-0 items-center'>
-                                                {/* Checkbox Styling */}
-                                                <div className='group grid size-4 grid-cols-1'>
-                                                    <input defaultValue={option.value} defaultChecked={option.checked} id={`filter-${section.id}-${optionIdx}`} name={`${section.id}[]`} type="checkbox"
-                                                    className='col-start-1 row-start-1 appearance-none rounded border border-divider bg-white checked:border-primary checked:bg-primary'/>
-                                                    <svg fill="none" viewBox="0 0 14 14" className="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-[:disabled]:stroke-gray-950/25">
-                                                    <path
-                                                        d="M3 8L6 11L11 3.5"
-                                                        strokeWidth={2}
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        className="opacity-0 group-has-[:checked]:opacity-100"
-                                                    />
-                                                    <path
-                                                        d="M3 7H11"
-                                                        strokeWidth={2}
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        className="opacity-0 group-has-[:indeterminate]:opacity-100"
-                                                    />
-                                                    </svg>
-                                                </div>
-                                            </div>
-                                            <label htmlFor={`filter-${section.id}-${optionIdx}`} className='text-sm font-text text-black'>{option.label}</label>
-                                        </div>
-                                    ))}
-                                </div>
-                            </DisclosurePanel>
-                        </Disclosure>
-                        ))}
-                </form>
+            <div className='col-start-1 row-start-2 row-span-1 px-5 py-3'>
+            <button className='flex flex-row items-center border-2 border-primary py-2 px-4 font-header bg-secondarybackground rounded-md text-primary gap-2 w-fit hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md'>
+                <p>Filter</p>
+                <FontAwesomeIcon icon={faFilter}/>
+            </button>
             </div>
 
             {/* Userlist/Table */}
-            <div className='row-start-2 row-span-2 col-start-1 col-span-3'>
-                <table>
-                    <thead>
+            <div className='row-start-3 row-span-2 col-start-1 col-span-4 px-5 py-2'>
+                <div className='w-full border-primary border rounded-md overflow-hidden shadow-md'>
+                <table className='text-left w-full overflow-y-scroll'>
+                    <thead className='font-header text-xs text-primary bg-secondaryprimary'>
                         <tr>
-                            <th>Employee Name</th>
-                            <th>Department & Title</th>
-                            <th>Branch</th>
-                            <th>Role</th>
+                            <th className='py-4 px-4'>EMPLOYEE NAME</th>
+                            <th className='py-4 px-4'>DEPARTMENT</th>
+                            <th className='py-4 px-4'>BRANCH</th>
+                            <th className='py-4 px-4'>ROLE</th>
+                            <th className='py-4 px-4'></th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>Rogelio Gio Talingdan</td>
-                            <td>Information Tachnology Support</td>
-                            <td>Quezon City</td>
-                            <td>System Admin</td>
-                        </tr>
+                    <tbody className='bg-white divide-y divide-divider'>
+                        <User click={OpenDialog}/>
                     </tbody>
                 </table>
+                </div>
             </div>
 
             {/* Sample Footer Pagenataion */}
-            <div className='row-start-4 row-span-1 col-start-1 col-span-3 border-t border-divider mx-5 py-3 flex flex-row items-center justify-between'>
+            <div className='row-start-5 row-span-1 col-start-1 col-span-4 border-t border-divider mx-5 py-3 flex flex-row items-center justify-between'>
                 {/* Total number of entries and only be shown */}
                 <div>
                     <p className='text-sm font-text text-unactive'>
@@ -179,6 +149,9 @@ export default function UserManagementMaintenance() {
                     </nav>
                 </div>
             </div>
+
+            {/* User Profile Card */}
+            <UserEntryModal open={isOpen} close={CloseDialog} classname='relative z-10' />
         </div>
 
     )

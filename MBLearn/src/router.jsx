@@ -5,6 +5,7 @@ import GuestLayout from "./components/GuestLayout";
 import NotFound from "./views/NotFound";
 import CourseListMaintenance from "./views/CourseListMaintenance";
 import UserManagementMaintenance from "./views/UserManagementMaintenance";
+import UserAccountSecurityMaintenance from "./views/UserAccountSecurityMaintenance";
 import Dashboard from "./views/Dashboard";
 import SystemAdmin from "./components/SystemAdmin";
 import CourseAdmin from "./components/CourseAdmin";
@@ -37,6 +38,10 @@ const router = createBrowserRouter([
                     {
                         path: "usermanagementmaintenance",
                         element: <UserManagementMaintenance/>
+                    },
+                    {
+                        path: "useraccountsmaintenance",
+                        element: <UserAccountSecurityMaintenance/>
                     },
                 ]
             },
