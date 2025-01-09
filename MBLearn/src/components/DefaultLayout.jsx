@@ -12,6 +12,7 @@ export default function DefaultLayout() {
         axiosClient.get('/user').then(({ data }) => {
             setUser(data.name);
             setRole(data.role);
+            console.log('User:', data);
         }).catch((error) => {
             console.error('Failed to fetch user:', error.response?.data || error.message);
             setUser(null); // Handle unauthorized state

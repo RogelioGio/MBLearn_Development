@@ -62,7 +62,6 @@ export default function Dashboard()
         });
     }), [];
 
-    console.log(user.role);
 
     return (
             <DashboardLayout role={user.role}/>

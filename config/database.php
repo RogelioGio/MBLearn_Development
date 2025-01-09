@@ -95,6 +95,9 @@ return [
             'prefix_indexes' => true,
             'search_path' => 'public',
             'sslmode' => 'prefer',
+            'options' => [
+            'options' => '--endpoint=' . env('DB_OPTIONS'),
+            ],
         ],
 
         'sqlsrv' => [
