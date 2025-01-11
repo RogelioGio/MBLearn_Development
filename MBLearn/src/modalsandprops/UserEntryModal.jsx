@@ -9,22 +9,18 @@ const UserEntryModal = ({open, close, classname,ID}) =>{
     //API Call for fetching specific user
     const [selectedUser, setSelectedUser] = useState(null)
     const [loading, setLoading] = useState(false)
-    console.log(ID)
 
     useEffect(()=>{
         if(ID?.userID){
             setLoading(true)
             setSelectedUser(null)
-            axiosClient.get(`/selecteduser/${ID.userID}`)
+            axiosClient.get(`/select-user/${ID.userID}`)
             .then(response =>
-                {setSelectedUser(response.data);setLoading(false)})
+                {setSelectedUser(response.data.data);
+                setLoading(false)})
             .catch(err => console.log(err))
         }
     },[ID?.userID]);
-
-    const profileImage = useMemo(() => {
-        if(!selectedUser) return null;
-    })
 
     //Memoize the user profile
     const userProfile = useMemo(()=>{
@@ -34,10 +30,12 @@ const UserEntryModal = ({open, close, classname,ID}) =>{
             <div className='w-[8vw] h-[8vw] bg-white rounded-full shadow-md flex items-center justify-center'>
                 <img src={selectedUser.profile_image} alt="" className='w-[7vw] h-[7vw] bg-primary rounded-full'/>
             </div>
-            <p className='text-white font-header'>ID: 02000304273</p>
+            <p className='text-white font-header'>ID: {selectedUser.employeeID}</p>
             </div>
         )
     },[selectedUser]);
+
+
 
     //Memoize the Action Button
     const actionButton = useMemo(()=>{

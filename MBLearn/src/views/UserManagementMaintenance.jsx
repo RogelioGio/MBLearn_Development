@@ -70,8 +70,8 @@ export default function UserManagementMaintenance() {
 
     //Fetching Users in the database using axios
     useEffect(()=>{
-        axiosClient.get('/userinfo').then(response => {
-            setUsers(response.data);
+        axiosClient.get('/index-user').then(response => {;
+            setUsers(response.data.data)
         }).catch(err => {
             console.log(err)
         })

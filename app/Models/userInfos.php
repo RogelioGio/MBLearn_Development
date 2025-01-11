@@ -2,22 +2,24 @@
 
 namespace App\Models;
 
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class UserInfo extends Model
+class UserInfos extends Model
 {
     use HasFactory;
 
     /**
      * The table associated with the model.
      */
-    protected $table = 'userinfo';
+    protected $table = 'userInfo'; // Replace with your actual table name
 
     /**
      * The attributes that are mass assignable.
      */
     protected $fillable = [
+        'employeeID',
         'name',
         'department',
         'title',
@@ -26,12 +28,6 @@ class UserInfo extends Model
         'role',
         'status',
         'profile_image',
-    ];
-
-    /**
-     * The attributes that should be cast to native types.
-     */
-    protected $casts = [
-        'status' => 'string', // Enum fields can be cast as strings
+        // Add all the column names you want to make mass-assignable
     ];
 }

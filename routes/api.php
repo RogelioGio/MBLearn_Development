@@ -4,7 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\UserController;;
-use App\Http\Controllers\Api\UserInfoController;
+use App\Http\Controllers\Api\userInfo_controller;
 
 Route::middleware('auth:sanctum')->group(function() {
     Route::get('/user', function (Request $request) {
@@ -24,5 +24,7 @@ Route::get('/reset-users', [UserController::class, 'resetUsers']);
 
 
 //Userlist API for the frontend
-Route::get('/userinfo', [UserInfoController::class, 'userinfo']);
-Route::get('/selecteduser/{id}',[UserInfoController::class,'selecteduser']);
+Route::post('/add-user', [userInfo_controller::class, 'addUser']);
+Route::get('/index-user',[userInfo_controller::class, 'indexUsers']);
+Route::get('select-user/{id}',[userInfo_controller::class, 'findUser']);
+Route::get('/reset-user',[userInfo_controller::class, 'resetUser']);
