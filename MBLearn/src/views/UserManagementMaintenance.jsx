@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import Navigation from './Navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -6,6 +6,9 @@ import { faChevronDown, faChevronLeft, faChevronRight, faChevronUp, faFilter, fa
 import { Menu, MenuButton, MenuItem, MenuItems, Disclosure, DisclosureButton, DisclosurePanel, Dialog, DialogBackdrop, DialogPanel, DialogTitle} from '@headlessui/react';
 import User from '../modalsandprops/UserEntryProp';
 import UserEntryModal from '../modalsandprops/UserEntryModal';
+import axiosClient from '../axios-client';
+import { use } from 'react';
+import AddUserModal from '../modalsandprops/AddUserModal';
 
 //User Filter
 const Userfilter = [
@@ -47,14 +50,33 @@ export default function UserManagementMaintenance() {
 
     //Modal State mounting
     const [isOpen, setIsOpen] = useState(false);
+    const [isOpenAdd, setOpenAdd] = useState(false)
+    const [userID, setUserID] = useState(null); //Fethcing the selected user in the list
+    const [users, setUsers] = useState([]) //Fetching the user list
 
     //Modal Open and Close Function
-    const OpenDialog = () => {
+    const OpenDialog = (ID) => {
         setIsOpen(true)
+        setUserID(ID)
     }
     const CloseDialog = () => {
         setIsOpen(false)
     }
+
+    //Close Modal
+    const CloseAddUser = () => {
+        setOpenAdd(false)
+    }
+
+    //Fetching Users in the database using axios
+    useEffect(()=>{
+        axiosClient.get('/userinfo').then(response => {
+            setUsers(response.data);
+        }).catch(err => {
+            console.log(err)
+        })
+    },[])
+
 
 
     return (
@@ -73,11 +95,12 @@ export default function UserManagementMaintenance() {
 
             {/* Add Button */}
             <div className='col-start-4 row-start-1 flex flex-col justify-center pl-5 mr-5 border-divider border-b'>
-                <button className='inline-flex flex-row shadow-md items-center justify-center bg-primary font-header text-white text-base p-4 rounded-full hover:bg-primaryhover hover:scale-105 transition-all ease-in-out'>
+                <button className='inline-flex flex-row shadow-md items-center justify-center bg-primary font-header text-white text-base p-4 rounded-full hover:bg-primaryhover hover:scale-105 transition-all ease-in-out' onClick={() => setOpenAdd(true)}>
                     <FontAwesomeIcon icon={faUserPlus} className='mr-2'/>
                     <p>Add User</p>
                 </button>
             </div>
+
 
             {/* Search bar */}
             <div className='inline-flex items-center col-start-4 row-start-2 px-5 py-3 h-fit'>
@@ -112,7 +135,11 @@ export default function UserManagementMaintenance() {
                         </tr>
                     </thead>
                     <tbody className='bg-white divide-y divide-divider'>
-                        <User click={OpenDialog}/>
+                        {
+                            users.map(userEntry => (
+                                <User key={userEntry.id} userID={userEntry.id} click={OpenDialog} name={userEntry.name} department={userEntry.department} title={userEntry.title} branch={userEntry.branch} city={userEntry.city} profile_url={userEntry.profile_image}/>
+                            ))
+                        }
                     </tbody>
                 </table>
                 </div>
@@ -151,7 +178,10 @@ export default function UserManagementMaintenance() {
             </div>
 
             {/* User Profile Card */}
-            <UserEntryModal open={isOpen} close={CloseDialog} classname='relative z-10' />
+            <UserEntryModal open={isOpen} close={CloseDialog} classname='relative z-10' ID={userID}/>
+
+            {/* Add User Modal */}
+            <AddUserModal open={isOpenAdd} close={CloseAddUser} />
         </div>
 
     )

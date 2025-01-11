@@ -114,7 +114,7 @@ export default function Navigation() {
                     <li><Icons icon={<FontAwesomeIcon icon={faGear}/>} text={"Account Setting"}/></li>
                     <li><Icons icon={<FontAwesomeIcon icon={faBell}/>} text={"Notifications"}/></li>
                     <li className='inline-block relative w-auto group p-1'>
-                        <img src={profileUrl} alt="" className='w-10 h-10 hover:h-[2.6rem] rounded-full shadow-lg transition-all ease-in-out'/>
+                        <img src={profileUrl} alt="" className='w-10 h-10 rounded-full shadow-lg hover:scale-105 transition-all ease-in-out'/>
                         {/* Profile */}
                         <div className='bg-tertiary p-4 rounded-md absolute left-9 min-w-max bottom-0 flex flex-row scale-0 group-hover:scale-100'>
                             <ul>

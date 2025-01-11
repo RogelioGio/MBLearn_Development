@@ -3,18 +3,18 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react'
 import React from 'react'
 
-const User = ({click}) => {
+const User = ({click,userID,name,department,title,branch,city,profile_url}) => {
     return(
-        <tr className='font-text text-sm hover:bg-gray-200' onClick={() => click()}>
+        <tr className='font-text text-sm hover:bg-gray-200' onClick={() => click({userID})}>
                 <td className='text-sm  py-3 px-4'>
                     <div className='flex items-center gap-2'>
                         {/* User Image */}
                         <div className='bg-blue-500 h-10 w-10 rounded-full'>
-                            <img src="" alt="" className=''/>
+                            <img src={profile_url} alt="" className='rounded-full'/>
                         </div>
                         {/* Name and employee-id*/}
                         <div>
-                            <p className='font-header'>Rogelio Gio Talindan</p>
+                            <p className='font-header'>{name}</p>
                             <p className='text-unactive text-xs'>ID: 02000304273</p>
                         </div>
                     </div>
@@ -22,17 +22,17 @@ const User = ({click}) => {
                 <td className='py-3 px-4'>
                     <div className='flex flex-col'>
                         {/* Department */}
-                        <p className='text-unactive'>Information Technology Support</p>
+                        <p className='text-unactive'>{department}</p>
                         {/* Title */}
-                        <p className='text-unactive text-xs'>Front-end Developer</p>
+                        <p className='text-unactive text-xs'>{title}</p>
                     </div>
                 </td>
                 <td className='py-3 px-4'>
                     <div className='flex flex-col'>
                     {/* Branch Location */}
-                    <p className='text-unactive'>Novaliches Branch</p>
+                    <p className='text-unactive'>{branch}</p>
                     {/* City Location */}
-                    <p className='text-unactive text-xs'>Quezon City</p>
+                    <p className='text-unactive text-xs'>{city}</p>
                     </div>
                 </td>
                 <td className='py-3 px-4'>

@@ -38,7 +38,7 @@ export default function GuestLayout() {
         };
 
         //duration of the slideshow
-        const interval = setInterval(changeBackground, 20000);
+        const interval = setInterval(changeBackground, 5000);
 
         // Preload the first image
         preloadNextImage(0);
