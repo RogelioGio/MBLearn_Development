@@ -19,11 +19,12 @@ class userInfo_controller extends Controller
             'branch' => 'nullable|string|max:255',
             'city' => 'required|string|max:255',
             'role' => 'required|in:System Admin, Course Admin, Learner',
-            'status' => 'required|in:Active, Unactive',
+            'status' => 'nullable|in:Active, Unactive',
             'profile_image' => 'nullable|string|max:255'
         ]);
 
         $profile_image = $this -> generateProfileImageurl($validatedData['name']);
+        $status = $validatedData['status'] ?? 'Active';
 
         $userInfo = UserInfos::create([
             'employeeID' => $validatedData['employeeID'],
@@ -33,7 +34,7 @@ class userInfo_controller extends Controller
             'branch' => $validatedData['branch'],
             'city' => $validatedData['city'],
             'role' => $validatedData['role'],
-            'status' =>$validatedData['status'],
+            'status' =>$status,
             'profile_image' =>$profile_image
         ]);
 

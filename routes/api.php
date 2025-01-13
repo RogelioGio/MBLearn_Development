@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\UserController;;
 use App\Http\Controllers\Api\userInfo_controller;
+use App\Http\Controllers\Api\userCredentials_controller;
 
 Route::middleware('auth:sanctum')->group(function() {
     Route::get('/user', function (Request $request) {
@@ -28,3 +29,6 @@ Route::post('/add-user', [userInfo_controller::class, 'addUser']);
 Route::get('/index-user',[userInfo_controller::class, 'indexUsers']);
 Route::get('select-user/{id}',[userInfo_controller::class, 'findUser']);
 Route::get('/reset-user',[userInfo_controller::class, 'resetUser']);
+
+//UserCredential API (for logging in accounts)
+Route::post('/addusercredentials', [userCredentials_controller::class, 'addUserCredentials']);

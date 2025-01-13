@@ -17,6 +17,7 @@
 :root{
     /*Colors*/
     --Primary-Color: hsl(218,97%,26%);
+    --Primay-BG-pastel: hsl(222, 74%, 75%);
     --Secondary-Primary-Color: hsl(218, 97%, 85%);
     --Primary-Color-Hover: hsl(218, 97%, 33%);
     --Darker-Primary-Color: hsl(218,97%,20%);

@@ -1,47 +1,94 @@
-import { faFileArrowUp } from "@fortawesome/free-solid-svg-icons"
+import { faFileArrowUp, faUserPlus } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react"
-import { useRef } from "react"
+import { useRef, useState } from "react"
+import axiosClient from "../axios-client"
+import * as Yup from 'yup';
+import { useFormik } from "formik"
+import axios from "axios"
+import UserAddedSuccessfullyModal from "./UserAddedSuccessfullyModal"
 
 
 const AddUserModal = ({open, close}) => {
+    const [success, setSuccess] = useState(false)
+    const [addedUser, setaddedUser] = useState('')
+    const [loading, setLoading] = useState(false);
 
-    const nameRef = useRef();
-    const employeeIDRef = useRef();
-    const departmentRef = useRef();
-    const titleRef = useRef();
-    const branchRef = useRef();
-    const cityRef = useRef();
+    //payload and validation schema
+    const formik = useFormik({
+        //references
+        initialValues: {
+            employeeID: '',
+            name: '',
+            department: '',
+            title: '',
+            branch: '',
+            city: '',
+            role: '',
+            status: 'Active',
 
-    const workingEmailRef = useRef();
-    const passwordRef = useRef();
+            MBemail: '',
+            password: '',
+        },
+        //validation
+        validationSchema: Yup.object({
+            //userInfo
+            employeeID: Yup.string().required('required *').min(11, 'Employee ID must have 11 characters'),
+            name: Yup.string().required('required *'),
+            city: Yup.string().required('required *'),
+            role: Yup.string().required('required *'),
+            //userCredentials
+            MBemail: Yup.string()
+                        .required('required *')
+                        .email('Invalid Working Email Format'),
+            password: Yup.string()
+                        .required("required *")
+                        .min(8,'Password must be atleast 8 characters'),
+        }),
+        //submission
+        onSubmit: (values) => {
+            console.log('Submitted Data', values);
+            setLoading(true)
 
-    const addUserPayload = () => {
-        return{
-            name: nameRef.current.value,
-            employeeID: employeeIDRef.current.value,
-            department: departmentRef.current.value,
-            title: titleRef.current.value,
-            branch: branchRef.current.value,
-            city: cityRef.current.value
+            setaddedUser(values)
+
+            const userInfo_payload = {
+                employeeID: values.employeeID,
+                name: values.name,
+                department: values.department,
+                title: values.title,
+                branch: values.branch,
+                city: values.city,
+                role: values.role,
+                status: values.status
+            };
+
+            const userCredentials_payload = {
+                employeeID: values.employeeID,
+                name: values.name,
+                MBemail: values.MBemail,
+                password: values.password,
+                role: values.role
+            }
+
+            // Adding to usercredentials first
+            axiosClient.post('/addusercredentials',userCredentials_payload)
+            .then(response => {console.log(response.data.message || 'User credentials created successfully');
+            }).catch((error) => {console.log(error)})
+
+            // Adding to userinfo
+            axiosClient.post('/add-user',userInfo_payload)
+            .then(response => {console.log(response.data.message || 'User info created successfully');
+            }).catch((error) => {console.log(error)})
+            .finally(()=> {
+                setSuccess(true)
+                formik.resetForm()
+                }
+            )
         }
-    }
+    });
 
-    const addUserCredentialsPayload = () => {
-        return{
-            workingEmail: workingEmailRef.current.value,
-            password: passwordRef.current.value
-        }
-    }
 
-    //Submit Function
-    const submitForm = async (e) => {
-        e.preventDefault();
-        const payload_1 = addUserPayload();
-        const payload_2 = addUserCredentialsPayload();
-        console.log(payload_1)
-        console.log(payload_2)
-    }
 
     return(
         <>
@@ -52,63 +99,151 @@ const AddUserModal = ({open, close}) => {
                     <DialogPanel transition className='relative overflow-hidden transform rounded-md bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in'>
                         <div className='bg-white rounded-md h-full w-fit p-5 flex flex-col'>
                             {/* Header */}
-                            <div className="py-4 mx-4 border-b border-divider">
-                                <h1 className="text-primary font-header text-3xl">Add User</h1>
-                                <p className="text-unactive font-text text-md">Create and register new users with defined roles and permissions.</p>
+                            <div className="py-4 mx-4 border-b border-divider flex flex-row justify-between item-center">
+                                <div>
+                                    <h1 className="text-primary font-header text-3xl">Add User</h1>
+                                    <p className="text-unactive font-text text-md">Create and register new users with defined roles and permissions.</p>
+                                </div>
+                                <div className="bg-primarybg p-5 rounded-full">
+                                    <div className="h-full w-fit aspect-square flex items-center justify-center">
+                                        <FontAwesomeIcon icon={faUserPlus} className="text-primary text-lg"/>
+                                    </div>
+                                </div>
                             </div>
+
+
                             {/* Add User by Form */}
                             <div className="mx-4 flex flex-row gap-5">
-                                <form onSubmit={submitForm} className="grid grid-cols-3 gap-y-2 ">
-                                {/* User information */}
+                                <form onSubmit={formik.handleSubmit} className="grid grid-cols-3 gap-y-2 pb-4">
+
+                                {/* User information Header*/}
                                 <div className="py-2 col-span-3">
                                     <p className="font-header uppercase">Employee Information</p>
                                     <p className="font-text text-unactive text-xs"> Input all basic information of the employee to be added in the system.</p>
                                 </div>
+
                                 {/* Name */}
-                                <div className="inline-flex flex-col gap-2 row-start-2 col-span-3">
-                                    <label htmlFor="Name" className="font-header text-xs uppercase ">Name:</label>
-                                    <input type="text" name="Name" ref={nameRef} className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
+                                <div className="inline-flex flex-col gap-2 row-start-2 col-span-2 pr-2">
+                                    <label htmlFor="name" className="font-header text-xs flex flex-row justify-between">
+                                        <p className="uppercase">Name</p>
+                                        {formik.touched.name && formik.errors.name ? (<div className="text-red-500 text-xs font-text">{formik.errors.name}</div>):null}
+                                    </label>
+                                    <input type="text" name="name"
+                                            value={formik.values.name}
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
                                 </div>
-                                {/* Employee Details */}
+
+                                {/* EmployeeID */}
+                                <div className="inline-flex flex-col gap-2 row-start-2 col-start-3 pr-2">
+                                    <label htmlFor="employeeID" className="font-header text-xs flex flex-row justify-between">
+                                        <p className="uppercase">Employee ID</p>
+                                        {formik.touched.employeeID && formik.errors.employeeID ? (<div className="text-red-500 text-xs font-text">{formik.errors.employeeID}</div>):null}
+                                    </label>
+                                    <input type="text" name="employeeID"
+                                            value={formik.values.employeeID}
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
+                                </div>
+
+                                {/* Role */}
                                 <div className="inline-flex flex-col gap-2 row-start-3 col-span-1 pr-2">
-                                    <label htmlFor="EmployeeID" className="font-header text-xs uppercase">Employee ID:</label>
-                                    <input type="text" name="EmployeeID" ref={employeeIDRef} className="border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
+                                    <label htmlFor="role" className="font-header text-xs flex flex-row justify-between">
+                                        <p className="uppercase">System Role</p>
+                                        {formik.touched.role && formik.errors.role ? (<div className="text-red-500 text-xs font-text">{formik.errors.role}</div>):null}
+                                    </label>
+                                    <input type="text" name="role"
+                                            value={formik.values.role}
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
                                 </div>
+
+                                {/*Department*/}
                                 <div className="inline-flex flex-col gap-2 row-start-3 col-span-1 pr-2">
                                     {/* Must be dropdown */}
-                                    <label htmlFor="Department" className="font-header text-xs uppercase ">Deparment:</label>
-                                    <input type="text" name="Department" ref={departmentRef} className="border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
+                                    <label htmlFor="department" className="font-header text-xs flex uppercase">Deparment:</label>
+                                    <input type="text" name="department"
+                                            value={formik.values.department}
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
                                 </div>
+
+                                {/* Job Title */}
                                 <div className="inline-flex flex-col gap-2 row-start-3 col-span-1">
                                     {/* Must be dropdown */}
-                                    <label htmlFor="Title" className="font-header text-xs uppercase ">Title:</label>
-                                    <input type="text" name="Title" ref={titleRef} className="border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
+                                    <label htmlFor="title" className="font-header text-xs uppercase ">Title:</label>
+                                    <input type="text" name="title"
+                                            value={formik.values.title}
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
                                 </div>
+
+                                {/* Branch Location */}
                                 <div className="inline-flex flex-col gap-2 row-start-4 col-span-2 pr-2">
-                                    <label htmlFor="Branch" className="font-header text-xs uppercase ">Branch Location:</label>
-                                    <input type="text" name="Branch" ref={branchRef} className="border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
+                                    <label htmlFor="branch" className="font-header text-xs uppercase ">Branch Location:</label>
+                                    <input type="text" name="branch"
+                                            value={formik.values.branch}
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
                                 </div>
+
+                                {/* City Location */}
                                 <div className="inline-flex flex-col gap-2 row-start-4 col-span-1 pb-4">
-                                    <label htmlFor="City" className="font-header text-xs uppercase ">City:</label>
-                                    <input type="text" name="City" ref={cityRef} className="border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
+                                    <label htmlFor="city" className="font-header text-xs flex flex-row justify-between">
+                                        <p className="uppercase">City:</p>
+                                        {formik.touched.city && formik.errors.city ? (<div className="text-red-500 text-xs font-text">{formik.errors.city}</div>):null}
+                                    </label>
+                                    <input type="text" name="city"
+                                            value={formik.values.city}
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
                                 </div>
-                                {/* Account credentials */}
+
+                                {/* Account credentials Header*/}
                                 <div className="py-2 col-span-3 border-t border-divider">
                                     <p className="font-header uppercase">Employee Account Credentials</p>
                                     <p className="font-text text-unactive text-xs">Input all employee's account crendentials to be added in the system.</p>
                                 </div>
 
+                                {/* MBemail */}
                                 <div className="inline-flex flex-col gap-2 row-start-6 col-span-2 pr-2">
-                                    <label htmlFor="Email" className="font-header text-xs uppercase">Metrobank Working Email</label>
-                                    <input type="text" name="Email" ref={workingEmailRef} className="border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
-                                </div>
-                                <div className="inline-flex flex-col gap-2 row-start-6 col-span-2 pb-4">
-                                    <label htmlFor="Password" className="font-header text-xs uppercase">Password</label>
-                                    <input type="text" name="Password" ref={passwordRef} className="border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
+                                    <label htmlFor="MBemail" className="font-header text-xs flex flex-row justify-between">
+                                        <p className="uppercase">Metrobank Working Email</p>
+                                        {formik.touched.MBemail && formik.errors.MBemail ? (<div className="text-red-500 text-xs font-text">{formik.errors.MBemail}</div>):null}
+                                    </label>
+                                    <input type="text" name="MBemail"
+                                            value={formik.values.MBemail}
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
                                 </div>
 
-                                {/* submit */}
-                                <input type="submit" className="inline-flex flex-col gap-2 row-start-7 col-span-3 bg-primary p-4 rounded-md font-header uppercase text-white text-xs" />
+                                {/* Account Password */}
+                                <div className="inline-flex flex-col gap-2 row-start-6 col-span-2 pb-4">
+                                    <label htmlFor="password" className="font-header text-xs flex flex-row justify-between">
+                                        <p className="uppercase">Password</p>
+                                        {formik.touched.password && formik.errors.password ? (<div className="text-red-500 text-xs font-text">{formik.errors.password}</div>):null}
+                                    </label>
+                                    <input type="text" name="password"
+                                            value={formik.values.password}
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
+                                </div>
+
+                                {/* Submit Button */}
+                                <input type="submit"
+                                        value={loading ? 'Submitting...' : 'Submit'}
+                                        disabled={loading}
+                                        className="inline-flex flex-col gap-2 row-start-7 col-span-3 bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out" />
+
                                 </form>
 
                                 {/* divider */}
@@ -131,6 +266,9 @@ const AddUserModal = ({open, close}) => {
                 </div>
             </div>
         </Dialog>
+
+        {/* Successfully Added User  */}
+        <UserAddedSuccessfullyModal success={success}  close={() => setSuccess(false)} userdata={addedUser}/>
         </>
     )
 }

@@ -24,6 +24,7 @@ export default {
         },
         colors:{
             primary: 'var(--Primary-Color)',
+            primarybg: 'var(--Primay-BG-pastel)',
             primaryhover: 'var(--Primary-Color-Hover)',
             secondaryprimary: 'var(--Secondary-Primary-Color)',
             secodary: 'var(--Darker-Primary-Color)',
