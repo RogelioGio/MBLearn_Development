@@ -7,9 +7,11 @@ import { Menu, MenuButton, MenuItem, MenuItems, Disclosure, DisclosureButton, Di
 import User from '../modalsandprops/UserEntryProp';
 import UserEntryModal from '../modalsandprops/UserEntryModal';
 import axiosClient from '../axios-client';
-import { use } from 'react';
 import AddUserModal from '../modalsandprops/AddUserModal';
-
+import { TailSpin } from 'react-loader-spinner'
+import UserListLoadingProps from '../modalsandprops/UserListLoadingProps';
+import EditUserModal from '../modalsandprops/EditUserModal';
+import DeleteUserModal from '../modalsandprops/DeleteUserModal';
 //User Filter
 const Userfilter = [
     {
@@ -51,8 +53,18 @@ export default function UserManagementMaintenance() {
     //Modal State mounting
     const [isOpen, setIsOpen] = useState(false);
     const [isOpenAdd, setOpenAdd] = useState(false)
+    const [Edit, setEdit] = useState(false)
+    const [Delete, setDelete] = useState(false)
+    const[isLoading, setLoading] = useState(true)
+
+    //Listing User states
     const [userID, setUserID] = useState(null); //Fethcing the selected user in the list
     const [users, setUsers] = useState([]) //Fetching the user list
+    const[currentPage, setCurrentPage] =useState(1);
+    const [perPage] = useState(5)
+    const [totalUsers, setTotalUsers] = useState(0);
+    const [lastPage, setLastPage] = useState(1)
+
 
     //Modal Open and Close Function
     const OpenDialog = (ID) => {
@@ -68,15 +80,69 @@ export default function UserManagementMaintenance() {
         setOpenAdd(false)
     }
 
+    // Edit user modal
+    const OpenEdit = (e) => {
+        e.stopPropagation();
+        setEdit(true);
+    }
+    const CloseEdit = () => {
+        setEdit(false)
+    }
+
+    // Delete user modal
+    const OpenDelete = (e) => {
+        e.stopPropagation();
+        setDelete(true);
+    }
+
+    const CloseDelete = (e) => {
+        setDelete(false)
+    }
+
     //Fetching Users in the database using axios
     useEffect(()=>{
-        axiosClient.get('/index-user').then(response => {;
+        setLoading(true)
+        axiosClient.get('/index-user',{
+            params: {
+                page: currentPage,
+                perPage: perPage,
+            }
+        }).then(response => {;
             setUsers(response.data.data)
+            setTotalUsers(response.data.total)
+            setLastPage(response.data.lastPage);
+            setLoading(false)
         }).catch(err => {
             console.log(err)
+        }).finally(()=>{
+            setLoading(false)
         })
-    },[])
+    },[currentPage, perPage])
 
+    //Next and Previous
+    const back = () => {
+        if (currentPage > 1){
+            setCurrentPage(currentPage - 1)
+            console.log('back')
+        }
+    }
+    const next = () => {
+        if (currentPage < lastPage){
+            setCurrentPage(currentPage + 1)
+        }
+    }
+
+    //Current page change
+    const pageChange = (page) => {
+        if(page > 0 && page <= lastPage){
+            setCurrentPage(page)
+        }
+    }
+    //Dynamic Pagging numbering
+    const Pages = [];
+    for(let p = 1; p <= lastPage; p++){
+        Pages.push(p)
+    }
 
 
     return (
@@ -136,9 +202,24 @@ export default function UserManagementMaintenance() {
                     </thead>
                     <tbody className='bg-white divide-y divide-divider'>
                         {
-                            users.map(userEntry => (
-                                <User key={userEntry.id} userID={userEntry.id} click={OpenDialog} name={userEntry.name} department={userEntry.department} title={userEntry.title} branch={userEntry.branch} city={userEntry.city} profile_url={userEntry.profile_image}/>
+                            isLoading ? (
+                                <UserListLoadingProps/>
+                            ) : (
+                                users.map(userEntry => (<User
+                                    re_move={OpenDelete}
+                                    edit={OpenEdit}
+                                    key={userEntry.id}
+                                    userID={userEntry.id}
+                                    click={OpenDialog}
+                                    name={userEntry.name}
+                                    department={userEntry.department}
+                                    title={userEntry.title}
+                                    branch={userEntry.branch}
+                                    city={userEntry.city}
+                                    profile_url={userEntry.profile_image}/>
                             ))
+                        )
+
                         }
                     </tbody>
                 </table>
@@ -150,27 +231,35 @@ export default function UserManagementMaintenance() {
                 {/* Total number of entries and only be shown */}
                 <div>
                     <p className='text-sm font-text text-unactive'>
-                        Showing <span className='font-header text-primary'>1</span> to <span className='font-header text-primary'>3</span> of {/*here is the backend code for total entries*/}
-                        <span className='font-header text-primary'>97</span> <span className='text-primary'>results</span>
+                        Showing <span className='font-header text-primary'>1</span> to <span className='font-header text-primary'>{perPage}</span> of <span className='font-header text-primary'>{totalUsers}</span> <span className='text-primary'>results</span>
                     </p>
                 </div>
                 {/* Paganation */}
                 <div>
                     <nav className='isolate inline-flex -space-x-px round-md shadow-xs'>
                         {/* Previous */}
-                        <a href="#" className='relative inline-flex items-center rounded-l-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
+                        <a href="#"
+                            onClick={back}
+                            className='relative inline-flex items-center rounded-l-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
                             <FontAwesomeIcon icon={faChevronLeft}/>
                         </a>
-                        {/* Current: "z-10 bg-indigo-600 text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600", Default: "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0" */}
-                        <a href="#" className='relative z-10 inline-flex item center bg-primary px-4 py-2 text-sm font-header text-white ring-1 ring-divider ring-inset'>1</a>
-                        <a href="#" className='relative z-10 inline-flex item center bg-secondarybackground px-4 py-2 text-sm font-header text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>2</a>
-                        <a href="#" className= 'relative z-10 inline-flex item center bg-secondarybackground px-4 py-2 text-sm font-header text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>3</a>
-                        <span className='relative inline-flex item center bg-secondarybackground px-4 py-2 text-sm font-header text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all eas'>...</span>
-                        <a href="#" className='relative z-10 inline-flex item center bg-secondarybackground px-4 py-2 text-sm font-header text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>8</a>
-                        <a href="#" className='relative z-10 inline-flex item center bg-secondarybackground px-4 py-2 text-sm font-header text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>9</a>
-                        <a href="#" className='relative z-10 inline-flex item center bg-secondarybackground px-4 py-2 text-sm font-header text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>10</a>
-                        {/* Next */}
-                        <a href="#" className='relative inline-flex items-center rounded-r-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
+
+                        {/* Current Page & Dynamic Paging */}
+                        {Pages.map((page)=>(
+                            <a href="#"
+                                key={page}
+                                className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset
+                                    ${
+                                        page === currentPage
+                                        ? 'bg-primary text-white'
+                                        : 'bg-secondarybackground text-primary hover:bg-primary hover:text-white'
+                                    } transition-all ease-in-out`}
+                                    onClick={() => pageChange(page)}>
+                                {page}</a>
+                        ))}
+                        <a href="#"
+                            onClick={next}
+                            className='relative inline-flex items-center rounded-r-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
                             <FontAwesomeIcon icon={faChevronRight}/>
                         </a>
                     </nav>
@@ -182,6 +271,12 @@ export default function UserManagementMaintenance() {
 
             {/* Add User Modal */}
             <AddUserModal open={isOpenAdd} close={CloseAddUser} />
+
+            {/* Edit User Modal */}
+            <EditUserModal open={Edit} close={CloseEdit}/>
+
+            {/* Delete User Modal */}
+            <DeleteUserModal open={Delete} close={CloseDelete}/>
         </div>
 
     )

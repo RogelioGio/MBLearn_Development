@@ -55,9 +55,19 @@ class userInfo_controller extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function indexUsers(){
-        $users = UserInfos::all();
-        return response()->json(['data' => $users],200);
+    public function indexUsers(Request $request){
+
+        $page = $request->input('page', 1);//Default page
+        $perPage = $request->input('perPage',5); //Number of entry per page
+
+        $users = UserInfos::paginate($perPage);
+
+        return response()->json([
+            'data' => $users->items(),
+            'total' => $users->total(),
+            'lastPage' => $users->lastPage(),
+            'currentPage' => $users->currentPage()
+        ],200);
     }
 
     /**
