@@ -8,6 +8,7 @@ import { InfinitySpin } from 'react-loader-spinner'
 const UserEntryModal = ({open, close, classname,ID}) =>{
     //API Call for fetching specific user
     const [selectedUser, setSelectedUser] = useState(null)
+    const [date, setDate] = useState();
     const [loading, setLoading] = useState(false)
 
     useEffect(()=>{
@@ -17,10 +18,25 @@ const UserEntryModal = ({open, close, classname,ID}) =>{
             axiosClient.get(`/select-user/${ID.userID}`)
             .then(response =>
                 {setSelectedUser(response.data.data);
-                setLoading(false)})
+                setLoading(false)
+
+                })
             .catch(err => console.log(err))
         }
     },[ID?.userID]);
+
+    //function for readable dates
+    useEffect(() => {
+        if(selectedUser?.created_at){
+            const created_date = new Date(selectedUser.created_at).toLocaleDateString('en-US', {
+                year: 'numeric',  // Display the full year (e.g., 2025)
+                month: 'long',    // Display the full month name (e.g., January)
+                day: 'numeric'    // Display the numeric day (e.g., 16)
+            });
+            setDate(created_date)
+        }
+    },[selectedUser])
+
 
     //Memoize the user profile
     const userProfile = useMemo(()=>{
@@ -86,12 +102,15 @@ const UserEntryModal = ({open, close, classname,ID}) =>{
                 <p className='font-header text-sm text-unactive uppercase'>Role:</p>
                 <p className='font-text text-lg'>{selectedUser.role}</p>
             </div>
+                {/* User Status */}
             <div className='row-start-3 col-span-2 py-4 px-4 border-r border-divider'>
                 <p className='font-header text-sm text-unactive uppercase'>User Status:</p>
                 <p className='font-text text-lg'>{selectedUser.status}</p>
             </div>
-                <div className='row-start-3 col-span-1 py-4 px-4'>
+                {/* User Added */}
+            <div className='row-start-3 col-span-1 py-4 px-4'>
                     <p className='font-header text-sm text-unactive uppercase'>User Added:</p>
+                    <p className='font-text text-lg'>{date}</p>
             </div>
             </div>
             </>

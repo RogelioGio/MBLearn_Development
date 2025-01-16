@@ -8,9 +8,9 @@ import { Link, Links, NavLink, useNavigate } from 'react-router-dom';
 
 //Icon props
 const Icons = ({icon, text, to}) => (
-    <NavLink to={to}>
+    <NavLink to={to} className={({isActive}) => isActive ? 'icon_active':'_icon'}>
         <div className='icon group'>
-            <p>{icon}</p>
+            <p className='hover:scale-105 transition-all ease-in-out'>{icon}</p>
             <p className='icon-name group-hover:scale-100'>{text}</p>
         </div>
     </NavLink>
@@ -29,7 +29,7 @@ const ProfileIcons = ({text ,icon, onClick}) => (
 //Role-based Navigations
 const navItems = {
     "system_admin": [
-        {icon:faHouse, text:"Home", to:'/systemadmin'},
+        {icon:faHouse, text:"Home", to:'/systemadmin/dashboard'},
         {icon:faBook, text:"Course List Maintenance", to:"/systemadmin/courselistmaintenance"},
         {icon:faUserGroup, text:"User Management Maintenance", to:"/systemadmin/usermanagementmaintenance"},
         {icon:faUserLock, text:"User Accounts Maintenance", to:"/systemadmin/useraccountsmaintenance"},

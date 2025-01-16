@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react'
 import React from 'react'
 
-const User = ({edit,re_move,click,userID,name,department,title,branch,city,profile_url}) => {
+const User = ({re_move,click,userID,name,department,title,branch,city,profile_url,employeeID,role,edit}) => {
     return(
         <tr className='font-text text-sm hover:bg-gray-200' onClick={() => click({userID})}>
                 <td className='text-sm  py-3 px-4'>
@@ -15,7 +15,7 @@ const User = ({edit,re_move,click,userID,name,department,title,branch,city,profi
                         {/* Name and employee-id*/}
                         <div>
                             <p className='font-header'>{name}</p>
-                            <p className='text-unactive text-xs'>ID: 02000304273</p>
+                            <p className='text-unactive text-xs'>ID: {employeeID}</p>
                         </div>
                     </div>
                 </td>
@@ -36,13 +36,13 @@ const User = ({edit,re_move,click,userID,name,department,title,branch,city,profi
                     </div>
                 </td>
                 <td className='py-3 px-4'>
-                    <p className='text-unactive'>System Admin</p>
+                    <p className='text-unactive'>{role}</p>
                 </td>
 
                 {/* Action */}
                 <td className='py-3 px-4'>
                     <div className='flex gap-1 justify-end'>
-                    <button onClick={edit}
+                    <button onClick={(e) => edit(e,userID)}
                             className='flex flex-row items-center justify-center gap-2 px-5 py-2 border border-primary rounded-md text-primary hover:bg-primary hover:text-white hover:scale-105 transition-all ease-in-out'>
                         <FontAwesomeIcon icon={faUserPen}/>
                         <p>Edit</p>

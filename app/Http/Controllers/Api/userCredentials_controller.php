@@ -27,4 +27,14 @@ class userCredentials_controller extends Controller
             'message' => 'User Credentials Added Successfully',
             'data' => $userCredentials],201);
     }
+
+    public function resetUsers()
+{
+    // Truncate the users table
+    DB::table('userCredentials')->truncate();
+
+    return response()->json([
+        'message' => 'Users table truncated and auto-increment reset.'
+    ]);
+}
 }

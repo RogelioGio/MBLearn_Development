@@ -26,7 +26,7 @@ class addUserCredential_request extends FormRequest
             'name' => 'required|string|max:255',
             'MBemail' => 'required|email|unique:userCredentials,MBemail',
             'password' => 'required|string|min:8',
-            'role' => 'required|in:System Admin, Course Admin, Learner|max:225',
+            'role' => 'required|in:System Admin,Course Admin,Learner|max:225',
         ];
     }
 }

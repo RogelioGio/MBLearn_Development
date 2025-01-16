@@ -5,11 +5,17 @@
 
 @layer components {
     /* Navigation Icon Class */
+    ._icon{
+        @apply text-unactive text-lg hover:scale-105 cursor-pointer hover:text-primary transition-all ease-in-out z-30;
+    }
     .icon {
-        @apply flex text-unactive text-lg hover:text-xl cursor-pointer hover:text-primary transition-all ease-in-out;
+        @apply flex z-30;
+    }
+    .icon_active{
+        @apply text-primary text-lg z-30;
     }
     .icon-name{
-        @apply absolute w-auto left-16 z-10 bg-tertiary text-white p-2 rounded-md text-xs scale-0 font-text;
+        @apply absolute w-fit left-16 z-30 bg-tertiary text-white p-2 rounded-md text-xs scale-0 font-text;
     }
 
     /* Profile sub-menu */

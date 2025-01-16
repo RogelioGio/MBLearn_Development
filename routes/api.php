@@ -28,7 +28,8 @@ Route::get('/reset-users', [UserController::class, 'resetUsers']);
 Route::post('/add-user', [userInfo_controller::class, 'addUser']);
 Route::get('/index-user',[userInfo_controller::class, 'indexUsers']);
 Route::get('select-user/{id}',[userInfo_controller::class, 'findUser']);
-Route::get('/reset-user',[userInfo_controller::class, 'resetUser']);
+Route::get('/reset-user',[userInfo_controller::class, 'resetUser']); //reset user table
 
 //UserCredential API (for logging in accounts)
 Route::post('/addusercredentials', [userCredentials_controller::class, 'addUserCredentials']);
+Route::get('/reset-user-creds',[userCredentials_controller::class, 'resetUsers']); //reset user table

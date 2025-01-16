@@ -12,6 +12,7 @@ import { TailSpin } from 'react-loader-spinner'
 import UserListLoadingProps from '../modalsandprops/UserListLoadingProps';
 import EditUserModal from '../modalsandprops/EditUserModal';
 import DeleteUserModal from '../modalsandprops/DeleteUserModal';
+
 //User Filter
 const Userfilter = [
     {
@@ -50,97 +51,121 @@ const Userfilter = [
 
 export default function UserManagementMaintenance() {
 
-    //Modal State mounting
-    const [isOpen, setIsOpen] = useState(false);
-    const [isOpenAdd, setOpenAdd] = useState(false)
-    const [Edit, setEdit] = useState(false)
-    const [Delete, setDelete] = useState(false)
-    const[isLoading, setLoading] = useState(true)
+    //Modal State
+    const [modalState, setModalState] = useState({
+        isOpen: false,
+        isOpenAdd:false,
+        isEdit:false,
+        isDelete: false,
+    });
 
-    //Listing User states
+    //Modal state changes
+    const toggleModal = (key,value) => {
+        setModalState((prev => ({
+            ...prev,
+            [key]:value,
+        })));
+    }
+
+    //Pagenation States
+    const [pageState, setPagination] = useState({
+        currentPage: 1,
+        perPage: 5,
+        totalUsers: 0,
+        lastPage:1,
+    });
+
+    const pageChangeState = (key, value) => {
+        setPagination ((prev) => ({
+            ...prev,
+            [key]: value
+        }))
+    }
+
+    //User State
     const [userID, setUserID] = useState(null); //Fethcing the selected user in the list
     const [users, setUsers] = useState([]) //Fetching the user list
-    const[currentPage, setCurrentPage] =useState(1);
-    const [perPage] = useState(5)
-    const [totalUsers, setTotalUsers] = useState(0);
-    const [lastPage, setLastPage] = useState(1)
 
+    //Loading State
+    const [isLoading, setLoading] = useState(true);
 
-    //Modal Open and Close Function
+    //Open and Closing User Description
     const OpenDialog = (ID) => {
-        setIsOpen(true)
-        setUserID(ID)
+        setUserID(ID);
+        toggleModal("isOpen",true);
     }
     const CloseDialog = () => {
-        setIsOpen(false)
+        toggleModal("isOpen",false);
+        setUserID('');
     }
 
-    //Close Modal
+    //Close Add User Modal
     const CloseAddUser = () => {
-        setOpenAdd(false)
+        toggleModal("isOpenAdd", false)
     }
 
-    // Edit user modal
-    const OpenEdit = (e) => {
+
+    // Open and Close Edit User Modal
+    const OpenEdit = (e, ID) => {
         e.stopPropagation();
-        setEdit(true);
+        setUserID(ID)
+        toggleModal("isEdit", true);
     }
     const CloseEdit = () => {
-        setEdit(false)
+        toggleModal("isEdit", false);
     }
 
-    // Delete user modal
-    const OpenDelete = (e) => {
-        e.stopPropagation();
-        setDelete(true);
-    }
+    // // Delete user modal
+    // const OpenDelete = (e) => {
+    //     e.stopPropagation();
+    //     setDelete(true);
+    // }
 
-    const CloseDelete = (e) => {
-        setDelete(false)
-    }
+    // const CloseDelete = (e) => {
+    //     setDelete(false)
+    // }
 
     //Fetching Users in the database using axios
     useEffect(()=>{
         setLoading(true)
         axiosClient.get('/index-user',{
             params: {
-                page: currentPage,
-                perPage: perPage,
+                page: pageState.currentPage,
+                perPage: pageState.perPage,
             }
         }).then(response => {;
             setUsers(response.data.data)
-            setTotalUsers(response.data.total)
-            setLastPage(response.data.lastPage);
+            pageChangeState("totalUser", response.data.total)
+            pageChangeState("lastPage", response.data.lastPage)
             setLoading(false)
         }).catch(err => {
             console.log(err)
         }).finally(()=>{
             setLoading(false)
         })
-    },[currentPage, perPage])
+    },[pageState.currentPage, pageState.perPage])
 
     //Next and Previous
     const back = () => {
-        if (currentPage > 1){
-            setCurrentPage(currentPage - 1)
-            console.log('back')
+        if (pageState.currentPage > 1){
+            pageChangeState("currentPage", pageState.currentPage - 1)
         }
     }
     const next = () => {
-        if (currentPage < lastPage){
-            setCurrentPage(currentPage + 1)
+        if (pageState.currentPage < pageState.lastPage){
+            pageChangeState("currentPage", pageState.currentPage + 1)
         }
     }
 
     //Current page change
     const pageChange = (page) => {
-        if(page > 0 && page <= lastPage){
-            setCurrentPage(page)
+        if(page > 0 && page <= pageState.lastPage){
+            pageChangeState("currentPage", page)
         }
     }
     //Dynamic Pagging numbering
     const Pages = [];
-    for(let p = 1; p <= lastPage; p++){
+    for(let p = 1; p <= pageState.lastPage; p++){
         Pages.push(p)
     }
 
@@ -161,7 +186,7 @@ export default function UserManagementMaintenance() {
 
             {/* Add Button */}
             <div className='col-start-4 row-start-1 flex flex-col justify-center pl-5 mr-5 border-divider border-b'>
-                <button className='inline-flex flex-row shadow-md items-center justify-center bg-primary font-header text-white text-base p-4 rounded-full hover:bg-primaryhover hover:scale-105 transition-all ease-in-out' onClick={() => setOpenAdd(true)}>
+                <button className='inline-flex flex-row shadow-md items-center justify-center bg-primary font-header text-white text-base p-4 rounded-full hover:bg-primaryhover hover:scale-105 transition-all ease-in-out' onClick={() => toggleModal("isOpenAdd",true)}>
                     <FontAwesomeIcon icon={faUserPlus} className='mr-2'/>
                     <p>Add User</p>
                 </button>
@@ -206,8 +231,6 @@ export default function UserManagementMaintenance() {
                                 <UserListLoadingProps/>
                             ) : (
                                 users.map(userEntry => (<User
-                                    re_move={OpenDelete}
-                                    edit={OpenEdit}
                                     key={userEntry.id}
                                     userID={userEntry.id}
                                     click={OpenDialog}
@@ -216,7 +239,11 @@ export default function UserManagementMaintenance() {
                                     title={userEntry.title}
                                     branch={userEntry.branch}
                                     city={userEntry.city}
-                                    profile_url={userEntry.profile_image}/>
+                                    profile_url={userEntry.profile_image}
+                                    employeeID={userEntry.employeeID}
+                                    role={userEntry.role}
+                                    edit={OpenEdit}
+                                    />
                             ))
                         )
 
@@ -231,7 +258,7 @@ export default function UserManagementMaintenance() {
                 {/* Total number of entries and only be shown */}
                 <div>
                     <p className='text-sm font-text text-unactive'>
-                        Showing <span className='font-header text-primary'>1</span> to <span className='font-header text-primary'>{perPage}</span> of <span className='font-header text-primary'>{totalUsers}</span> <span className='text-primary'>results</span>
+                        Showing <span className='font-header text-primary'>1</span> to <span className='font-header text-primary'>{pageState.perPage}</span> of <span className='font-header text-primary'>{pageState.totalUsers}</span> <span className='text-primary'>results</span>
                     </p>
                 </div>
                 {/* Paganation */}
@@ -250,7 +277,7 @@ export default function UserManagementMaintenance() {
                                 key={page}
                                 className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset
                                     ${
-                                        page === currentPage
+                                        page === pageState.currentPage
                                         ? 'bg-primary text-white'
                                         : 'bg-secondarybackground text-primary hover:bg-primary hover:text-white'
                                     } transition-all ease-in-out`}
@@ -267,16 +294,16 @@ export default function UserManagementMaintenance() {
             </div>
 
             {/* User Profile Card */}
-            <UserEntryModal open={isOpen} close={CloseDialog} classname='relative z-10' ID={userID}/>
+            <UserEntryModal open={modalState.isOpen} close={CloseDialog} classname='relative z-10' ID={userID}/>
 
             {/* Add User Modal */}
-            <AddUserModal open={isOpenAdd} close={CloseAddUser} />
+            <AddUserModal open={modalState.isOpenAdd} close={CloseAddUser} />
 
             {/* Edit User Modal */}
-            <EditUserModal open={Edit} close={CloseEdit}/>
+            <EditUserModal open={modalState.isEdit} close={CloseEdit} ID={userID}/>
 
             {/* Delete User Modal */}
-            <DeleteUserModal open={Delete} close={CloseDelete}/>
+            {/* <DeleteUserModal open={modalState.isDelete} close={CloseDelete}/> */}
         </div>
 
     )

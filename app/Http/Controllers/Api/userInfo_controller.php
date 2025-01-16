@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Models\UserInfos;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class userInfo_controller extends Controller
 {
@@ -18,7 +19,7 @@ class userInfo_controller extends Controller
             'title' => 'nullable|string|max:255',
             'branch' => 'nullable|string|max:255',
             'city' => 'required|string|max:255',
-            'role' => 'required|in:System Admin, Course Admin, Learner',
+            'role' => 'required|in:System Admin,Course Admin,Learner',
             'status' => 'nullable|in:Active, Unactive',
             'profile_image' => 'nullable|string|max:255'
         ]);
@@ -60,7 +61,12 @@ class userInfo_controller extends Controller
         $page = $request->input('page', 1);//Default page
         $perPage = $request->input('perPage',5); //Number of entry per page
 
-        $users = UserInfos::paginate($perPage);
+
+
+        $users = Cache::remember('Userpage_'.$page, 60, function () use ($perPage) {
+            return UserInfos::paginate($perPage);
+        });
+
 
         return response()->json([
             'data' => $users->items(),

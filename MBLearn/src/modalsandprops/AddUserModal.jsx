@@ -83,6 +83,7 @@ const AddUserModal = ({open, close}) => {
             .finally(()=> {
                 setSuccess(true)
                 formik.resetForm()
+                setLoading(false)
                 }
             )
         }
