@@ -6,7 +6,7 @@ import { use, useEffect, useState } from "react"
 import * as Yup from "yup"
 import axiosClient from "../axios-client"
 
-const EditUserModal = ({open, close, classname, ID}) =>{
+const EditUserModal = ({open, close, classname, ID, EmployeeID}) =>{
     const [loading, setLoading] = useState(true);
     const [selectedUser, setSelectedUser] = useState(null);
 
@@ -48,9 +48,35 @@ const EditUserModal = ({open, close, classname, ID}) =>{
             city: Yup.string().required('required *'),
             role: Yup.string().required('required *'),
         }),
-        onsubmit: (values) => {
+        onSubmit: (values) => {
             console.log(values)
-            // Prepare an backend here tomorrow haha
+
+            const userInfo_payload = {
+                employeeID: values.employeeID,
+                name: values.name,
+                department: values.department,
+                title: values.title,
+                branch: values.branch,
+                city: values.city,
+                role: values.role,
+                status: values.status
+            };
+
+            const userCredentials_payload = {
+                employeeID: values.employeeID,
+                name: values.name,
+            };
+
+            //Update API Calls
+            axiosClient.put(`/update-user-info/${EmployeeID}`, userInfo_payload)
+            .then(response => {
+                console.log(response.data.message || 'User Information Updated Successfully')
+            }).catch(err => console.log(err))
+
+            axiosClient.put(`/update-user-creds/${EmployeeID}`, userCredentials_payload)
+            .then(response => {
+                console.log(response.data.message || 'User Credentials Updated Successfully')
+            }).catch(err => console.log(err))
         }
     })
 
@@ -169,6 +195,8 @@ const EditUserModal = ({open, close, classname, ID}) =>{
                                                         disabled={loading}
                                                         className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
                                             </div>
+
+                                            {/* Submit */}
                                             <input type="submit"
                                             value='Submit'
                                             className="inline-flex flex-col gap-2 row-start-7 col-span-3 bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out" />

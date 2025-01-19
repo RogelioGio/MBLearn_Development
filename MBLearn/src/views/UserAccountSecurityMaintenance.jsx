@@ -1,9 +1,29 @@
 import { faSearch } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Helmet } from "react-helmet"
-
+import UserListLoadingProps from "../modalsandprops/UserListLoadingProps"
+import UserSecEntyProps from "../modalsandprops/UserSecEntyProps"
+import { use } from "react"
+import axiosClient from "../axios-client"
+import User from "../modalsandprops/UserEntryProp"
+import { useEffect, useState } from "react"
 
 export default function UserAccountSecurityMaintenance(){
+    const [isLoading, setIsLoading] = useState(true)
+    const [users, setUsers] = useState([]) //Fetching the user list
+
+    useEffect(() => {
+        setIsLoading(true)
+        axiosClient.get('/index-user-creds')
+        .then((response) => {
+            setUsers(response.data.data)
+        }).catch((error) => {
+            console.log(error)
+        }).finally(() => {
+            setIsLoading(false)
+        })
+    },[])
+
     return(
         <div className='grid  grid-cols-4 grid-rows-[6.25rem_min-content_auto_auto_min-content] h-full w-full'>
             <Helmet>
@@ -28,6 +48,34 @@ export default function UserAccountSecurityMaintenance(){
                     </div>
                 </div>
 
+            </div>
+
+            {/* UserList Table */}
+            <div className='row-start-3 row-span-2 col-start-1 col-span-4 px-5 py-4'>
+                <div className='w-full border-primary border rounded-md overflow-hidden shadow-md'>
+                <table className='text-left w-full overflow-y-scroll'>
+                    <thead className='font-header text-xs text-primary bg-secondaryprimary uppercase'>
+                        <tr>
+                            <th className='py-4 px-4'>EMPLOYEE NAME</th>
+                            <th className='py-4 px-4'>Employee ID</th>
+                            <th className='py-4 px-4'>Metrobank Working Email</th>
+                            <th className='py-4 px-4'>ROLE</th>
+                            <th className='py-4 px-4'></th>
+                        </tr>
+                    </thead>
+                    <tbody className='bg-white divide-y divide-divider'>
+                        {
+                            isLoading ? (
+                                <UserListLoadingProps/>
+                            ) : (
+                                users.map(user => (<UserSecEntyProps key={user.id} name={user.name} employeeID={user.employeeID} MBEmail={user.MBemail} role={user.role}/>))
+                            )
+
+
+                        }
+                    </tbody>
+                </table>
+                </div>
             </div>
         </div>
     )

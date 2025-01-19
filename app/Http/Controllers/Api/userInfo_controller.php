@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\addUserInfo;
+use App\Http\Requests\updateUserInfo;
 use App\Models\UserInfos;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -10,19 +12,9 @@ use Illuminate\Support\Facades\Cache;
 class userInfo_controller extends Controller
 {
     //Add user information function
-    public function addUser(Request $request){
+    public function addUser(addUserInfo $request){
 
-        $validatedData = $request->validate([
-            'employeeID' => 'required|string|max:11',
-            'name' => 'required|string|max:255',
-            'department' => 'nullable|string|max:255',
-            'title' => 'nullable|string|max:255',
-            'branch' => 'nullable|string|max:255',
-            'city' => 'required|string|max:255',
-            'role' => 'required|in:System Admin,Course Admin,Learner',
-            'status' => 'nullable|in:Active, Unactive',
-            'profile_image' => 'nullable|string|max:255'
-        ]);
+        $validatedData = $request->validated();
 
         $profile_image = $this -> generateProfileImageurl($validatedData['name']);
         $status = $validatedData['status'] ?? 'Active';
@@ -91,6 +83,59 @@ class userInfo_controller extends Controller
             return response() -> json(['data' => $user], 200);
         }else {
             return response()->json(['message' => 'User not found'], 404);  // Return error if not found
+        }
+    }
+
+    //Find User using employeeID
+    public function findUser_EmployeeID($employeeID)
+    {
+        // Find the user info by Employee ID
+        $user = UserInfos::where('employeeID', $employeeID)->first();
+
+        if($user){
+            return response() -> json(['data' => $user], 200);
+        }else {
+            return response()->json(['message' => 'User not found'], 404);  // Return error if not found
+        }
+    }
+
+    /**
+     * Update the specified user info.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function updateUser($employeeID, updateUserInfo $request){
+
+        //Input Validation
+        $validatedData = $request->validated();
+
+        //Find User by Employee ID
+        $employee = UserInfos::where('employeeID', $employeeID)->first();
+        //User Checker
+        if(!$employee){
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        //Update UserInfo
+        return DB::transaction(function () use ($employee, $validatedData){
+            $employee->update($validatedData);
+
+            return response() -> json(['message' => 'User Info Updated Successfully', 'data' => $employee], 200);
+        });
+    }
+
+    //Delete User
+    public function deleteUser($employeeID)
+    {
+        $user = UserInfos::where('employeeID', $employeeID)->first();
+
+        if($user){
+            $user->delete();
+            return response()->json(['message' => 'User deleted successfully!'], 200);
+        }else {
+            return response()->json(['message' => 'User not found'], 404);
         }
     }
 

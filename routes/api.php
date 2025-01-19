@@ -27,9 +27,16 @@ Route::get('/reset-users', [UserController::class, 'resetUsers']);
 //Userlist API for the frontend
 Route::post('/add-user', [userInfo_controller::class, 'addUser']);
 Route::get('/index-user',[userInfo_controller::class, 'indexUsers']);
-Route::get('select-user/{id}',[userInfo_controller::class, 'findUser']);
+Route::get('/select-user/{id}',[userInfo_controller::class, 'findUser']);
+Route::get('/select-employeeid/{employeeID}',[userInfo_controller::class, 'findUser_EmployeeID']);
+Route::put('/update-user-info/{employeeID}',[userInfo_controller::class, 'updateUser']);
+Route::delete('/delete-user/{employeeID}',[userInfo_controller::class, 'deleteUser']);
 Route::get('/reset-user',[userInfo_controller::class, 'resetUser']); //reset user table
 
 //UserCredential API (for logging in accounts)
 Route::post('/addusercredentials', [userCredentials_controller::class, 'addUserCredentials']);
+Route::put('/update-user-creds/{employeeID}',[userCredentials_controller::class, 'updateUserCredentials']);
+Route::get('/index-user-creds',[userCredentials_controller::class, 'userCredentialsList']);
+Route::get('/select-user-creds/{employeeID}',[userCredentials_controller::class, 'findUser_EmployeeID']);
+Route::delete('/delete-user-creds/{employeeID}',[userCredentials_controller::class, 'deleteUser']);
 Route::get('/reset-user-creds',[userCredentials_controller::class, 'resetUsers']); //reset user table

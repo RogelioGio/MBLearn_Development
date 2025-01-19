@@ -24,10 +24,13 @@ axiosClient.interceptors.response.use(
     }, (error) => {
         // Do something with response error
         const {response} = error;
+
         if(response.status===401){
             localStorage.removeItem('ACCESS_TOKEN');
             window.location.href = '/login';
         }
+
+        return Promise.reject(error)
     });
 
 export default axiosClient;

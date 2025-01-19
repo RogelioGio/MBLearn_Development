@@ -6,16 +6,16 @@
 @layer components {
     /* Navigation Icon Class */
     ._icon{
-        @apply text-unactive text-lg hover:scale-105 cursor-pointer hover:text-primary transition-all ease-in-out z-30;
+        @apply text-unactive text-lg hover:scale-105 cursor-pointer hover:text-primary transition-all ease-in-out z-50;
     }
     .icon {
-        @apply flex z-30;
+        @apply flex z-50;
     }
     .icon_active{
         @apply text-primary text-lg z-30;
     }
     .icon-name{
-        @apply absolute w-fit left-16 z-30 bg-tertiary text-white p-2 rounded-md text-xs scale-0 font-text;
+        @apply absolute w-fit left-16 z-50 bg-tertiary text-white p-2 rounded-md text-xs scale-0 font-text  transition-all ease-in-out;
     }
 
     /* Profile sub-menu */

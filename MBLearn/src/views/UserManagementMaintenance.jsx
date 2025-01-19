@@ -12,6 +12,8 @@ import { TailSpin } from 'react-loader-spinner'
 import UserListLoadingProps from '../modalsandprops/UserListLoadingProps';
 import EditUserModal from '../modalsandprops/EditUserModal';
 import DeleteUserModal from '../modalsandprops/DeleteUserModal';
+import DeleteUserSuccessfully from '../modalsandprops/DeleteUserSuccessfully';
+
 
 //User Filter
 const Userfilter = [
@@ -57,6 +59,7 @@ export default function UserManagementMaintenance() {
         isOpenAdd:false,
         isEdit:false,
         isDelete: false,
+        isDeleteSuccess: false,
     });
 
     //Modal state changes
@@ -84,6 +87,7 @@ export default function UserManagementMaintenance() {
 
     //User State
     const [userID, setUserID] = useState(null); //Fethcing the selected user in the list
+    const [EmployeeID, setEmployeeID] = useState(null); //Fetching the selected user's employee ID
     const [users, setUsers] = useState([]) //Fetching the user list
 
     //Loading State
@@ -95,38 +99,53 @@ export default function UserManagementMaintenance() {
         toggleModal("isOpen",true);
     }
     const CloseDialog = () => {
-        toggleModal("isOpen",false);
         setUserID('');
+        toggleModal("isOpen",false);
     }
 
     //Close Add User Modal
     const CloseAddUser = () => {
         toggleModal("isOpenAdd", false)
+        fetchUsers()
     }
 
 
     // Open and Close Edit User Modal
-    const OpenEdit = (e, ID) => {
+    const OpenEdit = (e, ID, EmployeeID) => {
         e.stopPropagation();
         setUserID(ID)
+        setEmployeeID(EmployeeID)
         toggleModal("isEdit", true);
     }
     const CloseEdit = () => {
         toggleModal("isEdit", false);
+        fetchUsers()
     }
 
-    // // Delete user modal
-    // const OpenDelete = (e) => {
-    //     e.stopPropagation();
-    //     setDelete(true);
-    // }
+    // Open and Close Delete User Modal
+    const OpenDelete = (e, EmployeeID) => {
+        e.stopPropagation();
+        setEmployeeID(EmployeeID)
+        toggleModal("isDelete", true);
+    }
 
-    // const CloseDelete = (e) => {
-    //     setDelete(false)
-    // }
+    const CloseDelete = () => {
+        toggleModal("isDelete", false);
+
+    }
+
+    //Close Delete Success Modal
+    const OpenSuccessFullyDelete = () => {
+        toggleModal("isDeleteSuccess", true);
+    }
+
+    const CloseSuccessFullyDelete = () => {
+        toggleModal("isDeleteSuccess", false);
+        fetchUsers()
+    }
 
     //Fetching Users in the database using axios
-    useEffect(()=>{
+    const fetchUsers = () => {
         setLoading(true)
         axiosClient.get('/index-user',{
             params: {
@@ -135,7 +154,7 @@ export default function UserManagementMaintenance() {
             }
         }).then(response => {;
             setUsers(response.data.data)
-            pageChangeState("totalUser", response.data.total)
+            pageChangeState("totalUsers", response.data.total)
             pageChangeState("lastPage", response.data.lastPage)
             setLoading(false)
         }).catch(err => {
@@ -143,6 +162,10 @@ export default function UserManagementMaintenance() {
         }).finally(()=>{
             setLoading(false)
         })
+    }
+
+    useEffect(()=>{
+        fetchUsers()
     },[pageState.currentPage, pageState.perPage])
 
     //Next and Previous
@@ -228,7 +251,7 @@ export default function UserManagementMaintenance() {
                     <tbody className='bg-white divide-y divide-divider'>
                         {
                             isLoading ? (
-                                <UserListLoadingProps/>
+                                <UserListLoadingProps className="z-10"/>
                             ) : (
                                 users.map(userEntry => (<User
                                     key={userEntry.id}
@@ -243,6 +266,7 @@ export default function UserManagementMaintenance() {
                                     employeeID={userEntry.employeeID}
                                     role={userEntry.role}
                                     edit={OpenEdit}
+                                    _delete={OpenDelete}
                                     />
                             ))
                         )
@@ -300,10 +324,11 @@ export default function UserManagementMaintenance() {
             <AddUserModal open={modalState.isOpenAdd} close={CloseAddUser} />
 
             {/* Edit User Modal */}
-            <EditUserModal open={modalState.isEdit} close={CloseEdit} ID={userID}/>
+            <EditUserModal open={modalState.isEdit} close={CloseEdit} ID={userID} EmployeeID={EmployeeID}/>
 
             {/* Delete User Modal */}
-            {/* <DeleteUserModal open={modalState.isDelete} close={CloseDelete}/> */}
+            <DeleteUserModal open={modalState.isDelete} close={CloseDelete} EmployeeID={EmployeeID} close_confirmation={OpenSuccessFullyDelete}/>
+            <DeleteUserSuccessfully open={modalState.isDeleteSuccess} close={CloseSuccessFullyDelete}/>
         </div>
 
     )

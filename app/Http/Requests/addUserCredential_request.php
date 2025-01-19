@@ -22,11 +22,26 @@ class addUserCredential_request extends FormRequest
     public function rules(): array
     {
         return [
-            'employeeID' => 'required|string|max:11',
-            'name' => 'required|string|max:255',
+            'employeeID' => 'required|string|max:11|unique:userCredentials,employeeID',
+            'name' => 'required|string|max:255|unique:userCredentials,name',
             'MBemail' => 'required|email|unique:userCredentials,MBemail',
             'password' => 'required|string|min:8',
             'role' => 'required|in:System Admin,Course Admin,Learner|max:225',
+        ];
+    }
+
+    /**
+     * Get custom validation error messages.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'role.in' => 'The selected role is invalid. Please choose from "System Admin", "Course Admin", or "Learner".',
+            'MBemail.unique' => 'The working metrobank email address is already in use.',
+            'employeeID.unique' => 'This employee ID is already registered.',
+            'name.unique' => 'This name is already registered.',
         ];
     }
 }

@@ -7,11 +7,22 @@ import * as Yup from 'yup';
 import { useFormik } from "formik"
 import axios from "axios"
 import UserAddedSuccessfullyModal from "./UserAddedSuccessfullyModal"
+import AddUserErrorModal from "./AdduserErrorModal"
 
 
 const AddUserModal = ({open, close}) => {
+    // Modals (subject to change)
     const [success, setSuccess] = useState(false)
+    const [OpenError, setError] = useState(false)
+
+    //Data
     const [addedUser, setaddedUser] = useState('')
+    const [errorMessage, setErrorMessage] = useState({
+        message: '',
+        errors: {}
+    })
+
+    //Loading
     const [loading, setLoading] = useState(false);
 
     //payload and validation schema
@@ -46,7 +57,7 @@ const AddUserModal = ({open, close}) => {
                         .min(8,'Password must be atleast 8 characters'),
         }),
         //submission
-        onSubmit: (values) => {
+        onSubmit: async (values) => {
             console.log('Submitted Data', values);
             setLoading(true)
 
@@ -71,23 +82,66 @@ const AddUserModal = ({open, close}) => {
                 role: values.role
             }
 
-            // Adding to usercredentials first
-            axiosClient.post('/addusercredentials',userCredentials_payload)
-            .then(response => {console.log(response.data.message || 'User credentials created successfully');
-            }).catch((error) => {console.log(error)})
+            //Adding into UserCredentials Table
+            axiosClient.post('/addusercredentials', userCredentials_payload)
+                .then((response) => {
+                console.log('Response:', response);
 
-            // Adding to userinfo
-            axiosClient.post('/add-user',userInfo_payload)
-            .then(response => {console.log(response.data.message || 'User info created successfully');
-            }).catch((error) => {console.log(error)})
-            .finally(()=> {
-                setSuccess(true)
-                formik.resetForm()
-                setLoading(false)
+                //Adding into UserInfo Table
+                axiosClient.post('/add-user', userInfo_payload)
+                .then((response) => {
+                    console.log('Response:', response);
+                    setSuccess(true)
+                }).catch((error)=>{
+                    console.log('Caught error:', error);
+
+                    //Displaying the error message
+                    if (error.response) {
+                        const serverError = error.response.data;
+                        setErrorMessage({
+                            message: serverError.message,
+                            errors: serverError.errors,
+                        });
+                    }else {
+                    setErrorData({
+                        message: 'Network Error',
+                        errors: {},
+                    });
+
+                    }
+                    setError(true);
+
+                    //Deleting the user credentials entry if the user info is not added
+                    axiosClient.delete(`/delete-user-creds/${values.employeeID}`)
+                    .then((response)=>{console.log(response.data.data)})
+                    .catch((error)=>{console.log(error)})
+                })
+            })
+            .catch((error)=>{
+                console.log('Caught error:', error); // Logs error if unsuccessful
+
+                console.log(error.response.data)
+                if (error.response) {
+                    const serverError = error.response.data;
+                    setErrorMessage({
+                        message: serverError.message,
+                        errors: serverError.errors,
+                    });
+                }else {
+                setErrorData({
+                    message: 'Network Error',
+                    errors: {},
+                });
+
                 }
-            )
+                setError(true);
+            })
+            .finally(() => {
+                formik.resetForm();
+                setLoading(false);
+            });
         }
-    });
+    })
 
 
 
@@ -270,6 +324,8 @@ const AddUserModal = ({open, close}) => {
 
         {/* Successfully Added User  */}
         <UserAddedSuccessfullyModal success={success}  close={() => setSuccess(false)} userdata={addedUser}/>
+        {/* Error Message*/}
+        <AddUserErrorModal error={OpenError} close={()=>setError(false)} message={errorMessage.message} desc={errorMessage.errors}/>
         </>
     )
 }

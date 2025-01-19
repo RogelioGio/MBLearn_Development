@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\addUserCredential_request;
+use App\Http\Requests\updateUserCreds_info;
 use App\Models\UserCredentials;
 use App\Models\UserInfos;
 use Illuminate\Http\Request;
@@ -28,6 +29,48 @@ class userCredentials_controller extends Controller
             'data' => $userCredentials],201);
     }
 
+    //update user credentials in the user maintenance management
+    public function updateUserCredentials(updateUserCreds_info $request, $employeeID){
+        $validatedData = $request->validated();
+
+        $userCredentials = UserCredentials::where('employeeID', $employeeID)->first();
+
+        $userCredentials->update([
+            'employeeID' => $validatedData['employeeID'],
+            'name' => $validatedData['name'],
+        ]);
+
+        return response()->json([
+            'message' => 'User Credentials Updated Successfully',
+            'data' => $userCredentials
+        ]);
+    }
+
+    //User Credential List
+    public function userCredentialsList(){
+        $userCredentials = UserCredentials::all();
+
+        return response()->json([
+            'message' => 'User Credentials List',
+            'data' => $userCredentials
+        ]);
+    }
+
+    //find by employeeID in the user maintenance management
+    public function findUser_EmployeeID($employeeID){
+        $userCredentials = UserCredentials::where('employeeID', $employeeID)->first();
+
+        if($userCredentials){
+            return response()->json([
+                'message' => 'User Credentials Found',
+                'data' => $userCredentials
+            ]);
+        }else{
+            return response()->json([
+                'message' => 'User Credentials Not Found'
+            ],404);
+        }
+    }
     public function resetUsers()
 {
     // Truncate the users table
@@ -36,5 +79,21 @@ class userCredentials_controller extends Controller
     return response()->json([
         'message' => 'Users table truncated and auto-increment reset.'
     ]);
-}
+    }
+
+    //Delete User
+    public function deleteUser($employeeID)
+    {
+        $user = UserCredentials::where('employeeID', $employeeID)->first();
+
+        if($user){
+            $user->delete();
+            return response()->json(['message' => 'User deleted successfully!'], 200);
+        }else {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+    }
+
+
+
 }

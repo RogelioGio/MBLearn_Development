@@ -4,7 +4,7 @@ const UserListLoadingProps = () => {
             {Array(5)
                 .fill(0)
                     .map((_, index) => (
-                <tr key={index} className='font-text text-sm hover:bg-gray-200'>
+                <tr key={index} className='font-text text-sm hover:bg-gray-200 z-10'>
                     <td className='py-3 px-4'>
                         <div className='flex items-center gap-2'>
                             {/* User Image */}
