@@ -4,7 +4,7 @@ import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react"
 import axiosClient from "../axios-client"
 import { useEffect, useState } from "react"
 
-const DeleteUserModal = ({open,close,classname,EmployeeID,close_confirmation}) => {
+const DeleteUserModal = ({open,close,classname,EmployeeID,close_confirmation,updateTable}) => {
 
     const [loading, setLoading] = useState(false)
     const [employeeData, setEmployeeData] = useState([])
@@ -35,15 +35,19 @@ const DeleteUserModal = ({open,close,classname,EmployeeID,close_confirmation}) =
         e.preventDefault()
         close_confirmation()
         close()
-        // if(EmployeeID){
-        //     axiosClient.delete(`/delete-user/${EmployeeID}`)
-        //     .then(response => {console.log(response.data.message)})
-        //     .catch(error => {console.log(error)})
+        if(EmployeeID){
+            axiosClient.delete(`/delete-user/${EmployeeID}`)
+            .then(response => {console.log(response.data.message)
+                axiosClient.delete(`/delete-user-creds/${EmployeeID}`)
+                .then(response => {
+                    console.log(response.data.message)
+                })
+                .catch(error => {console.log(error)})
+            })
+            .catch(error => {console.log(error)})
 
-        //     axiosClient.delete(`/delete-user-creds/${EmployeeID}`)
-        //     .then(response => {console.log(response.data.message)})
-        //     .catch(error => {console.log(error)})
-        // }
+
+        }
     }
     return(
         <Dialog open={open} onClose={close} className={classname}>

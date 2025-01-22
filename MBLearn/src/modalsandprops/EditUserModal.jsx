@@ -9,12 +9,20 @@ import axiosClient from "../axios-client"
 const EditUserModal = ({open, close, classname, ID, EmployeeID}) =>{
     const [loading, setLoading] = useState(true);
     const [selectedUser, setSelectedUser] = useState(null);
+    const [user, setUser] = useState();
 
     useEffect (()=>{
         setSelectedUser(null)
         if(ID) {
-            setLoading(true)
-            axiosClient.get(`/select-user/${ID}`)
+            // Check if ID is an object
+            if (typeof ID === "object" && ID.userID) {
+                setUser(ID.userID); // Extract the userID from the object and set it
+            } else if (typeof ID === "number") {
+                setUser(ID); // Use ID as-is if it's already a number
+            }
+
+            console.log(user)
+            axiosClient.get(`/select-user/${user}`)
             .then(response => {
                 setSelectedUser(response.data.data)
             }).catch(err => console.log(err))

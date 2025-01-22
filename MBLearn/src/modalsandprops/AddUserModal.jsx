@@ -10,8 +10,8 @@ import UserAddedSuccessfullyModal from "./UserAddedSuccessfullyModal"
 import AddUserErrorModal from "./AdduserErrorModal"
 
 
-const AddUserModal = ({open, close}) => {
-    // Modals (subject to change)
+const AddUserModal = ({open, close, updateTable}) => {
+    // Modals state(subject to change)
     const [success, setSuccess] = useState(false)
     const [OpenError, setError] = useState(false)
 
@@ -21,6 +21,18 @@ const AddUserModal = ({open, close}) => {
         message: '',
         errors: {}
     })
+
+    //setSuccess Function to automaticaly update the table
+    const openSuccessModal = () =>{
+        setSuccess(true)
+        updateTable()
+        close()
+    }
+
+    const closeSuccessModal = () =>{
+        setSuccess(false)
+        updateTable()
+    }
 
     //Loading
     const [loading, setLoading] = useState(false);
@@ -91,7 +103,7 @@ const AddUserModal = ({open, close}) => {
                 axiosClient.post('/add-user', userInfo_payload)
                 .then((response) => {
                     console.log('Response:', response);
-                    setSuccess(true)
+                    openSuccessModal()//success
                 }).catch((error)=>{
                     console.log('Caught error:', error);
 
@@ -323,7 +335,7 @@ const AddUserModal = ({open, close}) => {
         </Dialog>
 
         {/* Successfully Added User  */}
-        <UserAddedSuccessfullyModal success={success}  close={() => setSuccess(false)} userdata={addedUser}/>
+        <UserAddedSuccessfullyModal success={success}  close={closeSuccessModal} userdata={addedUser}/>
         {/* Error Message*/}
         <AddUserErrorModal error={OpenError} close={()=>setError(false)} message={errorMessage.message} desc={errorMessage.errors}/>
         </>

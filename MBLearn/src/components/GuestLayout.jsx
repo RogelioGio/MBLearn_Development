@@ -46,17 +46,6 @@ export default function GuestLayout() {
         return () => clearInterval(interval);
     }, [backgroundIndex]);
 
-    //Check if the user is logged in
-    const { token, user } = useStateContext();
-    if (token) {
-        if (user.role === 'system_admin') {
-            return <Navigate to="/systemadmin" />
-        } else if (user.role === 'course_admin') {
-            return <Navigate to="/courseadmin" />
-        } else if (user.role === 'learner') {
-            return <Navigate to="/learner" />
-        }
-    }
 
 
 

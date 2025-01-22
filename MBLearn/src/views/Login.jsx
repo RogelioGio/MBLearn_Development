@@ -27,7 +27,7 @@ export default function Login() {
 
         //credentials payload
         const payload ={
-            email: Email.current.value,
+            MBemail: Email.current.value,
             password: Password.current.value
         }
 
@@ -37,6 +37,14 @@ export default function Login() {
         axiosClient.post('/login', payload).then(({data})=>{
             setToken(data.token);
             setUser(data.user);
+
+            if (data.redirect) {
+                window.location.href = data.redirect; // Redirect to the appropriate URL based on role
+            } else {
+                // If no redirect is provided, proceed with whatever default logic you need
+                setIsLoading(false);
+            }
+
             setIsLoading(false);
         })
         .catch((err)=>{

@@ -21,6 +21,12 @@ class User extends Authenticatable
     use TwoFactorAuthenticatable;
 
     /**
+     * The table associated with the model.
+     */
+    protected $table = 'users'; // Replace with your actual table name
+
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>

@@ -28,7 +28,7 @@ const ProfileIcons = ({text ,icon, onClick}) => (
 
 //Role-based Navigations
 const navItems = {
-    "system_admin": [
+    "System Admin": [
         {icon:faHouse, text:"Home", to:'/systemadmin/dashboard'},
         {icon:faBook, text:"Course List Maintenance", to:"/systemadmin/courselistmaintenance"},
         {icon:faUserGroup, text:"User Management Maintenance", to:"/systemadmin/usermanagementmaintenance"},
@@ -37,13 +37,13 @@ const navItems = {
         {icon:faChartPie, text:"System-Level Reports", to:"/systemadmin/systemlevelreports"},
         {icon:faChartGantt, text:"Activity Logs", to:"/systemadmin/activitylogs"},
     ],
-    "course_admin": [
-        {icon:faHouse, text:"Home"},
+    "Course Admin": [
+        {icon:faHouse, text:"Home", to:"/courseadmin/dashboard"},
         {icon:faBookBookmark, text:"Assigened Courses"},
-        {icon:faPersonCirclePlus, text:"Enroll Trainee"},
+        {icon:faPersonCirclePlus, text:"Enroll Trainee", to:"/courseadmin/bulkenrollment"},
         {icon:faChartPie, text:"Course Reports"},
     ],
-    "learner": [
+    "Learner": [
         {icon:faHouse, text:"Home"},
         {icon:faBook, text:"My Courses"},
         {icon:faMedal, text:"Certificates"},

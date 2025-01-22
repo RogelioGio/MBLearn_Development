@@ -106,7 +106,6 @@ export default function UserManagementMaintenance() {
     //Close Add User Modal
     const CloseAddUser = () => {
         toggleModal("isOpenAdd", false)
-        fetchUsers()
     }
 
 
@@ -134,7 +133,7 @@ export default function UserManagementMaintenance() {
 
     }
 
-    //Close Delete Success Modal
+    //Close DeleteSuccess Modal
     const OpenSuccessFullyDelete = () => {
         toggleModal("isDeleteSuccess", true);
     }
@@ -321,7 +320,7 @@ export default function UserManagementMaintenance() {
             <UserEntryModal open={modalState.isOpen} close={CloseDialog} classname='relative z-10' ID={userID}/>
 
             {/* Add User Modal */}
-            <AddUserModal open={modalState.isOpenAdd} close={CloseAddUser} />
+            <AddUserModal open={modalState.isOpenAdd} close={CloseAddUser} updateTable={fetchUsers}/>
 
             {/* Edit User Modal */}
             <EditUserModal open={modalState.isEdit} close={CloseEdit} ID={userID} EmployeeID={EmployeeID}/>

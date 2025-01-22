@@ -7,15 +7,23 @@ use App\Http\Controllers\Api\UserController;;
 use App\Http\Controllers\Api\userInfo_controller;
 use App\Http\Controllers\Api\userCredentials_controller;
 
-Route::middleware('auth:sanctum')->group(function() {
+// Route::middleware('auth:sanctum')->group(function() {
+//
+//     Route::post('/logout', [AuthController::class, 'logout']);
+// });
+
+
+
+
+//New Login routing
+Route::post('/login', [AuthController::class, 'login']);
+//Protected Routes
+Route::middleware('auth:sanctum')->group(function(){
+    Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
-    Route::post('/logout', [AuthController::class, 'logout']);
 });
-
-Route::post('/login', [AuthController::class, 'login']);
-
 
 //test purposes amd account implementation (postman testing)
 Route::post('/add-test-user', [UserController::class, 'addTestUser']);

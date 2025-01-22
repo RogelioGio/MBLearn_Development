@@ -16,7 +16,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8',
-            'role' => 'required|in:System Admin, Course Admin, Learner',
+            'role' => 'required|in:system_admin, course_Admin, learner',
         ]);
 
         // Create a new user

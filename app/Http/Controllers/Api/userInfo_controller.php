@@ -55,9 +55,9 @@ class userInfo_controller extends Controller
 
 
 
-        $users = Cache::remember('Userpage_'.$page, 60, function () use ($perPage) {
-            return UserInfos::paginate($perPage);
-        });
+
+        $users =  UserInfos::paginate($perPage);
+
 
 
         return response()->json([

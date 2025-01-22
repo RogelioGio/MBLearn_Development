@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
+use App\Models\UserCredentials;
+use Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
@@ -15,52 +17,54 @@ class AuthController extends Controller
     private function redirections(string $role){
         switch($role){
 
-            case 'system_admin' :
+            case 'System Admin' :
                 return '/systemadmin';
-            case 'course_admin' :
+            case 'Course Admin' :
                 return '/courseadmin';
-            case 'learner' :
+            case 'Learner' :
                 return '/learner';
             default:
                 return '/';
         }
     }
-    public function login(LoginRequest $request)
-    {
+
+    //New Login to another table
+    public function login(LoginRequest $request){
 
         $credentials = $request->validated();
+        $user = UserCredentials::where('MBemail', $credentials['MBemail'])->first();
 
-        Log::info('Attempting login with credentials:', $credentials);
 
-        if(!Auth::attempt($credentials)){
-            return response([
-                'message' => 'Invalid credentials'
-            ],422);
-        }
+        if($user && Hash::check($credentials['password'], $user->password)){
+            //Generate Login Token
+            $token = $user->createToken('authToken')->plainTextToken;
+            //Log
+            Log::info('User Login: ' . $user->MBemail);
 
-        /** @var User $user */
-        $user = Auth::user();
-        $token = $user ->createToken('authToken')->plainTextToken;
-        $role = $user->role;
+            $redirect = $this->redirections($user->role);
 
-        //Role-Based redirections
+            return response()->json([
+                'message' => 'Login Successful',
+                'user' => $user,
+                'token' => $token,
+                'redirect' => $redirect
+            ], 200);
+        };
+
         return response()->json([
-            'message' => 'Login successful',
-            'user' => $user,
-            'token' => $token,
-            'role' => $user->role,
-            'redirect_url' => $this->redirections($role)
-        ]);
-
-    }
-    public function logout($request){
-
-        /** @var User $user */
-        $user = $request->user();
-        $user->currentAccessToken()->delete();
-        return response(204);
+            'message' => 'Invalid email or password.',
+        ], 401);
     }
 
+    public function logout(Request $request){
+
+        if($request->user()){
+            $request->user()->currentAccessToken()->delete();
+            return response()->json(['message' => 'Logged out']);
+
+        }
+        return response()->json(['message' => 'No user to logout']);
+    }
 
 
 }

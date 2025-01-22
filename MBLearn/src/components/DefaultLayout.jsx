@@ -9,14 +9,28 @@ export default function DefaultLayout() {
     const { user, token, role, setUser, setRole } = useStateContext();
 
     useEffect(() => {
-        axiosClient.get('/user').then(({ data }) => {
-            setUser(data.name);
-            setRole(data.role);
-        }).catch((error) => {
-            console.error('Failed to fetch user:', error.response?.data || error.message);
-            setUser(null); // Handle unauthorized state
-        });
-    }, [setUser]);
+        // Check if user is already stored in state or localStorage
+        if (!user && !localStorage.getItem('USER_DATA')) {
+            axiosClient.get('/user')
+                .then(({ data }) => {
+                    setUser(data.name);
+                    setRole(data.role);
+                    // Store user data in localStorage for future reference
+                    localStorage.setItem('USER_DATA', JSON.stringify({ name: data.name, role: data.role }));
+                })
+                .catch((error) => {
+                    console.error('Failed to fetch user:', error.response?.data || error.message);
+                    setUser(null); // Handle unauthorized state
+                });
+        } else {
+            // If user data is found in state or localStorage, use it
+            const storedUser = JSON.parse(localStorage.getItem('USER_DATA'));
+            if (storedUser) {
+                setUser(storedUser.name);
+                setRole(storedUser.role);
+            }
+        }
+    }, [setUser, setRole, user]);
 
     // Function to check if the user is logged in
     if (!token) {
@@ -27,15 +41,15 @@ export default function DefaultLayout() {
         return <div>Loading...</div>; // Optionally show a loader or skeleton screen
     }
 
-    if(location.pathname === '/'){
-        if(role === 'system_admin'){
-                return <Navigate to='/systemadmin/dashboard' />
-        }else if(role === 'course_admin'){
-                return <Navigate to='/courseadmin/dashboard' />
-        } else if(role === 'learner'){
-                return <Navigate to='/learner/dashboard' />
-        }
-    }
+    // if(location.pathname === '/'){
+    //     if(role === 'system_admin'){
+    //             return <Navigate to='/systemadmin/dashboard' />
+    //     }else if(role === 'course_admin'){
+    //             return <Navigate to='/courseadmin/dashboard' />
+    //     } else if(role === 'learner'){
+    //             return <Navigate to='/learner/dashboard' />
+    //     }
+    // }
 
 
     return (

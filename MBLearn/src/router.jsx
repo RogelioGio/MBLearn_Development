@@ -13,6 +13,7 @@ import Learner from "./components/Learner";
 import SystemConfiguration from "./views/SystemConfigurationMaintenance";
 import ActivityLog from "./views/ActivityLog";
 import SystemLevelReports from "./views/SystemLevelReports";
+import BulkEnrollment from "./views/BulkEnrollment";
 
 
 const router = createBrowserRouter([
@@ -71,7 +72,11 @@ const router = createBrowserRouter([
                     {
                         path: "dashboard",
                         element: <Dashboard/>
-                    }
+                    },
+                    {
+                        path: "bulkenrollment",
+                        element: <BulkEnrollment/>
+                    },
                 ]
             },
             {

@@ -4,6 +4,8 @@ import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react'
 import React, { useEffect, useMemo, useState } from 'react'
 import axiosClient from '../axios-client'
 import { InfinitySpin } from 'react-loader-spinner'
+import EditUserModal from './EditUserModal'
+
 
 const UserEntryModal = ({open, close, classname,ID}) =>{
     //API Call for fetching specific user
@@ -11,15 +13,31 @@ const UserEntryModal = ({open, close, classname,ID}) =>{
     const [date, setDate] = useState();
     const [loading, setLoading] = useState(false)
 
+    //Modal states
+    const [modalState, setModalState] = useState({
+        isEdit: false,
+        isDelete: false,
+    })
+
+    //Toggle Modal State
+    const toggleModal = (key,value) => {
+        setModalState((prev => ({
+            ...prev,
+            [key]:value,
+        })));
+    }
+
+    //UseEffect for fetching specific user
     useEffect(()=>{
         if(ID?.userID){
             setLoading(true)
             setSelectedUser(null)
             axiosClient.get(`/select-user/${ID.userID}`)
             .then(response =>
-                {setSelectedUser(response.data.data);
-                setLoading(false)
-
+                {
+                    setSelectedUser(response.data.data);
+                    console.log(selectedUser)
+                    setLoading(false)
                 })
             .catch(err => console.log(err))
         }
@@ -36,6 +54,15 @@ const UserEntryModal = ({open, close, classname,ID}) =>{
             setDate(created_date)
         }
     },[selectedUser])
+
+    //Function for handling Edit
+    const handleEdit = () => {
+        toggleModal('isEdit',true)
+    }
+    const CloseEdit = () => {
+        toggleModal("isEdit", false);
+        fetchUsers()
+    }
 
 
     //Memoize the user profile
@@ -60,7 +87,7 @@ const UserEntryModal = ({open, close, classname,ID}) =>{
             <div className='col-start-3 border-b border-divider'>
                 {/* Action button */}
                 <div className='flex flex-row gap-2 justify-end'>
-                    <div className='relative border-2 border-primary h-10 w-10 rounded-full flex items-center justify-center text-primary text-sm hover:text-white hover:bg-primary hover:cursor-pointer transition-all ease-in-out group shadow-md'>
+                    <div className='relative border-2 border-primary h-10 w-10 rounded-full flex items-center justify-center text-primary text-sm hover:text-white hover:bg-primary hover:cursor-pointer transition-all ease-in-out group shadow-md' onClick={handleEdit}>
                         <FontAwesomeIcon icon={faUserPen}/>
                         <p className='absolute w-auto top-10 z-10 bg-tertiary text-white p-2 rounded-md text-xs scale-0 font-text group-hover:scale-100'>Edit</p>
                     </div>
@@ -69,6 +96,8 @@ const UserEntryModal = ({open, close, classname,ID}) =>{
                         <p className='absolute w-auto top-10 z-10 bg-tertiary text-white p-2 rounded-md text-xs scale-0 font-text group-hover:scale-100'>Delete</p>
                     </div>
                 </div>
+
+
             </div>
         )
     })
@@ -118,6 +147,7 @@ const UserEntryModal = ({open, close, classname,ID}) =>{
     })
 
     return(
+    <>
         <Dialog open={open} onClose={close} className={classname}>
             <DialogBackdrop transition className="fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in" />
             <div className='fixed inset-0 z-10 w-screen overflow-y-auto'>
@@ -152,6 +182,8 @@ const UserEntryModal = ({open, close, classname,ID}) =>{
                 </div>
             </div>
         </Dialog>
+        <EditUserModal open={modalState.isEdit} close={CloseEdit} ID={ID?.userID} />
+    </>
     )
 }
 

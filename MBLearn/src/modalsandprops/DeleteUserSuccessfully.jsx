@@ -13,15 +13,15 @@ const DeleteUserSuccessfully = ({open,close,classname}) => {
                         <DialogPanel transition className='relative overflow-hidden transform rounded-md bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in'>
                             <div className='bg-white rounded-md h-full w-fit p-5 flex flex-col'>
                             {/* Header */}
-                                <div className="py-4 mx-4 border-b border-divider flex flex-row justify-between item-center gap-6">
-                                    <div>
-                                        <h1 className="text-primary font-header text-3xl">Remove na sya</h1>
-                                        <p className="text-unactive font-text text-md">Confirms the permanent deletion of the selected information from the system.</p>
-                                    </div>
+                                <div className="py-4 mx-4 border-divider flex flex-row justify-between item-center gap-6">
                                     <div className="bg-primarybg p-5 rounded-full">
                                         <div className="w-fit h-fit aspect-square flex items-center justify-center p-1">
                                             <FontAwesomeIcon icon={faTrash} className="text-primary text-lg"/>
                                         </div>
+                                    </div>
+                                    <div>
+                                        <h1 className="text-primary font-header text-3xl">User Removed</h1>
+                                        <p className="text-unactive font-text text-md">The selected user is successfuly removed in the system and user list</p>
                                     </div>
                                 </div>
                             </div>
