@@ -18,6 +18,7 @@
     "@headlessui/react": "^2.2.0",
     "axios": "^1.7.9",
     "formik": "^2.4.6",
+    "mblearn": "file:",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-helmet": "^6.1.0",
