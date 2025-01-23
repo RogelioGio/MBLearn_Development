@@ -65,17 +65,16 @@ const profileItems = {
 
 export default function Navigation() {
 
-    const {user, setUser, setToken} = useStateContext();
-    const [profile, setProfile] = useState('');
+    const {user, profile_image, setUser, setToken} = useStateContext();
 
     //fethcing user profile
-    useEffect(() => {
-        axiosClient.get(`/select-employeeid/${user.employeeID}`).then(({data}) => {
-            setProfile(data.data.profile_image);
-        }).catch((e) => {
-            console.error(e);
-        });
-    },[])
+    // useEffect(() => {
+    //     axiosClient.get(`/select-employeeid/${user.employeeID}`).then(({data}) => {
+    //         setProfile(data.data.profile_image);
+    //     }).catch((e) => {
+    //         console.error(e);
+    //     });
+    // },[])
 
 
     //Role-based Navigation
@@ -84,10 +83,14 @@ export default function Navigation() {
 
     //Logout Function
     const onLogout = () => {
+        setUser('');
+        setToken(null);
+        localStorage.removeItem('ACCESS_TOKEN');
+
         axiosClient.post('/logout').then(() => {
-            setUser('');
-            setToken(null);
             console.log("Logout Success");
+        }).catch((e) => {
+            console.error(e);
         });
     };
 
@@ -113,7 +116,7 @@ export default function Navigation() {
                     <li><Icons icon={<FontAwesomeIcon icon={faGear}/>} text={"Account Setting"}/></li>
                     <li><Icons icon={<FontAwesomeIcon icon={faBell}/>} text={"Notifications"}/></li>
                     <li className='inline-block relative w-auto group p-1'>
-                        <img src={profile} alt="" className='w-10 h-10 rounded-full shadow-lg hover:scale-105 transition-all ease-in-out'/>
+                        <img src={profile_image} alt="" className='w-10 h-10 rounded-full shadow-lg hover:scale-105 transition-all ease-in-out'/>
                         {/* Profile */}
                         <div className='bg-tertiary p-4 rounded-md absolute left-9 min-w-max bottom-0 flex flex-row scale-0 group-hover:scale-100'>
                             <ul>

@@ -3,46 +3,48 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Helmet } from "react-helmet"
 export default function BulkEnrollment() {
     return (
-        <div className='grid grid-cols-4 grid-rows-[6.25rem_min-content_auto_auto_min-content] h-full w-full'>
+        <div className='grid grid-cols-4 grid-rows-[6.25rem_min-content_auto_auto_3.75rem] h-full w-full'>
             <Helmet>
                 {/* Title of the mark-up */}
                 <title>MBLearn | Enroll Trainee</title>
             </Helmet>
 
             {/* Header */}
-            <div className='flex flex-col justify-center col-span-4 row-span-1 pr-5 border-b mx-5 border-divider'>
+            <div className='flex flex-col justify-center col-span-3 row-span-1 pr-5 border-b ml-5 border-divider'>
                 <h1 className='text-primary text-4xl font-header'>Enroll Trainee</h1>
                 <p className='font-text text-sm text-unactive' >Quickly enroll large groups of trainees into assigned courses for efficient training delivery.</p>
             </div>
 
+            {/* Enroll button */}
+            <div className="flex flex-col justify-center pl-5 mr-5 border-divider border-b col-start-4 row-start-1 row-span-1">
+                <button className="w-full p-4 bg-primary font-header text-white rounded-full hover:scale-105 transition-all ease-in-out ">
+                    <FontAwesomeIcon icon={faUserPlus} className='mr-2'/>
+                    Enroll Employees
+                </button>
+            </div>
+
+            {/* Course list header */}
+            <div className="px-4 pb-3 mt-5 border-l border-divider ">
+                <h1 className='text-primary text-2xl font-header'>Assigned Courses</h1>
+                <p className='font-text text-xs text-unactive' >Assigned courses to enroll users into effortlessly.</p>
+            </div>
+
             {/* Assigned Courses */}
-            <div className="col-start-4 row-start-2 row-span-4 my-5 border-l border-divider flex flex-col justify-between">
-                {/* Course list header */}
-                <div className="px-4">
-                    <h1 className='text-primary text-2xl font-header'>Assigned Courses</h1>
-                    <p className='font-text text-xs text-unactive' >Assigned courses to enroll users into effortlessly.</p>
-                </div>
+            <div className="col-start-4 row-start-3 row-span-3 mb-5 border-l border-divider">
                 {/* Course Props */}
-                <div className="h-full p-5 flex flex-col gap-2">
-                    <div className="w-full py-5 px-4 border border-divider bg-primary rounded-md font-text text-white text-center shadow-md">
+                <div className="h-full p-4 flex flex-col gap-2">
+                    <div className="w-full py-5 px-4 border border-divider bg-primary rounded-md font-text text-white text-center shadow-md hover:cursor-pointer hover:scale-105 transition-all ease-in-out">
                         sample course card
                     </div>
-                    <div className="w-full py-5 px-4 border border-divider bg-white rounded-md font-text text-primary text-center shadow-md">
+                    <div className="w-full py-5 px-4 border border-divider bg-white rounded-md font-text text-primary text-center shadow-md hover:cursor-pointer hover:scale-105 transition-all ease-in-out">
                         sample course card
                     </div>
-                    <div className="w-full py-5 px-4 border border-divider bg-white rounded-md font-text text-primary text-center shadow-md">
+                    <div className="w-full py-5 px-4 border border-divider bg-white rounded-md font-text text-primary text-center shadow-md hover:cursor-pointer hover:scale-105 transition-all ease-in-out">
                         sample course card
                     </div>
-                    <div className="w-full py-5 px-4 border border-divider bg-white rounded-md font-text text-primary text-center shadow-md">
+                    <div className="w-full py-5 px-4 border border-divider bg-white rounded-md font-text text-primary text-center shadow-md hover:cursor-pointer hover:scale-105 transition-all ease-in-out">
                         sample course card
                     </div>
-                </div>
-                {/* Enroll button */}
-                <div className="px-5">
-                    <button className="w-full p-3 bg-primary font-header text-white rounded-md hover:scale-105 transition-all ease-in-out">
-                        <FontAwesomeIcon icon={faUserPlus} className='mr-2'/>
-                        Enroll Employees
-                    </button>
                 </div>
             </div>
 
@@ -90,7 +92,7 @@ export default function BulkEnrollment() {
             </div>
 
             {/* User Pagination */}
-            <div className='row-start-5 row-span-1 col-start-1 col-span-3 border-t border-divider mx-5 py-3 flex flex-row items-center justify-between'>
+            <div className='row-start-5 row-span-1 col-start-1 col-span-3 border-t border-divider mx-5 flex flex-row items-center justify-between'>
                 {/* Total number of entries and only be shown */}
                 <div>
                     <p className='text-sm font-text text-unactive'>
