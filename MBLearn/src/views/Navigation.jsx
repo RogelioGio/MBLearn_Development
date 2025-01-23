@@ -2,9 +2,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBell, faBook, faBookBookmark, faBookOpen, faBookOpenReader, faChartGantt, faChartPie, faGear, faGears, faGraduationCap, faHouse, faMedal, faPersonCirclePlus, faRightFromBracket, faUser, faUserGroup, faUserLock, } from '@fortawesome/free-solid-svg-icons'
 import Small_Logo from '../assets/Small_Logo.svg'
 import axiosClient from '../axios-client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useStateContext } from '../contexts/ContextProvider';
 import { Link, Links, NavLink, useNavigate } from 'react-router-dom';
+import { use } from 'react';
 
 //Icon props
 const Icons = ({icon, text, to}) => (
@@ -64,20 +65,25 @@ const profileItems = {
 
 export default function Navigation() {
 
-    const {user, role, token, profileUrl, setUser, setRole, setToken, setProfileUrl} = useStateContext();
+    const {user, role, token, employeeID, setUser, setRole, setToken, setEmployeeID} = useStateContext();
+    const [profile, setProfile] = useState('');
 
     //fetching user data
     useEffect(() => {
         axiosClient.get('/user').then(({ data }) => {
             setUser(data.name);
-            setProfileUrl(data.profile_photo_url);
             setRole(data.role);
+            setEmployeeID(data.employeeID);
+            if(data.employeeID){
+                axiosClient.get(`/select-employeeid/${employeeID}`) .then((response) => {
+                    setProfile(response.data.data.profile_image)
+                })
+            }
 
-        }).catch((error) => {
-            console.error('Failed to fetch user:', error.response?.data || error.message);
-            setUser(null); // Handle unauthorized state
-        });
+
+        })
     }, [setUser]);
+
 
     //Role-based Navigation
     const Items = navItems[role] || [];
@@ -114,7 +120,7 @@ export default function Navigation() {
                     <li><Icons icon={<FontAwesomeIcon icon={faGear}/>} text={"Account Setting"}/></li>
                     <li><Icons icon={<FontAwesomeIcon icon={faBell}/>} text={"Notifications"}/></li>
                     <li className='inline-block relative w-auto group p-1'>
-                        <img src={profileUrl} alt="" className='w-10 h-10 rounded-full shadow-lg hover:scale-105 transition-all ease-in-out'/>
+                        <img src={profile} alt="" className='w-10 h-10 rounded-full shadow-lg hover:scale-105 transition-all ease-in-out'/>
                         {/* Profile */}
                         <div className='bg-tertiary p-4 rounded-md absolute left-9 min-w-max bottom-0 flex flex-row scale-0 group-hover:scale-100'>
                             <ul>

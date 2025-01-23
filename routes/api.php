@@ -7,14 +7,6 @@ use App\Http\Controllers\Api\UserController;;
 use App\Http\Controllers\Api\userInfo_controller;
 use App\Http\Controllers\Api\userCredentials_controller;
 
-// Route::middleware('auth:sanctum')->group(function() {
-//
-//     Route::post('/logout', [AuthController::class, 'logout']);
-// });
-
-
-
-
 //New Login routing
 Route::post('/login', [AuthController::class, 'login']);
 //Protected Routes
