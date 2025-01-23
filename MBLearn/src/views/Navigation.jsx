@@ -54,45 +54,38 @@ const navItems = {
 
 //Profile Menu per role
 const profileItems = {
-    "system_admin": [
+    "System Admin": [
         {text:"Login as Course Admin", icon:faBookOpenReader},
         {text:"Login as Learner", icon:faGraduationCap}
     ],
-    "course_admin": [
+    "Course Admin": [
         {text:"Login as Learner", icon:faGraduationCap}
     ]
 }
 
 export default function Navigation() {
 
-    const {user, role, token, employeeID, setUser, setRole, setToken, setEmployeeID} = useStateContext();
+    const {user, setUser, setToken} = useStateContext();
     const [profile, setProfile] = useState('');
 
-    //fetching user data
+    //fethcing user profile
     useEffect(() => {
-        axiosClient.get('/user').then(({ data }) => {
-            setUser(data.name);
-            setRole(data.role);
-            setEmployeeID(data.employeeID);
-            if(data.employeeID){
-                axiosClient.get(`/select-employeeid/${employeeID}`) .then((response) => {
-                    setProfile(response.data.data.profile_image)
-                })
-            }
-
-
-        })
-    }, [setUser]);
+        axiosClient.get(`/select-employeeid/${user.employeeID}`).then(({data}) => {
+            setProfile(data.data.profile_image);
+        }).catch((e) => {
+            console.error(e);
+        });
+    },[])
 
 
     //Role-based Navigation
-    const Items = navItems[role] || [];
-    const PItems = profileItems[role] || [];
+    const Items = navItems[user.role] || [];
+    const PItems = profileItems[user.role] || [];
 
     //Logout Function
     const onLogout = () => {
         axiosClient.post('/logout').then(() => {
-            setUser({});
+            setUser('');
             setToken(null);
             console.log("Logout Success");
         });

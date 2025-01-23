@@ -51,26 +51,13 @@ const DashboardLayout = ({role,name}) => {
 
 export default function Dashboard()
 {
-    const { user, setUser } = useStateContext();
-    const { role, setRole } = useStateContext();
-
-    useEffect(() => {
-        axiosClient.get('/user')
-            .then(({ data }) => {
-                setUser(data); // Set the user data in context
-                setRole(data)
-            })
-            .catch((error) => {
-                console.error('Failed to fetch user:', error.response?.data || error.message);
-            });
-    }, []); // Only fetch data once on mount
-
+    const {user} = useStateContext();
     if (!user) {
         return <div>Loading...</div>;
     }
 
     return (
-            <DashboardLayout role={role} name={user}/>
+            <DashboardLayout role={user.role} name={user.name}/>
     )
 
 }
