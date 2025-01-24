@@ -74,11 +74,19 @@ class User extends Authenticatable
     }
 
     public function enrollments(): HasMany{
-        return $this->hasMany(Enrollment::class, 'foreign_key', 'user_id');
+        return $this->hasMany(Enrollment::class, 'user_id');
     }
 
     //TODO change name to be more clear, for knowing who made the enrollment
     public function enrollings(): HasMany{
-        return $this->hasMany(Enrollment::class, 'foreign_key', 'enroller_id');
+        return $this->hasMany(Enrollment::class, 'enroller_id');
+    }
+
+    public function addedCourses(): HasMany{
+        return $this->hasMany(Course::class, 'system_admin_id');
+    }
+
+    public function assignedCourses(): HasMany{
+        return $this->hasMany(Course::class, 'assigned_course_admin_id');
     }
 }

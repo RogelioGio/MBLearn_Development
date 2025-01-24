@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
@@ -31,12 +32,12 @@ class Course extends Model
 
 
     //help with better name, basically system admin na nag add ng course
-    public function adder(): HasOne{
-        return $this->hasOne(User::class, 'foreign_key', 'system_admin_id');
+    public function adder(): BelongsTo{
+        return $this->belongsTo(User::class);
     }
 
     //IDK if multiple course admin can be assigned to a course subject to change
-    public function assignedCourseAdmin(): HasOne{
-        return $this->hasOne(User::class, 'foreign_key', 'assigned_course_admin_id');
+    public function assignedCourseAdmin(): BelongsTo{
+        return $this->belongsTo(User::class);
     }
 }
