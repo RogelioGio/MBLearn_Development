@@ -1,7 +1,22 @@
 import { faChevronLeft, faChevronRight, faFilter, faSearch, faUserPlus } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Helmet } from "react-helmet"
+import axiosClient from "../axios-client"
+import { useEffect, useState } from "react"
+import Learner from "../modalsandprops/LearnerEnroleeEntryProps"
 export default function BulkEnrollment() {
+
+    const [learners, setLearners] = useState([]);
+
+    useEffect(() =>{
+        axiosClient.get('/index-user/enrolees')
+        .then(({data}) => setLearners(data))
+        .catch((err) => console.log(err))
+    },[])
+
+
+
+
     return (
         <div className='grid grid-cols-4 grid-rows-[6.25rem_min-content_auto_auto_3.75rem] h-full w-full'>
             <Helmet>
@@ -71,21 +86,31 @@ export default function BulkEnrollment() {
                 <table className='text-left w-full overflow-y-scroll'>
                     <thead className='font-header text-xs text-primary bg-secondaryprimary'>
                         <tr>
+                            <th className='py-4 px-4'></th>
                             <th className='py-4 px-4'>EMPLOYEE NAME</th>
                             <th className='py-4 px-4'>DEPARTMENT</th>
                             <th className='py-4 px-4'>BRANCH</th>
-                            <th className='py-4 px-4'>ROLE</th>
-                            <th className='py-4 px-4'></th>
                         </tr>
                     </thead>
                     <tbody className='bg-white divide-y divide-divider'>
-                        <tr>
+                        {/* <tr>
                             <td colSpan="5">
                                 <div className="p-5 text-center font-text text-unactive">
                                     <p>Please choose a course to select employee to enroll</p>
                                 </div>
                             </td>
-                        </tr>
+                        </tr> */}
+                        {
+                            learners.map((learner)=>(
+                                <Learner
+                                    key={learner.id}
+                                    profile_image={learner.profile_image}
+                                    name={learner.name}
+                                    employeeID={learner.employeeID}
+                                    department={learner.department}
+                                    branch={learner.branch}/>
+                            ))
+                        }
                     </tbody>
                 </table>
                 </div>

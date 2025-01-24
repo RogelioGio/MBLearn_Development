@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\EnrollmentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
@@ -40,3 +41,6 @@ Route::get('/index-user-creds',[userCredentials_controller::class, 'userCredenti
 Route::get('/select-user-creds/{employeeID}',[userCredentials_controller::class, 'findUser_EmployeeID']);
 Route::delete('/delete-user-creds/{employeeID}',[userCredentials_controller::class, 'deleteUser']);
 Route::get('/reset-user-creds',[userCredentials_controller::class, 'resetUsers']); //reset user table
+
+//Enrollment API
+Route::get('/index-user/enrolees', [EnrollmentController::class, 'enrolees']);

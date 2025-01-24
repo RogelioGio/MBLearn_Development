@@ -84,14 +84,14 @@ export default function Navigation() {
     //Logout Function
     const onLogout = () => {
         setUser('');
-        setToken(null);
-        localStorage.removeItem('ACCESS_TOKEN');
-
         axiosClient.post('/logout').then(() => {
             console.log("Logout Success");
         }).catch((e) => {
             console.error(e);
         });
+        setToken(null);
+        localStorage.removeItem('ACCESS_TOKEN');
+
     };
 
 

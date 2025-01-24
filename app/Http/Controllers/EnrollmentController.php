@@ -2,48 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\enrollmentRequest;
 use App\Models\Enrollment;
+use App\Models\UserInfos;
 use Illuminate\Http\Request;
 
 class EnrollmentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
+    //Fetch Learners
+    public function enrolees () {
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Enrollment $enrollment)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Enrollment $enrollment)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Enrollment $enrollment)
-    {
-        //
+        $learner = UserInfos::where('role', 'Learner')->get();
+        \Log::info($learner);
+        return response()->json($learner);
     }
 }
