@@ -7,10 +7,12 @@ const StateContext = createContext({
     token: null,
     role: null,
     EmployeeID: null,
+    profile_image: null,
     setUser: () => {},
     setToken: () => {},
     setRole: () => {},
     setEmployeeID: () => {},
+    setProfile: () => {},
 });
 
 //passing information into layouts
@@ -19,6 +21,7 @@ export const ContextProvider = ({ children }) => {
     const [token, _setToken] = useState(localStorage.getItem('ACCESS_TOKEN'));
     const [role, setRole] = useState('');
     const [employeeID, setEmployeeID] = useState('');
+    const [profile_image, setProfile] = useState('');
     const [tokenTimeoutId, setTokenTimeoutId] = useState(null);
 
     // for Authentication and PageLoading token in logging in
@@ -43,10 +46,12 @@ export const ContextProvider = ({ children }) => {
             token,
             role,
             employeeID,
+            profile_image,
             setUser,
             setToken,
             setRole,
-            setEmployeeID
+            setEmployeeID,
+            setProfile
             }}>
 
             {children}

@@ -193,7 +193,7 @@ export default function UserManagementMaintenance() {
 
 
     return (
-        <div className='grid  grid-cols-4 grid-rows-[6.25rem_min-content_auto_auto_min-content] h-full w-full'>
+        <div className='grid grid-cols-4 grid-rows-[6.25rem_min-content_auto_auto_min-content] h-full w-full'>
             <Helmet>
                 {/* Title of the mark-up */}
                 <title>MBLearn | User Management Maintenance</title>
