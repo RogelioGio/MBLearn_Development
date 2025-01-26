@@ -2,32 +2,53 @@ import { faChevronLeft, faChevronRight, faFilter, faSearch, faUserPlus } from "@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Helmet } from "react-helmet"
 import axiosClient from "../axios-client"
-import { useEffect, useRef, useState } from "react"
+import { act, useEffect, useRef, useState } from "react"
 import Learner from "../modalsandprops/LearnerEnroleeEntryProps"
 
 export default function BulkEnrollment() {
 
     const [learners, setLearners] = useState([]); //List all learners
-    const [selected, setSelected] = useState([]); //Select learner to ernoll
+    const [selected, setSelected] = useState({}); //Select learner to ernoll
+    const [course, selectCourse] = useState("course1"); //Select course to enroll
     const selectAll = useRef(false) //select all learners
+
+    //Handle course change
+    const handleCourseChange = (Course) => {
+        selectCourse(Course);
+    }
 
     //Learner to enroll
     const handleCheckbox = (employeeID) => {
         setSelected((prevUsers) => {
-            if(prevUsers.includes(employeeID)){
-                return prevUsers.filter((user) => user !== employeeID);
+
+            const currentCourse = prevUsers[course] || [];
+
+            if(currentCourse.includes(employeeID)){
+                return {...prevUsers,
+                        [course]: currentCourse.filter((user) => user !== employeeID)}
             } else {
-                return [...prevUsers, employeeID];
+                return {
+                    ...prevUsers,
+                    [course]: [...currentCourse, employeeID]
+                }
             }
         });
     };
 
     //Select All Learners
-    const handleSelectAll = () => {
-        if(selected.length === learners.length){
-            setSelected([]);
+    const handleSelectAll = (Course) => {
+        if(selected[Course] && selected[Course].length === learners.length){
+            setSelected((prevUsers) => {
+                const newUsers = {... prevUsers};
+                newUsers[Course] = [];
+                return newUsers;
+            })
         } else {
-            setSelected(learners.map((enrollees) => enrollees.employeeID));
+            setSelected((prevUsers) => {
+                const newUsers = {... prevUsers};
+                newUsers[Course] = learners.map((user) => user.employeeID);
+                return newUsers;
+            });
         }
     }
 
@@ -35,21 +56,24 @@ export default function BulkEnrollment() {
     useEffect(() => {
         if(!selectAll.current) return;
 
-        if(selected.length === learners.length && learners.length > 0){
+        const courseLearners = learners.map((user) => user.employeeID);
+        const selectedLearners = selected[course] || [];
+
+        if(courseLearners.length === selectedLearners.length && courseLearners.length > 0){
             selectAll.current.indeterminate = false;
             selectAll.current.checked = true;
-        } else if(selected.length > 0){
+        } else if(selectedLearners.length > 0){
             selectAll.current.indeterminate = true;
         } else {
             selectAll.current.indeterminate = false;
             selectAll.current.checked = false;
 
         }
-    },[selected, learners]);
+    },[selected, learners, course]);
 
     //Number of enrollees
-    const numberOfEnrollees = () => {
-        return selected.length;
+    const numberOfEnrollees = (Course) => {
+        return selected[Course].length ? selected[Course].length : 0;
     }
 
     //handle ernollment
@@ -96,16 +120,51 @@ export default function BulkEnrollment() {
             <div className="col-start-4 row-start-3 row-span-3 mb-5 border-l border-divider">
                 {/* Course Props */}
                 <div className="h-full p-4 flex flex-col gap-2">
-                    <div className="w-full py-5 px-4 border border-divider bg-primary rounded-md font-text text-white text-center shadow-md hover:cursor-pointer hover:scale-105 transition-all ease-in-out">
-                    Effective Communication Skills in the Workplace
-Soft Skills Training-Personal Development
-Duration:
-2 weeks
-Asynchronous
-                        <p>{selected.length > 0 && <p>{numberOfEnrollees()}</p>}</p>
+                    <div className={`w-full h-40 p-5 grid  grid-cols-[auto_3.75rem] border border-divider rounded-md font-text shadow-md hover:cursor-pointer hover:scale-105 transition-all ease-in-out ${course === "course1" ? 'bg-primary text-white' : 'bg-white text-primary'}`}
+                        onClick={() => handleCourseChange("course1")}>
+                        {/* Course Header */}
+                        <div className="col-span-2">
+                            <h1 className="text-sm font-header mb-2">Effective Communication Skills in the Workplace</h1>
+                            <p className="text-xs">Soft Skills Training - Personal Development</p>
+                        </div>
+
+                        {/* Duration & Training Method */}
+                        <div className="flex flex-col gap-0.5 text-xs row-start-2 items-start justify-end">
+                            <p>2 Weeks</p>
+                            <p>Asynchronous</p>
+                        </div>
+
+                        <div className="flex items-end justify-end">
+                            {
+                                selected["course1"] && selected["course1"].length > 0 &&
+                                <div className=" bg-[#1664C0] rounded-full text-white flex items-center justify-center aspect-square w-8">
+                                    <p className="text-s">{numberOfEnrollees("course1")}</p>
+                                </div>
+                            }
+                        </div>
                     </div>
-                    <div className="w-full py-5 px-4 border border-divider bg-white rounded-md font-text text-primary text-center shadow-md hover:cursor-pointer hover:scale-105 transition-all ease-in-out">
-                        sample course card
+                    <div className= {`w-full h-40 p-5 grid  grid-cols-[auto_3.75rem] border border-divider rounded-md font-text shadow-md hover:cursor-pointer hover:scale-105 transition-all ease-in-out ${course === "course2" ? 'bg-primary text-white' : 'bg-white text-primary'}`}
+                        onClick={() => handleCourseChange("course2")}>
+                        {/* Course Header */}
+                        <div className="col-span-2">
+                            <h1 className="text-sm font-header mb-2">Time Management and Productivity Hacks</h1>
+                            <p className="text-xs">Soft Skills Training - Personal Development</p>
+                        </div>
+
+                        {/* Duration & Training Method */}
+                        <div className="flex flex-col gap-0.5 text-xs row-start-2 items-start justify-end">
+                            <p>1 Week</p>
+                            <p>Online Training (Asynchonous)</p>
+                        </div>
+
+                        <div className="flex items-end justify-end">
+                            {
+                                selected["course2"] && selected["course2"].length > 0 &&
+                                <div className=" bg-[#1664C0] rounded-full text-white flex items-center justify-center aspect-square w-8">
+                                    <p className="text-s">{numberOfEnrollees("course2")}</p>
+                                </div>
+                            }
+                        </div>
                     </div>
                 </div>
             </div>
@@ -128,72 +187,144 @@ Asynchronous
             </div>
 
             {/* User table */}
-            <div className='row-start-3 row-span-2 col-start-1 col-span-3 px-5 py-2'>
-                <div className='w-full border-primary border rounded-md overflow-hidden shadow-md'>
-                <table className='text-left w-full overflow-y-scroll'>
-                    <thead className='font-header text-xs text-primary bg-secondaryprimary'>
-                        <tr>
-                            <th className='py-4 px-4 flex flex-row gap-4'>
-                                {/* Checkbox */}
-                                <div className="group grid size-4 grid-cols-1">
-                                    <input type="checkbox"
-                                        className="col-start-1 row-start-1 appearance-none border border-primary rounded checked:border-primary checked:bg-primary indeterminate:bg-primary focus:ring-2 focus:ring-primary focus:outline-none focus:ring-offset-1"
-                                        ref={selectAll}
-                                        onChange={handleSelectAll}
-                                        />
-                                    {/* Custom Checkbox styling */}
-                                    <svg fill="none" viewBox="0 0 14 14" className="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-[:disabled]:stroke-gray-950/25">
-                                        {/* Checked */}
-                                        <path
-                                            d="M3 8L6 11L11 3.5"
-                                            strokeWidth={2}
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            className="opacity-0 group-has-[:checked]:opacity-100"
-                                        />
-                                        {/* Indeterminate */}
-                                        <path
-                                            d="M3 7H11"
-                                            strokeWidth={2}
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            className="opacity-0 group-has-[:indeterminate]:opacity-100"
+            {
+                course === "course1" &&
+                <div className='row-start-3 row-span-2 col-start-1 col-span-3 px-5 py-2'>
+                    <div className='w-full border-primary border rounded-md overflow-hidden shadow-md'>
+                    <table className='text-left w-full overflow-y-scroll'>
+                        <thead className='font-header text-xs text-primary bg-secondaryprimary'>
+                            <tr>
+                                <th className='py-4 px-4 flex flex-row gap-4'>
+                                    {/* Checkbox */}
+                                    <div className="group grid size-4 grid-cols-1">
+                                        <input type="checkbox"
+                                            className="col-start-1 row-start-1 appearance-none border border-primary rounded checked:border-primary checked:bg-primary indeterminate:bg-primary focus:ring-2 focus:ring-primary focus:outline-none focus:ring-offset-1"
+                                            ref={selectAll}
+                                            onChange={() => handleSelectAll(course)}
                                             />
-                                    </svg>
-                                </div>
-                                <p>EMPLOYEE NAME</p>
-                            </th>
-                            <th className='py-4 px-4'>DEPARTMENT</th>
-                            <th className='py-4 px-4'>BRANCH</th>
-                        </tr>
-                    </thead>
-                    <tbody className='bg-white divide-y divide-divider'>
-                        {/* <tr>
-                            <td colSpan="5">
-                                <div className="p-5 text-center font-text text-unactive">
-                                    <p>Please choose a course to select employee to enroll</p>
-                                </div>
-                            </td>
-                        </tr> */}
-                        {
-                            learners.map((learner)=>(
-                                <Learner
-                                    key={learner.id}
-                                    profile_image={learner.profile_image}
-                                    name={learner.name}
-                                    employeeID={learner.employeeID}
-                                    department={learner.department}
-                                    title={learner.title}
-                                    branch={learner.branch}
-                                    city={learner.city}
-                                    selectedUser={selected}
-                                    handleCheckbox={handleCheckbox}/>
-                            ))
-                        }
-                    </tbody>
-                </table>
+                                        {/* Custom Checkbox styling */}
+                                        <svg fill="none" viewBox="0 0 14 14" className="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-[:disabled]:stroke-gray-950/25">
+                                            {/* Checked */}
+                                            <path
+                                                d="M3 8L6 11L11 3.5"
+                                                strokeWidth={2}
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                className="opacity-0 group-has-[:checked]:opacity-100"
+                                            />
+                                            {/* Indeterminate */}
+                                            <path
+                                                d="M3 7H11"
+                                                strokeWidth={2}
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                className="opacity-0 group-has-[:indeterminate]:opacity-100"
+                                                />
+                                        </svg>
+                                    </div>
+                                    <p>EMPLOYEE NAME</p>
+                                </th>
+                                <th className='py-4 px-4'>DEPARTMENT</th>
+                                <th className='py-4 px-4'>BRANCH</th>
+                            </tr>
+                        </thead>
+                        <tbody className='bg-white divide-y divide-divider'>
+                            {/* <tr>
+                                <td colSpan="5">
+                                    <div className="p-5 text-center font-text text-unactive">
+                                        <p>Please choose a course to select employee to enroll</p>
+                                    </div>
+                                </td>
+                            </tr> */}
+                            {
+                                learners.map((learner)=>(
+                                    <Learner
+                                        key={learner.id}
+                                        profile_image={learner.profile_image}
+                                        name={learner.name}
+                                        employeeID={learner.employeeID}
+                                        department={learner.department}
+                                        title={learner.title}
+                                        branch={learner.branch}
+                                        city={learner.city}
+                                        selectedUser={selected[course] || []}
+                                        handleCheckbox={handleCheckbox}/>
+                                ))
+                            }
+                        </tbody>
+                    </table>
+                    </div>
                 </div>
-            </div>
+            }
+            {
+                course === "course2" &&
+                <div className='row-start-3 row-span-2 col-start-1 col-span-3 px-5 py-2'>
+                    <div className='w-full border-primary border rounded-md overflow-hidden shadow-md'>
+                    <table className='text-left w-full overflow-y-scroll'>
+                        <thead className='font-header text-xs text-primary bg-secondaryprimary'>
+                            <tr>
+                                <th className='py-4 px-4 flex flex-row gap-4'>
+                                    {/* Checkbox */}
+                                    <div className="group grid size-4 grid-cols-1">
+                                        <input type="checkbox"
+                                            className="col-start-1 row-start-1 appearance-none border border-primary rounded checked:border-primary checked:bg-primary indeterminate:bg-primary focus:ring-2 focus:ring-primary focus:outline-none focus:ring-offset-1"
+                                            ref={selectAll}
+                                            onChange={() => handleSelectAll(course)}
+                                            />
+                                        {/* Custom Checkbox styling */}
+                                        <svg fill="none" viewBox="0 0 14 14" className="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-[:disabled]:stroke-gray-950/25">
+                                            {/* Checked */}
+                                            <path
+                                                d="M3 8L6 11L11 3.5"
+                                                strokeWidth={2}
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                className="opacity-0 group-has-[:checked]:opacity-100"
+                                            />
+                                            {/* Indeterminate */}
+                                            <path
+                                                d="M3 7H11"
+                                                strokeWidth={2}
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                className="opacity-0 group-has-[:indeterminate]:opacity-100"
+                                                />
+                                        </svg>
+                                    </div>
+                                    <p>EMPLOYEE NAME</p>
+                                </th>
+                                <th className='py-4 px-4'>DEPARTMENT</th>
+                                <th className='py-4 px-4'>BRANCH</th>
+                            </tr>
+                        </thead>
+                        <tbody className='bg-white divide-y divide-divider'>
+                            {/* <tr>
+                                <td colSpan="5">
+                                    <div className="p-5 text-center font-text text-unactive">
+                                        <p>Please choose a course to select employee to enroll</p>
+                                    </div>
+                                </td>
+                            </tr> */}
+                            {
+                                learners.map((learner)=>(
+                                    <Learner
+                                        key={learner.id}
+                                        profile_image={learner.profile_image}
+                                        name={learner.name}
+                                        employeeID={learner.employeeID}
+                                        department={learner.department}
+                                        title={learner.title}
+                                        branch={learner.branch}
+                                        city={learner.city}
+                                        selectedUser={selected[course] || []}
+                                        handleCheckbox={handleCheckbox}/>
+                                ))
+                            }
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+            }
 
             {/* User Pagination */}
             <div className='row-start-5 row-span-1 col-start-1 col-span-3 border-t border-divider mx-5 flex flex-row items-center justify-between'>
