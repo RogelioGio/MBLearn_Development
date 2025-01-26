@@ -2,19 +2,67 @@ import { faChevronLeft, faChevronRight, faFilter, faSearch, faUserPlus } from "@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Helmet } from "react-helmet"
 import axiosClient from "../axios-client"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import Learner from "../modalsandprops/LearnerEnroleeEntryProps"
+
 export default function BulkEnrollment() {
 
-    const [learners, setLearners] = useState([]);
+    const [learners, setLearners] = useState([]); //List all learners
+    const [selected, setSelected] = useState([]); //Select learner to ernoll
+    const selectAll = useRef(false) //select all learners
 
+    //Learner to enroll
+    const handleCheckbox = (employeeID) => {
+        setSelected((prevUsers) => {
+            if(prevUsers.includes(employeeID)){
+                return prevUsers.filter((user) => user !== employeeID);
+            } else {
+                return [...prevUsers, employeeID];
+            }
+        });
+    };
+
+    //Select All Learners
+    const handleSelectAll = () => {
+        if(selected.length === learners.length){
+            setSelected([]);
+        } else {
+            setSelected(learners.map((enrollees) => enrollees.employeeID));
+        }
+    }
+
+    //handle indertiminate checkbox
+    useEffect(() => {
+        if(!selectAll.current) return;
+
+        if(selected.length === learners.length && learners.length > 0){
+            selectAll.current.indeterminate = false;
+            selectAll.current.checked = true;
+        } else if(selected.length > 0){
+            selectAll.current.indeterminate = true;
+        } else {
+            selectAll.current.indeterminate = false;
+            selectAll.current.checked = false;
+
+        }
+    },[selected, learners]);
+
+    //Number of enrollees
+    const numberOfEnrollees = () => {
+        return selected.length;
+    }
+
+    //handle ernollment
+    const enrollLearners = () => {
+        console.log("Enrolled Learners", selected)
+    }
+
+    //Fetch Learners
     useEffect(() =>{
         axiosClient.get('/index-user/enrolees')
         .then(({data}) => setLearners(data))
         .catch((err) => console.log(err))
-    },[])
-
-
+    },[]);
 
 
     return (
@@ -32,7 +80,7 @@ export default function BulkEnrollment() {
 
             {/* Enroll button */}
             <div className="flex flex-col justify-center pl-5 mr-5 border-divider border-b col-start-4 row-start-1 row-span-1">
-                <button className="w-full p-4 bg-primary font-header text-white rounded-full hover:scale-105 transition-all ease-in-out ">
+                <button className="w-full p-4 bg-primary font-header text-white rounded-full hover:scale-105 transition-all ease-in-out" onClick={enrollLearners}>
                     <FontAwesomeIcon icon={faUserPlus} className='mr-2'/>
                     Enroll Employees
                 </button>
@@ -49,13 +97,12 @@ export default function BulkEnrollment() {
                 {/* Course Props */}
                 <div className="h-full p-4 flex flex-col gap-2">
                     <div className="w-full py-5 px-4 border border-divider bg-primary rounded-md font-text text-white text-center shadow-md hover:cursor-pointer hover:scale-105 transition-all ease-in-out">
-                        sample course card
-                    </div>
-                    <div className="w-full py-5 px-4 border border-divider bg-white rounded-md font-text text-primary text-center shadow-md hover:cursor-pointer hover:scale-105 transition-all ease-in-out">
-                        sample course card
-                    </div>
-                    <div className="w-full py-5 px-4 border border-divider bg-white rounded-md font-text text-primary text-center shadow-md hover:cursor-pointer hover:scale-105 transition-all ease-in-out">
-                        sample course card
+                    Effective Communication Skills in the Workplace
+Soft Skills Training-Personal Development
+Duration:
+2 weeks
+Asynchronous
+                        <p>{selected.length > 0 && <p>{numberOfEnrollees()}</p>}</p>
                     </div>
                     <div className="w-full py-5 px-4 border border-divider bg-white rounded-md font-text text-primary text-center shadow-md hover:cursor-pointer hover:scale-105 transition-all ease-in-out">
                         sample course card
@@ -86,8 +133,36 @@ export default function BulkEnrollment() {
                 <table className='text-left w-full overflow-y-scroll'>
                     <thead className='font-header text-xs text-primary bg-secondaryprimary'>
                         <tr>
-                            <th className='py-4 px-4'></th>
-                            <th className='py-4 px-4'>EMPLOYEE NAME</th>
+                            <th className='py-4 px-4 flex flex-row gap-4'>
+                                {/* Checkbox */}
+                                <div className="group grid size-4 grid-cols-1">
+                                    <input type="checkbox"
+                                        className="col-start-1 row-start-1 appearance-none border border-primary rounded checked:border-primary checked:bg-primary indeterminate:bg-primary focus:ring-2 focus:ring-primary focus:outline-none focus:ring-offset-1"
+                                        ref={selectAll}
+                                        onChange={handleSelectAll}
+                                        />
+                                    {/* Custom Checkbox styling */}
+                                    <svg fill="none" viewBox="0 0 14 14" className="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-[:disabled]:stroke-gray-950/25">
+                                        {/* Checked */}
+                                        <path
+                                            d="M3 8L6 11L11 3.5"
+                                            strokeWidth={2}
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            className="opacity-0 group-has-[:checked]:opacity-100"
+                                        />
+                                        {/* Indeterminate */}
+                                        <path
+                                            d="M3 7H11"
+                                            strokeWidth={2}
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            className="opacity-0 group-has-[:indeterminate]:opacity-100"
+                                            />
+                                    </svg>
+                                </div>
+                                <p>EMPLOYEE NAME</p>
+                            </th>
                             <th className='py-4 px-4'>DEPARTMENT</th>
                             <th className='py-4 px-4'>BRANCH</th>
                         </tr>
@@ -108,7 +183,11 @@ export default function BulkEnrollment() {
                                     name={learner.name}
                                     employeeID={learner.employeeID}
                                     department={learner.department}
-                                    branch={learner.branch}/>
+                                    title={learner.title}
+                                    branch={learner.branch}
+                                    city={learner.city}
+                                    selectedUser={selected}
+                                    handleCheckbox={handleCheckbox}/>
                             ))
                         }
                     </tbody>
