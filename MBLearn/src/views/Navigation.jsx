@@ -82,17 +82,23 @@ export default function Navigation() {
     const PItems = profileItems[user.role] || [];
 
     //Logout Function
-    const onLogout = () => {
-        setUser('');
-        axiosClient.post('/logout').then(() => {
-            console.log("Logout Success");
-        }).catch((e) => {
+    // const onLogout = () => {
+    //     axiosClient.post('/logout').then(() => {
+    //         setUser('');
+    //         setToken(null);
+    //     }).catch((e) => {
+    //         console.error(e);
+    //     });
+    // };
+    const onLogout = async () => {
+        try{
+            await axiosClient.post('/logout');
+            setUser('');
+            setToken(null);
+        }catch (e){
             console.error(e);
-        });
-        setToken(null);
-        localStorage.removeItem('ACCESS_TOKEN');
-
-    };
+        }
+    }
 
 
 

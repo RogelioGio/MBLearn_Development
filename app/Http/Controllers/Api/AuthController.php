@@ -34,6 +34,17 @@ class AuthController extends Controller
         $credentials = $request->validated();
         $user = UserCredentials::where('MBemail', $credentials['MBemail'])->first();
 
+        if(!$user){
+            return response()->json([
+                'message' => 'There is no user with that credentials',
+            ], 401);
+        }
+
+        if(!Hash::check($credentials['password'], $user->password)){
+            return response()->json([
+                'message' => 'Invalid password',
+            ], 401);
+        }
 
         if($user && Hash::check($credentials['password'], $user->password)){
             //Generate Login Token
@@ -50,10 +61,6 @@ class AuthController extends Controller
                 'redirect' => $redirect
             ], 200);
         };
-
-        return response()->json([
-            'message' => 'Invalid email or password.',
-        ], 401);
     }
 
     public function logout(Request $request){
