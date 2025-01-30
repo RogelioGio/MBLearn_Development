@@ -28,9 +28,10 @@ export default function DefaultLayout() {
     },[setUser, setRole])
 
     // Function to check if the user is logged in
-    if (!token) {
-        return <Navigate to="/login" />
-    }
+
+        if(!token){
+            return <Navigate to="/login" />
+        }
 
     if(loading){
         return (
@@ -58,4 +59,5 @@ export default function DefaultLayout() {
             <Outlet />
         </div>
     )
+
 }
