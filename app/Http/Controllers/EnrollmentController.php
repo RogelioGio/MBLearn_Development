@@ -10,10 +10,18 @@ use Illuminate\Http\Request;
 class EnrollmentController extends Controller
 {
     //Fetch Learners
-    public function enrolees () {
+    public function enrolees (Request $request){
 
-        $learner = UserInfos::where('role', 'Learner')->get();
+        $page = $request->input('page', 1);//Default page
+        $perPage = $request->input('perPage',5); //Number of entry per page
+
+        $learner = UserInfos::where('role', 'Learner')->paginate($perPage);
         \Log::info($learner);
-        return response()->json($learner);
+        return response()->json([
+            'data' => $learner->items(),
+            'total' => $learner->total(),
+            'lastPage' => $learner->lastPage(),
+            'currentPage' => $learner->currentPage()
+        ],200);
     }
 }

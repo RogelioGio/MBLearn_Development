@@ -4,13 +4,56 @@ import { Helmet } from "react-helmet"
 import axiosClient from "../axios-client"
 import { act, useEffect, useRef, useState } from "react"
 import Learner from "../modalsandprops/LearnerEnroleeEntryProps"
+import EnrollmentTableProps from "../modalsandprops/EnrollmentTableProps"
+import AssignedCourseEnrollmentCard from "../modalsandprops/AssignedCourseEnrollmentCard"
+
+const assigned_courses = [
+    {name: "Effective Communication Skills in the Workplace", courseType:"Soft Skill Training", courseCategory:"Personal Development", duration: "2 Weeks", method: "Asynchronous"},
+    {name: "Time Management and Productivity Hacks", courseType:"Soft Skill Training", courseCategory:"Personal Development", duration: "1 Weeks", method: "Online Training"},
+]
 
 export default function BulkEnrollment() {
 
     const [learners, setLearners] = useState([]); //List all learners
     const [selected, setSelected] = useState({}); //Select learner to ernoll
-    const [course, selectCourse] = useState("course1"); //Select course to enroll
+    const [course, selectCourse] = useState(assigned_courses[0].name); //Select course to enroll
+    const [isLoading, setLoading] = useState(true); //Loading state
     const selectAll = useRef(false) //select all learners
+
+    //Pagenation States
+    const [pageState, setPagination] = useState({
+        currentPage: 1,
+        perPage:5,
+        totalUser: 0,
+        lastPage: 1
+    })
+
+    //Pagination Change State
+    const pageChangeState = (key, value) => {
+        setPagination((prev) => ({
+            ...prev,
+            [key]: value
+        }))
+    }
+
+    //Next and Previous Page
+    const back = () => {
+        if (pageState.currentPage > 1){
+            pageChangeState("currentPage", pageState.currentPage - 1)
+        }
+    }
+    const next = () => {
+        if (pageState.currentPage < pageState.lastPage){
+            pageChangeState("currentPage", pageState.currentPage + 1)
+        }
+    }
+
+    //Page Navigation
+    const pageChange = (page) => {
+        if(page > 0 && page <= pageState.lastPage){
+            pageChangeState("currentPage", page)
+        }
+    }
 
     //Handle course change
     const handleCourseChange = (Course) => {
@@ -83,11 +126,28 @@ export default function BulkEnrollment() {
 
     //Fetch Learners
     useEffect(() =>{
-        axiosClient.get('/index-user/enrolees')
-        .then(({data}) => setLearners(data))
+        setLoading(true)
+        axiosClient.get('/index-user/enrolees',{
+            params: {
+                page: pageState.currentPage,
+                perPage: pageState.perPage
+            }
+        })
+        .then(({data}) => {
+            setLearners(data.data)
+            pageChangeState('totalUser', data.total)
+            pageChangeState('lastPage', data.lastPage)
+            setLoading(false)
+        })
         .catch((err) => console.log(err))
-    },[]);
+    },[pageState.currentPage, pageState.perPage]);
 
+
+    // Dynamic Page Number
+    const Pages = [];
+    for(let p = 1; p <= pageState.lastPage; p++){
+        Pages.push(p)
+    }
 
     return (
         <div className='grid grid-cols-4 grid-rows-[6.25rem_min-content_auto_auto_3.75rem] h-full w-full'>
@@ -120,52 +180,21 @@ export default function BulkEnrollment() {
             <div className="col-start-4 row-start-3 row-span-3 mb-5 border-l border-divider">
                 {/* Course Props */}
                 <div className="h-full p-4 flex flex-col gap-2">
-                    <div className={`w-full h-40 p-5 grid  grid-cols-[auto_3.75rem] border border-divider rounded-md font-text shadow-md hover:cursor-pointer hover:scale-105 transition-all ease-in-out ${course === "course1" ? 'bg-primary text-white' : 'bg-white text-primary'}`}
-                        onClick={() => handleCourseChange("course1")}>
-                        {/* Course Header */}
-                        <div className="col-span-2">
-                            <h1 className="text-sm font-header mb-2">Effective Communication Skills in the Workplace</h1>
-                            <p className="text-xs">Soft Skills Training - Personal Development</p>
-                        </div>
-
-                        {/* Duration & Training Method */}
-                        <div className="flex flex-col gap-0.5 text-xs row-start-2 items-start justify-end">
-                            <p>2 Weeks</p>
-                            <p>Asynchronous</p>
-                        </div>
-
-                        <div className="flex items-end justify-end">
-                            {
-                                selected["course1"] && selected["course1"].length > 0 &&
-                                <div className=" bg-[#1664C0] rounded-full text-white flex items-center justify-center aspect-square w-8">
-                                    <p className="text-s">{numberOfEnrollees("course1")}</p>
-                                </div>
-                            }
-                        </div>
-                    </div>
-                    <div className= {`w-full h-40 p-5 grid  grid-cols-[auto_3.75rem] border border-divider rounded-md font-text shadow-md hover:cursor-pointer hover:scale-105 transition-all ease-in-out ${course === "course2" ? 'bg-primary text-white' : 'bg-white text-primary'}`}
-                        onClick={() => handleCourseChange("course2")}>
-                        {/* Course Header */}
-                        <div className="col-span-2">
-                            <h1 className="text-sm font-header mb-2">Time Management and Productivity Hacks</h1>
-                            <p className="text-xs">Soft Skills Training - Personal Development</p>
-                        </div>
-
-                        {/* Duration & Training Method */}
-                        <div className="flex flex-col gap-0.5 text-xs row-start-2 items-start justify-end">
-                            <p>1 Week</p>
-                            <p>Online Training (Asynchonous)</p>
-                        </div>
-
-                        <div className="flex items-end justify-end">
-                            {
-                                selected["course2"] && selected["course2"].length > 0 &&
-                                <div className=" bg-[#1664C0] rounded-full text-white flex items-center justify-center aspect-square w-8">
-                                    <p className="text-s">{numberOfEnrollees("course2")}</p>
-                                </div>
-                            }
-                        </div>
-                    </div>
+                    {
+                        assigned_courses.map((Course) => (
+                            <AssignedCourseEnrollmentCard
+                                key={Course.name}
+                                name={Course.name}
+                                coursetype={Course.courseType}
+                                coursecategory={Course.courseCategory}
+                                duration={Course.duration}
+                                trainingmode={Course.method}
+                                course={course}
+                                selected={selected}
+                                onclick={() => handleCourseChange(Course.name)}
+                                numberOfEnrollees={numberOfEnrollees}/>
+                        ))
+                    }
                 </div>
             </div>
 
@@ -186,144 +215,28 @@ export default function BulkEnrollment() {
                 </button>
             </div>
 
-            {/* User table */}
+            {/* Learner table */}
             {
-                course === "course1" &&
-                <div className='row-start-3 row-span-2 col-start-1 col-span-3 px-5 py-2'>
-                    <div className='w-full border-primary border rounded-md overflow-hidden shadow-md'>
-                    <table className='text-left w-full overflow-y-scroll'>
-                        <thead className='font-header text-xs text-primary bg-secondaryprimary'>
-                            <tr>
-                                <th className='py-4 px-4 flex flex-row gap-4'>
-                                    {/* Checkbox */}
-                                    <div className="group grid size-4 grid-cols-1">
-                                        <input type="checkbox"
-                                            className="col-start-1 row-start-1 appearance-none border border-primary rounded checked:border-primary checked:bg-primary indeterminate:bg-primary focus:ring-2 focus:ring-primary focus:outline-none focus:ring-offset-1"
-                                            ref={selectAll}
-                                            onChange={() => handleSelectAll(course)}
-                                            />
-                                        {/* Custom Checkbox styling */}
-                                        <svg fill="none" viewBox="0 0 14 14" className="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-[:disabled]:stroke-gray-950/25">
-                                            {/* Checked */}
-                                            <path
-                                                d="M3 8L6 11L11 3.5"
-                                                strokeWidth={2}
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                className="opacity-0 group-has-[:checked]:opacity-100"
-                                            />
-                                            {/* Indeterminate */}
-                                            <path
-                                                d="M3 7H11"
-                                                strokeWidth={2}
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                className="opacity-0 group-has-[:indeterminate]:opacity-100"
-                                                />
-                                        </svg>
-                                    </div>
-                                    <p>EMPLOYEE NAME</p>
-                                </th>
-                                <th className='py-4 px-4'>DEPARTMENT</th>
-                                <th className='py-4 px-4'>BRANCH</th>
-                            </tr>
-                        </thead>
-                        <tbody className='bg-white divide-y divide-divider'>
-                            {/* <tr>
-                                <td colSpan="5">
-                                    <div className="p-5 text-center font-text text-unactive">
-                                        <p>Please choose a course to select employee to enroll</p>
-                                    </div>
-                                </td>
-                            </tr> */}
-                            {
-                                learners.map((learner)=>(
-                                    <Learner
-                                        key={learner.id}
-                                        profile_image={learner.profile_image}
-                                        name={learner.name}
-                                        employeeID={learner.employeeID}
-                                        department={learner.department}
-                                        title={learner.title}
-                                        branch={learner.branch}
-                                        city={learner.city}
-                                        selectedUser={selected[course] || []}
-                                        handleCheckbox={handleCheckbox}/>
-                                ))
-                            }
-                        </tbody>
-                    </table>
-                    </div>
-                </div>
-            }
-            {
-                course === "course2" &&
-                <div className='row-start-3 row-span-2 col-start-1 col-span-3 px-5 py-2'>
-                    <div className='w-full border-primary border rounded-md overflow-hidden shadow-md'>
-                    <table className='text-left w-full overflow-y-scroll'>
-                        <thead className='font-header text-xs text-primary bg-secondaryprimary'>
-                            <tr>
-                                <th className='py-4 px-4 flex flex-row gap-4'>
-                                    {/* Checkbox */}
-                                    <div className="group grid size-4 grid-cols-1">
-                                        <input type="checkbox"
-                                            className="col-start-1 row-start-1 appearance-none border border-primary rounded checked:border-primary checked:bg-primary indeterminate:bg-primary focus:ring-2 focus:ring-primary focus:outline-none focus:ring-offset-1"
-                                            ref={selectAll}
-                                            onChange={() => handleSelectAll(course)}
-                                            />
-                                        {/* Custom Checkbox styling */}
-                                        <svg fill="none" viewBox="0 0 14 14" className="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-[:disabled]:stroke-gray-950/25">
-                                            {/* Checked */}
-                                            <path
-                                                d="M3 8L6 11L11 3.5"
-                                                strokeWidth={2}
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                className="opacity-0 group-has-[:checked]:opacity-100"
-                                            />
-                                            {/* Indeterminate */}
-                                            <path
-                                                d="M3 7H11"
-                                                strokeWidth={2}
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                className="opacity-0 group-has-[:indeterminate]:opacity-100"
-                                                />
-                                        </svg>
-                                    </div>
-                                    <p>EMPLOYEE NAME</p>
-                                </th>
-                                <th className='py-4 px-4'>DEPARTMENT</th>
-                                <th className='py-4 px-4'>BRANCH</th>
-                            </tr>
-                        </thead>
-                        <tbody className='bg-white divide-y divide-divider'>
-                            {/* <tr>
-                                <td colSpan="5">
-                                    <div className="p-5 text-center font-text text-unactive">
-                                        <p>Please choose a course to select employee to enroll</p>
-                                    </div>
-                                </td>
-                            </tr> */}
-                            {
-                                learners.map((learner)=>(
-                                    <Learner
-                                        key={learner.id}
-                                        profile_image={learner.profile_image}
-                                        name={learner.name}
-                                        employeeID={learner.employeeID}
-                                        department={learner.department}
-                                        title={learner.title}
-                                        branch={learner.branch}
-                                        city={learner.city}
-                                        selectedUser={selected[course] || []}
-                                        handleCheckbox={handleCheckbox}/>
-                                ))
-                            }
-                        </tbody>
-                    </table>
-                    </div>
-                </div>
+                assigned_courses.map((Course) => (
+                    course === Course.name ? (
+                    <EnrollmentTableProps selectAll={selectAll} onchange={handleSelectAll} course={Course.name} key={Course.name}>
+                        {
+                            learners.map((learner)=>(
+                                <Learner
+                                    key={learner.id}
+                                    profile_image={learner.profile_image}
+                                    name={learner.name}
+                                    employeeID={learner.employeeID}
+                                    department={learner.department}
+                                    title={learner.title}
+                                    branch={learner.branch}
+                                    city={learner.city}
+                                    selectedUser={selected[course] || []}
+                                    handleCheckbox={handleCheckbox}/>
+                            ))
+                        }
+                    </EnrollmentTableProps>) : (null)
+                ))
             }
 
             {/* User Pagination */}
@@ -339,12 +252,13 @@ export default function BulkEnrollment() {
                     <nav className='isolate inline-flex -space-x-px round-md shadow-xs'>
                         {/* Previous */}
                         <a href="#"
+                            onClick={back}
                             className='relative inline-flex items-center rounded-l-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
                             <FontAwesomeIcon icon={faChevronLeft}/>
                         </a>
 
                         {/* Current Page & Dynamic Paging */}
-                        {/* {Pages.map((page)=>(
+                        {Pages.map((page)=>(
                             <a href="#"
                                 key={page}
                                 className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset
@@ -355,9 +269,11 @@ export default function BulkEnrollment() {
                                     } transition-all ease-in-out`}
                                     onClick={() => pageChange(page)}>
                                 {page}</a>
-                        ))} */}
+                        ))}
 
+                        {/* Next */}
                         <a href="#"
+                            onClick={next}
                             className='relative inline-flex items-center rounded-r-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
                             <FontAwesomeIcon icon={faChevronRight}/>
                         </a>
