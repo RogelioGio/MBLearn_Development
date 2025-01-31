@@ -2,32 +2,96 @@ import { faChevronLeft, faChevronRight, faFilter, faSearch, faUserPlus } from "@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Helmet } from "react-helmet"
 import axiosClient from "../axios-client"
-import { useEffect, useRef, useState } from "react"
+import { act, useEffect, useRef, useState } from "react"
 import Learner from "../modalsandprops/LearnerEnroleeEntryProps"
+import EnrollmentTableProps from "../modalsandprops/EnrollmentTableProps"
+import AssignedCourseEnrollmentCard from "../modalsandprops/AssignedCourseEnrollmentCard"
+
+const assigned_courses = [
+    {name: "Effective Communication Skills in the Workplace", courseType:"Soft Skill Training", courseCategory:"Personal Development", duration: "2 Weeks", method: "Asynchronous"},
+    {name: "Time Management and Productivity Hacks", courseType:"Soft Skill Training", courseCategory:"Personal Development", duration: "1 Weeks", method: "Online Training"},
+]
 
 export default function BulkEnrollment() {
 
     const [learners, setLearners] = useState([]); //List all learners
-    const [selected, setSelected] = useState([]); //Select learner to ernoll
+    const [selected, setSelected] = useState({}); //Select learner to ernoll
+    const [course, selectCourse] = useState(assigned_courses[0].name); //Select course to enroll
+    const [isLoading, setLoading] = useState(true); //Loading state
     const selectAll = useRef(false) //select all learners
+
+    //Pagenation States
+    const [pageState, setPagination] = useState({
+        currentPage: 1,
+        perPage:5,
+        totalUser: 0,
+        lastPage: 1
+    })
+
+    //Pagination Change State
+    const pageChangeState = (key, value) => {
+        setPagination((prev) => ({
+            ...prev,
+            [key]: value
+        }))
+    }
+
+    //Next and Previous Page
+    const back = () => {
+        if (pageState.currentPage > 1){
+            pageChangeState("currentPage", pageState.currentPage - 1)
+        }
+    }
+    const next = () => {
+        if (pageState.currentPage < pageState.lastPage){
+            pageChangeState("currentPage", pageState.currentPage + 1)
+        }
+    }
+
+    //Page Navigation
+    const pageChange = (page) => {
+        if(page > 0 && page <= pageState.lastPage){
+            pageChangeState("currentPage", page)
+        }
+    }
+
+    //Handle course change
+    const handleCourseChange = (Course) => {
+        selectCourse(Course);
+    }
 
     //Learner to enroll
     const handleCheckbox = (employeeID) => {
         setSelected((prevUsers) => {
-            if(prevUsers.includes(employeeID)){
-                return prevUsers.filter((user) => user !== employeeID);
+
+            const currentCourse = prevUsers[course] || [];
+
+            if(currentCourse.includes(employeeID)){
+                return {...prevUsers,
+                        [course]: currentCourse.filter((user) => user !== employeeID)}
             } else {
-                return [...prevUsers, employeeID];
+                return {
+                    ...prevUsers,
+                    [course]: [...currentCourse, employeeID]
+                }
             }
         });
     };
 
     //Select All Learners
-    const handleSelectAll = () => {
-        if(selected.length === learners.length){
-            setSelected([]);
+    const handleSelectAll = (Course) => {
+        if(selected[Course] && selected[Course].length === learners.length){
+            setSelected((prevUsers) => {
+                const newUsers = {... prevUsers};
+                newUsers[Course] = [];
+                return newUsers;
+            })
         } else {
-            setSelected(learners.map((enrollees) => enrollees.employeeID));
+            setSelected((prevUsers) => {
+                const newUsers = {... prevUsers};
+                newUsers[Course] = learners.map((user) => user.employeeID);
+                return newUsers;
+            });
         }
     }
 
@@ -35,21 +99,24 @@ export default function BulkEnrollment() {
     useEffect(() => {
         if(!selectAll.current) return;
 
-        if(selected.length === learners.length && learners.length > 0){
+        const courseLearners = learners.map((user) => user.employeeID);
+        const selectedLearners = selected[course] || [];
+
+        if(courseLearners.length === selectedLearners.length && courseLearners.length > 0){
             selectAll.current.indeterminate = false;
             selectAll.current.checked = true;
-        } else if(selected.length > 0){
+        } else if(selectedLearners.length > 0){
             selectAll.current.indeterminate = true;
         } else {
             selectAll.current.indeterminate = false;
             selectAll.current.checked = false;
 
         }
-    },[selected, learners]);
+    },[selected, learners, course]);
 
     //Number of enrollees
-    const numberOfEnrollees = () => {
-        return selected.length;
+    const numberOfEnrollees = (Course) => {
+        return selected[Course].length ? selected[Course].length : 0;
     }
 
     //handle ernollment
@@ -59,11 +126,28 @@ export default function BulkEnrollment() {
 
     //Fetch Learners
     useEffect(() =>{
-        axiosClient.get('/index-user/enrolees')
-        .then(({data}) => setLearners(data))
+        setLoading(true)
+        axiosClient.get('/index-user/enrolees',{
+            params: {
+                page: pageState.currentPage,
+                perPage: pageState.perPage
+            }
+        })
+        .then(({data}) => {
+            setLearners(data.data)
+            pageChangeState('totalUser', data.total)
+            pageChangeState('lastPage', data.lastPage)
+            setLoading(false)
+        })
         .catch((err) => console.log(err))
-    },[]);
+    },[pageState.currentPage, pageState.perPage]);
 
+
+    // Dynamic Page Number
+    const Pages = [];
+    for(let p = 1; p <= pageState.lastPage; p++){
+        Pages.push(p)
+    }
 
     return (
         <div className='grid grid-cols-4 grid-rows-[6.25rem_min-content_auto_auto_3.75rem] h-full w-full'>
@@ -96,17 +180,21 @@ export default function BulkEnrollment() {
             <div className="col-start-4 row-start-3 row-span-3 mb-5 border-l border-divider">
                 {/* Course Props */}
                 <div className="h-full p-4 flex flex-col gap-2">
-                    <div className="w-full py-5 px-4 border border-divider bg-primary rounded-md font-text text-white text-center shadow-md hover:cursor-pointer hover:scale-105 transition-all ease-in-out">
-                    Effective Communication Skills in the Workplace
-Soft Skills Training-Personal Development
-Duration:
-2 weeks
-Asynchronous
-                        <p>{selected.length > 0 && <p>{numberOfEnrollees()}</p>}</p>
-                    </div>
-                    <div className="w-full py-5 px-4 border border-divider bg-white rounded-md font-text text-primary text-center shadow-md hover:cursor-pointer hover:scale-105 transition-all ease-in-out">
-                        sample course card
-                    </div>
+                    {
+                        assigned_courses.map((Course) => (
+                            <AssignedCourseEnrollmentCard
+                                key={Course.name}
+                                name={Course.name}
+                                coursetype={Course.courseType}
+                                coursecategory={Course.courseCategory}
+                                duration={Course.duration}
+                                trainingmode={Course.method}
+                                course={course}
+                                selected={selected}
+                                onclick={() => handleCourseChange(Course.name)}
+                                numberOfEnrollees={numberOfEnrollees}/>
+                        ))
+                    }
                 </div>
             </div>
 
@@ -127,54 +215,11 @@ Asynchronous
                 </button>
             </div>
 
-            {/* User table */}
-            <div className='row-start-3 row-span-2 col-start-1 col-span-3 px-5 py-2'>
-                <div className='w-full border-primary border rounded-md overflow-hidden shadow-md'>
-                <table className='text-left w-full overflow-y-scroll'>
-                    <thead className='font-header text-xs text-primary bg-secondaryprimary'>
-                        <tr>
-                            <th className='py-4 px-4 flex flex-row gap-4'>
-                                {/* Checkbox */}
-                                <div className="group grid size-4 grid-cols-1">
-                                    <input type="checkbox"
-                                        className="col-start-1 row-start-1 appearance-none border border-primary rounded checked:border-primary checked:bg-primary indeterminate:bg-primary focus:ring-2 focus:ring-primary focus:outline-none focus:ring-offset-1"
-                                        ref={selectAll}
-                                        onChange={handleSelectAll}
-                                        />
-                                    {/* Custom Checkbox styling */}
-                                    <svg fill="none" viewBox="0 0 14 14" className="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-[:disabled]:stroke-gray-950/25">
-                                        {/* Checked */}
-                                        <path
-                                            d="M3 8L6 11L11 3.5"
-                                            strokeWidth={2}
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            className="opacity-0 group-has-[:checked]:opacity-100"
-                                        />
-                                        {/* Indeterminate */}
-                                        <path
-                                            d="M3 7H11"
-                                            strokeWidth={2}
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            className="opacity-0 group-has-[:indeterminate]:opacity-100"
-                                            />
-                                    </svg>
-                                </div>
-                                <p>EMPLOYEE NAME</p>
-                            </th>
-                            <th className='py-4 px-4'>DEPARTMENT</th>
-                            <th className='py-4 px-4'>BRANCH</th>
-                        </tr>
-                    </thead>
-                    <tbody className='bg-white divide-y divide-divider'>
-                        {/* <tr>
-                            <td colSpan="5">
-                                <div className="p-5 text-center font-text text-unactive">
-                                    <p>Please choose a course to select employee to enroll</p>
-                                </div>
-                            </td>
-                        </tr> */}
+            {/* Learner table */}
+            {
+                assigned_courses.map((Course) => (
+                    course === Course.name ? (
+                    <EnrollmentTableProps selectAll={selectAll} onchange={handleSelectAll} course={Course.name} key={Course.name}>
                         {
                             learners.map((learner)=>(
                                 <Learner
@@ -186,14 +231,13 @@ Asynchronous
                                     title={learner.title}
                                     branch={learner.branch}
                                     city={learner.city}
-                                    selectedUser={selected}
+                                    selectedUser={selected[course] || []}
                                     handleCheckbox={handleCheckbox}/>
                             ))
                         }
-                    </tbody>
-                </table>
-                </div>
-            </div>
+                    </EnrollmentTableProps>) : (null)
+                ))
+            }
 
             {/* User Pagination */}
             <div className='row-start-5 row-span-1 col-start-1 col-span-3 border-t border-divider mx-5 flex flex-row items-center justify-between'>
@@ -208,12 +252,13 @@ Asynchronous
                     <nav className='isolate inline-flex -space-x-px round-md shadow-xs'>
                         {/* Previous */}
                         <a href="#"
+                            onClick={back}
                             className='relative inline-flex items-center rounded-l-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
                             <FontAwesomeIcon icon={faChevronLeft}/>
                         </a>
 
                         {/* Current Page & Dynamic Paging */}
-                        {/* {Pages.map((page)=>(
+                        {Pages.map((page)=>(
                             <a href="#"
                                 key={page}
                                 className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset
@@ -224,9 +269,11 @@ Asynchronous
                                     } transition-all ease-in-out`}
                                     onClick={() => pageChange(page)}>
                                 {page}</a>
-                        ))} */}
+                        ))}
 
+                        {/* Next */}
                         <a href="#"
+                            onClick={next}
                             className='relative inline-flex items-center rounded-r-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
                             <FontAwesomeIcon icon={faChevronRight}/>
                         </a>

@@ -1,6 +1,5 @@
 import { createContext, useContext, useState } from "react";
 import axiosClient from "../axios-client";
-import { useEffect } from "react";
 
 const StateContext = createContext({
     user: null,
@@ -22,9 +21,7 @@ export const ContextProvider = ({ children }) => {
     const [role, setRole] = useState('');
     const [employeeID, setEmployeeID] = useState('');
     const [profile_image, setProfile] = useState('');
-    const [tokenTimeoutId, setTokenTimeoutId] = useState(null);
 
-    // for Authentication and PageLoading token in logging in
     const setToken = (token) => {
 
         _setToken(token);
