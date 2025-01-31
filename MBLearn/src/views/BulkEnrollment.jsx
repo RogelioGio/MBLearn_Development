@@ -25,8 +25,11 @@ export default function BulkEnrollment() {
         currentPage: 1,
         perPage:5,
         totalUser: 0,
-        lastPage: 1
+        lastPage: 1,
+        startNumber: 0,
+        endNumber: 0,
     })
+
 
     //Pagination Change State
     const pageChangeState = (key, value) => {
@@ -40,11 +43,13 @@ export default function BulkEnrollment() {
     const back = () => {
         if (pageState.currentPage > 1){
             pageChangeState("currentPage", pageState.currentPage - 1)
+            pageChangeState("startNumber", pageState.perPage - 4)
         }
     }
     const next = () => {
         if (pageState.currentPage < pageState.lastPage){
             pageChangeState("currentPage", pageState.currentPage + 1)
+
         }
     }
 
@@ -137,10 +142,15 @@ export default function BulkEnrollment() {
             setLearners(data.data)
             pageChangeState('totalUser', data.total)
             pageChangeState('lastPage', data.lastPage)
+            pageChangeState('currentPerPage', data.data.length)
             setLoading(false)
         })
         .catch((err) => console.log(err))
     },[pageState.currentPage, pageState.perPage]);
+    useEffect(() => {
+        pageChangeState('startNumber', (pageState.currentPage - 1) * pageState.perPage + 1)
+        pageChangeState('endNumber', Math.min(pageState.currentPage * pageState.perPage, pageState.totalUser))
+    },[pageState.currentPerPage])
 
 
     // Dynamic Page Number
@@ -244,7 +254,7 @@ export default function BulkEnrollment() {
                 {/* Total number of entries and only be shown */}
                 <div>
                     <p className='text-sm font-text text-unactive'>
-                        Showing <span className='font-header text-primary'>1</span> to <span className='font-header text-primary'>31</span> of <span className='font-header text-primary'>43</span> <span className='text-primary'>results</span>
+                        Showing <span className='font-header text-primary'>{pageState.startNumber}</span> to <span className='font-header text-primary'>{pageState.endNumber}</span> of <span className='font-header text-primary'>{pageState.totalUser}</span> <span className='text-primary'>results</span>
                     </p>
                 </div>
                 {/* Paganation */}
