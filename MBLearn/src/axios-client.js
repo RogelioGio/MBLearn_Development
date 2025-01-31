@@ -11,7 +11,7 @@ axiosClient.interceptors.request.use(
 
         //User Inactivity handling
         const lastActivity = localStorage.getItem('LAST_ACTIVITY');
-        const inactivityTime = 10*60*1000;
+        const inactivityTime = 5*60*60*1000;
 
         if(lastActivity && Date.now() - lastActivity > inactivityTime){
             localStorage.removeItem('ACCESS_TOKEN');

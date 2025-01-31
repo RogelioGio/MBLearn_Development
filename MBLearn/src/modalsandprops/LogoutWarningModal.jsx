@@ -4,33 +4,9 @@ import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import { useEffect, useState } from "react";
 
 
-const LogoutWarningmModal = ({open,close,handleLogout}) => {
-    const [countdown, setCountdown] = useState(10);
-    const [timer, setTimer] = useState(null);
-
-    useEffect(() => {
-        if(open){
-            const interval = setInterval(() => {
-                setCountdown(prev => {
-                    if(prev === 1){
-                        handleLogout();
-                        clearInterval(interval);
-                        return 0
-                    }
-                    return prev - 1;
-                });
-            },1000);
-
-            setTimer(interval);
-
-            return () => {
-                clearInterval(interval);
-            }
-        }
-    },[open,handleLogout])
-
+const LogoutWarningmModal = ({open,close}) => {
     return (
-        <Dialog open={open} onClose={close}>
+        <Dialog open={open} onClose={()=>{}}>
             <DialogBackdrop transition className="fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in" />
                 <div className='fixed inset-0 z-10 w-screen overflow-y-auto'>
                     <div className='flex min-h-full items-center justify-center p-4 text center'>

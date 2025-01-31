@@ -19,7 +19,10 @@ export default function DefaultLayout() {
         localStorage.removeItem('ACCESS_TOKEN');
         localStorage.removeItem('LAST_ACTIVITY');
         localStorage.removeItem("SESSION_CLOSED_AT");
-        navigate('/login');
+
+        setTimeout(() => {
+            navigate('/login');
+        },300)
     };
 
     const update = () => {
@@ -32,7 +35,7 @@ export default function DefaultLayout() {
         if(!token) return;
         if(loading) return;
 
-        const inactivityTime = 10*1000;
+        const inactivityTime = 5*60*60*1000;
         let timeout;
 
         //Check userEvents
@@ -41,12 +44,12 @@ export default function DefaultLayout() {
             if(lastActivity && Date.now() - lastActivity > inactivityTime){
                 setWarning(true)
             } else {
-                timeout = setTimeout(checkInactivity, inactivityTime);
+                timeout = setTimeout(()=> {checkInactivity()}, 30*60*1000);
             }
         }
 
         //Event Listeners
-        const events = ['mousemove', 'mousedown', 'click', 'scroll', 'keypress'];
+        const events = ['mousemove', 'click', 'scroll', 'keypress'];
         events.forEach(event => window.addEventListener(event, update));
 
         const handleBeforeUnload = () => {
@@ -55,7 +58,7 @@ export default function DefaultLayout() {
         window.addEventListener('beforeunload', handleBeforeUnload);
 
         //Actvity checks
-        timeout = setTimeout(checkInactivity, inactivityTime);
+        timeout = setTimeout(checkInactivity, 30*60*1000);
 
         return () => {
             clearTimeout(timeout);
@@ -76,6 +79,8 @@ export default function DefaultLayout() {
         }
     },[token])
 
+    //countdown to logout after closing the modal
+
     //fetching the logged in user
     useEffect(() => {
         axiosClient
@@ -95,6 +100,11 @@ export default function DefaultLayout() {
         })
     },[setUser, setRole])
 
+    //WarningModal
+    const close = () => {
+        setWarning(false);
+        setTimeout(logout(), 1000)
+    }
 
     // Function to check if the user is logged in
         if(!token){
@@ -117,7 +127,7 @@ export default function DefaultLayout() {
             <Outlet />
 
             {/* Logout warning */}
-            <LogoutWarningmModal open={warning} close={logout} handleLogout={logout}/>
+            <LogoutWarningmModal open={warning} close={close}/>
         </div>
     )
 
