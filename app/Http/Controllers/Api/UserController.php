@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CourseResource;
+use App\Models\Enrollment;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -35,41 +37,51 @@ class UserController extends Controller
     }
 
     public function index()
-{
-    // Return a list of all users
-    return response()->json(User::all());
-}
+    {
+        // Return a list of all users
+        return response()->json(User::all());
+    }
 
     //delete
     public function deleteUser($id)
-{
-    // Find the user by id
-    $user = User::find($id);
+    {
+        // Find the user by id
+        $user = User::find($id);
 
-    // Check if the user exists
-    if (!$user) {
+        // Check if the user exists
+        if (!$user) {
+            return response()->json([
+                'message' => 'User not found',
+            ], 404);
+        }
+
+        // Delete the user
+        $user->delete();
+
+        // Return a success response
         return response()->json([
-            'message' => 'User not found',
-        ], 404);
+            'message' => 'User deleted successfully!',
+        ], 200);
     }
-
-    // Delete the user
-    $user->delete();
-
-    // Return a success response
-    return response()->json([
-        'message' => 'User deleted successfully!',
-    ], 200);
-}
 
     //Truncate
     public function resetUsers()
-{
-    // Truncate the users table
-    DB::table('users')->truncate();
+    {
+        // Truncate the users table
+        DB::table('users')->truncate();
 
-    return response()->json([
-        'message' => 'Users table truncated and auto-increment reset.'
-    ]);
-}
+        return response()->json([
+            'message' => 'Users table truncated and auto-increment reset.'
+        ]);
+    }
+
+    //Subject to change ung request
+    public function showEnrolledCourses(Request $request){
+        $enrollments = Enrollment::query()->where('user_id', $request->userId)->get();
+        $courses = [];
+        foreach($enrollments as $enrollment){
+            $courses[] = $enrollment->Course;
+        }
+        return CourseResource::collection($courses);
+    }
 }
