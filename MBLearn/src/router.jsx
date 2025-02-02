@@ -14,7 +14,7 @@ import SystemConfiguration from "./views/SystemConfigurationMaintenance";
 import ActivityLog from "./views/ActivityLog";
 import SystemLevelReports from "./views/SystemLevelReports";
 import BulkEnrollment from "./views/BulkEnrollment";
-
+import ProtectedRoutes from "./ProtectedRoutes";
 
 const router = createBrowserRouter([
 
@@ -25,7 +25,7 @@ const router = createBrowserRouter([
         children: [
             {
                 path: "/systemadmin",
-                element: <SystemAdmin/>,
+                element: <ProtectedRoutes allowed={["System Admin"]}/>,
                 children: [
                     {
                         path: "/systemadmin",
@@ -63,7 +63,7 @@ const router = createBrowserRouter([
             },
             {
                 path:"/courseadmin",
-                element: <CourseAdmin/>,
+                element: <ProtectedRoutes allowed={["Course Admin"]}/>,
                 children: [
                     {
                         path: "/courseadmin",
