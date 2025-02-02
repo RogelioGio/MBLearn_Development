@@ -4,9 +4,8 @@ import Small_Logo from '../assets/Small_Logo.svg'
 import axiosClient from '../axios-client';
 import { useEffect, useState } from 'react';
 import { useStateContext } from '../contexts/ContextProvider';
-import { Link, Links, NavLink, useNavigate } from 'react-router-dom';
+import { Link, Links, Navigate, NavLink, useNavigate } from 'react-router-dom';
 import { use } from 'react';
-
 //Icon props
 const Icons = ({icon, text, to}) => (
     <NavLink to={to} className={({isActive}) => isActive ? 'icon_active':'_icon'}>
@@ -53,19 +52,50 @@ const navItems = {
 }
 
 //Profile Menu per role
-const profileItems = {
-    "System Admin": [
-        {text:"Login as Course Admin", icon:faBookOpenReader},
-        {text:"Login as Learner", icon:faGraduationCap}
-    ],
-    "Course Admin": [
-        {text:"Login as Learner", icon:faGraduationCap}
-    ]
-}
+
 
 export default function Navigation() {
 
-    const {user, profile_image, setUser, setToken} = useStateContext();
+    const {user, profile_image, role, setUser, setToken, setRole} = useStateContext();
+    const navigate = useNavigate();
+
+    const profileItems = {
+        "System Admin": [
+            {text:"Login as Course Admin", icon:faBookOpenReader, onclick:()=>handleRoleSwtiching('Course Admin')},
+            {text:"Login as Learner", icon:faGraduationCap}
+        ],
+        "Course Admin": [
+            {text:"Login as Learner", icon:faGraduationCap}
+        ]
+    };
+
+
+    //Role Switching
+    const handleRoleSwtiching = (newRole) => {
+        if(!localStorage.getItem("ORIGINAL_ROLE")){
+            localStorage.setItem("ORIGINAL_ROLE", role);
+        }
+
+        setRole(newRole);
+        navigate(`/${newRole.toLowerCase().replace(" ","")}/dashboard`);
+    };
+
+    //Backtrack Function
+    if(role !== "System Admin" && localStorage.getItem("ORIGINAL_ROLE") === "System Admin"){
+        profileItems[role] = [
+            ...(profileItems[role] || []),
+            {text: "Return to System Admin", icon: faUser, onclick: () => switchBackToAdmin()}
+        ]
+    }
+
+    const switchBackToAdmin = () => {
+        const originalRole = localStorage.getItem("ORIGINAL_ROLE");
+        if (originalRole) {
+            setRole(originalRole);
+            localStorage.removeItem("ORIGINAL_ROLE"); // Remove stored role after switching back
+            navigate("/systemadmin/dashboard");
+        }
+    };
 
     //fethcing user profile
     // useEffect(() => {
@@ -78,8 +108,8 @@ export default function Navigation() {
 
 
     //Role-based Navigation
-    const Items = navItems[user.role] || [];
-    const PItems = profileItems[user.role] || [];
+    const Items = navItems[role] || [];
+    const PItems = profileItems[role] || [];
 
     //Logout Function
     // const onLogout = () => {
@@ -99,7 +129,7 @@ export default function Navigation() {
             console.error(e);
         }
     }
-
+    console.log(role)
 
 
     return (
@@ -129,7 +159,7 @@ export default function Navigation() {
                                 {
                                     PItems.map((role, index) => (
                                         <li key={index}>
-                                            <ProfileIcons text={role.text} icon={<FontAwesomeIcon icon={role.icon}/>}/>
+                                            <ProfileIcons text={role.text} icon={<FontAwesomeIcon icon={role.icon}/>} onClick={role.onclick}/>
                                         </li>
                                     ))
                                 }

@@ -9,7 +9,7 @@ const ProtectedRoutes = ({allowed}) => {
     }
 
     if(!allowed.includes(user.role)){
-        return <Navigate to="/404-not-found" replace/>;
+        return <Navigate to="/unauthorized" replace/>;
     }
 
     return <Outlet/>

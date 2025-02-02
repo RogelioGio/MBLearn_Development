@@ -15,6 +15,7 @@ import ActivityLog from "./views/ActivityLog";
 import SystemLevelReports from "./views/SystemLevelReports";
 import BulkEnrollment from "./views/BulkEnrollment";
 import ProtectedRoutes from "./ProtectedRoutes";
+import Unauthorized from "./views/Unauthorized";
 
 const router = createBrowserRouter([
 
@@ -63,7 +64,7 @@ const router = createBrowserRouter([
             },
             {
                 path:"/courseadmin",
-                element: <ProtectedRoutes allowed={["Course Admin"]}/>,
+                element: <ProtectedRoutes allowed={["System Admin","Course Admin"]}/>,
                 children: [
                     {
                         path: "/courseadmin",
@@ -115,7 +116,11 @@ const router = createBrowserRouter([
         element: <NotFound/>
     },
 
-    //testing routes
+    //Unauthorized route
+    {
+        path: "/unauthorized",
+        element: <Unauthorized/>
+    }
 
 
 

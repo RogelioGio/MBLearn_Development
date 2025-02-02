@@ -87,7 +87,6 @@ export default function DefaultLayout() {
         .get('/user')
         .then(({data})=>{
             setUser(data)
-            setRole(data.role)
 
             axiosClient.get(`/select-employeeid/${data.employeeID}`).then(({data}) => {
                 setProfile(data.data.profile_image);
@@ -98,7 +97,7 @@ export default function DefaultLayout() {
         }).catch((e)=>{
             console.error(e)
         })
-    },[setUser, setRole])
+    },[setUser])
 
     //WarningModal
     const close = () => {

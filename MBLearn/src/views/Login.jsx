@@ -12,7 +12,7 @@ import * as Yup from 'yup'
 
 
 export default function Login() {
-    const {setUser, setToken} = useStateContext();
+    const {setUser, setToken, setAvailableRoles, setRole} = useStateContext();
 
     //loading state
     const [isLoading, setIsLoading] = useState(false);
@@ -71,6 +71,12 @@ export default function Login() {
                     // If no redirect is provided, proceed with whatever default logic you need
                     setIsLoading(false);
                 }
+                let roles = [data.user.role];
+                if(data.user.role === 'System Admin'){
+                    roles = ['System Admin', 'Course Admin', 'Learner'];
+                }
+                setAvailableRoles(roles);
+                setRole(data.user.role);
                 setIsLoading(false);
             })
             .catch(({response})=>{

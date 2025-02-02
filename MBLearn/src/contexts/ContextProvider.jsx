@@ -5,11 +5,13 @@ const StateContext = createContext({
     user: null,
     token: null,
     role: null,
+    availableRoles: [],
     EmployeeID: null,
     profile_image: null,
     setUser: () => {},
     setToken: () => {},
     setRole: () => {},
+    setAvailableRoles: () => {},
     setEmployeeID: () => {},
     setProfile: () => {},
 });
@@ -18,7 +20,8 @@ const StateContext = createContext({
 export const ContextProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [token, _setToken] = useState(localStorage.getItem('ACCESS_TOKEN'));
-    const [role, setRole] = useState('');
+    const [role, _setRole] = useState(localStorage.getItem('USER_ROLE'));
+    const [availableRoles, setAvailableRoles] = useState([]);
     const [employeeID, setEmployeeID] = useState('');
     const [profile_image, setProfile] = useState('');
 
@@ -36,17 +39,32 @@ export const ContextProvider = ({ children }) => {
         }
     };
 
+    const setRole = (role) => {
+        _setRole(role);
+        try{
+            if (role) {
+                localStorage.setItem('USER_ROLE', role)
+            } else{
+                localStorage.removeItem('USER_ROLE')
+            }
+        }catch(e){
+            console.error(e);
+        }
+    }
+
     return(
         //passing information into the layouts and components
         <StateContext.Provider value={{
             user,
             token,
             role,
+            availableRoles,
             employeeID,
             profile_image,
             setUser,
             setToken,
             setRole,
+            setAvailableRoles,
             setEmployeeID,
             setProfile
             }}>
