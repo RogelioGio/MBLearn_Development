@@ -1,7 +1,7 @@
 const UserListLoadingProps = () => {
     return (
         <>
-            {Array(5)
+            {Array(6)
                 .fill(0)
                     .map((_, index) => (
                 <tr key={index} className='font-text text-sm hover:bg-gray-200 z-10'>

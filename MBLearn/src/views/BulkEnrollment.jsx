@@ -29,6 +29,7 @@ export default function BulkEnrollment() {
         lastPage: 1,
         startNumber: 0,
         endNumber: 0,
+        currentPerPage:0
     })
 
 

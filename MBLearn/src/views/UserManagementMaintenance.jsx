@@ -73,9 +73,12 @@ export default function UserManagementMaintenance() {
     //Pagenation States
     const [pageState, setPagination] = useState({
         currentPage: 1,
-        perPage: 5,
+        perPage: 6,
         totalUsers: 0,
         lastPage:1,
+        startNumber: 0,
+        endNumber: 0,
+        currentPerPage:0
     });
 
     const pageChangeState = (key, value) => {
@@ -162,6 +165,10 @@ export default function UserManagementMaintenance() {
             setLoading(false)
         })
     }
+    useEffect(() => {
+        pageChangeState('startNumber', (pageState.currentPage - 1) * pageState.perPage + 1)
+        pageChangeState('endNumber', Math.min(pageState.currentPage * pageState.perPage, pageState.totalUsers))
+    },[pageState.currentPage, pageState.perPage, pageState.totalUsers])
 
     useEffect(()=>{
         fetchUsers()
@@ -169,11 +176,14 @@ export default function UserManagementMaintenance() {
 
     //Next and Previous
     const back = () => {
+        if (isLoading) return;
         if (pageState.currentPage > 1){
             pageChangeState("currentPage", pageState.currentPage - 1)
+            pageChangeState("startNumber", pageState.perPage - 4)
         }
     }
     const next = () => {
+        if (isLoading) return;
         if (pageState.currentPage < pageState.lastPage){
             pageChangeState("currentPage", pageState.currentPage + 1)
         }
@@ -181,6 +191,7 @@ export default function UserManagementMaintenance() {
 
     //Current page change
     const pageChange = (page) => {
+        if(isLoading) return;
         if(page > 0 && page <= pageState.lastPage){
             pageChangeState("currentPage", page)
         }
@@ -281,7 +292,7 @@ export default function UserManagementMaintenance() {
                 {/* Total number of entries and only be shown */}
                 <div>
                     <p className='text-sm font-text text-unactive'>
-                        Showing <span className='font-header text-primary'>1</span> to <span className='font-header text-primary'>{pageState.perPage}</span> of <span className='font-header text-primary'>{pageState.totalUsers}</span> <span className='text-primary'>results</span>
+                        Showing <span className='font-header text-primary'>{pageState.startNumber}</span> to <span className='font-header text-primary'>{pageState.endNumber}</span> of <span className='font-header text-primary'>{pageState.totalUsers}</span> <span className='text-primary'>results</span>
                     </p>
                 </div>
                 {/* Paganation */}

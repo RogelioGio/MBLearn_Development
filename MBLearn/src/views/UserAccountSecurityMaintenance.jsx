@@ -12,6 +12,23 @@ export default function UserAccountSecurityMaintenance(){
     const [isLoading, setIsLoading] = useState(true)
     const [users, setUsers] = useState([]) //Fetching the user list
 
+    const [pageState, setPagination] = useState({
+            currentPage: 1,
+            perPage: 6,
+            totalUsers: 0,
+            lastPage:1,
+            startNumber: 0,
+            endNumber: 0,
+            currentPerPage:0
+        });
+
+        const pageChangeState = (key, value) => {
+            setPagination ((prev) => ({
+                ...prev,
+                [key]: value
+            }))
+        }
+
     useEffect(() => {
         setIsLoading(true)
         axiosClient.get('/index-user-creds')
@@ -23,6 +40,27 @@ export default function UserAccountSecurityMaintenance(){
             setIsLoading(false)
         })
     },[])
+
+    const fetchUsers = () => {
+        setIsLoading(true)
+        axiosClient.get('/index-user-creds',{
+            params: {
+                page: pageState.currentPage,
+                perPage: pageState.currentPage,
+            }
+        }).then(response => {
+            setUsers(response.data.data)
+            pageChangeState("totalUsers",response.data.total)
+            pageChangeState("lastPage", response.data.lastPage)
+            setIsLoading(false)
+        }).catch(err => {
+            console.log(err)
+        })
+    }
+    useEffect(()=>{
+        pageChangeState('startNumber', (pageState.currentPage - 1) * pageState.perPage + 1)
+        pageChangeState('endNumber', Math.min(pageState.currentPage * pageState.perPage, pageState.totalUsers))
+    },[pageState.currentPage, pageState.perPage, pageState.totalUsers])
 
     return(
         <div className='grid  grid-cols-4 grid-rows-[6.25rem_min-content_auto_auto_min-content] h-full w-full'>

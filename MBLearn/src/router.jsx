@@ -16,6 +16,8 @@ import SystemLevelReports from "./views/SystemLevelReports";
 import BulkEnrollment from "./views/BulkEnrollment";
 import ProtectedRoutes from "./ProtectedRoutes";
 import Unauthorized from "./views/Unauthorized";
+import AssignedCourse from "./views/AssignedCourseCatalog";
+import AssignedCourseReport from "./views/AssignedCourseResport";
 
 const router = createBrowserRouter([
 
@@ -77,6 +79,14 @@ const router = createBrowserRouter([
                     {
                         path: "bulkenrollment",
                         element: <BulkEnrollment/>
+                    },
+                    {
+                        path: "assignedcourses",
+                        element: <AssignedCourse/>
+                    },
+                    {
+                        path: "coursereports",
+                        element: <AssignedCourseReport/>
                     },
                 ]
             },

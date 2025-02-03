@@ -39,9 +39,9 @@ const navItems = {
     ],
     "Course Admin": [
         {icon:faHouse, text:"Home", to:"/courseadmin/dashboard"},
-        {icon:faBookBookmark, text:"Assigned Courses"},
+        {icon:faBookBookmark, text:"Assigned Course Catalog", to:"/courseadmin/assignedcourses"},
         {icon:faPersonCirclePlus, text:"Enroll Trainee", to:"/courseadmin/bulkenrollment"},
-        {icon:faChartPie, text:"Course Reports"},
+        {icon:faChartPie, text:"Assigned Course Reports", to:"/courseadmin/coursereports"},
     ],
     "Learner": [
         {icon:faHouse, text:"Home"},
@@ -54,6 +54,8 @@ const navItems = {
 export default function Navigation() {
     const {user, profile_image, role, availableRoles, setAvailableRoles,setUser, setToken, setRole} = useStateContext();
     const navigate = useNavigate();
+    console.log(user.role)
+    console.log(role)
 
     useEffect(() => {
         let roles = []
@@ -84,7 +86,6 @@ export default function Navigation() {
         }));
         return acc;
     },{})
-    console.log(rolesSwitch);
 
 
 
