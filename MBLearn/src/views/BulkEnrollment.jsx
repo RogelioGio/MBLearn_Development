@@ -6,6 +6,7 @@ import { act, useEffect, useRef, useState } from "react"
 import Learner from "../modalsandprops/LearnerEnroleeEntryProps"
 import EnrollmentTableProps from "../modalsandprops/EnrollmentTableProps"
 import AssignedCourseEnrollmentCard from "../modalsandprops/AssignedCourseEnrollmentCard"
+import LearnerLoadingProps from "../modalsandprops/LearnerLoadingProps"
 
 const assigned_courses = [
     {name: "Effective Communication Skills in the Workplace", courseType:"Soft Skill Training", courseCategory:"Personal Development", duration: "2 Weeks", method: "Asynchronous"},
@@ -41,12 +42,14 @@ export default function BulkEnrollment() {
 
     //Next and Previous Page
     const back = () => {
+        if(isLoading) return;
         if (pageState.currentPage > 1){
             pageChangeState("currentPage", pageState.currentPage - 1)
             pageChangeState("startNumber", pageState.perPage - 4)
         }
     }
     const next = () => {
+        if(isLoading) return;
         if (pageState.currentPage < pageState.lastPage){
             pageChangeState("currentPage", pageState.currentPage + 1)
 
@@ -55,6 +58,7 @@ export default function BulkEnrollment() {
 
     //Page Navigation
     const pageChange = (page) => {
+        if(isLoading) return;
         if(page > 0 && page <= pageState.lastPage){
             pageChangeState("currentPage", page)
         }
@@ -231,6 +235,9 @@ export default function BulkEnrollment() {
                     course === Course.name ? (
                     <EnrollmentTableProps selectAll={selectAll} onchange={handleSelectAll} course={Course.name} key={Course.name}>
                         {
+                            isLoading ? (
+                                <LearnerLoadingProps/>
+                            ) :(
                             learners.map((learner)=>(
                                 <Learner
                                     key={learner.id}
@@ -244,6 +251,7 @@ export default function BulkEnrollment() {
                                     selectedUser={selected[course] || []}
                                     handleCheckbox={handleCheckbox}/>
                             ))
+                        )
                         }
                     </EnrollmentTableProps>) : (null)
                 ))

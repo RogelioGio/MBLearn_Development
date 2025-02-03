@@ -11,6 +11,7 @@ import LoginBackground2 from '../assets/Login_Background2.png';
 
 //Login Page Layout
 export default function GuestLayout() {
+    const {token, role} = useStateContext();
     const background = [LoginBackground, LoginBackground1, LoginBackground2];
     const [backgroundIndex, setBackgroundIndex] = useState(0);
     const [isFading, setIsFading] = useState(false);
@@ -28,6 +29,7 @@ export default function GuestLayout() {
 
     const currentBackground = background[backgroundIndex];
 
+    if(token) {return <Navigate to= {`/${role.toLowerCase().replace(/\s+/g, '')}/dashboard`} replace/>}
 
     return (
         <div className="w-full h-screen flex items-center justify-center bg-primary">

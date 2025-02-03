@@ -20,7 +20,7 @@ const StateContext = createContext({
 export const ContextProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [token, _setToken] = useState(localStorage.getItem('ACCESS_TOKEN'));
-    const [role, _setRole] = useState(localStorage.getItem('USER_ROLE'));
+    const [role, setRole] = useState(localStorage.getItem('USER_ROLE'));
     const [availableRoles, setAvailableRoles] = useState([]);
     const [employeeID, setEmployeeID] = useState('');
     const [profile_image, setProfile] = useState('');
@@ -38,19 +38,6 @@ export const ContextProvider = ({ children }) => {
             console.error(e);
         }
     };
-
-    const setRole = (role) => {
-        _setRole(role);
-        try{
-            if (role) {
-                localStorage.setItem('USER_ROLE', role)
-            } else{
-                localStorage.removeItem('USER_ROLE')
-            }
-        }catch(e){
-            console.error(e);
-        }
-    }
 
     return(
         //passing information into the layouts and components

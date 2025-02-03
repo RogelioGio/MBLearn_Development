@@ -65,19 +65,13 @@ export default function Login() {
             axiosClient.post('/login', payload).then(({data})=>{
                 setToken(data.token);
                 setUser(data.user);
+
                 if (data.redirect) {
                     window.location.href = data.redirect; // Redirect to the appropriate URL based on role
                 } else {
                     // If no redirect is provided, proceed with whatever default logic you need
                     setIsLoading(false);
                 }
-                let roles = [data.user.role];
-                if(data.user.role === 'System Admin'){
-                    roles = ['System Admin', 'Course Admin', 'Learner'];
-                }
-                setAvailableRoles(roles);
-                setRole(data.user.role);
-                setIsLoading(false);
             })
             .catch(({response})=>{
                 if(response){
@@ -88,6 +82,8 @@ export default function Login() {
             })
         }
     })
+
+
     return (
     // Login Card
     <div className='bg-white max-w-md h-fit shadow-md rounded-xl px-16 py-10 flex flex-col gap-5'>

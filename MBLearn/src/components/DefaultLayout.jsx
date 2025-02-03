@@ -107,7 +107,7 @@ export default function DefaultLayout() {
 
     // Function to check if the user is logged in
         if(!token){
-            return <Navigate to="/login" />
+            return <Navigate to="/login" replace/>
         }
 
     if(loading){
