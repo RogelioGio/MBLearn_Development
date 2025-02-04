@@ -22,6 +22,7 @@ return new class extends Migration
             $table->enum('role',['Learner','System Admin','Course Admin'])->default('Learner');
             $table->enum('status',['Active','Inactive'])->default('Active');
             $table->string('profile_image')->nullable();
+            $table->integer('user_credentials_id');
             $table->timestamps();
         });
     }

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('MBemail',225);
             $table->string('password',8);
             $table->enum('role', ['System Admin', 'Course Admin', 'Learner']);
+            $table->integer('user_info_id');
             $table->timestamps();
         });
     }

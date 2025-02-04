@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\addUserCredential_request;
 use App\Http\Requests\updateUserCreds_info;
+use App\Http\Resources\CourseResource;
 use App\Models\UserCredentials;
 use App\Models\UserInfos;
 use Illuminate\Http\Request;
@@ -56,6 +57,10 @@ class userCredentials_controller extends Controller
         ]);
     }
 
+    public function showEnrolledCourses(UserCredentials $userCredentials){
+        return CourseResource::collection($userCredentials->enrolledCourses);
+    }
+    
     //find by employeeID in the user maintenance management
     public function findUser_EmployeeID($employeeID){
         $userCredentials = UserCredentials::where('employeeID', $employeeID)->first();

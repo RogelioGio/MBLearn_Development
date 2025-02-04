@@ -1,9 +1,10 @@
 <?php
 
-use App\Http\Controllers\EnrollmentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CourseController;
+use App\Http\Controllers\Api\EnrollmentController;
 use App\Http\Controllers\Api\UserController;;
 use App\Http\Controllers\Api\userInfo_controller;
 use App\Http\Controllers\Api\userCredentials_controller;
@@ -39,11 +40,16 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('/select-user-creds/{employeeID}',[userCredentials_controller::class, 'findUser_EmployeeID']);
     Route::delete('/delete-user-creds/{employeeID}',[userCredentials_controller::class, 'deleteUser']);
     Route::get('/reset-user-creds',[userCredentials_controller::class, 'resetUsers']); //reset user table
+    Route::get('/usercredentials/{userCredentials}/courses', [userCredentials_controller::class, 'showEnrolledCourses']);
 
     //Enrollment API
-    Route::get('/index-user/enrolees', [EnrollmentController::class, 'enrolees']);
     Route::post('/enrollments/bulk', [EnrollmentController::class, 'bulkStore']);
     Route::apiResource('/enrollments', EnrollmentController::class);
+
+    //Courses API
+    Route::apiResource('/courses', CourseController::class);
+    Route::post('/courses/bulk', [CourseController::class, 'bulkStore']);
+    Route::get('/courses/{course}/users', [CourseController::class, 'showEnrolledUsers']);
 });
 
 
