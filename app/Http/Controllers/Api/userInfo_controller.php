@@ -53,12 +53,7 @@ class userInfo_controller extends Controller
         $page = $request->input('page', 1);//Default page
         $perPage = $request->input('perPage',5); //Number of entry per page
 
-
-
-
         $users =  UserInfos::paginate($perPage);
-
-
 
         return response()->json([
             'data' => $users->items(),
@@ -145,6 +140,21 @@ class userInfo_controller extends Controller
         // Truncate the users table
         DB::table('userInfo')->truncate();
         return response()->json(['message' => 'User Info table reset successfully!'], 200);
+    }
+
+    //Fetch UserProfilePhoto for the UserCredentials
+    public function getProfile(Request $request)
+    {
+        $page = $request->input('page', 1);//Default page
+        $perPage = $request->input('perPage',5); //Number of entry per page
+
+        $profile_image = UserInfos::select('profile_image','employeeID')->paginate($perPage);
+        return response()->json([
+            'data' => $profile_image->items(),
+            'total' => $profile_image->total(),
+            'lastPage' => $profile_image->lastPage(),
+            'currentPage' => $profile_image->currentPage()
+        ],200);
     }
 
 }

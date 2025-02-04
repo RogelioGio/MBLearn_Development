@@ -20,7 +20,7 @@ const StateContext = createContext({
 export const ContextProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [token, _setToken] = useState(localStorage.getItem('ACCESS_TOKEN'));
-    const [role, _setRole] = useState(localStorage.getItem('USER_ROLE'));
+    const [role, _setRole] = useState(localStorage.getItem('LOGIN_AS'));
     const [availableRoles, setAvailableRoles] = useState([]);
     const [employeeID, setEmployeeID] = useState('');
     const [profile_image, setProfile] = useState('');
@@ -42,13 +42,13 @@ export const ContextProvider = ({ children }) => {
     const setRole = (role) => {
         _setRole(role);
         try{
-            if (role) {
-                localStorage.setItem('USER_ROLE', role)
+            if(role){
+                localStorage.setItem('LOGIN_AS', role)
             } else{
-                localStorage.removeItem('USER_ROLE')
+                localStorage.remove('LOGIN_AS')
             }
         }catch(e){
-            console.error(e);
+            console.log(e)
         }
     }
 

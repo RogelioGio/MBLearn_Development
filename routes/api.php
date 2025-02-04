@@ -32,6 +32,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::put('/update-user-info/{employeeID}',[userInfo_controller::class, 'updateUser']);
     Route::delete('/delete-user/{employeeID}',[userInfo_controller::class, 'deleteUser']);
     Route::get('/reset-user',[userInfo_controller::class, 'resetUser']); //reset user table
+    Route::get('get-profile-image',[userInfo_controller::class, 'getProfile']); //Get Profile Image for UserCredentials
 
     //UserCredential API (for logging in accounts)
     Route::post('/addusercredentials', [userCredentials_controller::class, 'addUserCredentials']);

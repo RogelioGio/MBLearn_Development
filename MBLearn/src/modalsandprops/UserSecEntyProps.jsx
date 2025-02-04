@@ -1,14 +1,14 @@
 import { faTrashCan, faUserPen } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-const UserSecEntyProps = ({name,employeeID,MBEmail,role}) => {
+const UserSecEntyProps = ({name,employeeID,MBEmail,role,image}) => {
     return (
         <tr className='font-text text-sm hover:bg-gray-200'>
-                        <td className='text-sm  py-3 px-4'>
+                        <td className='text-sm py-3 px-4'>
                             <div className='flex items-center gap-2'>
                                 {/* User Image */}
                                 <div className='bg-blue-500 h-10 w-10 rounded-full'>
-                                    <img alt="" className='rounded-full'/>
+                                    <img alt="" src={image} className='rounded-full'/>
                                 </div>
                                 {/* Name */}
                                 <div>

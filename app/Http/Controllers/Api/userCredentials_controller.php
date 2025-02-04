@@ -48,12 +48,19 @@ class userCredentials_controller extends Controller
     }
 
     //User Credential List
-    public function userCredentialsList(){
-        $userCredentials = UserCredentials::all();
+    public function userCredentialsList(Request $request){
+
+        $page = $request->input('page', 1);//Default page
+        $perPage = $request->input('perPage',5); //Number of entry per page
+
+        $userCredentials = UserCredentials::paginate($perPage);
 
         return response()->json([
             'message' => 'User Credentials List',
-            'data' => $userCredentials
+            'total' => $userCredentials->total(),
+            'last' => $userCredentials->lastPage(),
+            'currentPage' => $userCredentials->currentPage(),
+            'data' => $userCredentials->items()
         ]);
     }
 
