@@ -194,7 +194,7 @@ export default function BulkEnrollment() {
             {/* Assigned Courses */}
             <div className="col-start-4 row-start-3 row-span-3 mb-5 border-l border-divider">
                 {/* Course Props */}
-                <div className="h-full p-4 flex flex-col gap-2">
+                <div className="h-full px-4 flex flex-col gap-2">
                     {
                         assigned_courses.map((Course) => (
                             <AssignedCourseEnrollmentCard

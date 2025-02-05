@@ -111,11 +111,15 @@ export default function DefaultLayout() {
     }
 
     if(loading){
+        if(!token){
+            return <Navigate to="/login" replace/>
+        }
         return (
             <div className='h-screen w-screen flex flex-col justify-center items-center bg-background gap-3'>
                 <h1 className='font-header text-5xl text-primary'>"Loading your learning journey..."</h1>
                 <p className='font-text'>Empowering you with the knowledge to achieve your goals</p>
             </div>
+
         )
     }
 
