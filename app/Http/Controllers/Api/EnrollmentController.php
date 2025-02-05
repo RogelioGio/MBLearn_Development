@@ -88,8 +88,4 @@ class EnrollmentController extends Controller
     {
         //
     }
-<<<<<<< HEAD
-
-=======
->>>>>>> 66bf99d63c492d9a844f8be01227d3dfef2ea895
 }

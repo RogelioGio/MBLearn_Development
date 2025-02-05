@@ -86,8 +86,6 @@ export default function BulkEnrollment() {
             }else{
                 return [...prevUsers, {EmployeeID: employeeID, Course: course}]
             }
-
-
         })
 
     }
