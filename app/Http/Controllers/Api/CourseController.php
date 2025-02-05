@@ -6,8 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\BulkStoreCourseRequest;
 use App\Http\Requests\StoreCourseRequest;
 use App\Http\Resources\CourseResource;
+use App\Http\Resources\UserCredentialsResource;
 use App\Models\Course;
+use App\Models\UserCredentials;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 
 class CourseController extends Controller
 {
@@ -29,7 +32,15 @@ class CourseController extends Controller
     }
 
     public function bulkStore(BulkStoreCourseRequest $request){
-        
+        $bulk = collect($request->all())->map(function($arr, $key){
+            return Arr::except($arr,['trainingMode', 'systemAdminId', 'assignedCourseAdminId']);
+        });
+
+        Course::insert($bulk->toArray());
+        return response()->json([
+            "Message" => "Bulk Store complete",
+            "Data" => $bulk
+        ]);
     }
 
     /**
@@ -40,7 +51,9 @@ class CourseController extends Controller
         return new CourseResource($course);
     }
 
-
+    public function showEnrolledUsers(Course $course){
+        return UserCredentialsResource::collection($course->enrolledUsers);
+    }
 
     /**
      * Update the specified resource in storage.

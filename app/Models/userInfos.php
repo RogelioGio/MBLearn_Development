@@ -5,6 +5,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class UserInfos extends Model
 {
@@ -30,4 +31,8 @@ class UserInfos extends Model
         'profile_image',
         // Add all the column names you want to make mass-assignable
     ];
+
+    public function userCredentials(): BelongsTo{
+        return $this->belongsTo(UserCredentials::class, 'user_info_id');
+    }
 }

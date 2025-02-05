@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Znck\Eloquent\Relations\BelongsToThrough;
 
 class Course extends Model
 {
@@ -30,14 +31,17 @@ class Course extends Model
         return $this->hasMany(Enrollment::class);
     }
 
+    public function enrolledUsers(): BelongsToThrough{
+        return $this->BelongsToThrough(UserCredentials::class, Enrollment::class);
+    }
 
     //help with better name, basically system admin na nag add ng course
     public function adder(): BelongsTo{
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(UserCredentials::class);
     }
 
     //IDK if multiple course admin can be assigned to a course subject to change
     public function assignedCourseAdmin(): BelongsTo{
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(UserCredentials::class);
     }
 }

@@ -24,6 +24,7 @@ class CourseResource extends JsonResource
             'mandatory'=> $this->mandatory,
             'duration'=> $this->duration,
             'archived'=>$this->archived,
+            
         ];
     }
 }
