@@ -46,7 +46,11 @@ Route::middleware('auth:sanctum')->group(function(){
     //Enrollment API
     Route::post('/enrollments/bulk', [EnrollmentController::class, 'bulkStore']);
     Route::apiResource('/enrollments', EnrollmentController::class);
+<<<<<<< HEAD
     Route::get('/index-user/enrolees', [EnrollmentController:: class, 'enrolees']);
+=======
+    Route::get('/index-user/enrolees', [EnrollmentController::class, 'enrolees']);
+>>>>>>> 34c45d3738a306d2d1b52e0af264e27aaf921a05
 
     //Courses API
     Route::apiResource('/courses', CourseController::class);
