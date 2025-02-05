@@ -46,7 +46,7 @@ class EnrollmentController extends Controller
     }
 
     //Fetch Learners
-    public function enrolees (Request $request){
+    public function enrolees(Request $request){
 
         $page = $request->input('page', 1);//Default page
         $perPage = $request->input('perPage',5); //Number of entry per page
