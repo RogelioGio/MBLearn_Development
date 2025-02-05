@@ -47,22 +47,21 @@ class EnrollmentController extends Controller
         ]);
     }
 
-        //Fetch Learners
-        public function enrolees (Request $request){
+    //Fetch Learners
+    public function enrolees(Request $request){
 
-            $page = $request->input('page', 1);//Default page
-            $perPage = $request->input('perPage',5); //Number of entry per page
+        $page = $request->input('page', 1);//Default page
+        $perPage = $request->input('perPage',5); //Number of entry per page
 
-            $learner = UserInfos::paginate($perPage);
-
-            Log::info($learner);
-            return response()->json([
-                'data' => $learner->items(),
-                'total' => $learner->total(),
-                'lastPage' => $learner->lastPage(),
-                'currentPage' => $learner->currentPage()
-            ],200);
-        }
+        $learner = UserInfos::where('role', 'Learner')->paginate($perPage);
+        Log::info($learner);
+        return response()->json([
+            'data' => $learner->items(),
+            'total' => $learner->total(),
+            'lastPage' => $learner->lastPage(),
+            'currentPage' => $learner->currentPage()
+        ],200);
+    }
 
     /**
      * Display the specified resource.
@@ -89,5 +88,8 @@ class EnrollmentController extends Controller
     {
         //
     }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 66bf99d63c492d9a844f8be01227d3dfef2ea895
 }
