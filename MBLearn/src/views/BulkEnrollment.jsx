@@ -16,7 +16,7 @@ const assigned_courses = [
 export default function BulkEnrollment() {
 
     const [learners, setLearners] = useState([]); //List all learners
-    const [selected, setSelected] = useState({}); //Select learner to ernoll
+    const [selected, setSelected] = useState([]); //Select learner to ernoll
     const [course, selectCourse] = useState(assigned_courses[0].name); //Select course to enroll
     const [isLoading, setLoading] = useState(true); //Loading state
     const selectAll = useRef(false) //select all learners
@@ -71,22 +71,38 @@ export default function BulkEnrollment() {
     }
 
     //Learner to enroll
-    const handleCheckbox = (employeeID) => {
+    // const handleCheckbox = (employeeID) => {
+    //     setSelected((prevUsers) => {
+
+    //         const currentCourse = prevUsers[course] || [];
+
+    //         if(currentCourse.includes(employeeID)){
+    //             return {...prevUsers,
+    //                     [course]: currentCourse.filter((user) => user !== employeeID)}
+    //         } else {
+    //             return {
+    //                 ...prevUsers,
+    //                 [course]: [...currentCourse, employeeID]
+    //             }
+    //         }
+    //     });
+    // };
+
+    const handleCheckbox = (employeeID, course) => {
         setSelected((prevUsers) => {
+            const exists = prevUsers.some(
+                (entry) => entry.EmployeeID === employeeID && entry.Course === course
+            );
 
-            const currentCourse = prevUsers[course] || [];
-
-            if(currentCourse.includes(employeeID)){
-                return {...prevUsers,
-                        [course]: currentCourse.filter((user) => user !== employeeID)}
-            } else {
-                return {
-                    ...prevUsers,
-                    [course]: [...currentCourse, employeeID]
-                }
+            if(exists){
+                return prevUsers.filter(
+                    (entry) => !(entry.EmployeeID === employeeID && entry.Course === course )
+                )
+            }else{
+                return [prevUsers, {EmployeeID: employeeID, Course: course}]
             }
-        });
-    };
+        })
+    }
 
     //Select All Learners
     const handleSelectAll = (Course) => {
@@ -249,8 +265,10 @@ export default function BulkEnrollment() {
                                     title={learner.title}
                                     branch={learner.branch}
                                     city={learner.city}
-                                    selectedUser={selected[course] || []}
-                                    handleCheckbox={handleCheckbox}/>
+                                    selectedUser={selected}
+                                    selectedCourse={course}
+                                    handleCheckbox={handleCheckbox}
+                                    selected={selected}/>
                             ))
                         )
                         }
