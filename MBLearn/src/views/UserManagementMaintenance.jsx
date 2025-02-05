@@ -299,7 +299,7 @@ export default function UserManagementMaintenance() {
                 <div>
                     <nav className='isolate inline-flex -space-x-px round-md shadow-xs'>
                         {/* Previous */}
-                        <a href="#"
+                        <a
                             onClick={back}
                             className='relative inline-flex items-center rounded-l-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
                             <FontAwesomeIcon icon={faChevronLeft}/>
@@ -307,7 +307,7 @@ export default function UserManagementMaintenance() {
 
                         {/* Current Page & Dynamic Paging */}
                         {Pages.map((page)=>(
-                            <a href="#"
+                            <a
                                 key={page}
                                 className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset
                                     ${
@@ -318,7 +318,7 @@ export default function UserManagementMaintenance() {
                                     onClick={() => pageChange(page)}>
                                 {page}</a>
                         ))}
-                        <a href="#"
+                        <a
                             onClick={next}
                             className='relative inline-flex items-center rounded-r-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
                             <FontAwesomeIcon icon={faChevronRight}/>
