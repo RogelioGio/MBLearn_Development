@@ -1,13 +1,14 @@
 
-const Learner = ({profile_image, name, employeeID, department, title, branch, city, selectedUser, selectedCourse ,handleCheckbox}) => {
+const Learner = ({profile_image, name, employeeID, department, title, branch, city, enrolled, selectedCourse ,handleCheckbox}) => {
 
+    const selectedEnrollee = enrolled.some(
+        (entry) => entry.EmployeeID == employeeID && entry.Course === selectedCourse
+    )
     return(
-        <tr className={`font-text text-md text-primary hover:bg-gray-200 cursor-pointer  ${selectedUser.some(entry => entry.EmployeeID === employeeID && entry.Course === selectedCourse)
-      ? '!bg-gray-200'
-      : ''}`} onClick={()=>handleCheckbox()}>
+        <tr className={`font-text text-md text-primary hover:bg-gray-200 cursor-pointer ${selectedEnrollee ? 'bg-gray-200':''}`} onClick={()=>handleCheckbox(employeeID, selectedCourse)}>
 
                 {/* Employee Name */}
-                <td className={`font-header p-4 flex flex-row items-center gap-4 border-l-2 border-transparent transition-all ease-in-out`}>
+                <td className={`font-header p-4 flex flex-row items-center gap-4 border-l-2 border-transparent transition-all ease-in-out ${selectedEnrollee ? '!border-primary':''}`}>
 
                     {/* Checkbox */}
                     <div className="group grid size-4 grid-cols-1">
@@ -15,9 +16,7 @@ const Learner = ({profile_image, name, employeeID, department, title, branch, ci
                             className="col-start-1 row-start-1 appearance-none border border-divider rounded checked:border-primary checked:bg-primary focus:ring-2 focus:ring-primary focus:outline-none focus:ring-offset-1"
                             name={employeeID}
                             id={employeeID}
-                            checked={selectedUser.some(
-                                (entry) => entry.EmployeeID === employeeID && entry.Course === selectedCourse
-                            )}
+                            checked={selectedEnrollee}
                             onChange={() => handleCheckbox(employeeID, selectedCourse)}/>
                         {/* Custom Checkbox styling */}
                         <svg fill="none" viewBox="0 0 14 14" className="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-[:disabled]:stroke-gray-950/25">
@@ -43,7 +42,7 @@ const Learner = ({profile_image, name, employeeID, department, title, branch, ci
                     <img src={profile_image} alt="" className="w-10 rounded-full"/>
 
                     <div>
-                    <h1 className={`text-unactive`}>{name}</h1>
+                    <h1 className={`text-unactive ${selectedEnrollee ? '!text-primary':''}`}>{name}</h1>
                     <p className="font-text text-unactive text-xs">ID: {employeeID}</p>
                     </div>
                 </td>

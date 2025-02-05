@@ -71,25 +71,10 @@ export default function BulkEnrollment() {
     }
 
     //Learner to enroll
-    // const handleCheckbox = (employeeID) => {
-    //     setSelected((prevUsers) => {
-
-    //         const currentCourse = prevUsers[course] || [];
-
-    //         if(currentCourse.includes(employeeID)){
-    //             return {...prevUsers,
-    //                     [course]: currentCourse.filter((user) => user !== employeeID)}
-    //         } else {
-    //             return {
-    //                 ...prevUsers,
-    //                 [course]: [...currentCourse, employeeID]
-    //             }
-    //         }
-    //     });
-    // };
-
     const handleCheckbox = (employeeID, course) => {
         setSelected((prevUsers) => {
+            if(!employeeID&&!course) return
+
             const exists = prevUsers.some(
                 (entry) => entry.EmployeeID === employeeID && entry.Course === course
             );
@@ -99,9 +84,12 @@ export default function BulkEnrollment() {
                     (entry) => !(entry.EmployeeID === employeeID && entry.Course === course )
                 )
             }else{
-                return [prevUsers, {EmployeeID: employeeID, Course: course}]
+                return [...prevUsers, {EmployeeID: employeeID, Course: course}]
             }
+
+
         })
+
     }
 
     //Select All Learners
@@ -141,14 +129,18 @@ export default function BulkEnrollment() {
     },[selected, learners, course]);
 
     //Number of enrollees
-    const numberOfEnrollees = (Course) => {
-        return selected[Course].length ? selected[Course].length : 0;
+    const numberOfEnrollees = (courseName) => {
+        return selected.filter((entry) => entry.Course === courseName).length
     }
 
     //handle ernollment
     const enrollLearners = () => {
         console.log("Enrolled Learners", selected)
+
     }
+    useEffect(()=>{
+        console.log(selected)
+    },[selected])
 
     //Fetch Learners
     useEffect(() =>{
@@ -265,7 +257,7 @@ export default function BulkEnrollment() {
                                     title={learner.title}
                                     branch={learner.branch}
                                     city={learner.city}
-                                    selectedUser={selected}
+                                    enrolled={selected}
                                     selectedCourse={course}
                                     handleCheckbox={handleCheckbox}
                                     selected={selected}/>

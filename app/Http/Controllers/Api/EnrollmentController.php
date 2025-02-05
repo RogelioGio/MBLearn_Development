@@ -10,8 +10,10 @@ use App\Http\Resources\EnrollmentResource;
 use App\Models\Enrollment;
 use App\Models\UserInfos;
 use Illuminate\Http\Request;
+use Illuminate\Pagination;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
+
 
 
 class EnrollmentController extends Controller
@@ -50,8 +52,9 @@ class EnrollmentController extends Controller
 
             $page = $request->input('page', 1);//Default page
             $perPage = $request->input('perPage',5); //Number of entry per page
-    
-            $learner = UserInfos::all()->paginate($perPage);
+
+            $learner = UserInfos::paginate($perPage);
+
             Log::info($learner);
             return response()->json([
                 'data' => $learner->items(),
@@ -87,19 +90,4 @@ class EnrollmentController extends Controller
         //
     }
 
-
-    public function enrolees (Request $request){
-
-        $page = $request->input('page', 1);//Default page
-        $perPage = $request->input('perPage',5); //Number of entry per page
-
-        $learner = UserInfos::where('role', 'Learner')->paginate($perPage);
-        \Log::info($learner);
-        return response()->json([
-            'data' => $learner->items(),
-            'total' => $learner->total(),
-            'lastPage' => $learner->lastPage(),
-            'currentPage' => $learner->currentPage()
-        ],200);
-    }
 }
