@@ -13,7 +13,7 @@ class CoursePolicy
      */
     public function viewAny(UserCredentials $userCredentials): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,7 +21,7 @@ class CoursePolicy
      */
     public function view(UserCredentials $userCredentials, Course $course): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -29,6 +29,9 @@ class CoursePolicy
      */
     public function create(UserCredentials $userCredentials): bool
     {
+        if($userCredentials->role === "System Admin"){
+            return true;
+        }
         return false;
     }
 
@@ -37,6 +40,9 @@ class CoursePolicy
      */
     public function update(UserCredentials $userCredentials, Course $course): bool
     {
+        if($userCredentials->role === "System Admin"){
+            return true;
+        }
         return false;
     }
 
@@ -45,6 +51,9 @@ class CoursePolicy
      */
     public function delete(UserCredentials $userCredentials, Course $course): bool
     {
+        if($userCredentials->role === "System Admin"){
+            return true;
+        }
         return false;
     }
 
@@ -53,6 +62,9 @@ class CoursePolicy
      */
     public function restore(UserCredentials $userCredentials, Course $course): bool
     {
+        if($userCredentials->role === "System Admin"){
+            return true;
+        }
         return false;
     }
 
@@ -61,6 +73,9 @@ class CoursePolicy
      */
     public function forceDelete(UserCredentials $userCredentials, Course $course): bool
     {
+        if($userCredentials->role === "System Admin"){
+            return true;
+        }
         return false;
     }
 }
