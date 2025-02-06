@@ -5,6 +5,7 @@ import CourseCardModal from '../modalsandprops/CourseCardModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFolderPlus, faSearch, faArrowDownWideShort, faPlus, faMinus, faChevronUp, faChevronDown, faPenToSquare, faTrash, faChevronLeft, faChevronRight, faLaptopFile, faChalkboardTeacher, faCheck } from '@fortawesome/free-solid-svg-icons'
 import { Menu, MenuButton, MenuItem, MenuItems, Disclosure, DisclosureButton, DisclosurePanel, Dialog, DialogBackdrop, DialogPanel, DialogTitle} from '@headlessui/react';
+import AddCourseModal from '../modalsandprops/AddCourseModal';
 
 
 //Sort Options Array
@@ -77,11 +78,35 @@ const [selectedCourse, setSelectedCourse] = useState(null)
 
 //Modal Open and Close Function
 const OpenDialog = (course) => {
-    setIsOpen(true)
+    toggleModal('openCard', true)
     setSelectedCourse(course)
 }
 const CloseDialog = () => {
+    toggleModal('openCard', false)
     setIsOpen(false)
+}
+
+const [modalState, setModalState] = useState({
+        openCard: false,
+        openAddCourse: false,
+    });
+
+//Modal State
+const toggleModal = (key,value) => {
+    setModalState((prev => ({
+        ...prev,
+        [key]:value,
+    })));
+}
+
+
+// Checkbox Change state functions
+const [isfilter, setfilter] = useState({});
+const handleFilter = (sectionId, value) => {
+    setfilter((prev) => ({
+        ...prev,
+        [sectionId]: prev[sectionId] === value ? undefined : value
+    }));
 }
 
 
@@ -100,7 +125,7 @@ const CloseDialog = () => {
 
             {/* Add Button */}
             <div className='col-start-4 row-start-1 flex flex-col justify-center pl-5 mr-5 border-divider border-b'>
-            <button className='inline-flex flex-row shadow-md items-center justify-center bg-primary font-header text-white text-base p-4 rounded-full hover:bg-primaryhover hover:scale-105 transition-all ease-in-out'>
+            <button className='inline-flex flex-row shadow-md items-center justify-center bg-primary font-header text-white text-base p-4 rounded-full hover:bg-primaryhover hover:scale-105 transition-all ease-in-out' onClick={()=>toggleModal('openAddCourse',true)}>
                 <FontAwesomeIcon icon={faFolderPlus} className='mr-2'/>
                 <p>Add Course</p>
             </button>
@@ -144,8 +169,8 @@ const CloseDialog = () => {
                                 <DisclosureButton className='group flex w-full justify-between py-3 text-sm hover:text-primary transition-all ease-in-out'>
                                     <span>{section.name}</span>
                                     <span className='ml-6 flex items-center'>
-                                        <FontAwesomeIcon icon={faChevronUp} className='group-data-[open]:hidden'/>
-                                        <FontAwesomeIcon icon={faChevronDown} className='group-[&:not([data-open])]:hidden'/>
+                                        <FontAwesomeIcon icon={faChevronDown} className='group-data-[open]:hidden'/>
+                                        <FontAwesomeIcon icon={faChevronUp} className='group-[&:not([data-open])]:hidden'/>
                                     </span>
                                 </DisclosureButton>
                             </h3>
@@ -156,8 +181,12 @@ const CloseDialog = () => {
                                             <div className='flex h-5 shrink-0 items-center'>
                                                 {/* Checkbox Styling */}
                                                 <div className='group grid size-4 grid-cols-1'>
-                                                    <input defaultValue={option.value} defaultChecked={option.checked} id={`filter-${section.id}-${optionIdx}`} name={`${section.id}[]`} type="checkbox"
-                                                    className='col-start-1 row-start-1 appearance-none rounded border border-divider bg-white checked:border-primary checked:bg-primary'/>
+                                                    <input defaultValue={option.value} defaultChecked={option.checked}
+                                                    id={`filter-${section.id}-${optionIdx}`} name={`${section.id}[]`} type="checkbox"
+                                                    className='col-start-1 row-start-1 appearance-none rounded border border-divider bg-white checked:border-primary checked:bg-primary'
+                                                    checked={isfilter[section.id] === option.value} // Controlled state
+                                                    onChange={() => handleFilter(section.id, option.value)}/>
+
                                                     <svg fill="none" viewBox="0 0 14 14" className="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-[:disabled]:stroke-gray-950/25">
                                                     <path
                                                         d="M3 8L6 11L11 3.5"
@@ -180,6 +209,10 @@ const CloseDialog = () => {
                                             <label htmlFor={`filter-${section.id}-${optionIdx}`} className='text-sm font-text text-black'>{option.label}</label>
                                         </div>
                                     ))}
+                                    <button onClick={(e) => e.preventDefault()} className='flex items-center gap-4 text-primary transition-all ease-in-out text-sm border border-primary py-2 px-4 rounded-full hover:bg-primary hover:text-white'>
+                                        <FontAwesomeIcon icon={faPlus}/>
+                                        <p className='font-text'>Add New Filter Category</p>
+                                    </button>
                                 </div>
                             </DisclosurePanel>
                         </Disclosure>
@@ -223,7 +256,9 @@ const CloseDialog = () => {
             </div>
 
             {/* Dialog box */}
-            <CourseCardModal open={isOpen} close={CloseDialog} classname='relative z-10' selectedCourse={selectedCourse}/>
+            <CourseCardModal open={modalState.openCard} close={CloseDialog} classname='relative z-10' selectedCourse={selectedCourse}/>
+            {/* Add Modal */}
+            <AddCourseModal open={modalState.openAddCourse} onClose={()=>toggleModal('openAddCourse',false)}/>
         </div>
 
     )

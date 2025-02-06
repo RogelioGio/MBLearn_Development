@@ -14,7 +14,7 @@ const CourseListCard = ({courseList, classname, onclick}) => {
                             <img src="" alt="" className='w-full' />
                         </div>
                         {/* Course Info */}
-                        <div className='p-5 w-full'>
+                        <div className='p-5 w-full flex flex-col gap-5'>
                             {/* Course Name Header */}
                             <div className='flex flex-row place-content-between items-center mb-2'>
                                 {/* Course Name */}
@@ -36,7 +36,6 @@ const CourseListCard = ({courseList, classname, onclick}) => {
                             </div>
                             {/* Course Details */}
                             <div className='text-sm text-tertiary grid grid-cols-2 space-y-0.5'>
-                                <span className='font-header flex flex-row gap-2'>Duration: <p className='font-text'>{course.duration}</p></span>
                                 <span className='font-header flex flex-row gap-2'>Date-Added: <p className='font-text'>{course.dateadded}</p></span>
                                 <span className='font-header flex flex-row gap-2'>Training Type: <p className='font-text'>{course.trainingmode}</p></span>
                             </div>
