@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet';
 import CourseListCard from '../modalsandprops/CourseListCard';
 import CourseCardModal from '../modalsandprops/CourseCardModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faFolderPlus, faSearch, faArrowDownWideShort, faPlus, faMinus, faChevronUp, faChevronDown, faPenToSquare, faTrash, faChevronLeft, faChevronRight, faLaptopFile, faChalkboardTeacher, faCheck } from '@fortawesome/free-solid-svg-icons'
+import { faFolderPlus, faSearch, faArrowDownWideShort, faPlus, faMinus, faChevronUp, faChevronDown, faPenToSquare, faTrash, faChevronLeft, faChevronRight, faLaptopFile, faChalkboardTeacher, faCheck, faPen } from '@fortawesome/free-solid-svg-icons'
 import { Menu, MenuButton, MenuItem, MenuItems, Disclosure, DisclosureButton, DisclosurePanel, Dialog, DialogBackdrop, DialogPanel, DialogTitle} from '@headlessui/react';
 import AddCourseModal from '../modalsandprops/AddCourseModal';
 
@@ -24,6 +24,15 @@ const filter = [
             {value: 'softskill' , label: 'Soft Skill Training', checked: false },
             {value: 'technical' , label: 'Technical Training', checked: false },
             {value: 'leadership' , label: 'Compliance Training', checked: false },
+        ]
+    },
+    {
+        id:'coursecategory',
+        name: 'Course Category',
+        option: [
+            {value: 'professionaldev' , label: 'Professional Development', checked: false },
+            {value: 'dataandanalytics' , label: 'Data and Analystics', checked: false },
+            {value: 'managementandleadership' , label: 'Management and Leadership', checked: false },
         ]
     },
     {
@@ -89,6 +98,7 @@ const CloseDialog = () => {
 const [modalState, setModalState] = useState({
         openCard: false,
         openAddCourse: false,
+        openFilterEditor: false,
     });
 
 //Modal State
@@ -111,7 +121,7 @@ const handleFilter = (sectionId, value) => {
 
 
     return (
-        <div className='grid  grid-cols-4 grid-rows-[6.25rem_auto] h-full w-full'>
+        <div className='grid  grid-cols-4 grid-rows-[6.25rem_min-content_1fr_min-content] h-full w-full overflow-hidden'>
             <Helmet>
                 {/* Title of the mark-up */}
                 <title>MBLearn | Course List Maintenance</title>
@@ -150,7 +160,7 @@ const handleFilter = (sectionId, value) => {
             </div>
 
             {/* Search bar */}
-            <div className='inline-flex items-center col-start-4 row-start-2 px-5 py-3 h-fit'>
+            <div className='inline-flex items-center col-start-3 row-start-2 px-5 py-3 h-fit'>
                 <div className=' inline-flex flex-row place-content-between border-2 border-primary rounded-md w-full font-text shadow-md'>
                     <input type="text" className='focus:outline-none text-sm px-4 w-full rounded-md bg-white' placeholder='Search...'/>
                     <div className='bg-primary py-2 px-4 text-white'>
@@ -160,8 +170,21 @@ const handleFilter = (sectionId, value) => {
             </div>
 
             {/* Filter */}
-            <div className='row-start-3 col-start-4 px-5 py-2'>
-                <div className='w-full bg-divider h-[1px] rounded-full'></div>
+            <div className='row-start-2 col-start-4 inline-flex justify-between items-center flex-row mx-5'>
+                <div>
+                    {/* Filter Header */}
+                    <h1 className='font-header text-2xl text-primary'>Course Filter</h1>
+                    <p className='text-md font-text text-unactive text-sm'>Categorize courses</p>
+                </div>
+                <div>
+                    {/* Course Button */}
+                    <div className='relative group aspect-square w-10 rounded-full flex items-center justify-center bg-primarybg text-primary cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out'>
+                        <FontAwesomeIcon icon={faPen}/>
+                        <p className='absolute w-auto top-12 z-10 bg-tertiary text-white p-2 rounded-md text-xs scale-0 font-text group-hover:scale-100'>Edit</p>
+                    </div>
+                </div>
+            </div>
+            <div className='row-start-3 row-span-3 col-start-4 pl-5 pr-4 mr-2 py-2 overflow-y-auto max-h-full scrollbar-thin scrollbar-gutter scrollbar-thumb-primary scrollbar-track-primarybg scrollbar-thumb-rounded-full scrollbar-track-rounded-full sscrollbar-no-arrows'>
                 <form>
                     {filter.map((section)=>(
                         <Disclosure key={section.id} as="div" className='border-b border-divider py-6'>
@@ -221,10 +244,10 @@ const handleFilter = (sectionId, value) => {
             </div>
 
             {/* Sample Card for course display */}
-            <CourseListCard courseList={Courses} classname='row-start-3 row-span-3 col-start-1 col-span-3 w-full px-5 py-2 flex flex-col gap-2' onclick={OpenDialog}/>
+            <CourseListCard courseList={Courses} classname='row-start-3 row-span-1 col-start-1 col-span-3 w-full px-5 py-2 flex flex-col gap-2' onclick={OpenDialog}/>
 
             {/* Sample Footer Pagenataion */}
-            <div className='row-start-7 row-span-1 col-start-1 col-span-3 border-t border-divider mx-5 py-3 flex flex-row items-center justify-between'>
+            <div className='row-start-4 row-span-1 col-start-1 col-span-3 border-t border-divider mx-5 py-3 flex flex-row items-center justify-between'>
                 {/* Total number of entries and only be shown */}
                 <div>
                     <p className='text-sm font-text text-unactive'>
@@ -259,6 +282,7 @@ const handleFilter = (sectionId, value) => {
             <CourseCardModal open={modalState.openCard} close={CloseDialog} classname='relative z-10' selectedCourse={selectedCourse}/>
             {/* Add Modal */}
             <AddCourseModal open={modalState.openAddCourse} onClose={()=>toggleModal('openAddCourse',false)}/>
+            {/* Cutomizable filter */}
         </div>
 
     )
