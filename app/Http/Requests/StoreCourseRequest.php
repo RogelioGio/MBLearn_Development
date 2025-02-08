@@ -24,12 +24,12 @@ class StoreCourseRequest extends FormRequest
         // TODO be more specific
         return [
             'name' => 'required',
-            'code'=> 'required',
             'description' => 'required',
             'type' => 'required',
+            'category'=> 'required',
             'trainingMode' => 'required',
             'mandatory' => 'required',
-            'duration' => 'required|date_format:Y-m-d',
+            'duration' => 'required',
             'archived' => 'required',
             'systemAdminId' => 'required|integer',
             'assignedCourseAdminId' => 'required|integer',

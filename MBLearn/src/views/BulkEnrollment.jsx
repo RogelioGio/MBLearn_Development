@@ -7,17 +7,15 @@ import Learner from "../modalsandprops/LearnerEnroleeEntryProps"
 import EnrollmentTableProps from "../modalsandprops/EnrollmentTableProps"
 import AssignedCourseEnrollmentCard from "../modalsandprops/AssignedCourseEnrollmentCard"
 import LearnerLoadingProps from "../modalsandprops/LearnerLoadingProps"
-
-const assigned_courses = [
-    {name: "Effective Communication Skills in the Workplace", courseType:"Soft Skill Training", courseCategory:"Personal Development", duration: "2 Weeks", method: "Asynchronous"},
-    {name: "Time Management and Productivity Hacks", courseType:"Soft Skill Training", courseCategory:"Personal Development", duration: "1 Weeks", method: "Online Training"},
-]
+import { useStateContext } from "../contexts/ContextProvider"
 
 export default function BulkEnrollment() {
 
+    const {user} = useStateContext();
+    const [assigned_courses, setAssigned_courses] = useState([]);
     const [learners, setLearners] = useState([]); //List all learners
     const [selected, setSelected] = useState([]); //Select learner to ernoll
-    const [course, selectCourse] = useState(assigned_courses[0].name); //Select course to enroll
+    const [course, selectCourse] = useState([]); //Select course to enroll
     const [isLoading, setLoading] = useState(true); //Loading state
     const selectAll = useRef(false) //select all learners
 
@@ -71,20 +69,20 @@ export default function BulkEnrollment() {
     }
 
     //Learner to enroll
-    const handleCheckbox = (employeeID, course) => {
+    const handleCheckbox = (id, course) => {
         setSelected((prevUsers) => {
-            if(!employeeID&&!course) return
+            if(!id&&!course) return
 
             const exists = prevUsers.some(
-                (entry) => entry.EmployeeID === employeeID && entry.Course === course
+                (entry) => entry.userId === id && entry.courseId === course
             );
 
             if(exists){
                 return prevUsers.filter(
-                    (entry) => !(entry.EmployeeID === employeeID && entry.Course === course )
+                    (entry) => !(entry.userId === id && entry.courseId === course )
                 )
             }else{
-                return [...prevUsers, {EmployeeID: employeeID, Course: course}]
+                return [...prevUsers, {userId: id, courseId: course, enrollerId: user.user_info_id}]
             }
         })
 
@@ -128,13 +126,13 @@ export default function BulkEnrollment() {
 
     //Number of enrollees
     const numberOfEnrollees = (courseName) => {
-        return selected.filter((entry) => entry.Course === courseName).length
+        return selected.filter((entry) => entry.courseId === courseName).length
     }
 
     //handle ernollment
     const enrollLearners = () => {
-        console.log("Enrolled Learners", selected)
-
+        console.log(selected)
+        axiosClient.post('enrollments/bulk', selected).catch((err)=>console.log(err));
     }
     useEffect(()=>{
         console.log(selected)
@@ -157,6 +155,17 @@ export default function BulkEnrollment() {
             setLoading(false)
         })
         .catch((err) => console.log(err))
+
+        //fetch courses
+        axiosClient.get('/courses').then(({data})=>{
+            console.log(data);
+            setAssigned_courses(data.data);
+            console.log(data.data[0].id)
+            selectCourse(data.data[0].name);
+
+        }).catch((err)=>
+        console.log(err)
+        );
     },[pageState.currentPage, pageState.perPage]);
     useEffect(() => {
         pageChangeState('startNumber', (pageState.currentPage - 1) * pageState.perPage + 1)
@@ -204,12 +213,13 @@ export default function BulkEnrollment() {
                     {
                         assigned_courses.map((Course) => (
                             <AssignedCourseEnrollmentCard
-                                key={Course.name}
+                                key={Course.id}
+                                id={Course.id}
                                 name={Course.name}
-                                coursetype={Course.courseType}
-                                coursecategory={Course.courseCategory}
+                                coursetype={Course.type}
+                                coursecategory={Course.category}
                                 duration={Course.duration}
-                                trainingmode={Course.method}
+                                trainingmode={Course.trainingMode}
                                 course={course}
                                 selected={selected}
                                 onclick={() => handleCourseChange(Course.name)}
@@ -248,6 +258,7 @@ export default function BulkEnrollment() {
                             learners.map((learner)=>(
                                 <Learner
                                     key={learner.id}
+                                    id={learner.id}
                                     profile_image={learner.profile_image}
                                     name={learner.name}
                                     employeeID={learner.employeeID}
@@ -256,7 +267,7 @@ export default function BulkEnrollment() {
                                     branch={learner.branch}
                                     city={learner.city}
                                     enrolled={selected}
-                                    selectedCourse={course}
+                                    selectedCourse={Course.id}
                                     handleCheckbox={handleCheckbox}
                                     selected={selected}/>
                             ))

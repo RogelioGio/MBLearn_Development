@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('employeeID',11);
             $table->string('name',225);
             $table->string('MBemail',225);
-            $table->string('password',8);
+            $table->string('password');
             $table->enum('role', ['System Admin', 'Course Admin', 'Learner']);
             $table->integer('user_info_id');
             $table->timestamps();
