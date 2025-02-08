@@ -38,6 +38,18 @@ export default {
         }
     },
   },
-  plugins: [],
+  plugins: [
+    require("tailwind-scrollbar"),
+
+    function ({ addUtilities }) {
+        const newUtilities = {
+          // This utility will reserve space for the scrollbar.
+          '.scrollbar-gutter': {
+            'scrollbar-gutter': 'stable',
+          },
+        };
+        addUtilities(newUtilities, ['responsive']);
+      },
+  ],
 }
 
