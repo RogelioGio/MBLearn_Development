@@ -3,9 +3,11 @@ import { Helmet } from 'react-helmet';
 import CourseListCard from '../modalsandprops/CourseListCard';
 import CourseCardModal from '../modalsandprops/CourseCardModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faFolderPlus, faSearch, faArrowDownWideShort, faPlus, faMinus, faChevronUp, faChevronDown, faPenToSquare, faTrash, faChevronLeft, faChevronRight, faLaptopFile, faChalkboardTeacher, faCheck, faPen } from '@fortawesome/free-solid-svg-icons'
+import { faFolderPlus, faSearch,  faArrowUpWideShort, faArrowDownWideShort, faPlus, faMinus, faChevronUp, faChevronDown, faPenToSquare, faTrash, faChevronLeft, faChevronRight, faLaptopFile, faChalkboardTeacher, faCheck, faPen, faFloppyDisk, faArrowUpAZ, faSort, faArrowDownAZ, faArrowDownShortWide, faArrowDownZA } from '@fortawesome/free-solid-svg-icons'
 import { Menu, MenuButton, MenuItem, MenuItems, Disclosure, DisclosureButton, DisclosurePanel, Dialog, DialogBackdrop, DialogPanel, DialogTitle} from '@headlessui/react';
 import AddCourseModal from '../modalsandprops/AddCourseModal';
+import EditCourseModal from '../modalsandprops/EditCourseModal';
+import DeleteCourseModal from '../modalsandprops/DeleteCourseModal';
 
 
 //Sort Options Array
@@ -98,8 +100,15 @@ const CloseDialog = () => {
 const [modalState, setModalState] = useState({
         openCard: false,
         openAddCourse: false,
-        openFilterEditor: false,
+        openFilterEditor: false,// open edit mode for filte
+        openEditCourse: false,
+        openDeleteCourse: false
     });
+
+const [sort, setSort] = useState({
+    nameOrder : "none",
+    dateOrder : "none",
+});
 
 //Modal State
 const toggleModal = (key,value) => {
@@ -109,7 +118,23 @@ const toggleModal = (key,value) => {
     })));
 }
 
+//setOrder state
+const toggleSort = (key,value) => {
+    setSort((prev => ({
+        ...prev,
+        [key]:value,
+    })));
+}
+const setOrder = (key) => {
+    const order = sort[key] === "none" ? "asc" : sort[key] === "asc" ? "desc" : "none";
+    toggleSort(key, order);
+}
 
+// Action Button
+const handleAction = (e,key) => {
+    e.stopPropagation();
+    toggleModal(key, true);
+}
 // Checkbox Change state functions
 const [isfilter, setfilter] = useState({});
 const handleFilter = (sectionId, value) => {
@@ -142,21 +167,17 @@ const handleFilter = (sectionId, value) => {
             </div>
 
             {/* Small Sorter */}
-            <div className='inline-flex items-center row-start-2 col-start-1 px-5 py-3 h-fit'>
-                <Menu>
-                    <MenuButton className='flex flex-row items-center border-2 border-primary py-2 px-4 font-header bg-secondarybackground rounded-md text-primary gap-2 w-fit hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md'>
-                    <p>Sort Courses by</p>
-                    <FontAwesomeIcon icon={faArrowDownWideShort}/>
-                    </MenuButton>
-                    {/* Sort Options */}
-                    <MenuItems anchor="bottom" className = 'absolute origin-top-right border-2 border-primary bg-secondarybackground rounded-md shadow-md inline-flex flex-col gap-2 w-fit font-text text-primary p-1'>
-                        {sortOptions.map((index) =>
-                            <MenuItem key={index.name} className = 'p-1 w-40 hover:bg-primary hover:text-white hover:cursor-pointer rounded-md transition-all ease-in-out'>
-                                <p>{index.name}</p>
-                            </MenuItem>
-                        )}
-                    </MenuItems>
-                </Menu>
+            <div className='row-start-2 col-start-1 inline-flex items-center px-5 py-3 h-fit gap-3'>
+                {/* Sort by Name */}
+                <div className={`flex flex-row items-center border-2 border-primary py-2 px-4 font-header bg-secondarybackground rounded-md text-primary gap-2 w-fit hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md ${sort.nameOrder === "asc" ? '!bg-primary !text-white' : sort.nameOrder === "desc" ? '!bg-primary !text-white': 'bg-secondarybackground' }`} onClick={() => setOrder("nameOrder")}>
+                    <p>Name</p>
+                    <FontAwesomeIcon icon={sort.nameOrder === "asc" ? faArrowUpAZ : sort.nameOrder === "desc" ? faArrowDownZA : faSort}/>
+                </div>
+                {/* Sort By Date-Added */}
+                <div className={`flex flex-row items-center border-2 border-primary py-2 px-4 font-header bg-secondarybackground rounded-md text-primary gap-2 w-fit hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md ${sort.dateOrder === "asc" ? '!bg-primary !text-white' : sort.dateOrder === "desc" ? '!bg-primary !text-white': 'bg-secondarybackground' }`} onClick={() => setOrder("dateOrder")}>
+                    <p>Date-Added</p>
+                    <FontAwesomeIcon icon={sort.dateOrder === "asc" ? faArrowUpWideShort : sort.dateOrder === "desc" ? faArrowDownShortWide : faSort}/>
+                </div>
             </div>
 
             {/* Search bar */}
@@ -178,15 +199,23 @@ const handleFilter = (sectionId, value) => {
                 </div>
                 <div>
                     {/* Course Button */}
-                    <div className='relative group aspect-square w-10 rounded-full flex items-center justify-center bg-primarybg text-primary cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out'>
-                        <FontAwesomeIcon icon={faPen}/>
-                        <p className='absolute w-auto top-12 z-10 bg-tertiary text-white p-2 rounded-md text-xs scale-0 font-text group-hover:scale-100'>Edit</p>
-                    </div>
+                    {
+                        !modalState.openFilterEditor ?
+                        <div className='relative group aspect-square w-10 rounded-full flex items-center justify-center bg-primarybg text-primary cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out' onClick={()=>toggleModal('openFilterEditor',true)}>
+                            <FontAwesomeIcon icon={faPen}/>
+                            <p className='absolute w-auto top-12 z-10 bg-tertiary text-white p-2 rounded-md text-xs scale-0 font-text group-hover:scale-100'>Edit</p>
+                        </div> :
+                        <div className='relative group aspect-square w-10 rounded-full flex items-center justify-center bg-primarybg text-primary cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out' onClick={()=>toggleModal('openFilterEditor',false)}>
+                            <FontAwesomeIcon icon={faFloppyDisk}/>
+                            <p className='absolute w-auto top-12 z-10 bg-tertiary text-white p-2 rounded-md text-xs scale-0 font-text group-hover:scale-100'>Save</p>
+                        </div>
+                    }
                 </div>
             </div>
-            <div className='row-start-3 row-span-3 col-start-4 pl-5 pr-4 mr-2 py-2 overflow-y-auto max-h-full scrollbar-thin scrollbar-gutter scrollbar-thumb-primary scrollbar-track-primarybg scrollbar-thumb-rounded-full scrollbar-track-rounded-full sscrollbar-no-arrows'>
+            <div className='row-start-3 row-span-3 col-start-4 pl-5 pr-4 mr-2 overflow-y-auto max-h-full scrollbar-thin scrollbar-gutter scrollbar-thumb-primary scrollbar-track-primarybg scrollbar-thumb-rounded-full scrollbar-track-rounded-full sscrollbar-no-arrows'>
                 <form>
                     {filter.map((section)=>(
+                        <>
                         <Disclosure key={section.id} as="div" className='border-b border-divider py-6'>
                             <h3 className='-my-3 flow-root font-text text-primary'>
                                 <DisclosureButton className='group flex w-full justify-between py-3 text-sm hover:text-primary transition-all ease-in-out'>
@@ -200,51 +229,71 @@ const handleFilter = (sectionId, value) => {
                             <DisclosurePanel className='pt-6'>
                                 <div className='space-y-4'>
                                     {section.option.map((option, optionIdx) => (
-                                        <div key={option.value} className='flex gap-4'>
-                                            <div className='flex h-5 shrink-0 items-center'>
-                                                {/* Checkbox Styling */}
-                                                <div className='group grid size-4 grid-cols-1'>
-                                                    <input defaultValue={option.value} defaultChecked={option.checked}
-                                                    id={`filter-${section.id}-${optionIdx}`} name={`${section.id}[]`} type="checkbox"
-                                                    className='col-start-1 row-start-1 appearance-none rounded border border-divider bg-white checked:border-primary checked:bg-primary'
-                                                    checked={isfilter[section.id] === option.value} // Controlled state
-                                                    onChange={() => handleFilter(section.id, option.value)}/>
+                                        <div className='flex flex-row justify-between'>
+                                            <div key={option.value} className='flex gap-4'>
+                                                <div className='flex h-5 shrink-0 items-center'>
+                                                    {/* Checkbox Styling */}
+                                                    <div className='group grid size-4 grid-cols-1'>
+                                                        <input defaultValue={option.value} defaultChecked={option.checked}
+                                                        id={`filter-${section.id}-${optionIdx}`} name={`${section.id}[]`} type="checkbox"
+                                                        className='col-start-1 row-start-1 appearance-none rounded border border-divider bg-white checked:border-primary checked:bg-primary'
+                                                        checked={isfilter[section.id] === option.value && !modalState.openFilterEditor} // Controlled state
+                                                        onChange={() => handleFilter(section.id, option.value)}
+                                                        disabled={modalState.openFilterEditor}/>
 
-                                                    <svg fill="none" viewBox="0 0 14 14" className="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-[:disabled]:stroke-gray-950/25">
-                                                    <path
-                                                        d="M3 8L6 11L11 3.5"
-                                                        strokeWidth={2}
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        className="opacity-0 group-has-[:checked]:opacity-100"
-                                                    />
-                                                    <path
-                                                        d="M3 7H11"
-                                                        strokeWidth={2}
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        className="opacity-0 group-has-[:indeterminate]:opacity-100"
-                                                    />
-                                                    </svg>
+                                                        <svg fill="none" viewBox="0 0 14 14" className="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-[:disabled]:stroke-gray-950/25">
+                                                        <path
+                                                            d="M3 8L6 11L11 3.5"
+                                                            strokeWidth={2}
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            className="opacity-0 group-has-[:checked]:opacity-100"
+                                                        />
+                                                        <path
+                                                            d="M3 7H11"
+                                                            strokeWidth={2}
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            className="opacity-0 group-has-[:indeterminate]:opacity-100"
+                                                        />
+                                                        </svg>
+                                                    </div>
+
                                                 </div>
-
+                                                <label htmlFor={`filter-${section.id}-${optionIdx}`} className='text-sm font-text text-black'>{option.label}</label>
                                             </div>
-                                            <label htmlFor={`filter-${section.id}-${optionIdx}`} className='text-sm font-text text-black'>{option.label}</label>
+                                            {
+                                                modalState.openFilterEditor &&
+                                                    <FontAwesomeIcon icon={faMinus} className='text-unactive cursor-pointer hover:text-primary transition-all ease-in-out'/>
+                                            }
                                         </div>
+
                                     ))}
-                                    <button onClick={(e) => e.preventDefault()} className='flex items-center gap-4 text-primary transition-all ease-in-out text-sm border border-primary py-2 px-4 rounded-full hover:bg-primary hover:text-white'>
-                                        <FontAwesomeIcon icon={faPlus}/>
-                                        <p className='font-text'>Add New Filter Category</p>
-                                    </button>
+
+                                    {
+                                        modalState.openFilterEditor &&
+                                        <button onClick={(e) => e.preventDefault()} className='flex items-center gap-4 text-primary transition-all ease-in-out text-sm border border-primary py-2 px-4 rounded-full hover:bg-primary hover:text-white'>
+                                            <FontAwesomeIcon icon={faPlus}/>
+                                            <p className='font-text'>Add New Filter Item</p>
+                                        </button>
+                                    }
                                 </div>
                             </DisclosurePanel>
                         </Disclosure>
+                        </>
                     ))}
+                    {
+                        modalState.openFilterEditor &&
+                        <button onClick={(e) => e.preventDefault()} className='flex items-center gap-4 text-primary transition-all ease-in-out text-sm border border-primary py-2 my-3 px-4 rounded-full hover:bg-primary hover:text-white'>
+                        <FontAwesomeIcon icon={faPlus}/>
+                        <p className='font-text'>Add New Filter Category</p>
+                        </button>
+                    }
                 </form>
             </div>
 
             {/* Sample Card for course display */}
-            <CourseListCard courseList={Courses} classname='row-start-3 row-span-1 col-start-1 col-span-3 w-full px-5 py-2 flex flex-col gap-2' onclick={OpenDialog}/>
+            <CourseListCard courseList={Courses} classname='row-start-3 row-span-1 col-start-1 col-span-3 w-full px-5 py-2 flex flex-col gap-2' onclick={OpenDialog} action={handleAction}/>
 
             {/* Sample Footer Pagenataion */}
             <div className='row-start-4 row-span-1 col-start-1 col-span-3 border-t border-divider mx-5 py-3 flex flex-row items-center justify-between'>
@@ -282,7 +331,10 @@ const handleFilter = (sectionId, value) => {
             <CourseCardModal open={modalState.openCard} close={CloseDialog} classname='relative z-10' selectedCourse={selectedCourse}/>
             {/* Add Modal */}
             <AddCourseModal open={modalState.openAddCourse} onClose={()=>toggleModal('openAddCourse',false)}/>
-            {/* Cutomizable filter */}
+            {/* Edit */}
+            <EditCourseModal open={modalState.openEditCourse} close={()=>toggleModal('openEditCourse', false)}/>
+            {/* Delete */}
+            <DeleteCourseModal open={modalState.openDeleteCourse} close={()=>toggleModal('openDeleteCourse', false)}/>
         </div>
 
     )

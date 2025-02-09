@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFolderPlus, faSearch, faArrowDownWideShort, faPlus, faMinus, faChevronUp, faChevronDown, faPenToSquare, faTrash, faChevronLeft, faChevronRight, faLaptopFile, faChalkboardTeacher, faCheck } from '@fortawesome/free-solid-svg-icons'
 
 
-const CourseListCard = ({courseList, classname, onclick}) => {
+const CourseListCard = ({courseList, classname, onclick, action}) => {
     return (
         <div className={classname}>
             {
@@ -24,11 +24,11 @@ const CourseListCard = ({courseList, classname, onclick}) => {
                                 </div>
                                 {/* Course Action */}
                                 <div className='flex flex-row gap-2'>
-                                    <div className='relative border-2 border-primary h-10 w-10 rounded-full flex items-center justify-center text-primary text-sm hover:text-white hover:bg-primary hover:cursor-pointer transition-all ease-in-out group'>
+                                    <div className='relative border-2 border-primary h-10 w-10 rounded-full flex items-center justify-center text-primary text-sm hover:text-white hover:bg-primary hover:cursor-pointer transition-all ease-in-out group' onClick={(e) => action(e, "openEditCourse")}>
                                         <FontAwesomeIcon icon={faPenToSquare}/>
                                         <p className='absolute w-auto bottom-10 z-10 bg-tertiary text-white p-2 rounded-md text-xs scale-0 font-text group-hover:scale-100'>Edit</p>
                                     </div>
-                                    <div className='relative border-2 border-primary h-10 w-10 rounded-full flex items-center justify-center text-primary text-sm hover:text-white hover:bg-primary hover:cursor-pointer transition-all ease-in-out group'>
+                                    <div className='relative border-2 border-primary h-10 w-10 rounded-full flex items-center justify-center text-primary text-sm hover:text-white hover:bg-primary hover:cursor-pointer transition-all ease-in-out group' onClick={(e) => action(e, "openDeleteCourse")}>
                                         <FontAwesomeIcon icon={faTrash}/>
                                         <p className='absolute w-auto bottom-10 z-10 bg-tertiary text-white p-2 rounded-md text-xs scale-0 font-text group-hover:scale-100'>Delete</p>
                                     </div>
