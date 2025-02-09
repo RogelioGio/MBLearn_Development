@@ -12,6 +12,9 @@ class userCredentialsPolicy
      */
     public function viewAny(UserCredentials $userCredentials): bool
     {
+        if($userCredentials->role === "System Admin"){
+            return true;
+        }
         return false;
     }
 
@@ -20,6 +23,11 @@ class userCredentialsPolicy
      */
     public function view(UserCredentials $userCredentials, UserCredentials $userCredentialsCredentials): bool
     {
+        if($userCredentials->role === "System Admin"){
+            return true;
+        } elseif($userCredentialsCredentials->id === $userCredentials->id){
+            return true;
+        }
         return false;
     }
 
@@ -28,6 +36,9 @@ class userCredentialsPolicy
      */
     public function create(UserCredentials $userCredentials): bool
     {
+        if($userCredentials->role === "System Admin"){
+            return true;
+        }
         return false;
     }
 
@@ -36,6 +47,11 @@ class userCredentialsPolicy
      */
     public function update(UserCredentials $userCredentials, UserCredentials $userCredentialsCredentials): bool
     {
+        if($userCredentials->role === "System Admin"){
+            return true;
+        } elseif($userCredentialsCredentials->id === $userCredentials->id){
+            return true;
+        }
         return false;
     }
 
@@ -44,6 +60,9 @@ class userCredentialsPolicy
      */
     public function delete(UserCredentials $userCredentials, UserCredentials $userCredentialsCredentials): bool
     {
+        if($userCredentials->role === "System Admin"){
+            return true;
+        }
         return false;
     }
 
@@ -52,6 +71,9 @@ class userCredentialsPolicy
      */
     public function restore(UserCredentials $userCredentials, UserCredentials $userCredentialsCredentials): bool
     {
+        if($userCredentials->role === "System Admin"){
+            return true;
+        }
         return false;
     }
 
@@ -60,6 +82,9 @@ class userCredentialsPolicy
      */
     public function forceDelete(UserCredentials $userCredentials, UserCredentials $userCredentialsCredentials): bool
     {
+        if($userCredentials->role === "System Admin"){
+            return true;
+        }
         return false;
     }
 }

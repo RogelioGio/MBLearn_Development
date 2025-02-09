@@ -22,9 +22,9 @@ class BulkStoreEnrollmentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            '*.userId'=> 'required|integer|exists:users,id',
-            '*.courseId'=> 'required|integer|exists:courses,id',
-            '*.enrollerId'=> 'required|integer|exists:users,id'
+            'data.*.userId'=> 'required|integer|exists:userCredentials,id',
+            'data.*.courseId'=> 'required|integer',
+            'data.*.enrollerId'=> 'required|integer|exists:userCredentials,id'
         ];
     }
 
@@ -38,4 +38,5 @@ class BulkStoreEnrollmentRequest extends FormRequest
         }
         $this->merge($data);
     }
+
 }

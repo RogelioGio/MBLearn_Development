@@ -16,15 +16,15 @@ class CourseResource extends JsonResource
     {
         //TODO add a way to see the course admin that is assigned and who added the course
         return [
+            'id'=> $this->id,
             'name'=>$this->name,
-            'code'=>$this->code,
             'description' => $this->description,
             'type'=> $this->type,
+            'category'=> $this->category,
             'trainingMode' => $this->training_mode,
             'mandatory'=> $this->mandatory,
             'duration'=> $this->duration,
             'archived'=>$this->archived,
-            
         ];
     }
 }

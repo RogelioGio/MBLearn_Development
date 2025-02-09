@@ -13,6 +13,9 @@ class userInfosPolicy
      */
     public function viewAny(UserCredentials $userCredentials): bool
     {
+        if($userCredentials->role === "System Admin"){
+            return true;
+        }
         return false;
     }
 
@@ -21,6 +24,11 @@ class userInfosPolicy
      */
     public function view(UserCredentials $userCredentials, UserInfos $userCredentialsInfos): bool
     {
+        if($userCredentials->role === "System Admin"){
+            return true;
+        } elseif($userCredentialsInfos->id === $userCredentials->id){
+            return true;
+        }
         return false;
     }
 
@@ -29,6 +37,9 @@ class userInfosPolicy
      */
     public function create(UserCredentials $userCredentials): bool
     {
+        if($userCredentials->role === "System Admin"){
+            return true;
+        }
         return false;
     }
 
@@ -37,6 +48,11 @@ class userInfosPolicy
      */
     public function update(UserCredentials $userCredentials, UserInfos $userCredentialsInfos): bool
     {
+        if($userCredentials->role === "System Admin"){
+            return true;
+        } elseif($userCredentialsInfos->id === $userCredentials->id){
+            return true;
+        }
         return false;
     }
 
@@ -45,6 +61,9 @@ class userInfosPolicy
      */
     public function delete(UserCredentials $userCredentials, UserInfos $userCredentialsInfos): bool
     {
+        if($userCredentials->role === "System Admin"){
+            return true;
+        }
         return false;
     }
 
@@ -53,6 +72,9 @@ class userInfosPolicy
      */
     public function restore(UserCredentials $userCredentials, UserInfos $userCredentialsInfos): bool
     {
+        if($userCredentials->role === "System Admin"){
+            return true;
+        }
         return false;
     }
 
@@ -61,6 +83,9 @@ class userInfosPolicy
      */
     public function forceDelete(UserCredentials $userCredentials, UserInfos $userCredentialsInfos): bool
     {
+        if($userCredentials->role === "System Admin"){
+            return true;
+        }
         return false;
     }
 }

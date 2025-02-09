@@ -13,7 +13,10 @@ class EnrollmentPolicy
      */
     public function viewAny(UserCredentials $userCredentials): bool
     {
-        return false;
+        if($userCredentials->role === "learner"){
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -21,6 +24,9 @@ class EnrollmentPolicy
      */
     public function view(UserCredentials $userCredentials, Enrollment $enrollment): bool
     {
+        if($enrollment->user_id === $userCredentials->id){
+            return true;
+        }
         return false;
     }
 
@@ -29,6 +35,9 @@ class EnrollmentPolicy
      */
     public function create(UserCredentials $userCredentials): bool
     {
+        if($userCredentials->role === "Course Admin"){
+            return true;
+        }
         return false;
     }
 
@@ -37,6 +46,9 @@ class EnrollmentPolicy
      */
     public function update(UserCredentials $userCredentials, Enrollment $enrollment): bool
     {
+        if($userCredentials->role === "Course Admin"){
+            return true;
+        }
         return false;
     }
 
@@ -45,6 +57,9 @@ class EnrollmentPolicy
      */
     public function delete(UserCredentials $userCredentials, Enrollment $enrollment): bool
     {
+        if($userCredentials->role === "Course Admin"){
+            return true;
+        }
         return false;
     }
 
@@ -53,6 +68,9 @@ class EnrollmentPolicy
      */
     public function restore(UserCredentials $userCredentials, Enrollment $enrollment): bool
     {
+        if($userCredentials->role === "Course Admin"){
+            return true;
+        }
         return false;
     }
 
@@ -61,6 +79,9 @@ class EnrollmentPolicy
      */
     public function forceDelete(UserCredentials $userCredentials, Enrollment $enrollment): bool
     {
+        if($userCredentials->role === "Course Admin"){
+            return true;
+        }
         return false;
     }
 }
