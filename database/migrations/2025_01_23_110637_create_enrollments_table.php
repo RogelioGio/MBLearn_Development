@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->integer('user_id');
             $table->integer('course_id');
+            $table->dateTime('deadline');
             $table->integer('enroller_id');
             $table->timestamps();
         });

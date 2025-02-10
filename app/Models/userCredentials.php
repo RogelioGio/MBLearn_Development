@@ -28,10 +28,9 @@ class UserCredentials extends Model implements Authenticatable
 
     protected $fillable = [
         'employeeID',
-        'name',
         'MBemail',
         'password',
-        'role'
+        'user_info_id',
     ];
 
     /**
@@ -83,29 +82,8 @@ class UserCredentials extends Model implements Authenticatable
         return null;
     }
 
-    //Functions for relationships
-    public function enrollments(): HasMany{
-        return $this->hasMany(Enrollment::class, 'user_id');
-    }
-
-    public function enrolledCourses(): HasManyThrough{
-        return $this->hasManyThrough(Course::class, Enrollment::class, 'user_id');
-    }
-
-    //TODO change name to be more clear, for knowing who made the enrollment
-    public function enrollings(): HasMany{
-        return $this->hasMany(Enrollment::class, 'enroller_id');
-    }
-
-    public function addedCourses(): HasMany{
-        return $this->hasMany(Course::class, 'system_admin_id');
-    }
-
-    public function assignedCourses(): HasMany{
-        return $this->hasMany(Course::class, 'assigned_course_admin_id');
-    }
-
     public function userInfos(): HasOne{
-        return $this->hasOne(UserInfos::class, 'user_credentials_id');
+        return $this->hasOne(UserInfos::class, 'user_info_id');
     }
+
 }

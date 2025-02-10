@@ -9,32 +9,32 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
-        Schema::table('userinfo', function (Blueprint $table) {
-          // Step 1: Remove the existing column
-            $table->dropColumn('employeeID');
-        });
+    // public function up(): void
+    // {
+    //     Schema::table('userinfo', function (Blueprint $table) {
+    //       // Step 1: Remove the existing column
+    //         $table->dropColumn('employeeID');
+    //     });
 
-        Schema::table('userinfo', function (Blueprint $table) {
-            // Step 2: Recreate the column next to the `id` column
-            $table->string('employeeID')->after('id')->nullable();
-        });
-    }
+    //     Schema::table('userinfo', function (Blueprint $table) {
+    //         // Step 2: Recreate the column next to the `id` column
+    //         $table->string('employeeID')->after('id')->nullable();
+    //     });
+    // }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        Schema::table('userinfo', function (Blueprint $table) {
-            // Remove the column (in case of rollback)
-            $table->dropColumn('employeeID');
-        });
+    // /**
+    //  * Reverse the migrations.
+    //  */
+    // public function down(): void
+    // {
+    //     Schema::table('userinfo', function (Blueprint $table) {
+    //         // Remove the column (in case of rollback)
+    //         $table->dropColumn('employeeID');
+    //     });
 
-        Schema::table('userinfo', function (Blueprint $table) {
-            // Recreate the column (but without positioning since rollback doesn't allow `->after`)
-            $table->string('employeeID')->nullable();
-        });
-    }
+    //     Schema::table('userinfo', function (Blueprint $table) {
+    //         // Recreate the column (but without positioning since rollback doesn't allow `->after`)
+    //         $table->string('employeeID')->nullable();
+    //     });
+    // }
 };

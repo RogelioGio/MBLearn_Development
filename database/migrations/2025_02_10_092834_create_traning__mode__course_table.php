@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('userInfo', function(Blueprint $table){
-            $table->string('status')->nullable()->change();
+        Schema::create('traning__mode__course', function (Blueprint $table) {
+            $table->id();
+            $table->id('training_mode_id');
+            $table->id('course_id');
+            $table->timestamps();
         });
     }
 
@@ -21,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('traning__mode__course');
     }
 };
