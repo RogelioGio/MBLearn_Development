@@ -18,7 +18,7 @@ class Enrollment extends Model
     ];
 
     public function enrolledUser(): BelongsTo{
-        return $this->belongsTo(UserCredentials::class);
+        return $this->belongsTo(UserInfos::class);
     }
 
     public function course(): BelongsTo{
@@ -26,6 +26,6 @@ class Enrollment extends Model
     }
 
     public function enroller(): BelongsTo{
-        return $this->belongsTo(UserCredentials::class);
+        return $this->belongsTo(UserInfos::class);
     }
 }

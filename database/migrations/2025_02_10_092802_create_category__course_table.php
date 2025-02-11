@@ -11,7 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //
+        Schema::create('category__course', function (Blueprint $table) {
+            $table->id();
+            $table->integer('category_id');
+            $table->integer('course_id');
+            $table->timestamps();
+        });
     }
 
     /**
@@ -19,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('category__course');
     }
 };

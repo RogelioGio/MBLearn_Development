@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\addUserInfo;
 use App\Http\Requests\updateUserInfo;
+use App\Models\Course;
+use App\Models\Enrollment;
 use App\Models\UserInfos;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -11,6 +13,7 @@ use Illuminate\Support\Facades\Cache;
 
 class userInfo_controller extends Controller
 {
+
     //Add user information function
     public function addUser(addUserInfo $request){
 

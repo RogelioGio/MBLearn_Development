@@ -11,9 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Schema::table('userInfo', function(Blueprint $table){
-        //     $table->string('status')->nullable()->change();
-        // });
+        Schema::create('permission_userinfo', function (Blueprint $table) {
+            $table->id();
+            $table->integer('userinfo_id');
+            $table->integer('permission_id');
+            $table->timestamps();
+        });
     }
 
     /**
@@ -21,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('permission_userinfo');
     }
 };

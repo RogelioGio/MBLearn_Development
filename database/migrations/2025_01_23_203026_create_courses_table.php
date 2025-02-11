@@ -15,14 +15,13 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('description');
-            $table->string('type');
-            $table->string('category');
-            $table->string('training_mode');
+            $table->integer('type_id');
+            $table->integer('category_id');
+            $table->integer('training_mode_id');
             $table->string('mandatory');
-            $table->string('duration');
             $table->string('archived');
             $table->integer('system_admin_id');
-            $table->integer('assigned_course_admin_id');
+            $table->integer('assigned_course_admin_id')->nullable();
             $table->timestamps();
         });
     }
