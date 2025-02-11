@@ -7,29 +7,26 @@ const axiosClient = axios.create({
 
 axiosClient.interceptors.request.use(
     (config) => {
-        // Do something before request is sent
         const token = localStorage.getItem('ACCESS_TOKEN');
 
-        //User Inactivity handling
-        const lastActivity = localStorage.getItem('LAST_ACTIVITY');
-        const inactivityTime = 5*60*60*1000;
+        // User Inactivity handling
+        const lastActivity = parseInt(localStorage.getItem('LAST_ACTIVITY'), 10);
+        const inactivityTime = 5 * 60 * 60 * 1000; // 5 hours
 
-        if(lastActivity && Date.now() - lastActivity > inactivityTime){
+        if (lastActivity && Date.now() - lastActivity > inactivityTime) {
             localStorage.removeItem('ACCESS_TOKEN');
             localStorage.removeItem('LAST_ACTIVITY');
             return Promise.reject(new Error('User is inactive'));
         }
 
-        if(token){
-            config.headers.Authorization=`Bearer ${token}`;
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+            localStorage.setItem('LAST_ACTIVITY', Date.now()); // Update activity timestamp
         }
 
         return config;
     },
-    (error) => {
-        // Do something with request error
-        return Promise.reject(error);
-    }
+    (error) => Promise.reject(error)
 );
 
 axiosClient.interceptors.response.use(

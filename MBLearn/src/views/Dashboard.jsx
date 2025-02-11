@@ -52,13 +52,13 @@ const DashboardLayout = ({role,name}) => {
 export default function Dashboard()
 {
     const {user, role, token} = useStateContext();
+    if(!token){
+        return window.location.href = "/login";
+    }
     if (!user) {
         return <div>Loading...</div>;
     }
 
-    if(!token){
-        return window.location.href = "/login";
-    }
 
     return (
             <DashboardLayout role={role} name={user.name}/>
