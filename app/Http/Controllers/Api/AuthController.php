@@ -14,17 +14,15 @@ use Illuminate\Http\Request;
 class AuthController extends Controller
 {
     //role dashboard redirections
-    private function redirections(string $role){
-        switch($role){
-
-            case 'System Admin' :
-                return '/systemadmin';
-            case 'Course Admin' :
-                return '/courseadmin';
-            case 'Learner' :
-                return '/learner';
-            default:
-                return '/';
+    private function redirections(array $role){
+        if(in_array('System Admin', $role['role_name'])){
+            return '/systemadmin';
+        } elseif(in_array('Course Admin', $role['role_name'])){
+            return '/courseadmin';
+        } elseif(in_array('Learner', $role['role_name'])){
+            return '/learner';
+        } else{
+            return '/';
         }
     }
 
@@ -33,6 +31,12 @@ class AuthController extends Controller
 
         $credentials = $request->validated();
         $user = UserCredentials::where('MBemail', $credentials['MBemail'])->first();
+
+        if(!($user->userInfos->status === "Active")){
+            return response()->json([
+                'message' => 'This user is currently inactive'
+            ]);
+        }
 
         if(!$user){
             return response()->json([
@@ -52,7 +56,7 @@ class AuthController extends Controller
             //Log
             Log::info('User Login: ' . $user->MBemail);
 
-            $redirect = $this->redirections($user->role);
+            $redirect = $this->redirections($user->userInfos->roles->toArray());
 
             return response()->json([
                 'message' => 'Login Successful',

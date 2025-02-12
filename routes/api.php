@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\CourseController;
 use App\Http\Controllers\Api\EnrollmentController;
 use App\Http\Controllers\Api\UserController;;
@@ -52,6 +53,8 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::apiResource('/courses', CourseController::class);
     Route::post('/courses/bulk', [CourseController::class, 'bulkStore']);
     Route::get('/courses/{course}/users', [CourseController::class, 'showEnrolledUsers']);
+
+    Route::apiResource('/categories', CategoryController::class);
 });
 
 
