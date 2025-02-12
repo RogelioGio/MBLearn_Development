@@ -18,10 +18,8 @@ class userCredentials_controller extends Controller
 
         $userCredentials = UserCredentials::create([
             'employeeID' => $validatedData['employeeID'],
-            'name' => $validatedData['name'],
             'MBemail' => $validatedData['MBemail'],
             'password' => bcrypt($validatedData['password']),// Hash the password
-            'role' => $validatedData['role']
         ]);
 
 
@@ -38,7 +36,6 @@ class userCredentials_controller extends Controller
 
         $userCredentials->update([
             'employeeID' => $validatedData['employeeID'],
-            'name' => $validatedData['name'],
         ]);
 
         return response()->json([

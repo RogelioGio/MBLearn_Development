@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class updateUserCreds_info extends FormRequest
+class UpdateCategoryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,7 +22,13 @@ class updateUserCreds_info extends FormRequest
     public function rules(): array
     {
         return [
-            'employeeID' => 'required|string|max:11',
+            'categoryName' => "required|unique:categories,category_name"
         ];
+    }
+
+    public function prepareforValidation(){
+        $this->merge([
+            'category_name' => $this->categoryName
+        ]);
     }
 }

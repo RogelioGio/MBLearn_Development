@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('city')->index();
             $table->enum('status',['Active','Inactive'])->default('Active');
             $table->string('profile_image')->nullable();
-            $table->integer('user_credentials_id');
+            $table->integer('user_credentials_id')->nullable();
             $table->timestamps();
         });
     }

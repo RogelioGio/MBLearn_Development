@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('traning__mode__course', function (Blueprint $table) {
             $table->id();
-            $table->id('training_mode_id');
-            $table->id('course_id');
+            $table->integer('training_mode_id');
+            $table->integer('course_id');
             $table->timestamps();
         });
     }

@@ -26,8 +26,7 @@ class UserCredentials extends Model implements Authenticatable
      * @var array<int, string>
      */
 
-    protected $fillable = [
-        'employeeID',
+    protected $fillable = [,
         'MBemail',
         'password',
         'user_info_id',
@@ -83,7 +82,7 @@ class UserCredentials extends Model implements Authenticatable
     }
 
     public function userInfos(): HasOne{
-        return $this->hasOne(UserInfos::class, 'user_info_id');
+        return $this->hasOne(UserInfos::class, 'user_credentials_id');
     }
 
 }
