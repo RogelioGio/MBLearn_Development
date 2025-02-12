@@ -5,9 +5,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CourseController;
 use App\Http\Controllers\Api\EnrollmentController;
-use App\Http\Controllers\Api\UserController;;
+use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\userInfo_controller;
 use App\Http\Controllers\Api\userCredentials_controller;
+use App\Http\Controllers\Api\FilterCategoryController;
+use App\Http\Controllers\Api\Filters;
+
 
 //New Login routing
 Route::post('/login', [AuthController::class, 'login']);
@@ -52,6 +55,11 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::apiResource('/courses', CourseController::class);
     Route::post('/courses/bulk', [CourseController::class, 'bulkStore']);
     Route::get('/courses/{course}/users', [CourseController::class, 'showEnrolledUsers']);
+
+    //Dynamic Course Category API
+    Route::get('/categories', [FilterCategoryController::class, 'index']);
+    Route::get('/fetch',[Filters::class, 'index']);
+
 });
 
 
