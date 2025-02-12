@@ -14,17 +14,31 @@ use Illuminate\Http\Request;
 class AuthController extends Controller
 {
     //role dashboard redirections
-    private function redirections(array $role){
-        if(in_array('System Admin', $role['role_name'])){
+    // private function redirections(array $role){
+    //     if(in_array('System Admin', $role['role_name'])){
+    //         return '/systemadmin';
+    //     } elseif(in_array('Course Admin', $role['role_name'])){
+    //         return '/courseadmin';
+    //     } elseif(in_array('Learner', $role['role_name'])){
+    //         return '/learner';
+    //     } else{
+    //         return '/';
+    //     }
+    // }
+
+    private function redirection($roles){
+        if($roles === 'System Admin'){
             return '/systemadmin';
-        } elseif(in_array('Course Admin', $role['role_name'])){
+        } elseif($roles === 'Course Admin'){
             return '/courseadmin';
-        } elseif(in_array('Learner', $role['role_name'])){
+        } elseif($roles === 'Learner'){
             return '/learner';
         } else{
             return '/';
         }
     }
+
+
 
     //New Login to another table
     public function login(LoginRequest $request){
@@ -56,7 +70,8 @@ class AuthController extends Controller
             //Log
             Log::info('User Login: ' . $user->MBemail);
 
-            $redirect = $this->redirections($user->userInfos->roles->toArray());
+            //$redirect = $this->redirections($user->userInfos->roles->toArray());
+            $redirect = $this->redirection($user->role);
 
             return response()->json([
                 'message' => 'Login Successful',

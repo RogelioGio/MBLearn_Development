@@ -3,28 +3,19 @@
 namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-use App\Models\FilterCategory;
+use App\Http\Controllers\Controller;
 use App\Models\FilterOption;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\Controller;
 
-
-class FilterCategoryController extends Controller
+class FilterOptionController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $categories = FilterCategory::with('options')->get();
-
-        if ($categories->isEmpty()) {
-            return response()->json(['message' => 'No categories found'], 404);
-        }
-
-        return response()->json($categories, 200);
+        //
     }
 
     /**
@@ -32,17 +23,33 @@ class FilterCategoryController extends Controller
      */
     public function store(Request $request)
     {
+        // Validate request data
         $validator = Validator::make($request->all(), [
-            'filter_id' => 'required|string|unique:filter_categories,filter_id',
-            'name' => 'required|string'
+            'filter_category_id' => 'required|exists:filter_categories,id',
+            'value' => 'required|string|unique:filter_options,value',
+            'label' => 'required|string|max:255',
+            'checked' => 'boolean',
         ]);
 
+        // Return validation errors
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $category = FilterCategory::create($request->all());
-        return response()->json($category, 201);
+        // Create a new filter option
+        $option = FilterOption::create([
+            'filter_category_id' => $request->filter_category_id,
+            'value' => $request->value,
+            'label' => $request->label,
+            'checked' => $request->checked ?? false,
+        ]);
+
+        Log::info('New Filter Option Added:', $option->toArray());
+
+        return response()->json([
+            'message' => 'Filter option added successfully',
+            'option' => $option
+        ], 201);
     }
 
     /**

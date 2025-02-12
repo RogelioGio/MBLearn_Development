@@ -39,4 +39,8 @@ class HandleInertiaRequests extends Middleware
             //
         ]);
     }
+
+    protected $except = [
+        'api/*' // Exempt all API routes from CSRF protection
+    ];
 }
