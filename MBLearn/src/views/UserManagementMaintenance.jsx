@@ -13,6 +13,7 @@ import UserListLoadingProps from '../modalsandprops/UserListLoadingProps';
 import EditUserModal from '../modalsandprops/EditUserModal';
 import DeleteUserModal from '../modalsandprops/DeleteUserModal';
 import DeleteUserSuccessfully from '../modalsandprops/DeleteUserSuccessfully';
+import UserManagemenFilterPopover from '../modalsandprops/UserManagementFilterPopover';
 
 
 //User Filter
@@ -239,10 +240,7 @@ export default function UserManagementMaintenance() {
 
             {/* User Filter */}
             <div className='col-start-1 row-start-2 row-span-1 px-5 py-3'>
-            <button className='flex flex-row items-center border-2 border-primary py-2 px-4 font-header bg-secondarybackground rounded-md text-primary gap-2 w-fit hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md'>
-                <p>Filter</p>
-                <FontAwesomeIcon icon={faFilter}/>
-            </button>
+                <UserManagemenFilterPopover/>
             </div>
 
             {/* Userlist/Table */}
