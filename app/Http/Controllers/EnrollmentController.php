@@ -15,7 +15,7 @@ class EnrollmentController extends Controller
         $page = $request->input('page', 1);//Default page
         $perPage = $request->input('perPage',5); //Number of entry per page
 
-        $learner = UserInfos::where('role', 'Learner')->paginate($perPage);
+        $learner = UserInfos::paginate($perPage);
         \Log::info($learner);
         return response()->json([
             'data' => $learner->items(),

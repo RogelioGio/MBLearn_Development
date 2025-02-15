@@ -12,7 +12,7 @@ use App\Http\Controllers\Api\userInfo_controller;
 use App\Http\Controllers\Api\userCredentials_controller;
 use App\Http\Controllers\Api\FilterCategoryController;
 use App\Http\Controllers\Api\Filters;
-
+use App\Http\Controllers\EnrollmentController as ControllersEnrollmentController;
 
 //New Login routing
 Route::post('/login', [AuthController::class, 'login']);
@@ -48,7 +48,8 @@ Route::middleware('auth:sanctum')->group(function(){
     //Enrollment API
     Route::post('/enrollments/bulk', [EnrollmentController::class, 'bulkStore']);
     Route::apiResource('/enrollments', EnrollmentController::class);
-    Route::get('/index-user/enrolees', [EnrollmentController:: class, 'enrolees']);
+    //Route::get('/index-user/enrolees', [EnrollmentController:: class, 'enrolees']);
+    Route::get('/index-user/enrolees', [ControllersEnrollmentController::class, 'enrolees']);
 
     //Courses API
     Route::apiResource('/courses', CourseController::class);
