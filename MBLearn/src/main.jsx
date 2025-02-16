@@ -5,9 +5,13 @@ import App from './App.jsx'
 import { RouterProvider } from 'react-router-dom'
 import router from './router.jsx'
 import { ContextProvider } from './contexts/ContextProvider'
+import '@mantine/core/styles.css';
+import { MantineProvider } from '@mantine/core';
 
-createRoot(document.getElementById('root')).render(
+createRoot(document.getElementById("root")).render(
+  <MantineProvider withGlobalStyles withNormalizeCSS>
     <ContextProvider>
-        <RouterProvider router={router}></RouterProvider>
+      <RouterProvider router={router} />
     </ContextProvider>
-)
+  </MantineProvider>
+);

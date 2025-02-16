@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet';
 import CourseListCard from '../modalsandprops/CourseListCard';
 import CourseCardModal from '../modalsandprops/CourseCardModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faFolderPlus, faSearch,  faArrowUpWideShort, faArrowDownWideShort, faPlus, faMinus, faChevronUp, faChevronDown, faPenToSquare, faTrash, faChevronLeft, faChevronRight, faLaptopFile, faChalkboardTeacher, faCheck, faPen, faFloppyDisk, faArrowUpAZ, faSort, faArrowDownAZ, faArrowDownShortWide, faArrowDownZA } from '@fortawesome/free-solid-svg-icons'
+import { faFolderPlus, faSearch,  faArrowUpWideShort, faArrowDownWideShort, faPlus, faMinus, faChevronUp, faChevronDown, faPenToSquare, faTrash, faChevronLeft, faChevronRight, faLaptopFile, faChalkboardTeacher, faCheck, faPen, faFloppyDisk, faArrowUpAZ, faSort, faArrowDownAZ, faArrowDownShortWide, faArrowDownZA, faTrashCan } from '@fortawesome/free-solid-svg-icons'
 import { Menu, MenuButton, MenuItem, MenuItems, Disclosure, DisclosureButton, DisclosurePanel, Dialog, DialogBackdrop, DialogPanel, DialogTitle} from '@headlessui/react';
 import AddCourseModal from '../modalsandprops/AddCourseModal';
 import EditCourseModal from '../modalsandprops/EditCourseModal';
@@ -218,7 +218,9 @@ const saveNewOptions = ()=> {
                 }: category
             ))
 
-    const unsavedCategoriesAndOption = newFilterCategory.map((category) =>
+    const unsavedCategoriesAndOption = newFilterCategory
+    .filter((category) => category.name.trim() !== "")
+    .map((category) =>
         ({
             ...category,
             option: (category.option||[])
@@ -230,7 +232,6 @@ const saveNewOptions = ()=> {
             })),
         })
     )
-
 
             setNewFilterOption({});
             setfilter((prev) => [...prev, ...unsavedCategoriesAndOption]);
@@ -294,6 +295,43 @@ const deleteFilterOption = (categoryID, optionValue, isNew = false) => {
             }:category)
         );
     }
+}
+
+// Delete Category
+const deleteCourseCategory = (categoryID, isNewCategory = false) => {
+    if(isNewCategory){
+        setNewFilterCategory((prevCategories) =>
+            prevCategories.filter((category, index) => index !== categoryID)
+        );
+    }else{
+        setfilter((prevFilters) =>
+            prevFilters.filter((category) => category.id !== categoryID)
+        )
+    }
+}
+
+//Edit Category
+const [editingCategoryIndex, setEditingCategoryIndex] = useState(null);
+const editCourseCategory = (save,categoryID, newName) => {
+    if(save === "saved"){
+        setfilter((prevFilters) =>
+            prevFilters.map((category) =>
+                category.id === categoryID ? {...category, name: newName}:category
+            )
+        )
+    }else{
+        setNewFilterCategory((prev) => {
+            const updatedCategories = [...prev];
+            updatedCategories[index] = {
+                ...updatedCategories[index],
+                name: newName,
+            };
+            return updatedCategories;
+        })
+    }
+
+
+
 }
 
 
@@ -387,7 +425,30 @@ const handleFilter = (sectionId, value) => {
                         <Disclosure key={section.id} as="div" className='border-b border-divider py-6'>
                             <h3 className='-my-3 flow-root font-text text-primary'>
                                 <DisclosureButton className='group flex w-full justify-between py-3 text-sm hover:text-primary transition-all ease-in-out'>
-                                    <span>{section.name}</span>
+                                    {
+                                        modalState.openFilterEditor?(
+                                            <div className='flex flex-row gap-4 items-center'>
+                                                <FontAwesomeIcon icon={faPenToSquare} className='text-unactive hover:cursor-pointer hover:text-primary transition-all ease-in-out' onClick={() => setEditingCategoryIndex(section.id)}/>
+                                                {
+                                                    editingCategoryIndex === section.id ? (
+                                                        <input
+                                                        type="text"
+                                                        className="border border-unactive rounded-md p-2 text-xs focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                                        value={section.name}
+                                                        onChange={(e) => editCourseCategory("saved", section.id, e.target.value)}
+                                                        onBlur={() => setEditingCategoryIndex(null)}
+                                                        autoFocus
+                                                        />
+                                                    ):(
+                                                        <span>{section.name}</span>
+                                                    )
+                                                }
+                                                <FontAwesomeIcon icon={faTrashCan} className='text-unactive cursor-pointer hover:text-primary transition-all ease-in-out' onClick={()=>deleteCourseCategory(section.id, false)}/>
+                                            </div>
+                                        ):(
+                                            <span>{section.name}</span>
+                                        )
+                                    }
                                     <span className='ml-6 flex items-center'>
                                         <FontAwesomeIcon icon={faChevronDown} className='group-data-[open]:hidden'/>
                                         <FontAwesomeIcon icon={faChevronUp} className='group-[&:not([data-open])]:hidden'/>
@@ -458,6 +519,7 @@ const handleFilter = (sectionId, value) => {
                                         </div>
 
                                     ))}
+                                    {/* Add FIlter Option Input*/}
                                     {
                                         newFilterOption[section.id]?.map((option, index) => (
                                             <div key={`new-${section.id}-${index}`} className='flex flex-row justify-between items-center'>
@@ -474,7 +536,7 @@ const handleFilter = (sectionId, value) => {
                                             </div>
                                         ))
                                     }
-
+                                    {/* Add FIlter Option Button*/}
                                     {
                                         modalState.openFilterEditor &&
                                         <button onClick={(e) => insertOption(e,section.id)} className='flex items-center gap-4 text-primary transition-all ease-in-out text-sm border border-primary py-2 px-4 rounded-full hover:bg-primary hover:text-white'>
@@ -487,6 +549,7 @@ const handleFilter = (sectionId, value) => {
                         </Disclosure>
                         </>
                     ))}
+                    {/* Handle New Category */}
                     {
                         newFilterCategory.map((section, index) => (
                             <Disclosure key={`new-${index}`} as="div" className='border-b border-divider py-6'>
@@ -505,11 +568,11 @@ const handleFilter = (sectionId, value) => {
                                         </span>
                                     </DisclosureButton>
                                 </h3>
-
-                                <DisclosurePanel>
+                                {/* Handle New Category Options*/}
+                                <DisclosurePanel className='pt-6'>
                                     {
                                         section.option?.map((option, optionIndex) => (
-                                            <div key={`new-${index}-${optionIndex}`} className="flex flex-row justify-between items-center">
+                                            <div key={`new-${index}-${optionIndex}`} className="flex flex-row justify-between items-center py-3">
                                                 <input
                                                     type="text"
                                                     className="border border-unactive rounded-md p-2 text-xs focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
@@ -529,6 +592,7 @@ const handleFilter = (sectionId, value) => {
                                             </div>
                                         ))
                                     }
+                                    {/* Add FIlter Option Button*/}
                                     {
                                         modalState.openFilterEditor &&
                                         <button
