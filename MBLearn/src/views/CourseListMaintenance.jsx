@@ -329,9 +329,6 @@ const editCourseCategory = (save,categoryID, newName) => {
             return updatedCategories;
         })
     }
-
-
-
 }
 
 
