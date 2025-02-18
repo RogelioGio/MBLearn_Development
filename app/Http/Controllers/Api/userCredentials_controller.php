@@ -14,10 +14,9 @@ class userCredentials_controller extends Controller
 {
     public function addUserCredentials(addUserCredential_request $request){
 
-        $validatedData = $request->validated()  ;
+        $validatedData = $request->validated();
 
         $userCredentials = UserCredentials::create([
-            'employeeID' => $validatedData['employeeID'],
             'MBemail' => $validatedData['MBemail'],
             'password' => bcrypt($validatedData['password']),// Hash the password
         ]);
@@ -29,13 +28,11 @@ class userCredentials_controller extends Controller
     }
 
     //update user credentials in the user maintenance management
-    public function updateUserCredentials(updateUserCreds_info $request, $employeeID){
+    public function updateUserCredentials(updateUserCreds_info $request, UserCredentials $userCredentials){
         $validatedData = $request->validated();
 
-        $userCredentials = UserCredentials::where('employeeID', $employeeID)->first();
-
         $userCredentials->update([
-            'employeeID' => $validatedData['employeeID'],
+            'password' => bcrypt($validatedData['password'])
         ]);
 
         return response()->json([
@@ -67,8 +64,9 @@ class userCredentials_controller extends Controller
     
     //find by employeeID in the user maintenance management
     public function findUser_EmployeeID($employeeID){
-        $userCredentials = UserCredentials::where('employeeID', $employeeID)->first();
+        $userinfo = UserInfos::where('employeeID', $employeeID)->first();
 
+        $userCredentials = $userinfo->userCredentials;
         if($userCredentials){
             return response()->json([
                 'message' => 'User Credentials Found',
@@ -81,28 +79,22 @@ class userCredentials_controller extends Controller
         }
     }
     public function resetUsers()
-{
-    // Truncate the users table
-    DB::table('userCredentials')->truncate();
+    {
+        // Truncate the users table
+        DB::table('userCredentials')->truncate();
 
-    return response()->json([
-        'message' => 'Users table truncated and auto-increment reset.'
-    ]);
+        return response()->json([
+            'message' => 'Users table truncated and auto-increment reset.'
+        ]);
     }
 
     //Delete User
-    public function deleteUser($employeeID)
+    public function deleteUser(UserCredentials $userCredentials)
     {
-        $user = UserCredentials::where('employeeID', $employeeID)->first();
-
-        if($user){
-            $user->delete();
-            return response()->json(['message' => 'User deleted successfully!'], 200);
-        }else {
-            return response()->json(['message' => 'User not found'], 404);
-        }
+        $userCredentials->userInfos->status = "Inactive";
+        return response()->json([
+            'message' => 'User is now set to inactive'
+        ]);
     }
-
-
 
 }

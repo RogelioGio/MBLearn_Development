@@ -26,7 +26,7 @@ class UserCredentials extends Model implements Authenticatable
      * @var array<int, string>
      */
 
-    protected $fillable = [,
+    protected $fillable = [
         'MBemail',
         'password',
         'user_info_id',

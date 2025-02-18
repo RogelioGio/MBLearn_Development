@@ -27,20 +27,25 @@ Route::middleware('auth:sanctum')->group(function(){
 
     //Userlist API for the frontend
     Route::post('/add-user', [userInfo_controller::class, 'addUser']);
+    //Send the id for both the userinfos and roleid
+    Route::post('/addRole/{userInfos}/{role}', [userInfo_controller::class, 'addRole']);
+    Route::post('/removeRole/{userInfos}/{role}', [userInfo_controller::class, 'removeRole']);
+    Route::post('/addPermission/{userInfos}/{permission}', [userInfo_controller::class, 'addPermission']);
+    Route::post('removePermission/{userInfos}/{permission}', [userInfo_controller::class, 'removePermission']);
     Route::get('/index-user',[userInfo_controller::class, 'indexUsers']);
-    Route::get('/select-user/{id}',[userInfo_controller::class, 'findUser']);
+    Route::get('/select-user/{userInfos}',[userInfo_controller::class, 'findUser']);
     Route::get('/select-employeeid/{employeeID}',[userInfo_controller::class, 'findUser_EmployeeID']);
-    Route::put('/update-user-info/{employeeID}',[userInfo_controller::class, 'updateUser']);
-    Route::delete('/delete-user/{employeeID}',[userInfo_controller::class, 'deleteUser']);
+    Route::put('/update-user-info/{userInfos}',[userInfo_controller::class, 'updateUser']);
+    Route::delete('/delete-user/{userInfos}',[userInfo_controller::class, 'deleteUser']);
     Route::get('/reset-user',[userInfo_controller::class, 'resetUser']); //reset user table
     Route::get('get-profile-image',[userInfo_controller::class, 'getProfile']); //Get Profile Image for UserCredentials
 
     //UserCredential API (for logging in accounts)
     Route::post('/addusercredentials', [userCredentials_controller::class, 'addUserCredentials']);
-    Route::put('/update-user-creds/{employeeID}',[userCredentials_controller::class, 'updateUserCredentials']);
+    Route::put('/update-user-creds/{userCredentials}',[userCredentials_controller::class, 'updateUserCredentials']);
     Route::get('/index-user-creds',[userCredentials_controller::class, 'userCredentialsList']);
-    Route::get('/select-user-creds/{employeeID}',[userCredentials_controller::class, 'findUser_EmployeeID']);
-    Route::delete('/delete-user-creds/{employeeID}',[userCredentials_controller::class, 'deleteUser']);
+    Route::get('/select-user-creds/{userCredentials}',[userCredentials_controller::class, 'findUser_EmployeeID']);
+    Route::delete('/delete-user-creds/{userCredentials}',[userCredentials_controller::class, 'deleteUser']);
     Route::get('/reset-user-creds',[userCredentials_controller::class, 'resetUsers']); //reset user table
     Route::get('/usercredentials/{userCredentials}/courses', [userCredentials_controller::class, 'showEnrolledCourses']);
 
@@ -51,6 +56,12 @@ Route::middleware('auth:sanctum')->group(function(){
 
     //Courses API
     Route::apiResource('/courses', CourseController::class);
+    Route::post('/addType/{course}/{type}', [CourseController::class, 'addType']);
+    Route::post('/addType/{course}/{type}', [CourseController::class, 'removeType']);
+    Route::post('/addType/{course}/{category}', [CourseController::class, 'addCategory']);
+    Route::post('/addType/{course}/{category}', [CourseController::class, 'removeCategory']);
+    Route::post('/addType/{course}/{training_mode}', [CourseController::class, 'addTrainingMode']);
+    Route::post('/addType/{course}/{training_mode}', [CourseController::class, 'removeTrainingMode']);
     Route::post('/courses/bulk', [CourseController::class, 'bulkStore']);
     Route::get('/courses/{course}/users', [CourseController::class, 'showEnrolledUsers']);
 

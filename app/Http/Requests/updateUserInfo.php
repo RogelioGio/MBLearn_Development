@@ -23,13 +23,15 @@ class updateUserInfo extends FormRequest
     {
         return [
             'employeeID' => 'required|string|max:11',
-            'name' => 'required|string|max:255',
+            'first_name' => 'required|string',
+            'last_name' => 'required|string',
+            'middle_initial' => 'required|string',
+            'name_suffix' => 'required|string',
             'department' => 'nullable|string|max:255',
             'title' => 'nullable|string|max:255',
             'branch' => 'nullable|string|max:255',
             'city' => 'required|string|max:255',
-            'role' => 'required|in:System Admin,Course Admin,Learner',
-            'status' => 'nullable|in:Active, Unactive',
+            'status' => 'nullable|in:Active, Inactive',
         ];
     }
 }

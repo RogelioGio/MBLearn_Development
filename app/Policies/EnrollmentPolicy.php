@@ -13,7 +13,7 @@ class EnrollmentPolicy
      */
     public function viewAny(UserCredentials $userCredentials): bool
     {
-        if($userCredentials->role === "learner"){
+        if($userCredentials->userInfos->role === "learner"){
             return false;
         }
         return true;
@@ -24,7 +24,7 @@ class EnrollmentPolicy
      */
     public function view(UserCredentials $userCredentials, Enrollment $enrollment): bool
     {
-        if($enrollment->user_id === $userCredentials->id){
+        if($enrollment->enrolledUser->id === $userCredentials->userInfos->id){
             return true;
         }
         return false;
@@ -35,7 +35,7 @@ class EnrollmentPolicy
      */
     public function create(UserCredentials $userCredentials): bool
     {
-        if($userCredentials->role === "Course Admin"){
+        if($userCredentials->userInfos->role === "Course Admin"){
             return true;
         }
         return false;
@@ -46,7 +46,7 @@ class EnrollmentPolicy
      */
     public function update(UserCredentials $userCredentials, Enrollment $enrollment): bool
     {
-        if($userCredentials->role === "Course Admin"){
+        if($userCredentials->userInfos->role === "Course Admin"){
             return true;
         }
         return false;
@@ -57,7 +57,7 @@ class EnrollmentPolicy
      */
     public function delete(UserCredentials $userCredentials, Enrollment $enrollment): bool
     {
-        if($userCredentials->role === "Course Admin"){
+        if($userCredentials->userInfos->role === "Course Admin"){
             return true;
         }
         return false;
@@ -68,7 +68,7 @@ class EnrollmentPolicy
      */
     public function restore(UserCredentials $userCredentials, Enrollment $enrollment): bool
     {
-        if($userCredentials->role === "Course Admin"){
+        if($userCredentials->userInfos->role === "Course Admin"){
             return true;
         }
         return false;
@@ -79,7 +79,7 @@ class EnrollmentPolicy
      */
     public function forceDelete(UserCredentials $userCredentials, Enrollment $enrollment): bool
     {
-        if($userCredentials->role === "Course Admin"){
+        if($userCredentials->userInfos->role === "Course Admin"){
             return true;
         }
         return false;

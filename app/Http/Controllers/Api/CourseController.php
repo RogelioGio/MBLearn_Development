@@ -7,7 +7,10 @@ use App\Http\Requests\BulkStoreCourseRequest;
 use App\Http\Requests\StoreCourseRequest;
 use App\Http\Resources\CourseResource;
 use App\Http\Resources\UserCredentialsResource;
+use App\Models\Category;
 use App\Models\Course;
+use App\Models\Training_Mode;
+use App\Models\Type;
 use App\Models\UserCredentials;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -43,6 +46,55 @@ class CourseController extends Controller
         ]);
     }
 
+    //You add course id then mode/category/type id in url
+    public function addTrainingMode(Course $course, Training_Mode $training_Mode){
+        $course->training_modes()->attach($training_Mode->id);
+        return response()->json([
+            "Message" => "Training Mode Added",
+            "Data" => $course
+        ]);
+    }
+
+    public function removeTrainingMode(Course $course, Training_Mode $training_Mode){
+        $course->training_modes()->detach($training_Mode->id);
+        return response()->json([
+            "Message" => "Training Mode Removed",
+            "Data" => $course
+        ]);
+    }
+
+    public function addCategory(Course $course, Category $category){
+        $course->categories()->attach($category->id);
+        return response()->json([
+            "Message" => "Category Added",
+            "Data" => $course
+        ]);
+    }
+
+    public function removeCategory(Course $course, Category $category){
+        $course->categories()->detach($category->id);
+        return response()->json([
+            "Message" => "Category Removed",
+            "Data" => $course
+        ]);
+    }
+
+    public function addType(Course $course, Type $type){
+        $course->types()->attach($type->id);
+        return response()->json([
+            "Message" => "Type Added",
+            "Data" => $course
+        ]);
+    }
+
+    public function removeType(Course $course, Type $type){
+        $course->types()->detach($type->id);
+        return response()->json([
+            "Message" => "Type Removed",
+            "Data" => $course
+        ]);
+    }
+
     /**
      * Display the specified resource.
      */
@@ -51,9 +103,13 @@ class CourseController extends Controller
         return new CourseResource($course);
     }
 
-    public function showEnrolledUsers(Course $course){
-        return UserCredentialsResource::collection($course->enrolledUsers);
-    }
+
+    //TODO FIX 
+    // public function showEnrolledUsers(Course $course){
+    //     return UserCredentialsResource::collection($course->enrolledUsers);
+    // }
+
+    
 
     /**
      * Update the specified resource in storage.

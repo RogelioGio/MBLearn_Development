@@ -18,9 +18,6 @@ class Course extends Model
     protected $fillable = [
         'name',
         'description',
-        'type',
-        'category',
-        'training_mode',
         'mandatory',
         'duration',
         'archived',

@@ -34,7 +34,6 @@ class UserInfos extends Model
         'title',
         'branch',
         'city',
-        'role',
         'status',
         'profile_image',
         'user_credentials_id',
