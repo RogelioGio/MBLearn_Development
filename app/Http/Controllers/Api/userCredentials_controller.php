@@ -16,9 +16,19 @@ class userCredentials_controller extends Controller
 
         $validatedData = $request->validated();
 
+        //Check if the employeeID exists in the userInfos table
+        $userInfo = UserInfos::where('employeeID', $validatedData['employeeID'])->first();
+        if (!$userInfo) {
+            return response()->json([
+                'message' => 'User Info not found for employeeID: ' . $validatedData['employeeID']
+            ], 404);
+        }
+
+
         $userCredentials = UserCredentials::create([
             'MBemail' => $validatedData['MBemail'],
             'password' => bcrypt($validatedData['password']),// Hash the password
+            'user_info_id' => $userInfo->id
         ]);
 
 
@@ -61,7 +71,7 @@ class userCredentials_controller extends Controller
     public function showEnrolledCourses(UserCredentials $userCredentials){
         return CourseResource::collection($userCredentials->enrolledCourses);
     }
-    
+
     //find by employeeID in the user maintenance management
     public function findUser_EmployeeID($employeeID){
         $userinfo = UserInfos::where('employeeID', $employeeID)->first();

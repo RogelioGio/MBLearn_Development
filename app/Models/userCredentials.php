@@ -27,8 +27,14 @@ class UserCredentials extends Model implements Authenticatable
      */
 
     protected $fillable = [
+<<<<<<< HEAD
+=======
+        'employeeID',
+        'name',
+>>>>>>> c9cfaeca4b0da34913aa027301d30eeda06cd9d7
         'MBemail',
         'password',
+        'role',
         'user_info_id',
     ];
 
@@ -82,7 +88,7 @@ class UserCredentials extends Model implements Authenticatable
     }
 
     public function userInfos(): HasOne{
-        return $this->hasOne(UserInfos::class, 'user_credentials_id');
+        return $this->hasOne(UserInfos::class, 'user_credentials_id','id');
     }
 
 }

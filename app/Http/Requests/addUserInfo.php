@@ -23,10 +23,10 @@ class addUserInfo extends FormRequest
     {
         return [
             'employeeID' => 'required|string|max:11',
-            'first_name' => 'required|string',
-            'last_name' => 'required|string',
-            'middle_initial' => 'required|string',
-            'name_suffix' => 'required|string',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'middle_initial' => 'nullable|string|max:1',
+            'name_suffix' => 'nullable|string|max:10',
             'department' => 'nullable|string|max:255',
             'title' => 'nullable|string|max:255',
             'branch' => 'nullable|string|max:255',

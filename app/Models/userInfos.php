@@ -26,10 +26,7 @@ class UserInfos extends Model
      */
     protected $fillable = [
         'employeeID',
-        'first_name',
-        'last_name',
-        'middle_initial',
-        'name_suffix',
+        'name',
         'department',
         'title',
         'branch',
@@ -41,7 +38,7 @@ class UserInfos extends Model
     ];
 
     public function userCredentials(): BelongsTo{
-        return $this->belongsTo(UserCredentials::class, 'user_credentials_id');
+        return $this->belongsTo(UserCredentials::class, 'user_credentials_id', 'id');
     }
 
     //Functions for relationships

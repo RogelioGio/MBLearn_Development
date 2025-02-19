@@ -5,30 +5,11 @@ import { Navigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 
 //Background Images
-import LoginBackground from '../assets/Login_Background.png';
-import LoginBackground1 from '../assets/Login_Background1.png';
 import LoginBackground2 from '../assets/Login_Background2.png';
 
 //Login Page Layout
 export default function GuestLayout() {
     const {token, role} = useStateContext();
-    const background = [LoginBackground, LoginBackground1, LoginBackground2];
-    const [backgroundIndex, setBackgroundIndex] = useState(0);
-    const [isFading, setIsFading] = useState(false);
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setIsFading(true);
-            setTimeout(() => {
-                setBackgroundIndex((prevIndex) => (prevIndex + 1) % background.length);
-                setIsFading(false);
-            }, 500);
-        }, 10000);
-        return () => clearInterval(interval);
-    },[])
-
-    const currentBackground = background[backgroundIndex];
-
     if(token) {return <Navigate to= {`/${role.toLowerCase().replace(/\s+/g, '')}/dashboard`} replace/>}
 
     return (
@@ -40,9 +21,7 @@ export default function GuestLayout() {
             </Helmet>
 
             {/* Background Aesthetics */}
-            <div className={`absolute w-full h-full bg-cover bg-center transition-opacity duration-1000 ${isFading ? "opacity-0":"opacity-100"}`} style={{
-            backgroundImage: `url(${currentBackground})`,
-            }}>
+            <div className="absolute w-full h-full bg-cover bg-center bg-[url('assets/Login_Background2.png')]">
             </div>
 
             {/*Login Page Component*/}
