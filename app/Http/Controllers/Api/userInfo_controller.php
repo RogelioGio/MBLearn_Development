@@ -103,7 +103,7 @@ class userInfo_controller extends Controller
         ],200);
     }
 
-    //You add user id then role id in url
+    //You add user id then role id in url /addRole/{userInfos}/{role}
     public function addRole(UserInfos $userInfos, Role $role){
         $userInfos->roles()->syncWithoutDetaching($role->id);
         return response()->json([
