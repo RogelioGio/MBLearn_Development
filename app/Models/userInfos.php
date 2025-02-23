@@ -2,7 +2,8 @@
 
 namespace App\Models;
 
-
+use App\Observers\UserInfosObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Mockery\Generator\StringManipulation\Pass\Pass;
 
+#[ObservedBy([UserInfosObserver::class])]
 class UserInfos extends Model
 {
     use HasFactory;

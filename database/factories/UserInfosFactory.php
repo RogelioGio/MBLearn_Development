@@ -2,7 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\Role;
 use App\Models\UserCredentials;
+use App\Models\UserInfos;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -34,4 +36,13 @@ class UserInfosFactory extends Factory
             'user_credentials_id'=> UserCredentials::factory(),
         ];
     }
+    // public function configure()
+    // {
+    //     return $this->afterCreating(function (UserInfos $user) {
+    //         $userRole = Role::where('role_name', 'learner')->first();
+    //         if ($userRole) {
+    //             $user->roles()->attach($userRole->id);
+    //         }
+    //     });
+    // }
 }
