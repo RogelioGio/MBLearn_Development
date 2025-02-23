@@ -34,7 +34,6 @@ class UserInfos extends Model
         'status',
         'profile_image',
         'user_credentials_id',
-        // Add all the column names you want to make mass-assignable
     ];
 
     public function userCredentials(): BelongsTo{

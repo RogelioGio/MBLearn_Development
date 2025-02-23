@@ -5,40 +5,40 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Models\UserCredentials;
-use Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
     //role dashboard redirections
-    // private function redirections(array $role){
-    //     if(in_array('System Admin', $role['role_name'])){
+    private function redirections(array $roles){
+        foreach($roles as $role){
+            if(in_array('System Admin', $role)){
+                return '/systemadmin';
+            } elseif(in_array('Course Admin', $role)){
+                return '/courseadmin';
+            } elseif(in_array('Learner', $role)){
+                return '/learner';
+            } else{
+                return '/';
+            }
+        }
+    }
+
+    // private function redirection($roles){
+    //     if($roles === 'System Admin'){
     //         return '/systemadmin';
-    //     } elseif(in_array('Course Admin', $role['role_name'])){
+    //     } elseif($roles === 'Course Admin'){
     //         return '/courseadmin';
-    //     } elseif(in_array('Learner', $role['role_name'])){
+    //     } elseif($roles === 'Learner'){
     //         return '/learner';
     //     } else{
     //         return '/';
     //     }
     // }
-
-    private function redirection($roles){
-        if($roles === 'System Admin'){
-            return '/systemadmin';
-        } elseif($roles === 'Course Admin'){
-            return '/courseadmin';
-        } elseif($roles === 'Learner'){
-            return '/learner';
-        } else{
-            return '/';
-        }
-    }
-
-
 
     //New Login to another table
     public function login(LoginRequest $request){
@@ -46,16 +46,17 @@ class AuthController extends Controller
         $credentials = $request->validated();
         $user = UserCredentials::where('MBemail', $credentials['MBemail'])->first();
 
-        if(!($user->userInfos->status === "Active")){
-            return response()->json([
-                'message' => 'This user is currently inactive'
-            ]);
-        }
 
         if(!$user){
             return response()->json([
                 'message' => 'There is no user with that credentials',
             ], 401);
+        }
+
+        if(!($user->userInfos->status === "Active")){
+            return response()->json([
+                'message' => 'This user is currently inactive'
+            ]);
         }
 
         if(!Hash::check($credentials['password'], $user->password)){
@@ -68,10 +69,10 @@ class AuthController extends Controller
             //Generate Login Token
             $token = $user->createToken('authToken')->plainTextToken;
             //Log
-            Log::info('User Login: ' . $user->MBemail);
+            Log::info('User Login: ' . $user->userInfos->MBemail);
 
-            //$redirect = $this->redirections($user->userInfos->roles->toArray());
-            $redirect = $this->redirection($user->role);
+            $redirect = $this->redirections($user->userInfos->roles->toArray());
+            // $redirect = $this->redirection($user->role);
 
             return response()->json([
                 'message' => 'Login Successful',

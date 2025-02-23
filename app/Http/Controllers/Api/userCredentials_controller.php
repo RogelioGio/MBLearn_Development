@@ -38,7 +38,7 @@ class userCredentials_controller extends Controller
     }
 
     //update user credentials in the user maintenance management
-    public function updateUserCredentials(updateUserCreds_info $request, UserCredentials $userCredentials){
+    public function updateUserCredentials(UserCredentials $userCredentials,updateUserCreds_info $request){
         $validatedData = $request->validated();
 
         $userCredentials->update([

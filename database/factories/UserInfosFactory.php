@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\UserCredentials;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -21,15 +22,16 @@ class UserInfosFactory extends Factory
         $department = $this->faker->randomElement(['Human Resource', 'Internal Audit', 'IT Department', 'Finance', 'Operations Management']);
         $branch = $this->faker->randomElement(['Quezon Avenue', 'West Triangle', 'West Avenue', 'Novaliches', 'Tandang Sora', 'Kamuning', 'Valencia Hills']);
         return [
-            'employeeID'=> '000003',
-            'name' => fake()->name(),
-            'role' => "Learner",
+            'employeeID'=> fake()->randomNumber(5),
+            'first_name' => fake()->name(),
+            'last_name' => fake()->name(),
+            'middle_initial' => fake()->randomLetter(),
             'branch' => $branch,
             'title'=> fake()->title(),
             'city'=> fake()->city(),
             'status'=> 'Active',
             'department'=> $department,
-            'user_credentials_id'=> '00045',
+            'user_credentials_id'=> UserCredentials::factory(),
         ];
     }
 }

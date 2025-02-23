@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\addUserCredential_request;
 use App\Http\Requests\addUserInfo;
+use App\Http\Requests\AddUsersRequest;
 use App\Http\Requests\updateUserInfo;
 use App\Models\Course;
 use App\Models\Enrollment;
@@ -18,13 +19,38 @@ class userInfo_controller extends Controller
 {
 
     //Add user information function
-    public function addUser(addUserInfo $userRequest , addUserCredential_request $userCredentialRequest){
+    //Change, only have 1 request that has information for both the userinfos and usercreds
+    public function addUser(AddUsersRequest $addUsersRequest){
 
-    $validatedData = $userRequest->validated();
-    $validatedData2 = $userCredentialRequest->validated();
+        $validatedData = $addUsersRequest->validated();
 
         $profile_image = $this -> generateProfileImageurl($validatedData['first_name'] + $validatedData['last_name']);
         $status = $validatedData['status'] ?? 'Active';
+        $existingUser = UserInfos::where('employeeID', $validatedData['employeeID'])->first();
+
+        if ($existingUser) {
+            return response()->json([
+                'message' => 'User already exists',
+                'user' => $existingUser
+            ], 409); // Use 409 Conflict instead of 200
+        }
+
+        // Combine first name, middle initial, last name, and suffix into a full name
+        $fullName = trim("{$validatedData['first_name']} " .
+                            ($validatedData['middle_initial'] ? "{$validatedData['middle_initial']}. " : "") .
+                            "{$validatedData['last_name']} " .
+                            ($validatedData['name_suffix'] ? $validatedData['name_suffix'] : ""));
+
+        // Generate profile image URL (pass the correct name variable)
+        $profile_image = $this->generateProfileImageUrl($fullName);
+
+        // Default status to 'Active' if not provided
+        $status = $validatedData['status'] ?? 'Active';
+
+        $userCredentials = UserCredentials::create([
+            'MBemail' => $validatedData['MBemail'],
+            'password' => $validatedData['password'],
+        ]);
 
         $userInfo = UserInfos::create([
             'employeeID' => $validatedData['employeeID'],
@@ -33,63 +59,21 @@ class userInfo_controller extends Controller
             'middle_initial' => $validatedData['middle_initial'],
             'name_suffix' => $validatedData['name_suffix'],
             'department' => $validatedData['department'],
-            'title' => $validatedData['title'],
+            'title' => $validatedData['title'], 
             'branch' => $validatedData['branch'],
             'city' => $validatedData['city'],
             'status' =>$status,
             'profile_image' =>$profile_image
         ]);
-    $existingUser = UserInfos::where('employeeID', $validatedData['employeeID'])->first();
 
-    if ($existingUser) {
+        $userCredentials->userInfos()->save($userInfo);
+
+        // Return a success response
         return response()->json([
-            'message' => 'User already exists',
-            'user' => $existingUser
-        ], 409); // Use 409 Conflict instead of 200
-    }
-
-    // Combine first name, middle initial, last name, and suffix into a full name
-    $fullName = trim("{$validatedData['first_name']} " .
-                        ($validatedData['middle_initial'] ? "{$validatedData['middle_initial']}. " : "") .
-                        "{$validatedData['last_name']} " .
-                        ($validatedData['name_suffix'] ? $validatedData['name_suffix'] : ""));
-
-    // Generate profile image URL (pass the correct name variable)
-    $profile_image = $this->generateProfileImageUrl($fullName);
-
-    // Default status to 'Active' if not provided
-    $status = $validatedData['status'] ?? 'Active';
-
-    $userCredentials = UserCredentials::create([
-        'employeeID' => $validatedData2['employeeID'],
-        'name' => $fullName ?? "Gio",  // Use the correctly formatted full name
-        'role' => $validatedData['role'],
-        'MBemail' => $validatedData2['MBemail'],
-        'password' => $validatedData2['password'],
-    ]);
-
-    $userInfo = UserInfos::create([
-        'employeeID' => $validatedData['employeeID'],
-        'name' => $fullName ?? "Gio",  // Use the correctly formatted full name
-        'department' => $validatedData['department'] ?? null,
-        'title' => $validatedData['title'] ?? null,
-        'branch' => $validatedData['branch'] ?? null,
-        'city' => $validatedData['city'],
-        'role' => $validatedData['role'],
-        'status' => $status,
-        'profile_image' => $profile_image,
-        'user_credentials_id' => $userCredentials->id
-    ]);
-
-
-    $userInfo->update(['user_credentials_id' => $userCredentials->id]);
-
-    // Return a success response
-    return response()->json([
-        'message' => 'User registered successfully',
-        'user_info' => $userInfo,
-        'user_credentials' => $userCredentials
-    ], 201);
+            'message' => 'User registered successfully',
+            'user_info' => $userInfo,
+            'user_credentials' => $userCredentials
+        ], 201);
 
     }
     /**
@@ -121,10 +105,11 @@ class userInfo_controller extends Controller
 
     //You add user id then role id in url
     public function addRole(UserInfos $userInfos, Role $role){
-        $userInfos->roles()->attach($role->id);
+        $userInfos->roles()->syncWithoutDetaching($role->id);
         return response()->json([
             "Message" => "Role Added",
-            "Data" => $userInfos
+            "Data" => $userInfos,
+            "Roles" => $userInfos->roles,
         ]);
     }
 
@@ -132,7 +117,8 @@ class userInfo_controller extends Controller
         $userInfos->roles()->detach($role->id);
         return response()->json([
             "Message" => "Role Removed",
-            "Data" => $userInfos
+            "Data" => $userInfos,
+            "Roles" => $userInfos->roles,
         ]);
     }
 

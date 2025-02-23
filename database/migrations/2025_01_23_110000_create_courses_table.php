@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('mandatory');
             $table->string('archived');
             $table->integer('system_admin_id');
-            $table->integer('assigned_course_admin_id')->nullable();
+            $table->foreignId('assigned_course_admin_id')->nullable()->constrained('userInfo', 'id')->nullOnDelete();
             $table->timestamps();
         });
     }

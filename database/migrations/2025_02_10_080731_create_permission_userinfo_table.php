@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('permission_userinfo', function (Blueprint $table) {
             $table->id();
-            $table->integer('userinfo_id');
-            $table->integer('permission_id');
+            $table->foreignId('userinfo_id')->constrained('userInfo', 'id')->cascadeOnDelete();
+            $table->foreignId('permission_id')->constrained('permissions', 'id')->cascadeOnDelete();
             $table->timestamps();
         });
     }

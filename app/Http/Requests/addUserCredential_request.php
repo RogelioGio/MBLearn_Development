@@ -22,7 +22,7 @@ class addUserCredential_request extends FormRequest
     public function rules(): array
     {
         return [
-            'employeeID' => 'required|string|unique:userCredentials,employeeID',
+            'employeeID' => 'required|string|unique:userInfos,employeeID',
             'MBemail' => 'required|email|unique:userCredentials,MBemail',
             'password' => 'required|string|min:8',
         ];
