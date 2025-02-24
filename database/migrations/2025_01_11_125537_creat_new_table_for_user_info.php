@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('employeeID',11)->after('id')->unique();
             $table->string('first_name',30);
-            $table->string('middle_initial', 5);
+            $table->string('middle_initial', 5)->nullable();
             $table->string('last_name', 30);
             $table->string('name_suffix', 5)->nullable();
             $table->string('department')->nullable();

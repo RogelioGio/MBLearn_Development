@@ -48,7 +48,7 @@ class EnrollmentController extends Controller
     }
 
     //Fetch Learners
-    //The role names are inside of 2D array []["role_name"]
+    //The role names are inside of 2D array []["role_name"] to get role name
     public function enrolees(Request $request){
 
         $page = $request->input('page', 1);//Default page

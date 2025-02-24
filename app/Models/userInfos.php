@@ -28,7 +28,10 @@ class UserInfos extends Model
      */
     protected $fillable = [
         'employeeID',
-        'name',
+        'first_name',
+        'last_name',
+        'middle_initial',
+        'name_suffix',
         'department',
         'title',
         'branch',

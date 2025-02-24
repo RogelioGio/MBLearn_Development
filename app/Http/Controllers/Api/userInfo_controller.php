@@ -2,18 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\addUserCredential_request;
-use App\Http\Requests\addUserInfo;
 use App\Http\Requests\AddUsersRequest;
 use App\Http\Requests\updateUserInfo;
-use App\Models\Course;
-use App\Models\Enrollment;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\UserInfos;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Cache;
 use App\Models\UserCredentials;
 class userInfo_controller extends Controller
 {
@@ -24,7 +19,7 @@ class userInfo_controller extends Controller
 
         $validatedData = $addUsersRequest->validated();
 
-        $profile_image = $this -> generateProfileImageurl($validatedData['first_name'] + $validatedData['last_name']);
+        $profile_image = $this -> generateProfileImageurl($validatedData['first_name'].$validatedData['last_name']);
         $status = $validatedData['status'] ?? 'Active';
         $existingUser = UserInfos::where('employeeID', $validatedData['employeeID'])->first();
 
@@ -37,9 +32,9 @@ class userInfo_controller extends Controller
 
         // Combine first name, middle initial, last name, and suffix into a full name
         $fullName = trim("{$validatedData['first_name']} " .
-                            ($validatedData['middle_initial'] ? "{$validatedData['middle_initial']}. " : "") .
+                            ("{$validatedData['middle_initial']}" ? "{$validatedData['middle_initial']}. " : "") .
                             "{$validatedData['last_name']} " .
-                            ($validatedData['name_suffix'] ? $validatedData['name_suffix'] : ""));
+                            ("{$validatedData['name_suffix']}" ? $validatedData['name_suffix'] : ""));
 
         // Generate profile image URL (pass the correct name variable)
         $profile_image = $this->generateProfileImageUrl($fullName);
