@@ -13,6 +13,8 @@ use App\Http\Controllers\Api\userCredentials_controller;
 use App\Http\Controllers\Api\FilterCategoryController;
 use App\Http\Controllers\Api\Filters;
 use App\Http\Controllers\Api\RoleController;
+use App\Http\Controllers\Api\Training_ModeController;
+use App\Http\Controllers\Api\TypeController;
 use App\Http\Controllers\EnrollmentController as ControllersEnrollmentController;
 
 //New Login routing
@@ -69,6 +71,9 @@ Route::middleware('auth:sanctum')->group(function(){
 
     //Courses API
     Route::apiResource('/courses', CourseController::class);
+    Route::apiResource('/categories', CategoryController::class);
+    Route::apiResource('/modes', Training_ModeController::class);
+    Route::apiResource('/types', TypeController::class);
     Route::post('/addType/{course}/{type}', [CourseController::class, 'addType']);
     Route::post('/addType/{course}/{type}', [CourseController::class, 'removeType']);
     Route::post('/addType/{course}/{category}', [CourseController::class, 'addCategory']);
