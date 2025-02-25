@@ -88,7 +88,7 @@ class userInfo_controller extends Controller
         $page = $request->input('page', 1);//Default page
         $perPage = $request->input('perPage',5); //Number of entry per page
 
-        $users =  UserInfos::where('status', 'Active')->paginate($perPage);
+        $users =  UserInfos::with('roles')->where('status', 'Active')->paginate($perPage);
 
         return response()->json([
             'data' => $users->items(),
@@ -197,6 +197,17 @@ class userInfo_controller extends Controller
             $userInfos->status = "Inactive";
             $userInfos->save();
             return response()->json(['message' => 'User is now set to inactive'], 200);
+        }else {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+    }
+
+    public function restoreUser(UserInfos $userInfos)
+    {
+        if($userInfos){
+            $userInfos->status = "Active";
+            $userInfos->save();
+            return response()->json(['message' => 'User restored'], 200);
         }else {
             return response()->json(['message' => 'User not found'], 404);
         }

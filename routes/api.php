@@ -23,7 +23,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function(){
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', function (Request $request) {
-        return response()->json($request->user()->load('userInfos.roles'));
+        return $request->user();
     });
     //test purposes amd account implementation (postman testing)
     // Route::post('/add-test-user', [UserController::class, 'addTestUser']);
@@ -41,6 +41,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('removePermission/{userInfos}/{permission}', [userInfo_controller::class, 'removePermission']);
 
     //Userlist API for the frontend
+    //Userlist API for the fronten
     Route::get('/index-user',[userInfo_controller::class, 'indexUsers']);
     Route::get('/select-employeeid/{employeeID}',[userInfo_controller::class, 'findUser_EmployeeID']);
     Route::put('/update-user-info/{userInfos}',[userInfo_controller::class, 'updateUser']);
