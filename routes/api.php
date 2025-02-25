@@ -50,7 +50,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::put('/update-user-creds/{userCredentials}',[userCredentials_controller::class, 'updateUserCredentials']);
     Route::get('/index-user-creds',[userCredentials_controller::class, 'userCredentialsList']);
     Route::get('/select-user-creds/{userCredentials}',[userCredentials_controller::class, 'findUser_EmployeeID']);
-    Route::delete('/delete-user-creds/{userCredentials}',[userCredentials_controller::class, 'deleteUser']);
+    Route::delete('/delete-user-creds/{userCredentials}',[userCredentials_controller::class, 'S']);
     Route::get('/reset-user-creds',[userCredentials_controller::class, 'resetUsers']); //reset user table
     Route::put('/update-user-info/{userInfos}',[userInfo_controller::class, 'updateUser']);
     Route::delete('/delete-user/{userInfos}',[userInfo_controller::class, 'deleteUser']);
