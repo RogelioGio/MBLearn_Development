@@ -14,15 +14,7 @@ const EditUserModal = ({open, close, classname, ID, EmployeeID}) =>{
     useEffect (()=>{
         setSelectedUser(null)
         if(ID) {
-            // Check if ID is an object
-            if (typeof ID === "object" && ID.userID) {
-                setUser(ID.userID); // Extract the userID from the object and set it
-            } else if (typeof ID === "number") {
-                setUser(ID); // Use ID as-is if it's already a number
-            }
-
-            console.log(user)
-            axiosClient.get(`/select-user/${user}`)
+            axiosClient.get(`/select-employeeid/${ID}`)
             .then(response => {
                 setSelectedUser(response.data.data)
             }).catch(err => console.log(err))
@@ -40,7 +32,9 @@ const EditUserModal = ({open, close, classname, ID, EmployeeID}) =>{
         enableReinitialize: true,
         initialValues: {
             employeeID: selectedUser?.employeeID || 'Loading...',
-            name: selectedUser?.name || 'Loading...',
+            first_name: selectedUser?.first_name || 'Loading...',
+            middle_name: selectedUser?.middle_name || 'Loading...',
+            last_name: selectedUser?.last_name || 'Loading...',
             department: selectedUser?.department || 'Loading...',
             title: selectedUser?.title||'Loading...',
             branch: selectedUser?.branch||'Loading...',
@@ -114,17 +108,43 @@ const EditUserModal = ({open, close, classname, ID, EmployeeID}) =>{
                                             </div>
 
                                             {/* Name */}
-                                            <div className="inline-flex flex-col gap-2 row-start-2 col-span-2 pr-2">
-                                                <label htmlFor="name" className="font-header text-xs flex flex-row justify-between">
-                                                    <p className="uppercase">Name</p>
-                                                    {formik.touched.name && formik.errors.name ? (<div className="text-red-500 text-xs font-text">{formik.errors.name}</div>):null}
-                                                </label>
-                                                <input type="text" name="name"
-                                                        value={formik.values.name}
-                                                        onChange={formik.handleChange}
-                                                        onBlur={formik.handleBlur}
-                                                        disabled={loading}
-                                                        className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
+                                            <div className="gap-2 row-start-2 col-span-2 pr-2 grid grid-cols-3 grid-row-1">
+                                                <div className="inline-flex flex-col justify-between">
+                                                    <label htmlFor="name" className="font-header text-xs flex flex-row justify-between">
+                                                        <p className="uppercase">First Name: </p>
+                                                        {formik.touched.name && formik.errors.name ? (<div className="text-red-500 text-xs font-text">{formik.errors.name}</div>):null}
+                                                    </label>
+                                                    <input type="text" name="name"
+                                                            value={formik.values.first_name}
+                                                            onChange={formik.handleChange}
+                                                            onBlur={formik.handleBlur}
+                                                            disabled={loading}
+                                                            className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
+                                                </div>
+                                                <div className="inline-flex flex-col justify-between">
+                                                    <label htmlFor="name" className="font-header text-xs flex flex-row justify-between">
+                                                        <p className="uppercase">Middle Name: </p>
+                                                        {formik.touched.name && formik.errors.name ? (<div className="text-red-500 text-xs font-text">{formik.errors.name}</div>):null}
+                                                    </label>
+                                                    <input type="text" name="name"
+                                                            value={formik.values.middle_name}
+                                                            onChange={formik.handleChange}
+                                                            onBlur={formik.handleBlur}
+                                                            disabled={loading}
+                                                            className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
+                                                </div>
+                                                <div className="inline-flex flex-col justify-between">
+                                                    <label htmlFor="name" className="font-header text-xs flex flex-row justify-between">
+                                                        <p className="uppercase">Last Name: </p>
+                                                        {formik.touched.name && formik.errors.name ? (<div className="text-red-500 text-xs font-text">{formik.errors.name}</div>):null}
+                                                    </label>
+                                                    <input type="text" name="name"
+                                                            value={formik.values.last_name}
+                                                            onChange={formik.handleChange}
+                                                            onBlur={formik.handleBlur}
+                                                            disabled={loading}
+                                                            className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
+                                                </div>
                                             </div>
 
                                             {/* EmployeeID */}

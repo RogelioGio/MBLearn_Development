@@ -61,7 +61,7 @@ export default function Dashboard()
 
 
     return (
-            <DashboardLayout role={role} name={user.name}/>
+            <DashboardLayout role={role} name={user.user_infos.first_name}/>
     )
 
 }

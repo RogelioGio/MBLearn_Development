@@ -11,24 +11,18 @@ const DeleteUserModal = ({open,close,classname,EmployeeID,close_confirmation,upd
     const [employeecreds, setEmployeeCreds] = useState([])
 
     useEffect(() => {
-        setLoading(true)
-        if(EmployeeID){
+        if(EmployeeID) {
+            setLoading(true)
             axiosClient.get(`/select-employeeid/${EmployeeID}`)
             .then(response => {
                 setEmployeeData(response.data.data)
-            }).catch(error => {
-                console.log(error)
-            })
-
-            axiosClient.get(`/select-user-creds/${EmployeeID}`)
-            .then(response => {
-                setEmployeeCreds(response.data.data)
-            }).catch(error => {
-                console.log(error)
-            }).finally(() => {
+                setLoading(false)
+            }).catch(err => console.log(err))
+            .finally(()=>{
                 setLoading(false)
             })
         }
+        console.log(employeeData)
     },[EmployeeID])
 
     const handleDelete = (e) => {
@@ -85,7 +79,7 @@ const DeleteUserModal = ({open,close,classname,EmployeeID,close_confirmation,upd
                                                     {/* Name */}
                                                     <div className="row-start-2 col-span-2 py-2 border-b border-divider border-r">
                                                         <p className="font-header text-xs">Name</p>
-                                                        <p className="font-text text-xs">{employeeData.name}</p>
+                                                        <p className="font-text text-xs">{employeeData.first_name} {employeeData.middle_name} {employeeData.last_name}</p>
                                                     </div>
 
                                                     {/* EmployeeID */}
@@ -97,7 +91,7 @@ const DeleteUserModal = ({open,close,classname,EmployeeID,close_confirmation,upd
                                                     {/* System Role */}
                                                     <div className="row-start-3 col-span-1 py-2 border-b border-r border-divider">
                                                         <p className="font-header text-xs">System Role</p>
-                                                        <p className="font-text text-xs">{employeeData.role}</p>
+                                                        <p className="font-text text-xs">{employeeData.roles?.[0]?.role_name}</p>
                                                     </div>
 
                                                     {/* Department */}

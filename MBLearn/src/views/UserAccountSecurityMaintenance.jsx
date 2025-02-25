@@ -34,43 +34,17 @@ export default function UserAccountSecurityMaintenance(){
 
     const fetchUsers = () => {
         setIsLoading(true)
-
-        //API Calls
-        Promise.all([
-            //Get User-credentials
-            axiosClient.get('/index-user-creds',{
-                params: {
-                    page: pageState.currentPage,
-                    perPage: pageState.perPage,
-                }
-            }),
-            //Get userProfiles
-            axiosClient.get('/get-profile-image',{
-                params: {
-                    page: pageState.currentPage,
-                    perPage: pageState.perPage,
-                }
-            })
-        ])
-        .then(([usercreds, userprofiles]) => {
-            const users = usercreds.data.data
-            const profile_img = userprofiles.data.data
-
-            const userWithProfile = users.map(user =>{
-                const profile = profile_img.find(p => p.employeeID === user.employeeID);
-
-                return {
-                    ...user,
-                    profile_img: profile ? profile.profile_image : null
-                }
-            })
-            setUsers(userWithProfile)
-            pageChangeState("totalUsers", usercreds.data.total)
-            pageChangeState("lastPage", usercreds.data.last)
+        axiosClient.get('/index-user-creds',{
+            params: {
+                page: pageState.currentPage,
+                perPage: pageState.perPage
+            }
+        })
+        .then((response) => {
+            setUsers(response.data.data)
             setIsLoading(false)
-            console.log(userWithProfile)
-        }).catch(err => {
-            console.log(err)
+        }).catch((e)=>{
+            console.log(e)
         })
     }
     useEffect(()=>{
@@ -166,7 +140,8 @@ export default function UserAccountSecurityMaintenance(){
                                 <UserCredentialsLoadingProps/>
                             ) : (
                                 users.map(user => (
-                                    <UserSecEntyProps key={user.id} name={user.name} employeeID={user.employeeID} MBEmail={user.MBemail} role={user.role} image={user.profile_img}/>
+                                    <UserSecEntyProps key={user.id} name={[user.first_name, user.middle_name, user.last_name].join(" ")}
+                                        employeeID={user.employeeID} MBEmail={user.MBemail} role={user.role} image={user.profile_img}/>
                                 ))
                             )
 

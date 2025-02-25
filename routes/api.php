@@ -23,7 +23,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function(){
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', function (Request $request) {
-        return $request->user();
+        return response()->json($request->user()->load('userInfos.roles'));
     });
     //test purposes amd account implementation (postman testing)
     // Route::post('/add-test-user', [UserController::class, 'addTestUser']);
@@ -39,6 +39,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('/removeRole/{userInfos}/{role}', [userInfo_controller::class, 'removeRole']);
     Route::post('/addPermission/{userInfos}/{permission}', [userInfo_controller::class, 'addPermission']);
     Route::post('removePermission/{userInfos}/{permission}', [userInfo_controller::class, 'removePermission']);
+
     //Userlist API for the fronten
     Route::get('/index-user',[userInfo_controller::class, 'indexUsers']);
     Route::get('/select-employeeid/{employeeID}',[userInfo_controller::class, 'findUser_EmployeeID']);
@@ -85,7 +86,7 @@ Route::middleware('auth:sanctum')->group(function(){
 
     //Role API (get and post with /roles, get, put, and delete with /roles/{roleid} every api resource is same as this)
     Route::apiResource('/roles', RoleController::class);
-    
+
 
 
 });
