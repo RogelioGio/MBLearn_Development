@@ -167,7 +167,6 @@ export default function BulkEnrollment() {
         console.log(err)
         );
     },[pageState.currentPage, pageState.perPage]);
-
     useEffect(() => {
         pageChangeState('startNumber', (pageState.currentPage - 1) * pageState.perPage + 1)
         pageChangeState('endNumber', Math.min(pageState.currentPage * pageState.perPage, pageState.totalUser))
@@ -180,7 +179,6 @@ export default function BulkEnrollment() {
         Pages.push(p)
     }
 
-    console.log(learners)
     return (
         <div className='grid grid-cols-4 grid-rows-[6.25rem_min-content_auto_auto_3.75rem] h-full w-full'>
             <Helmet>

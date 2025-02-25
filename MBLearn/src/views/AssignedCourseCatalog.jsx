@@ -1,8 +1,11 @@
-import { faArrowDownShortWide, faArrowDownZA, faArrowUpAZ, faArrowUpWideShort, faChalkboard, faChevronLeft, faChevronRight, faFilter, faPersonChalkboard, faSearch, faSort } from "@fortawesome/free-solid-svg-icons"
+import { faArrowDownShortWide, faArrowDownZA, faArrowUpAZ, faArrowUpWideShort, faChalkboard, faChevronLeft, faChevronRight, faFilter, faFloppyDisk, faPen, faPersonChalkboard, faSearch, faSort } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Helmet } from "react-helmet"
 import AssignedCourseCatalogCard from "../modalsandprops/AssignedCourseCatalogCard"
-import React, { useState } from "react"
+import { useState } from "react"
+import CourseFilterProps from "../modalsandprops/CourseFilterProps"
+import React from "react"
+import { useStateContext } from "../contexts/ContextProvider"
 
 
 //Assigned Courses
@@ -20,7 +23,7 @@ const assigned_courses = [
 
 
 export default function AssignedCourseCatalog() {
-
+    const {user} = useStateContext();
     // Sort Order State
     const [sort, setSort] = useState({
         nameOrder : "none",
@@ -39,7 +42,8 @@ export default function AssignedCourseCatalog() {
 
     //UseState
     const [state, setState] = useState({
-        tab: "active"
+        tab: "active",
+        editFilter: false,
     })
     const toggleState = (key,value) => {
         setState((prev => ({
@@ -48,10 +52,8 @@ export default function AssignedCourseCatalog() {
         })));
     }
 
-
-
     return(
-        <div className='grid grid-cols-4 grid-rows-[6.25rem_min-content_auto_3rem] h-full w-full'>
+        <div className='grid grid-cols-4 grid-rows-[6.25rem_min-content_1fr_3rem] h-full w-full'>
             <Helmet>
                 {/* Title of the mark-up */}
                 <title>MBLearn | Assigned Courses Catalog</title>
@@ -115,8 +117,32 @@ export default function AssignedCourseCatalog() {
             </div>
 
             {/* Assigned Course Filter */}
-            <div className="col-start-4 row-start-2 row-span-3 flex flex-row justify-center items-center">
-                Course Filter
+            <div className="col-start-4 row-start-2 mx-5 py-2 inline-flex justify-between items-center flex-row">
+                    {/* Filter Header */}
+                    <div>
+                        <h1 className='font-header text-2xl text-primary'>Course Filter</h1>
+                        <p className='text-md font-text text-unactive text-sm'>Categorize courses</p>
+                    </div>
+                    <div>
+                    {/* Course Button */}
+                    {
+                        user.role === "System Admin" ? (
+
+                                !state.editFilter ?
+                                <div className='relative group aspect-square w-10 rounded-full flex items-center justify-center bg-primarybg text-primary cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out' onClick={()=>toggleState('editFilter',true)}>
+                                    <FontAwesomeIcon icon={faPen}/>
+                                    <p className='absolute w-auto top-12 z-10 bg-tertiary text-white p-2 rounded-md text-xs scale-0 font-text group-hover:scale-100'>Edit</p>
+                                </div> :
+                                <div className='relative group aspect-square w-10 rounded-full flex items-center justify-center bg-primarybg text-primary cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out' onClick={()=>toggleState('editFilter',false)}>
+                                    <FontAwesomeIcon icon={faFloppyDisk}/>
+                                    <p className='absolute w-auto top-12 z-10 bg-tertiary text-white p-2 rounded-md text-xs scale-0 font-text group-hover:scale-100'>Save</p>
+                                </div>
+                        ):null
+                    }
+                    </div>
+            </div>
+            <div className="col-start-4 row-start-3 row-span-3 flex flex-col h-full">
+                <CourseFilterProps isEdit={state.editFilter}/>
             </div>
 
             {/* Pagination */}

@@ -18,6 +18,7 @@ import ProtectedRoutes from "./ProtectedRoutes";
 import Unauthorized from "./views/Unauthorized";
 import AssignedCourse from "./views/AssignedCourseCatalog";
 import AssignedCourseReport from "./views/AssignedCourseResport";
+import Course from "./views/Course";
 
 const router = createBrowserRouter([
 
@@ -61,6 +62,10 @@ const router = createBrowserRouter([
                     {
                         path: "activitylogs",
                         element: <ActivityLog/>
+                    },
+                    {
+                        path: "course",
+                        element: <Course/>
                     },
                 ]
             },

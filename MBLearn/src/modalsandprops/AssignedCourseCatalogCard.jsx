@@ -1,6 +1,11 @@
-import { Card, Progress, Text } from '@mantine/core';
+import { Card, Progress, Text, RingProgress} from '@mantine/core';
 
 const AssignedCourseCatalogCard = ({name, courseType, courseCategory}) => {
+    const stat = {
+        progress: 50, // Progress in percentage
+        color: "blue", // Color of the progress ring
+    };
+
     return(
         <div className="bg-primary text-white h-full rounded-md shadow-md hover:scale-105 hover:cursor-pointer transition-all ease-in-out">
             {/* Course Thumbnail */}
@@ -15,22 +20,27 @@ const AssignedCourseCatalogCard = ({name, courseType, courseCategory}) => {
                     <p className="font-text text-xs text-divider">{courseType} - {courseCategory}</p>
                 </div>
                 {/* Enrolled, On-going, Finished */}
-                <div className="grid grid-rows-[auto_min-content] grid-cols-3 w-full gap-y-1">
-                <div className='row-start-1 col-span-1'>
-                    <p className='font-text text-xs'>Ongoing</p>
-                    <p className='font-text text-xs'>10</p>
-                </div>
-                <div className='row-start-1 col-span-1'>
-                    <p className='font-text text-xs'>Enrolled</p>
-                    <p className='font-text text-xs'>12</p>
-                </div>
-                <div className='row-start-1 col-span-1'>
-                    <p className='font-text text-xs'>Completed</p>
-                    <p className='font-text text-xs'>2</p>
-                </div>
-                <div className="w-full row-start-2 col-span-3">
-                    <Progress value={54.31} size='md' radius='xl'/>
-                </div>
+                <div className='flex flez-row justify-between'>
+                    <div className='flex flex-col justify-end'>
+                        <p className='font-header text-xs'>Deadline</p>
+                        <p className='font-text text-xs text-divider'>10/10/2024</p>
+                    </div>
+                    <div className='flex flex-row justify-between items-center gap-1'>
+                        <div className='flex flex-col'>
+                            <p className='text-xs font-header'>Completion</p>
+                            <p className='text-xs font-text text-divider self-end'>20%</p>
+
+                        </div>
+                        <div>
+                            <RingProgress
+                                    size={35} // Diameter of the ring
+                                    roundCaps
+                                    thickness={4} // Thickness of the progress bar
+                                    sections={[{ value: stat.progress, color: "white" }]} // Lighter blue progress
+                                    rootColor="hsl(218, 97%, 15%)" // Darker blue track
+                                    />
+                        </div>
+                    </div>
                 </div>
             </div>
 
