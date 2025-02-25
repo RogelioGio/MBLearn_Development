@@ -41,7 +41,7 @@ class DatabaseSeeder extends Seeder
             'employeeID' => '01',
             'first_name' => 'Jericho',
             'last_name' => 'Ilanga',
-            'middle_initial'=> 'S.',
+            'middle_name'=> 'S.',
             'department'=> 'IT Department',
             'title'=> 'title',
             'branch'=> 'Novaliches',

@@ -27,7 +27,7 @@ class UserInfosFactory extends Factory
             'employeeID'=> fake()->randomNumber(5),
             'first_name' => fake()->name(),
             'last_name' => fake()->name(),
-            'middle_initial' => fake()->randomLetter(),
+            'middle_name' => fake()->randomLetter(),
             'branch' => $branch,
             'title'=> fake()->title(),
             'city'=> fake()->city(),
