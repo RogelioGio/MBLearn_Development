@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import CourseListCard from '../modalsandprops/CourseListCard';
 import CourseCardModal from '../modalsandprops/CourseCardModal';
@@ -8,6 +8,9 @@ import { Menu, MenuButton, MenuItem, MenuItems, Disclosure, DisclosureButton, Di
 import AddCourseModal from '../modalsandprops/AddCourseModal';
 import EditCourseModal from '../modalsandprops/EditCourseModal';
 import DeleteCourseModal from '../modalsandprops/DeleteCourseModal';
+import React from 'react';
+import { useStateContext } from '../contexts/ContextProvider';
+import CourseFilterProps from '../modalsandprops/CourseFilterProps';
 
 
 //Sort Options Array
@@ -51,7 +54,7 @@ const Courses = [
 
 
 export default function CourseListMaintenance() {
-
+const {user} = useStateContext()
 
 //Filter Options and Categories
 const [filter, setfilter] = useState([
@@ -104,7 +107,8 @@ const [modalState, setModalState] = useState({
         openFilterEditor: false,// open edit mode for filter
         insertNewCategory: false,
         openEditCourse: false,
-        openDeleteCourse: false
+        openDeleteCourse: false,
+        editFilter: true
     });
 
 const [sort, setSort] = useState({
@@ -131,207 +135,6 @@ const setOrder = (key) => {
     const order = sort[key] === "none" ? "asc" : sort[key] === "asc" ? "desc" : "none";
     toggleSort(key, order);
 }
-
-//Insert Entry
-// Category
-const [newFilterCategory, setNewFilterCategory] = useState([]);
-const insertCategory = (e) =>{
-    e.preventDefault();
-    setNewFilterCategory((prev) => [...prev, {id:'', name:'',option:[]}])
-}
-const handleFilterCategory = (index, value) => {
-    setNewFilterCategory((prev) => {
-        const updatedCategories = [...prev];
-        updatedCategories[index] = {
-            ...updatedCategories[index],
-            id: value.toLowerCase().replace(/\s+/g, ""),
-            name: value,
-            option:[]
-        };
-        return updatedCategories;
-    })
-}
-// Filter Option
-const [newFilterOption, setNewFilterOption] = useState({})
-const insertOption = (e,categoryID, Index = null) =>{
-    e.preventDefault();
-    if(Index !== null){
-        setNewFilterCategory((prev) => {
-            const updatedCategories = [...prev];
-            updatedCategories[Index].option.push("");
-            return updatedCategories;
-        })
-    }else{
-        setNewFilterOption((prev) => ({
-            ...prev,
-            [categoryID]:[...(prev[categoryID] || []), ''],
-        }))
-    }
-
-
-
-}
-const handleNewOption = (categoryID, index, value, Index=null) => {
-    if(Index !== null){
-        setNewFilterCategory((prev) => {
-            const updatedCategories = [...prev];
-            updatedCategories[Index].option[index] = value;
-            return updatedCategories;
-        });
-    } else {
-        setNewFilterOption((prev) => {
-            const updatedOption = [...(prev[categoryID]||[])];
-            updatedOption[index] = value;
-            return{...prev, [categoryID]: updatedOption};
-        });
-    }
-}
-
-//Save Filter Options
-const saveNewOptions = ()=> {
-    setNewFilterOption((prev) =>{
-
-        const updatedOptions = Object.fromEntries(
-            Object.entries(prev).map(([categoryID, options]) => [
-                categoryID,
-                options.filter((option) => option.trim() !== "")
-            ])
-        );
-        return updatedOptions
-    })
-
-    setfilter((prevFilters) =>
-            prevFilters.map((category) =>
-                newFilterOption[category.id]?.length > 0
-                ?{
-                    ...category,
-                    option: [
-                        ...category.option,
-                        ...newFilterOption[category.id]
-                        .filter((option) => option.trim() !== "")
-                        .map((value) => ({
-                            value: value.toLowerCase().replace(/\s+/g, ""),
-                            label: value,
-                            checked: false,
-                        })),
-                    ]
-                }: category
-            ))
-
-    const unsavedCategoriesAndOption = newFilterCategory
-    .filter((category) => category.name.trim() !== "")
-    .map((category) =>
-        ({
-            ...category,
-            option: (category.option||[])
-            .filter((option) => option.trim() !== "") // Remove empty options
-            .map((value) => ({
-                value: value.toLowerCase().replace(/\s+/g, ""),
-                label: value,
-                checked: false,
-            })),
-        })
-    )
-
-            setNewFilterOption({});
-            setfilter((prev) => [...prev, ...unsavedCategoriesAndOption]);
-            setNewFilterCategory([]);
-
-            // Close editor mode
-            toggleModal('openFilterEditor', false);
-}
-// Edit Filter
-const [editingFilterOption, setEditingFilterOption] = useState(null);
-const [tempEditedValue, setTempEditedValue] = useState('');
-
-const handleInputChange = (e) => {
-    setTempEditedValue(e.target.value);
-};
-const editFilterOption = (categoryID, optionValue, isNew=false, optionLabel) => {
-    setEditingFilterOption({categoryID, optionValue, isNew});
-    setTempEditedValue(optionLabel);
-}
-
-const handleSave = (categoryID, oldValue, isNew) => {
-    saveEditedFilterOption(categoryID, oldValue, tempEditedValue, isNew);
-};
-
-const saveEditedFilterOption = (categoryID, oldValue, newValue, isNew) => {
-    if(isNew){
-        setNewFilterOption((prev) => {
-            const updatedOption = prev[categoryID].map((opt) => (opt === oldValue ? newValue : opt));
-            return{...prev, [categoryID]: updatedOption};
-        });
-    } else {
-        setfilter((prevFilters) =>
-                prevFilters.map((category) =>
-                    categoryID === category.id ? {
-                        ...category,
-                        option: category.option.map((option) => option.value === oldValue ? {...option, value:newValue.toLowerCase(), label: newValue} : option),
-                    } : category
-                )
-
-        )
-    }
-
-    setEditingFilterOption(null);
-}
-
-
-//Delete Filter
-const deleteFilterOption = (categoryID, optionValue, isNew = false) => {
-    if(isNew){
-        setNewFilterOption((prev => {
-            const updatedOption = [...(prev[categoryID]||[])].filter((opt) => opt !== optionValue);
-            return updatedOption.length > 0 ? { ...prev, [categoryID]: updatedOption}:{};
-        }))
-    } else {
-        setfilter((prevFilters) =>
-        prevFilters.map((category) =>
-            category.id === categoryID ?
-            {
-                ...category,
-                option: category.option.filter((option) => option.value !== optionValue),
-            }:category)
-        );
-    }
-}
-
-// Delete Category
-const deleteCourseCategory = (categoryID, isNewCategory = false) => {
-    if(isNewCategory){
-        setNewFilterCategory((prevCategories) =>
-            prevCategories.filter((category, index) => index !== categoryID)
-        );
-    }else{
-        setfilter((prevFilters) =>
-            prevFilters.filter((category) => category.id !== categoryID)
-        )
-    }
-}
-
-//Edit Category
-const [editingCategoryIndex, setEditingCategoryIndex] = useState(null);
-const editCourseCategory = (save,categoryID, newName) => {
-    if(save === "saved"){
-        setfilter((prevFilters) =>
-            prevFilters.map((category) =>
-                category.id === categoryID ? {...category, name: newName}:category
-            )
-        )
-    }else{
-        setNewFilterCategory((prev) => {
-            const updatedCategories = [...prev];
-            updatedCategories[index] = {
-                ...updatedCategories[index],
-                name: newName,
-            };
-            return updatedCategories;
-        })
-    }
-}
-
-
 
 // Action Button
 const handleAction = (e,key) => {
@@ -384,7 +187,7 @@ const handleFilter = (sectionId, value) => {
             </div>
 
             {/* Search bar */}
-            <div className='inline-flex items-center col-start-3 row-start-2 px-5 py-3 h-fit'>
+            <div className='inline-flex items-center col-start-3 row-start-2 pl-5 py-3 h-fit'>
                 <div className=' inline-flex flex-row place-content-between border-2 border-primary rounded-md w-full font-text shadow-md'>
                     <input type="text" className='focus:outline-none text-sm px-4 w-full rounded-md bg-white' placeholder='Search...'/>
                     <div className='bg-primary py-2 px-4 text-white'>
@@ -395,227 +198,35 @@ const handleFilter = (sectionId, value) => {
 
             {/* Filter */}
             <div className='row-start-2 col-start-4 inline-flex justify-between items-center flex-row mx-5'>
-                <div>
-                    {/* Filter Header */}
-                    <h1 className='font-header text-2xl text-primary'>Course Filter</h1>
-                    <p className='text-md font-text text-unactive text-sm'>Categorize courses</p>
-                </div>
-                <div>
+                {/* Filter Header */}
+                    <div>
+                        <h1 className='font-header text-2xl text-primary'>Course Filter</h1>
+                        <p className='text-md font-text text-unactive text-sm'>Categorize courses</p>
+                    </div>
+                    <div>
                     {/* Course Button */}
                     {
-                        !modalState.openFilterEditor ?
-                        <div className='relative group aspect-square w-10 rounded-full flex items-center justify-center bg-primarybg text-primary cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out' onClick={()=>toggleModal('openFilterEditor',true)}>
-                            <FontAwesomeIcon icon={faPen}/>
-                            <p className='absolute w-auto top-12 z-10 bg-tertiary text-white p-2 rounded-md text-xs scale-0 font-text group-hover:scale-100'>Edit</p>
-                        </div> :
-                        <div className='relative group aspect-square w-10 rounded-full flex items-center justify-center bg-primarybg text-primary cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out' onClick={()=>saveNewOptions()}>
-                            <FontAwesomeIcon icon={faFloppyDisk}/>
-                            <p className='absolute w-auto top-12 z-10 bg-tertiary text-white p-2 rounded-md text-xs scale-0 font-text group-hover:scale-100'>Save</p>
-                        </div>
-                    }
-                </div>
-            </div>
-            <div className='row-start-3 row-span-3 col-start-4 pl-5 pr-4 mr-2 overflow-y-auto max-h-full scrollbar-thin scrollbar-gutter scrollbar-thumb-primary scrollbar-track-primarybg scrollbar-thumb-rounded-full scrollbar-track-rounded-full sscrollbar-no-arrows'>
-                <form>
-                    {filter.map((section)=>(
-                        <>
-                        <Disclosure key={section.id} as="div" className='border-b border-divider py-6'>
-                            <h3 className='-my-3 flow-root font-text text-primary'>
-                                <DisclosureButton className='group flex w-full justify-between py-3 text-sm hover:text-primary transition-all ease-in-out'>
-                                    {
-                                        modalState.openFilterEditor?(
-                                            <div className='flex flex-row gap-4 items-center'>
-                                                <FontAwesomeIcon icon={faPenToSquare} className='text-unactive hover:cursor-pointer hover:text-primary transition-all ease-in-out' onClick={() => setEditingCategoryIndex(section.id)}/>
-                                                {
-                                                    editingCategoryIndex === section.id ? (
-                                                        <input
-                                                        type="text"
-                                                        className="border border-unactive rounded-md p-2 text-xs focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                                                        value={section.name}
-                                                        onChange={(e) => editCourseCategory("saved", section.id, e.target.value)}
-                                                        onBlur={() => setEditingCategoryIndex(null)}
-                                                        autoFocus
-                                                        />
-                                                    ):(
-                                                        <span>{section.name}</span>
-                                                    )
-                                                }
-                                                <FontAwesomeIcon icon={faTrashCan} className='text-unactive cursor-pointer hover:text-primary transition-all ease-in-out' onClick={()=>deleteCourseCategory(section.id, false)}/>
-                                            </div>
-                                        ):(
-                                            <span>{section.name}</span>
-                                        )
-                                    }
-                                    <span className='ml-6 flex items-center'>
-                                        <FontAwesomeIcon icon={faChevronDown} className='group-data-[open]:hidden'/>
-                                        <FontAwesomeIcon icon={faChevronUp} className='group-[&:not([data-open])]:hidden'/>
-                                    </span>
-                                </DisclosureButton>
-                            </h3>
-                            <DisclosurePanel className='pt-6'>
-                                <div className='space-y-4'>
-                                    {section.option.map((option, optionIdx) => (
-                                        <div className='flex flex-row justify-between'>
-                                            <div key={option.value} className='flex gap-4'>
-                                            {/* Checkbox Styling */}
-                                                <div className='flex h-5 shrink-0 items-center'>
-                                                    {
-                                                        modalState.openFilterEditor ? (
-                                                            editingFilterOption?.categoryID === section.id && editingFilterOption?.optionValue === option.value
-                                                            ?
-                                                            <input type="text"
-                                                            className='border border-unactive rounded-md p-2 text-xs focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary'
-                                                            value={tempEditedValue}
-                                                            onChange={handleInputChange}
-                                                            onBlur={() => handleSave(section.id, option.value, false)}
-                                                            onKeyDown={(e) => e.key === "Enter" && handleSave(section.id, option.value, false)}
-                                                            />
-                                                            :
-                                                            <FontAwesomeIcon icon={faPenToSquare} className='text-unactive hover:cursor-pointer hover:text-primary transition-all ease-in-out' onClick={() => editFilterOption(section.id, option.value, false,option.label)}/>
+                        user.role === "System Admin" ? (
 
-                                                        ):(
-                                                            <div className='group grid size-4 grid-cols-1'>
-                                                                <input defaultValue={option.value} defaultChecked={option.checked}
-                                                                id={`filter-${section.id}-${optionIdx}`} name={`${section.id}[]`} type="checkbox"
-                                                                className='col-start-1 row-start-1 appearance-none rounded border border-divider bg-white checked:border-primary checked:bg-primary'
-                                                                checked={isfilter[section.id] === option.value && !modalState.openFilterEditor} // Controlled state
-                                                                onChange={() => handleFilter(section.id, option.value)}
-                                                                disabled={modalState.openFilterEditor}/>
-
-                                                                <svg fill="none" viewBox="0 0 14 14" className="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-[:disabled]:stroke-gray-950/25">
-                                                                <path
-                                                                    d="M3 8L6 11L11 3.5"
-                                                                    strokeWidth={2}
-                                                                    strokeLinecap="round"
-                                                                    strokeLinejoin="round"
-                                                                    className="opacity-0 group-has-[:checked]:opacity-100"
-                                                                />
-                                                                <path
-                                                                    d="M3 7H11"
-                                                                    strokeWidth={2}
-                                                                    strokeLinecap="round"
-                                                                    strokeLinejoin="round"
-                                                                    className="opacity-0 group-has-[:indeterminate]:opacity-100"
-                                                                />
-                                                                </svg>
-                                                            </div>
-                                                        )
-                                                    }
-                                                </div>
-                                                {
-                                                    editingFilterOption?.categoryID === section.id && editingFilterOption?.optionValue === option.value
-                                                    ? null :
-                                                    <label htmlFor={`filter-${section.id}-${optionIdx}`} className='text-sm font-text text-black'>{option.label}</label>
-                                                }
-                                            </div>
-                                            {/* Delete */}
-                                            {
-                                                modalState.openFilterEditor &&
-                                                    <FontAwesomeIcon icon={faMinus} className='text-unactive cursor-pointer hover:text-primary transition-all ease-in-out' onClick={()=>deleteFilterOption(section.id,option.value)}/>
-                                            }
-                                        </div>
-
-                                    ))}
-                                    {/* Add FIlter Option Input*/}
-                                    {
-                                        newFilterOption[section.id]?.map((option, index) => (
-                                            <div key={`new-${section.id}-${index}`} className='flex flex-row justify-between items-center'>
-                                                <div className='flex gap-4 items-center'>
-                                                    <div className='flex h-5 shrink-0 items-center'>
-                                                        <FontAwesomeIcon icon={faPenToSquare} className='text-unactive hover:cursor-pointer hover:text-primary transition-all ease-in-out'/>
-                                                    </div>
-                                                    <input type="text"
-                                                            className='border border-unactive rounded-md p-2 text-xs focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary'
-                                                            value={option}
-                                                            onChange={(e) => handleNewOption(section.id, index, e.target.value)}/>
-                                                </div>
-                                                <FontAwesomeIcon icon={faMinus} className='text-unactive cursor-pointer hover:text-primary transition-all ease-in-out' onClick={() => deleteFilterOption(section.id, option, true)}/>
-                                            </div>
-                                        ))
-                                    }
-                                    {/* Add FIlter Option Button*/}
-                                    {
-                                        modalState.openFilterEditor &&
-                                        <button onClick={(e) => insertOption(e,section.id)} className='flex items-center gap-4 text-primary transition-all ease-in-out text-sm border border-primary py-2 px-4 rounded-full hover:bg-primary hover:text-white'>
-                                            <FontAwesomeIcon icon={faPlus}/>
-                                            <p className='font-text'>Add New Filter Item</p>
-                                        </button>
-                                    }
+                                !modalState.editFilter ?
+                                <div className='relative group aspect-square w-10 rounded-full flex items-center justify-center bg-primarybg text-primary cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out' onClick={()=>toggleModal('editFilter',true)}>
+                                    <FontAwesomeIcon icon={faPen}/>
+                                    <p className='absolute w-auto top-12 z-10 bg-tertiary text-white p-2 rounded-md text-xs scale-0 font-text group-hover:scale-100'>Edit</p>
+                                </div> :
+                                <div className='relative group aspect-square w-10 rounded-full flex items-center justify-center bg-primarybg text-primary cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out' onClick={()=>toggleModal('editFilter',false)}>
+                                    <FontAwesomeIcon icon={faFloppyDisk}/>
+                                    <p className='absolute w-auto top-12 z-10 bg-tertiary text-white p-2 rounded-md text-xs scale-0 font-text group-hover:scale-100'>Save</p>
                                 </div>
-                            </DisclosurePanel>
-                        </Disclosure>
-                        </>
-                    ))}
-                    {/* Handle New Category */}
-                    {
-                        newFilterCategory.map((section, index) => (
-                            <Disclosure key={`new-${index}`} as="div" className='border-b border-divider py-6'>
-                                <h3 className='-my-3 flow-root font-text text-primary'>
-                                    <DisclosureButton className='group flex w-full justify-between py-3 text-sm hover:text-primary transition-all ease-in-out'>
-                                        <input
-                                            type="text"
-                                            className='border border-unactive rounded-md p-2 text-xs focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary'
-                                            value={section.name}
-                                            onChange={(e) => handleFilterCategory(index, e.target.value)}
-                                        />
-
-                                        <span className='ml-6 flex items-center'>
-                                            <FontAwesomeIcon icon={faChevronDown} className='group-data-[open]:hidden'/>
-                                            <FontAwesomeIcon icon={faChevronUp} className='group-[&:not([data-open])]:hidden'/>
-                                        </span>
-                                    </DisclosureButton>
-                                </h3>
-                                {/* Handle New Category Options*/}
-                                <DisclosurePanel className='pt-6'>
-                                    {
-                                        section.option?.map((option, optionIndex) => (
-                                            <div key={`new-${index}-${optionIndex}`} className="flex flex-row justify-between items-center py-3">
-                                                <input
-                                                    type="text"
-                                                    className="border border-unactive rounded-md p-2 text-xs focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                                                    value={option}
-                                                    onChange={(e) => handleNewOption(null, optionIndex, e.target.value, index)}
-                                                />
-
-                                                <FontAwesomeIcon
-                                                    icon={faMinus}
-                                                    className="text-unactive cursor-pointer hover:text-primary transition-all ease-in-out"
-                                                    onClick={() => {
-                                                        const updatedCategories = [...newFilterCategory];
-                                                        updatedCategories[index].option.splice(optionIndex, 1);
-                                                        setNewFilterCategory(updatedCategories);
-                                                    }}
-                                                />
-                                            </div>
-                                        ))
-                                    }
-                                    {/* Add FIlter Option Button*/}
-                                    {
-                                        modalState.openFilterEditor &&
-                                        <button
-                                            onClick={(e) => insertOption(e, null, index)}
-                                            className='flex items-center gap-4 text-primary transition-all ease-in-out text-sm border border-primary py-2 px-4 rounded-full hover:bg-primary hover:text-white'
-                                        >
-                                            <FontAwesomeIcon icon={faPlus}/>
-                                            <p className='font-text'>Add New Filter Item</p>
-                                        </button>
-                                    }
-                                </DisclosurePanel>
-                            </Disclosure>
-                        ))
+                        ):null
                     }
-                    {
-                        modalState.openFilterEditor &&
-                        <button onClick={insertCategory} className='flex items-center gap-4 text-primary transition-all ease-in-out text-sm border border-primary py-2 my-3 px-4 rounded-full hover:bg-primary hover:text-white'>
-                        <FontAwesomeIcon icon={faPlus}/>
-                        <p className='font-text'>Add New Filter Category</p>
-                        </button>
-                    }
-                </form>
+                    </div>
+            </div>
+            <div className='row-start-3 row-span-3 col-start-4 flex flex-col h-full'>
+                <CourseFilterProps isEdit={modalState.editFilter}/>
             </div>
 
             {/* Sample Card for course display */}
-            <CourseListCard courseList={Courses} classname='row-start-3 row-span-1 col-start-1 col-span-3 w-full px-5 py-2 flex flex-col gap-2' onclick={OpenDialog} action={handleAction}/>
+            <CourseListCard courseList={Courses} classname='row-start-3 row-span-1 col-start-1 col-span-3 w-full pl-5 py-2 flex flex-col gap-2' onclick={OpenDialog} action={handleAction}/>
 
             {/* Sample Footer Pagenataion */}
             <div className='row-start-4 row-span-1 col-start-1 col-span-3 border-t border-divider mx-5 py-3 flex flex-row items-center justify-between'>

@@ -19,8 +19,12 @@ const StateContext = createContext({
 //passing information into layouts
 export const ContextProvider = ({ children }) => {
     const [user, setUser] = useState(null);
-    const [token, _setToken] = useState(localStorage.getItem('ACCESS_TOKEN'));
-    const [role, _setRole] = useState(localStorage.getItem('LOGIN_AS'));
+    const [token, _setToken] = useState(
+        localStorage.getItem('ACCESS_TOKEN')
+        );
+    const [role, _setRole] = useState(
+        localStorage.getItem('LOGIN_AS')
+        );
     const [availableRoles, setAvailableRoles] = useState([]);
     const [employeeID, setEmployeeID] = useState('');
     const [profile_image, setProfile] = useState('');

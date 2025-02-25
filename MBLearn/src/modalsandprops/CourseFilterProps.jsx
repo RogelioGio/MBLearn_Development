@@ -24,15 +24,6 @@ const CourseFilterProps = ({isEdit}) => {
                 {value: 'managementandleadership' , label: 'Management and Leadership', checked: false },
             ]
         },
-        {
-            id:'coursecategory',
-            name: 'Course Category',
-            option: [
-                {value: 'professionaldev' , label: 'Professional Development', checked: false },
-                {value: 'dataandanalytics' , label: 'Data and Analystics', checked: false },
-                {value: 'managementandleadership' , label: 'Management and Leadership', checked: false },
-            ]
-        },
     ])
 
     // FilterStates
