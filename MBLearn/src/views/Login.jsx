@@ -64,8 +64,8 @@ export default function Login() {
             //API call
             axiosClient.post('/login', payload).then(({data})=>{
                 setToken(data.token);
-                setUser(data.user);
-                setRole(data.user.role)
+                setRole(data.user.user_infos.roles[0]?.role_name)
+                console.log(data.user.user_infos.roles[0]?.role_name);
 
                 if (data.redirect) {
                     window.location.href = data.redirect; // Redirect to the appropriate URL based on role

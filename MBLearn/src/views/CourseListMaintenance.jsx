@@ -108,7 +108,7 @@ const [modalState, setModalState] = useState({
         insertNewCategory: false,
         openEditCourse: false,
         openDeleteCourse: false,
-        editFilter: true
+        editFilter: false
     });
 
 const [sort, setSort] = useState({
@@ -206,7 +206,7 @@ const handleFilter = (sectionId, value) => {
                     <div>
                     {/* Course Button */}
                     {
-                        user.role === "System Admin" ? (
+                        user.user_infos.roles[0]?.role_name === "System Admin" ? (
 
                                 !modalState.editFilter ?
                                 <div className='relative group aspect-square w-10 rounded-full flex items-center justify-center bg-primarybg text-primary cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out' onClick={()=>toggleModal('editFilter',true)}>

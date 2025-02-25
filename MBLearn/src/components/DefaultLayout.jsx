@@ -87,13 +87,7 @@ export default function DefaultLayout() {
         .get('/user')
         .then(({data})=>{
             setUser(data)
-
-            axiosClient.get(`/select-employeeid/${data.employeeID}`).then(({data}) => {
-                setProfile(data.data.profile_image);
-                setLoading(false)
-            }).catch((e) => {
-                console.error(e);
-            });
+            setLoading(false)
         }).catch((e)=>{
             console.error(e)
         })

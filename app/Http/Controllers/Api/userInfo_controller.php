@@ -54,7 +54,7 @@ class userInfo_controller extends Controller
             'middle_name' => $validatedData['middle_name'],
             'name_suffix' => $validatedData['name_suffix'],
             'department' => $validatedData['department'],
-            'title' => $validatedData['title'], 
+            'title' => $validatedData['title'],
             'branch' => $validatedData['branch'],
             'city' => $validatedData['city'],
             'status' =>$status,
@@ -88,7 +88,7 @@ class userInfo_controller extends Controller
         $page = $request->input('page', 1);//Default page
         $perPage = $request->input('perPage',5); //Number of entry per page
 
-        $users =  UserInfos::paginate($perPage);
+        $users =  UserInfos::with('roles')->paginate($perPage);
 
         return response()->json([
             'data' => $users->items(),
@@ -154,7 +154,9 @@ class userInfo_controller extends Controller
     public function findUser_EmployeeID($employeeID)
     {
         // Find the user info by Employee ID
-        $user = UserInfos::where('employeeID', $employeeID)->first();
+        $user = UserInfos::where('employeeID', $employeeID)
+        ->with('roles')
+        ->first();
 
         if($user){
             return response() -> json(['data' => $user], 200);

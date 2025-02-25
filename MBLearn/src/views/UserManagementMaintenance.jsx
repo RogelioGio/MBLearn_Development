@@ -128,7 +128,7 @@ export default function UserManagementMaintenance() {
     // Open and Close Delete User Modal
     const OpenDelete = (e, EmployeeID) => {
         e.stopPropagation();
-        setEmployeeID(EmployeeID)
+        setUserID(EmployeeID)
         toggleModal("isDelete", true);
     }
 
@@ -261,22 +261,27 @@ export default function UserManagementMaintenance() {
                             isLoading ? (
                                 <UserListLoadingProps className="z-10"/>
                             ) : (
-                                users.map(userEntry => (<User
-                                    key={userEntry.id}
-                                    userID={userEntry.id}
-                                    click={OpenDialog}
-                                    name={userEntry.name}
-                                    department={userEntry.department}
-                                    title={userEntry.title}
-                                    branch={userEntry.branch}
-                                    city={userEntry.city}
-                                    profile_url={userEntry.profile_image}
-                                    employeeID={userEntry.employeeID}
-                                    role={userEntry.role}
-                                    edit={OpenEdit}
-                                    _delete={OpenDelete}
-                                    />
-                            ))
+                                users.map(userEntry => {
+                                    const { first_name, middle_name, last_name } = userEntry || {};
+                                    const fullName = [first_name, middle_name, last_name].filter(Boolean).join(" ");
+                                    return(<User
+                                            key={userEntry.id}
+                                            userID={userEntry.id}
+                                            click={OpenDialog}
+                                            name={fullName}
+                                            department={userEntry.department}
+                                            title={userEntry.title}
+                                            branch={userEntry.branch}
+                                            city={userEntry.city}
+                                            profile_url={userEntry.profile_image}
+                                            employeeID={userEntry.employeeID}
+                                            role={userEntry.roles?.[0]?.role_name || "No Role Yet"}
+                                            edit={OpenEdit}
+                                            _delete={OpenDelete}
+                                            />)
+                                    }
+
+                            )
                         )
 
                         }
@@ -335,7 +340,7 @@ export default function UserManagementMaintenance() {
             <EditUserModal open={modalState.isEdit} close={CloseEdit} ID={userID} EmployeeID={EmployeeID}/>
 
             {/* Delete User Modal */}
-            <DeleteUserModal open={modalState.isDelete} close={CloseDelete} EmployeeID={EmployeeID} close_confirmation={OpenSuccessFullyDelete}/>
+            <DeleteUserModal open={modalState.isDelete} close={CloseDelete} EmployeeID={userID} close_confirmation={OpenSuccessFullyDelete}/>
             <DeleteUserSuccessfully open={modalState.isDeleteSuccess} close={CloseSuccessFullyDelete}/>
         </div>
 

@@ -57,7 +57,7 @@ class userCredentials_controller extends Controller
         $page = $request->input('page', 1);//Default page
         $perPage = $request->input('perPage',5); //Number of entry per page
 
-        $userCredentials = UserCredentials::paginate($perPage);
+        $userCredentials = UserCredentials::with(['userInfos', 'userInfos.roles'])->paginate($perPage);
 
         return response()->json([
             'message' => 'User Credentials List',
@@ -67,6 +67,8 @@ class userCredentials_controller extends Controller
             'data' => $userCredentials->items()
         ]);
     }
+
+
 
     public function showEnrolledCourses(UserCredentials $userCredentials){
         return CourseResource::collection($userCredentials->enrolledCourses);

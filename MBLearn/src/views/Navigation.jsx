@@ -58,9 +58,9 @@ export default function Navigation() {
     useEffect(() => {
         let roles = []
                 //Set Available Roles
-                if(user.role === 'System Admin'){
+                if(user.user_infos.roles[0]?.role_name === 'System Admin'){
                     roles = ['System Admin', 'Course Admin', 'Learner']
-                }else if(user.role === 'Course Admin'){
+                }else if(user.user_infos.roles[0]?.role_name === 'Course Admin'){
                     roles = ['Course Admin', 'Learner']
                 };
                 setAvailableRoles(roles);
