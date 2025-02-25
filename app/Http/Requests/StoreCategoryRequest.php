@@ -26,7 +26,7 @@ class StoreCategoryRequest extends FormRequest
         ];
     }
 
-    public function prepareforValidation(){
+    public function prepareForValidation(){
         $this->merge([
             'category_name' => $this->categoryName
         ]);

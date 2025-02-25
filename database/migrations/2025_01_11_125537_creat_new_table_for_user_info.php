@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('userInfo', function(Blueprint $table){
             $table->id();
-            $table->string('employeeID',11)->after('id');
+            $table->string('employeeID',11)->after('id')->unique();
             $table->string('first_name',30);
-            $table->string('middle_initial', 5);
+            $table->string('middle_name', 30)->nullable();
             $table->string('last_name', 30);
             $table->string('name_suffix', 5)->nullable();
             $table->string('department')->nullable();
@@ -24,7 +24,6 @@ return new class extends Migration
             $table->string('city')->index();
             $table->enum('status',['Active','Inactive'])->default('Active');
             $table->string('profile_image')->nullable();
-            $table->integer('user_credentials_id')->nullable();
             $table->timestamps();
         });
     }

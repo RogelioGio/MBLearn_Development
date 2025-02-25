@@ -12,6 +12,9 @@ use App\Http\Controllers\Api\userInfo_controller;
 use App\Http\Controllers\Api\userCredentials_controller;
 use App\Http\Controllers\Api\FilterCategoryController;
 use App\Http\Controllers\Api\Filters;
+use App\Http\Controllers\Api\RoleController;
+use App\Http\Controllers\Api\Training_ModeController;
+use App\Http\Controllers\Api\TypeController;
 use App\Http\Controllers\EnrollmentController as ControllersEnrollmentController;
 
 //New Login routing
@@ -29,32 +32,60 @@ Route::middleware('auth:sanctum')->group(function(){
     // Route::get('/reset-users', [UserController::class, 'resetUsers']);
 
 
+    //Userlist API for the frontend
+    Route::post('/add-user', [userInfo_controller::class, 'addUser']);
+    //Send the id for both the userinfos and roleid
+    Route::post('/addRole/{userInfos}/{role}', [userInfo_controller::class, 'addRole']);
+    Route::post('/removeRole/{userInfos}/{role}', [userInfo_controller::class, 'removeRole']);
+    Route::post('/addPermission/{userInfos}/{permission}', [userInfo_controller::class, 'addPermission']);
+    Route::post('removePermission/{userInfos}/{permission}', [userInfo_controller::class, 'removePermission']);
     //Userlist API for the fronten
     Route::get('/index-user',[userInfo_controller::class, 'indexUsers']);
-    Route::get('/select-user/{id}',[userInfo_controller::class, 'findUser']);
     Route::get('/select-employeeid/{employeeID}',[userInfo_controller::class, 'findUser_EmployeeID']);
-    Route::put('/update-user-info/{employeeID}',[userInfo_controller::class, 'updateUser']);
-    Route::delete('/delete-user/{employeeID}',[userInfo_controller::class, 'deleteUser']);
+    Route::get('/reset-user',[userInfo_controller::class, 'resetUser']); //reset user table
+    Route::get('get-profile-image',[userInfo_controller::class, 'getProfile']); //Get Profile Image for UserCredentials
+
+    //UserCredential API (for logging in accounts)
+    Route::post('/addusercredentials', [userCredentials_controller::class, 'addUserCredentials']);
+    Route::put('/update-user-creds/{userCredentials}',[userCredentials_controller::class, 'updateUserCredentials']);
+    Route::get('/index-user-creds',[userCredentials_controller::class, 'userCredentialsList']);
+    Route::get('/select-user-creds/{userCredentials}',[userCredentials_controller::class, 'findUser_EmployeeID']);
+    Route::delete('/delete-user-creds/{userCredentials}',[userCredentials_controller::class, 'deleteUser']);
+    Route::get('/reset-user-creds',[userCredentials_controller::class, 'resetUsers']); //reset user table
+    Route::put('/update-user-info/{userInfos}',[userInfo_controller::class, 'updateUser']);
+    Route::delete('/delete-user/{userInfos}',[userInfo_controller::class, 'deleteUser']);
 
     Route::get('get-profile-image',[userInfo_controller::class, 'getProfile']); //Get Profile Image for UserCredentials
 
     //UserCredential API (for logging in accounts)
-    Route::put('/update-user-creds/{employeeID}',[userCredentials_controller::class, 'updateUserCredentials']);
+    Route::put('/update-user-creds/{userCredentials}',[userCredentials_controller::class, 'updateUserCredentials']);
     Route::get('/index-user-creds',[userCredentials_controller::class, 'userCredentialsList']);
     Route::get('/select-user-creds/{employeeID}',[userCredentials_controller::class, 'findUser_EmployeeID']);
-    Route::delete('/delete-user-creds/{employeeID}',[userCredentials_controller::class, 'deleteUser']);
-    Route::get('/usercredentials/{userCredentials}/courses', [userCredentials_controller::class, 'showEnrolledCourses']);
+    Route::delete('/delete-user-creds/{userCredentials}',[userCredentials_controller::class, 'deleteUser']);
 
     //Enrollment API
     Route::post('/enrollments/bulk', [EnrollmentController::class, 'bulkStore']);
     Route::apiResource('/enrollments', EnrollmentController::class);
-    //Route::get('/index-user/enrolees', [EnrollmentController:: class, 'enrolees']);
-    Route::get('/index-user/enrolees', [ControllersEnrollmentController::class, 'enrolees']);
+    Route::get('/index-user/enrolees', [EnrollmentController:: class, 'enrolees']);
+    // Route::get('/index-user/enrolees', [ControllersEnrollmentController::class, 'enrolees']);
 
     //Courses API
     Route::apiResource('/courses', CourseController::class);
+    Route::apiResource('/categories', CategoryController::class);
+    Route::apiResource('/modes', Training_ModeController::class);
+    Route::apiResource('/types', TypeController::class);
+    Route::post('/addType/{course}/{type}', [CourseController::class, 'addType']);
+    Route::post('/addType/{course}/{type}', [CourseController::class, 'removeType']);
+    Route::post('/addType/{course}/{category}', [CourseController::class, 'addCategory']);
+    Route::post('/addType/{course}/{category}', [CourseController::class, 'removeCategory']);
+    Route::post('/addType/{course}/{training_mode}', [CourseController::class, 'addTrainingMode']);
+    Route::post('/addType/{course}/{training_mode}', [CourseController::class, 'removeTrainingMode']);
     Route::post('/courses/bulk', [CourseController::class, 'bulkStore']);
     Route::get('/courses/{course}/users', [CourseController::class, 'showEnrolledUsers']);
+
+    //Role API (get and post with /roles, get, put, and delete with /roles/{roleid} every api resource is same as this)
+    Route::apiResource('/roles', RoleController::class);
+    
 
 
 });

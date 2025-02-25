@@ -2,76 +2,73 @@
 
 namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\addUserCredential_request;
-use App\Http\Requests\addUserInfo;
+use App\Http\Requests\AddUsersRequest;
 use App\Http\Requests\updateUserInfo;
-use App\Models\Course;
-use App\Models\Enrollment;
+use App\Models\Permission;
+use App\Models\Role;
 use App\Models\UserInfos;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Cache;
 use App\Models\UserCredentials;
 class userInfo_controller extends Controller
 {
 
     //Add user information function
-    public function addUser(addUserInfo $userRequest , addUserCredential_request $userCredentialRequest){
+    //Change, only have 1 request that has information for both the userinfos and usercreds
+    public function addUser(AddUsersRequest $addUsersRequest){
 
-    $validatedData = $userRequest->validated();
-    $validatedData2 = $userCredentialRequest->validated();
+        $validatedData = $addUsersRequest->validated();
 
-    $existingUser = UserInfos::where('employeeID', $validatedData['employeeID'])->first();
+        $profile_image = $this -> generateProfileImageurl($validatedData['first_name'].$validatedData['last_name']);
+        $status = $validatedData['status'] ?? 'Active';
+        $existingUser = UserInfos::where('employeeID', $validatedData['employeeID'])->first();
 
-    if ($existingUser) {
+        if ($existingUser) {
+            return response()->json([
+                'message' => 'User already exists',
+                'user' => $existingUser
+            ], 409); // Use 409 Conflict instead of 200
+        }
+
+        // Combine first name, middle initial, last name, and suffix into a full name
+        $fullName = trim("{$validatedData['first_name']} " .
+                            ("{$validatedData['middle_name']}" ? "{$validatedData['middle_name']}. " : "") .
+                            "{$validatedData['last_name']} " .
+                            ("{$validatedData['name_suffix']}" ? $validatedData['name_suffix'] : ""));
+
+        // Generate profile image URL (pass the correct name variable)
+        $profile_image = $this->generateProfileImageUrl($fullName);
+
+        // Default status to 'Active' if not provided
+        $status = $validatedData['status'] ?? 'Active';
+
+        $userCredentials = UserCredentials::create([
+            'MBemail' => $validatedData['MBemail'],
+            'password' => $validatedData['password'],
+        ]);
+
+        $userInfo = UserInfos::create([
+            'employeeID' => $validatedData['employeeID'],
+            'first_name' => $validatedData['first_name'],
+            'last_name' => $validatedData['last_name'],
+            'middle_name' => $validatedData['middle_name'],
+            'name_suffix' => $validatedData['name_suffix'],
+            'department' => $validatedData['department'],
+            'title' => $validatedData['title'], 
+            'branch' => $validatedData['branch'],
+            'city' => $validatedData['city'],
+            'status' =>$status,
+            'profile_image' =>$profile_image
+        ]);
+
+        $userCredentials->userInfos()->save($userInfo);
+
+        // Return a success response
         return response()->json([
-            'message' => 'User already exists',
-            'user' => $existingUser
-        ], 409); // Use 409 Conflict instead of 200
-    }
-
-    // Combine first name, middle initial, last name, and suffix into a full name
-    $fullName = trim("{$validatedData['first_name']} " .
-                        ($validatedData['middle_initial'] ? "{$validatedData['middle_initial']}. " : "") .
-                        "{$validatedData['last_name']} " .
-                        ($validatedData['name_suffix'] ? $validatedData['name_suffix'] : ""));
-
-    // Generate profile image URL (pass the correct name variable)
-    $profile_image = $this->generateProfileImageUrl($fullName);
-
-    // Default status to 'Active' if not provided
-    $status = $validatedData['status'] ?? 'Active';
-
-    $userCredentials = UserCredentials::create([
-        'employeeID' => $validatedData2['employeeID'],
-        'name' => $fullName ?? "Gio",  // Use the correctly formatted full name
-        'role' => $validatedData['role'],
-        'MBemail' => $validatedData2['MBemail'],
-        'password' => $validatedData2['password'],
-    ]);
-
-    $userInfo = UserInfos::create([
-        'employeeID' => $validatedData['employeeID'],
-        'name' => $fullName ?? "Gio",  // Use the correctly formatted full name
-        'department' => $validatedData['department'] ?? null,
-        'title' => $validatedData['title'] ?? null,
-        'branch' => $validatedData['branch'] ?? null,
-        'city' => $validatedData['city'],
-        'role' => $validatedData['role'],
-        'status' => $status,
-        'profile_image' => $profile_image,
-        'user_credentials_id' => $userCredentials->id
-    ]);
-
-
-    $userInfo->update(['user_credentials_id' => $userCredentials->id]);
-
-    // Return a success response
-    return response()->json([
-        'message' => 'User registered successfully',
-        'user_info' => $userInfo,
-        'user_credentials' => $userCredentials
-    ], 201);
+            'message' => 'User registered successfully',
+            'user_info' => $userInfo,
+            'user_credentials' => $userCredentials
+        ], 201);
 
     }
     /**
@@ -101,19 +98,53 @@ class userInfo_controller extends Controller
         ],200);
     }
 
+    //You add user id then role id in url /addRole/{userInfos}/{role}
+    public function addRole(UserInfos $userInfos, Role $role){
+        $userInfos->roles()->syncWithoutDetaching($role->id);
+        return response()->json([
+            "Message" => "Role Added",
+            "Data" => $userInfos,
+            "Roles" => $userInfos->roles,
+        ]);
+    }
+
+    public function removeRole(UserInfos $userInfos, Role $role){
+        $userInfos->roles()->detach($role->id);
+        return response()->json([
+            "Message" => "Role Removed",
+            "Data" => $userInfos,
+            "Roles" => $userInfos->roles,
+        ]);
+    }
+
+    public function addPermission(UserInfos $userInfos, Permission $permission){
+        $userInfos->permissions()->attach($permission->id);
+        return response()->json([
+            "Message" => "Permission Added",
+            "Data" => $userInfos
+        ]);
+    }
+
+    public function RemovePermission(UserInfos $userInfos, Permission $permission){
+        $userInfos->permissions()->detach($permission->id);
+        return response()->json([
+            "Message" => "Permission Removed",
+            "Data" => $userInfos
+        ]);
+    }
+
     /**
      * Display the specified user info.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function findUser($id)
+    public function findUser(UserInfos $userInfos)
     {
         // Find the user info by ID
-        $user = UserInfos::find($id);
 
-        if($user){
-            return response() -> json(['data' => $user], 200);
+        if($userInfos){
+            return response() -> json(['data' => $userInfos], 200);
         }else {
             return response()->json(['message' => 'User not found'], 404);  // Return error if not found
         }
@@ -139,33 +170,29 @@ class userInfo_controller extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function updateUser($employeeID, updateUserInfo $request){
+    public function updateUser(UserInfos $userInfos, updateUserInfo $request){
 
         //Input Validation
         $validatedData = $request->validated();
 
-        //Find User by Employee ID
-        $employee = UserInfos::where('employeeID', $employeeID)->first();
-        //User Checker
-        if(!$employee){
+        if(!$userInfos){
             return response()->json(['message' => 'User not found'], 404);
         }
 
-        //Update UserInfo
-        return DB::transaction(function () use ($employee, $validatedData){
-            $employee->update($validatedData);
 
-            return response() -> json(['message' => 'User Info Updated Successfully', 'data' => $employee], 200);
-        });
+        $userInfos->update($validatedData);
+        //Update UserInfo
+        return response()->json([
+            "Message" => 'Updated User',
+            "Data" => $userInfos
+        ]);
     }
 
     //Delete User
-    public function deleteUser($employeeID)
+    public function deleteUser(UserInfos $userInfos)
     {
-        $user = UserInfos::where('employeeID', $employeeID)->first();
-
-        if($user){
-            $user->delete();
+        if($userInfos){
+            $userInfos->status = "Inactive";
             return response()->json(['message' => 'User deleted successfully!'], 200);
         }else {
             return response()->json(['message' => 'User not found'], 404);

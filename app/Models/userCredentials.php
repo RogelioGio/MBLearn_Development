@@ -27,11 +27,8 @@ class UserCredentials extends Model implements Authenticatable
      */
 
     protected $fillable = [
-        'employeeID',
-        'name',
         'MBemail',
         'password',
-        'role',
         'user_info_id',
     ];
 

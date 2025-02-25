@@ -2,7 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\Role;
 use App\Models\User;
+use App\Models\UserCredentials;
 use App\Models\UserInfos;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -23,28 +25,34 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         //     'password' => Hash::make('testing')
         // ]);
+        $roles = ['System Admin', 'Course Admin', 'Learner'];
+        foreach($roles as $role){
+            Role::create([
+                'role_name' => $role
+            ]);
+        }
 
-        // DB::table('userCredentials')->insert([
-        //     'employeeID'=> '01',
-        //     'name' => 'Jericho',
-        //     'MBemail'=> 'hello@gmail.com',
-        //     'password' => bcrypt('12345678'),
-        //     'role'=> 'System Admin',
-        //     'user_info_id' => '01',
-        // ]);
+        $firstcreds = UserCredentials::create([
+            'MBemail'=> 'hello@gmail.com',
+            'password' => bcrypt('12345678'),
+        ]);
 
-        // DB::table('userInfo')->insert([
-        //     'employeeID' => '01',
-        //     'name'=> 'Jericho',
-        //     'department'=> 'IT Department',
-        //     'title'=> 'title',
-        //     'branch'=> 'Novaliches',
-        //     'city'=> 'Quezon City',
-        //     'role'=> 'System Admin',
-        //     'status'=> 'Active',
-        //     'profile_image'=> 'https://ui-avatars.com/api/?name=System+Admin&color=ffffff&background=03045e&bold=true&size=400',
-        //     'user_credentials_id' => 01
-        // ]);
+        $firstinfos = UserInfos::create([
+            'employeeID' => '01',
+            'first_name' => 'Jericho',
+            'last_name' => 'Ilanga',
+            'middle_initial'=> 'S.',
+            'department'=> 'IT Department',
+            'title'=> 'title',
+            'branch'=> 'Novaliches',
+            'city'=> 'Quezon City',
+            'status'=> 'Active',
+            'profile_image'=> 'https://ui-avatars.com/api/?name=System+Admin&color=ffffff&background=03045e&bold=true&size=400',
+        ]);
+
+        $firstcreds->userInfos()->save($firstinfos);
+        $firstinfos->userCredentials()->associate($firstcreds);
+        $firstinfos->save();
 
         UserInfos::factory(10)->create();
     }

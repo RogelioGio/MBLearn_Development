@@ -48,12 +48,13 @@ class EnrollmentController extends Controller
     }
 
     //Fetch Learners
+    //The role names are inside of 2D array []["role_name"] to get role name
     public function enrolees(Request $request){
 
         $page = $request->input('page', 1);//Default page
         $perPage = $request->input('perPage',5); //Number of entry per page
 
-        $learner = UserInfos::where('role', 'Learner')->paginate($perPage);
+        $learner = UserInfos::with('roles')->paginate($perPage);
         Log::info($learner);
         return response()->json([
             'data' => $learner->items(),

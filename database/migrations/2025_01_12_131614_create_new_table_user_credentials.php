@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('MBemail',225);
             $table->string('password');
-            $table->integer('user_info_id')->nullable();
+            $table->foreignId('user_info_id')->nullable()->constrained('userInfo', 'id')->nullOnDelete();
             $table->timestamps();
         });
     }
