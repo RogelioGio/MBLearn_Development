@@ -88,7 +88,7 @@ class userInfo_controller extends Controller
         $page = $request->input('page', 1);//Default page
         $perPage = $request->input('perPage',5); //Number of entry per page
 
-        $users =  UserInfos::paginate($perPage);
+        $users =  UserInfos::where('status', 'Active')->paginate($perPage);
 
         return response()->json([
             'data' => $users->items(),
