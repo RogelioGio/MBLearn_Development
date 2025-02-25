@@ -40,9 +40,13 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('/addPermission/{userInfos}/{permission}', [userInfo_controller::class, 'addPermission']);
     Route::post('removePermission/{userInfos}/{permission}', [userInfo_controller::class, 'removePermission']);
 
-    //Userlist API for the fronten
+    //Userlist API for the frontend
     Route::get('/index-user',[userInfo_controller::class, 'indexUsers']);
     Route::get('/select-employeeid/{employeeID}',[userInfo_controller::class, 'findUser_EmployeeID']);
+    Route::put('/update-user-info/{userInfos}',[userInfo_controller::class, 'updateUser']);
+    Route::delete('/delete-user/{userInfos}',[userInfo_controller::class, 'deleteUser']);
+
+
     Route::get('/reset-user',[userInfo_controller::class, 'resetUser']); //reset user table
     Route::get('get-profile-image',[userInfo_controller::class, 'getProfile']); //Get Profile Image for UserCredentials
 
@@ -53,8 +57,6 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('/select-user-creds/{userCredentials}',[userCredentials_controller::class, 'findUser_EmployeeID']);
     Route::delete('/delete-user-creds/{userCredentials}',[userCredentials_controller::class, 'deleteUser']);
     Route::get('/reset-user-creds',[userCredentials_controller::class, 'resetUsers']); //reset user table
-    Route::put('/update-user-info/{userInfos}',[userInfo_controller::class, 'updateUser']);
-    Route::delete('/delete-user/{userInfos}',[userInfo_controller::class, 'deleteUser']);
 
     Route::get('get-profile-image',[userInfo_controller::class, 'getProfile']); //Get Profile Image for UserCredentials
 
