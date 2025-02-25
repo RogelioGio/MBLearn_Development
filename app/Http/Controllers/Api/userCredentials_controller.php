@@ -104,6 +104,7 @@ class userCredentials_controller extends Controller
     public function deleteUser(UserCredentials $userCredentials)
     {
         $userCredentials->userInfos->status = "Inactive";
+        $userCredentials->userInfos->save();
         return response()->json([
             'message' => 'User is now set to inactive'
         ]);
