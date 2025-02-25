@@ -30,7 +30,7 @@ class UserInfos extends Model
         'employeeID',
         'first_name',
         'last_name',
-        'middle_initial',
+        'middle_name',
         'name_suffix',
         'department',
         'title',

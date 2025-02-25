@@ -32,7 +32,7 @@ class userInfo_controller extends Controller
 
         // Combine first name, middle initial, last name, and suffix into a full name
         $fullName = trim("{$validatedData['first_name']} " .
-                            ("{$validatedData['middle_initial']}" ? "{$validatedData['middle_initial']}. " : "") .
+                            ("{$validatedData['middle_name']}" ? "{$validatedData['middle_name']}. " : "") .
                             "{$validatedData['last_name']} " .
                             ("{$validatedData['name_suffix']}" ? $validatedData['name_suffix'] : ""));
 
@@ -51,7 +51,7 @@ class userInfo_controller extends Controller
             'employeeID' => $validatedData['employeeID'],
             'first_name' => $validatedData['first_name'],
             'last_name' => $validatedData['last_name'],
-            'middle_initial' => $validatedData['middle_initial'],
+            'middle_name' => $validatedData['middle_name'],
             'name_suffix' => $validatedData['name_suffix'],
             'department' => $validatedData['department'],
             'title' => $validatedData['title'], 

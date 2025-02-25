@@ -23,9 +23,9 @@ class AddUsersRequest extends FormRequest
     {
         return [
             'employeeID' => 'required|string|max:11|unique:userInfo,employeeID',
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'middle_initial' => 'nullable|string|max:1',
+            'first_name' => 'required|string|max:30',
+            'last_name' => 'required|string|max:30',
+            'middle_name' => 'nullable|string|max:30',
             'name_suffix' => 'nullable|string|max:10',
             'department' => 'nullable|string|max:255',
             'title' => 'nullable|string|max:255',
