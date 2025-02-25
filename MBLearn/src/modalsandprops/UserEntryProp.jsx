@@ -14,7 +14,7 @@ const User = ({re_move,click,userID,name,department,title,branch,city,profile_ur
                         </div>
                         {/* Name and employee-id*/}
                         <div>
-                            <p className='font-header'>{name}</p>
+                            <p className='font-text'>{name}</p>
                             <p className='text-unactive text-xs'>ID: {employeeID}</p>
                         </div>
                     </div>
