@@ -193,7 +193,8 @@ class userInfo_controller extends Controller
     {
         if($userInfos){
             $userInfos->status = "Inactive";
-            return response()->json(['message' => 'User deleted successfully!'], 200);
+            $userInfos->save();
+            return response()->json(['message' => 'User is now set to inactive'], 200);
         }else {
             return response()->json(['message' => 'User not found'], 404);
         }
