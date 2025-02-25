@@ -43,6 +43,7 @@ export default function UserAccountSecurityMaintenance(){
         .then((response) => {
             setUsers(response.data.data)
             setIsLoading(false)
+            console.log(response.data.data)
         }).catch((e)=>{
             console.log(e)
         })
@@ -140,8 +141,7 @@ export default function UserAccountSecurityMaintenance(){
                                 <UserCredentialsLoadingProps/>
                             ) : (
                                 users.map(user => (
-                                    <UserSecEntyProps key={user.id} name={[user.first_name, user.middle_name, user.last_name].join(" ")}
-                                        employeeID={user.employeeID} MBEmail={user.MBemail} role={user.role} image={user.profile_img}/>
+                                    <UserSecEntyProps key={user.id} name={[user.user_infos?.first_name, user.user_infos?.middle_name, user.user_infos?.last_name].join("")} employeeID={user.user_infos.employeeID} MBEmail={user.MBemail} role={user.user_infos?.roles?.[0]?.role_name} image={user.user_infos?.profile_image }/>
                                 ))
                             )
 

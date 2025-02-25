@@ -30,7 +30,7 @@ const DeleteUserModal = ({open,close,classname,EmployeeID,close_confirmation,upd
         close_confirmation()
         close()
         if(EmployeeID){
-            axiosClient.delete(`/delete-user/${EmployeeID}`)
+            axiosClient.delete(`/delete-user/${employeeData.id}`).then((response)=>console.log(response))
         }
     }
     return(
