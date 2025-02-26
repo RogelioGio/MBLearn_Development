@@ -149,6 +149,7 @@ export default function BulkEnrollment() {
         })
         .then(({data}) => {
             setLearners(data.data)
+            console.log(data.data)
             pageChangeState('totalUser', data.total)
             pageChangeState('lastPage', data.lastPage)
             pageChangeState('currentPerPage', data.data.length)
