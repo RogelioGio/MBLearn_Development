@@ -71,4 +71,12 @@ class UserInfos extends Model
     public function permissions(): BelongsToMany{
         return $this->belongsToMany(Permission::class, 'permission_userinfo', 'userinfo_id', 'permission_id');
     }
+
+    public function branches():BelongsToMany{
+        return $this->belongsToMany(Branch::class, 'branch_user_info', 'userinfo_id', 'branch_id');
+    }
+
+    public function cities():BelongsToMany{
+        return $this->belongsToMany(City::class, 'city_user_info', 'userinfo_id', 'city_id');
+    }
 }
