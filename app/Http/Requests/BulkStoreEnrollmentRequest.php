@@ -22,9 +22,9 @@ class BulkStoreEnrollmentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'data.*.userId'=> 'required|integer|exists:userInfos,id',
+            'data.*.userId'=> 'required|integer',
             'data.*.courseId'=> 'required|integer',
-            'data.*.enrollerId'=> 'required|integer|exists:userInfo,id'
+            'data.*.enrollerId'=> 'required|integer'
         ];
     }
 

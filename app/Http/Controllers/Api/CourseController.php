@@ -28,11 +28,11 @@ class CourseController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    // public function store(StoreCourseRequest $request)
-    // {
-    //     $course = Course::create($request->all());
-    //     return response(new CourseResource($course), 204);
-    // }
+    public function store(StoreCourseRequest $request)
+    {
+        $course = Course::create($request->all());
+        return response(new CourseResource($course), 204);
+    }
 
     public function bulkStore(BulkStoreCourseRequest $request){
         $bulk = collect($request->all())->map(function($arr, $key){
@@ -114,11 +114,11 @@ class CourseController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    // public function update(Request $request, Course $course)
-    // {
-    //     $temp = $course->update($request->all());
-    //     return response(new CourseResource($temp), 204);
-    // }
+    public function update(Request $request, Course $course)
+    {
+        $temp = $course->update($request->all());
+        return response(new CourseResource($temp), 204);
+    }
 
     /**
      * Remove the specified resource from storage.
