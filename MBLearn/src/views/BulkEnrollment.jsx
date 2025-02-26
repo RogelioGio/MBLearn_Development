@@ -82,7 +82,7 @@ export default function BulkEnrollment() {
                     (entry) => !(entry.userId === id && entry.courseId === course )
                 )
             }else{
-                return [...prevUsers, {userId: id, courseId: course, enrollerId: user.user_infos.id}]
+                return [...prevUsers, {userId: id, courseId: course, enrollerId: user.user_info_id}]
             }
         })
 
@@ -149,7 +149,6 @@ export default function BulkEnrollment() {
         })
         .then(({data}) => {
             setLearners(data.data)
-            console.log(data.data)
             pageChangeState('totalUser', data.total)
             pageChangeState('lastPage', data.lastPage)
             pageChangeState('currentPerPage', data.data.length)
@@ -160,7 +159,6 @@ export default function BulkEnrollment() {
         //fetch courses
         axiosClient.get('/courses').then(({data})=>{
             console.log(data);
-            console.log(user);
             setAssigned_courses(data.data);
             console.log(data.data[0].id)
             selectCourse(data.data[0].name);

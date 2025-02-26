@@ -13,9 +13,10 @@ export default function SystemConfiguration() {
     useEffect(() => {
         axiosClient.get('/roles')
         .then((Response) => {
-            setRoles(Response.data)
+            setRoles(Response.data.data)
             setLoading(false)
         })
+        .catch(error => console.error(error));
     },[])
 
 
@@ -82,7 +83,7 @@ export default function SystemConfiguration() {
                                             <td className={`font-text p-4 gap-4 border-l-2 border-transparent transition-all ease-in-out`}>
                                                 <div className='flex flex-row items-center gap-2'>
                                                     <FontAwesomeIcon icon={faUsers}/>
-                                                    <p>0</p>
+                                                    <p>{role.users_count} Users</p>
                                                 </div>
                                             </td>
                                         </tr>
@@ -93,6 +94,16 @@ export default function SystemConfiguration() {
                         </table>
                     </div>
 
+                </div>
+
+                {/* Permision Settings */}
+                <div className="row-span-1 col-span-2 flex flex-col gap-5">
+                    <div className="row-span-1 col-span-2 flex flex-row justify-between items-center py-5">
+                        <div>
+                            <h1 className="font-header text-primary text-base">Role Permission</h1>
+                            <p className="font-text text-unactive">Cutomize the selected role's permission to the system funtionalities</p>
+                        </div>
+                    </div>
                 </div>
 
             </div>
