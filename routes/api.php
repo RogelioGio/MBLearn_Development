@@ -41,7 +41,6 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('removePermission/{userInfos}/{permission}', [userInfo_controller::class, 'removePermission']);
 
     //Userlist API for the frontend
-    //Userlist API for the fronten
     Route::get('/index-user',[userInfo_controller::class, 'indexUsers']);
     Route::get('/select-user/{userInfos}', [userInfo_controller::class, 'findUser']);
     Route::get('/select-employeeid/{employeeID}',[userInfo_controller::class, 'findUser_EmployeeID']);
@@ -86,7 +85,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('/addMode/{course}/{training_mode}', [CourseController::class, 'addTrainingMode']);
     Route::post('/removeMode/{course}/{training_mode}', [CourseController::class, 'removeTrainingMode']);
     Route::post('/courses/bulk', [CourseController::class, 'bulkStore']);
-    Route::get('/courses/{course}/users', [CourseController::class, 'showEnrolledUsers']);
+    // Route::get('/courses/{course}/users', [CourseController::class, 'showEnrolledUsers']);
 
     //Role API (get and post with /roles, get, put, and delete with /roles/{roleid} every api resource is same as this)
     Route::apiResource('/roles', RoleController::class);
