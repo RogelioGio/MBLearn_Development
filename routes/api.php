@@ -80,11 +80,11 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::apiResource('/modes', Training_ModeController::class);
     Route::apiResource('/types', TypeController::class);
     Route::post('/addType/{course}/{type}', [CourseController::class, 'addType']);
-    Route::post('/addType/{course}/{type}', [CourseController::class, 'removeType']);
-    Route::post('/addType/{course}/{category}', [CourseController::class, 'addCategory']);
-    Route::post('/addType/{course}/{category}', [CourseController::class, 'removeCategory']);
-    Route::post('/addType/{course}/{training_mode}', [CourseController::class, 'addTrainingMode']);
-    Route::post('/addType/{course}/{training_mode}', [CourseController::class, 'removeTrainingMode']);
+    Route::post('/removeType/{course}/{type}', [CourseController::class, 'removeType']);
+    Route::post('/addCategory/{course}/{category}', [CourseController::class, 'addCategory']);
+    Route::post('/removeCategory/{course}/{category}', [CourseController::class, 'removeCategory']);
+    Route::post('/addMode/{course}/{training_mode}', [CourseController::class, 'addTrainingMode']);
+    Route::post('/removeMode/{course}/{training_mode}', [CourseController::class, 'removeTrainingMode']);
     Route::post('/courses/bulk', [CourseController::class, 'bulkStore']);
     Route::get('/courses/{course}/users', [CourseController::class, 'showEnrolledUsers']);
 
