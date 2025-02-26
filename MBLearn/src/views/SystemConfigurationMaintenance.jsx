@@ -1,4 +1,4 @@
-import { faFileSignature, faUserLock, faUsers, faUsersLine } from "@fortawesome/free-solid-svg-icons"
+import { faFileSignature, faUserClock, faUserLock, faUsers, faUsersLine } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Helmet } from "react-helmet"
 import axiosClient from "../axios-client"
@@ -42,11 +42,15 @@ export default function SystemConfiguration() {
                     <FontAwesomeIcon icon={faFileSignature}/>
                     <h1 className="uppercase font-text">Form Input Setting</h1>
                 </div>
+                <div className='flex flex-row items-center w-full px-3 py-3 gap-4 text-sm text-unactive hover:text-primary hover:bg-divider rounded-md cursor-pointer transition-all ease-in-out'>
+                    <FontAwesomeIcon icon={faUserClock}/>
+                    <h1 className="uppercase font-text">Re-Activation Account</h1>
+                </div>
             </div>
             {/* Setting Content */}
             <div className="mx-5 py-5 row-span-2 col-span-3 grid grid-cols-2 grid-rows-[min-content_auto] gap-2">
                 {/* Header */}
-                <div className="row-span-1 col-span-2 flex flex-row justify-between items-center py-5">
+                <div className="row-span-1 col-span-2 flex flex-row justify-between items-center py-3">
                     <div>
                         <h1 className="font-header text-primary text-xl">Role Management</h1>
                         <p className="font-text text-unactive">Create and manage roles function and permission in the system</p>

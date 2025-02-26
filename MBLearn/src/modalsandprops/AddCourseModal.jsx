@@ -31,11 +31,11 @@ const AddCourseModal = ({open,onClose}) => {
                                 {/* Course ID */}
                                 <div className='col-span-1 col-start-1 row-start-1  pb-5 border-b border-divider flex flex-col justify-center'>
                                     <h1 className='text-primary font-header'>Step 1:</h1>
-                                    <p className='text-unactive font-text'>Please input an existing Course ID </p>
+                                    <p className='text-unactive font-text'>Please input an Course ID </p>
                                 </div>
                                 <div className="inline-flex flex-col justify-center gap-2 row-start-1 pb-5 col-span-1 border-b border-divider">
                                     <label htmlFor="name" className="font-header text-xs flex flex-row justify-between">
-                                        <p className="uppercase">Existing Course ID:</p>
+                                        <p className="uppercase">Course ID:</p>
                                     </label>
                                     <input type="text" name="name"
                                             className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
