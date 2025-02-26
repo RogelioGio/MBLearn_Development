@@ -43,6 +43,7 @@ Route::middleware('auth:sanctum')->group(function(){
     //Userlist API for the frontend
     //Userlist API for the fronten
     Route::get('/index-user',[userInfo_controller::class, 'indexUsers']);
+    Route::get('/select-user/{userInfos}', [userInfo_controller::class, 'findUser']);
     Route::get('/select-employeeid/{employeeID}',[userInfo_controller::class, 'findUser_EmployeeID']);
     Route::put('/update-user-info/{userInfos}',[userInfo_controller::class, 'updateUser']);
     Route::delete('/delete-user/{userInfos}',[userInfo_controller::class, 'deleteUser']);
