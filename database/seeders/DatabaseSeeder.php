@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Course;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\UserCredentials;
@@ -25,35 +26,36 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         //     'password' => Hash::make('testing')
         // ]);
-        $roles = ['System Admin', 'Course Admin', 'Learner'];
-        foreach($roles as $role){
-            Role::create([
-                'role_name' => $role
-            ]);
-        }
+        // $roles = ['System Admin', 'Course Admin', 'Learner'];
+        // foreach($roles as $role){
+        //     Role::create([
+        //         'role_name' => $role
+        //     ]);
+        // }
 
-        $firstcreds = UserCredentials::create([
-            'MBemail'=> 'hello@gmail.com',
-            'password' => bcrypt('12345678'),
-        ]);
+        // $firstcreds = UserCredentials::create([
+        //     'MBemail'=> 'hello@gmail.com',
+        //     'password' => bcrypt('12345678'),
+        // ]);
 
-        $firstinfos = UserInfos::create([
-            'employeeID' => '01',
-            'first_name' => 'Jericho',
-            'last_name' => 'Ilanga',
-            'middle_name'=> 'S.',
-            'department'=> 'IT Department',
-            'title'=> 'title',
-            'branch'=> 'Novaliches',
-            'city'=> 'Quezon City',
-            'status'=> 'Active',
-            'profile_image'=> 'https://ui-avatars.com/api/?name=System+Admin&color=ffffff&background=03045e&bold=true&size=400',
-        ]);
+        // $firstinfos = UserInfos::create([
+        //     'employeeID' => '01',
+        //     'first_name' => 'Jericho',
+        //     'last_name' => 'Ilanga',
+        //     'middle_name'=> 'S.',
+        //     'department'=> 'IT Department',
+        //     'title'=> 'title',
+        //     'branch'=> 'Novaliches',
+        //     'city'=> 'Quezon City',
+        //     'status'=> 'Active',
+        //     'profile_image'=> 'https://ui-avatars.com/api/?name=System+Admin&color=ffffff&background=03045e&bold=true&size=400',
+        // ]);
 
-        $firstcreds->userInfos()->save($firstinfos);
-        $firstinfos->userCredentials()->associate($firstcreds);
-        $firstinfos->save();
+        // $firstcreds->userInfos()->save($firstinfos);
+        // $firstinfos->userCredentials()->associate($firstcreds);
+        // $firstinfos->save();
 
-        UserInfos::factory(10)->create();
+        // UserInfos::factory(10)->create();
+        Course::factory(10)->create();
     }
 }
