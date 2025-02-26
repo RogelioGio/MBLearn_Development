@@ -41,7 +41,6 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('removePermission/{userInfos}/{permission}', [userInfo_controller::class, 'removePermission']);
 
     //Userlist API for the frontend
-    //Userlist API for the fronten
     Route::get('/index-user',[userInfo_controller::class, 'indexUsers']);
     Route::get('/select-user/{userInfos}', [userInfo_controller::class, 'findUser']);
     Route::get('/select-employeeid/{employeeID}',[userInfo_controller::class, 'findUser_EmployeeID']);
@@ -80,13 +79,13 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::apiResource('/modes', Training_ModeController::class);
     Route::apiResource('/types', TypeController::class);
     Route::post('/addType/{course}/{type}', [CourseController::class, 'addType']);
-    Route::post('/addType/{course}/{type}', [CourseController::class, 'removeType']);
-    Route::post('/addType/{course}/{category}', [CourseController::class, 'addCategory']);
-    Route::post('/addType/{course}/{category}', [CourseController::class, 'removeCategory']);
-    Route::post('/addType/{course}/{training_mode}', [CourseController::class, 'addTrainingMode']);
-    Route::post('/addType/{course}/{training_mode}', [CourseController::class, 'removeTrainingMode']);
+    Route::post('/removeType/{course}/{type}', [CourseController::class, 'removeType']);
+    Route::post('/addCategory/{course}/{category}', [CourseController::class, 'addCategory']);
+    Route::post('/removeCategory/{course}/{category}', [CourseController::class, 'removeCategory']);
+    Route::post('/addMode/{course}/{training_mode}', [CourseController::class, 'addTrainingMode']);
+    Route::post('/removeMode/{course}/{training_mode}', [CourseController::class, 'removeTrainingMode']);
     Route::post('/courses/bulk', [CourseController::class, 'bulkStore']);
-    Route::get('/courses/{course}/users', [CourseController::class, 'showEnrolledUsers']);
+    // Route::get('/courses/{course}/users', [CourseController::class, 'showEnrolledUsers']);
 
     //Role API (get and post with /roles, get, put, and delete with /roles/{roleid} every api resource is same as this)
     Route::apiResource('/roles', RoleController::class);
