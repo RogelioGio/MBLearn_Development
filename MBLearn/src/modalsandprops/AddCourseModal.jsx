@@ -36,6 +36,8 @@ const AddCourseModal = ({open,onClose}) => {
                                 <div className="inline-flex flex-col justify-center gap-2 row-start-1 pb-5 col-span-1 border-b border-divider">
                                     <label htmlFor="name" className="font-header text-xs flex flex-row justify-between">
                                         <p className="uppercase">Course ID:</p>
+                                        {/* Validation */}
+                                        {/* Must Be Seperated */}
                                     </label>
                                     <input type="text" name="name"
                                             className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
