@@ -22,7 +22,7 @@ class CourseController extends Controller
      */
     public function index()
     {
-        return CourseResource::collection(Course::query()->where('archived', '=', 'active')->orderby('name', 'asc')->paginate(3));
+        return Course::with(['categories', 'types', 'training_modes'])->where('archived', '=', 'active')->orderby('name', 'asc')->paginate(3);
     }
 
     /**

@@ -23,7 +23,7 @@ class CategoryController extends Controller
      */
     public function store(StoreCategoryRequest $request)
     {
-        $category = Category::create($request->all());
+        $category = Category::create($request->validated());
         return $category;
     }
 
@@ -40,7 +40,7 @@ class CategoryController extends Controller
      */
     public function update(UpdateCategoryRequest $request, Category $category)
     {
-        $temp = $category->update($request->all());
+        $temp = $category->update($request->validated());
         return $temp;
     }
 

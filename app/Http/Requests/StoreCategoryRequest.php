@@ -22,13 +22,7 @@ class StoreCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'categoryName' => "required|unique:categories,category_name"
+            'category_name' => "required|unique:categories,category_name"
         ];
-    }
-
-    public function prepareForValidation(){
-        $this->merge([
-            'category_name' => $this->categoryName
-        ]);
     }
 }
