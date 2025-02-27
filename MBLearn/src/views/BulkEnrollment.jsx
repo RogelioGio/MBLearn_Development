@@ -8,6 +8,7 @@ import EnrollmentTableProps from "../modalsandprops/EnrollmentTableProps"
 import AssignedCourseEnrollmentCard from "../modalsandprops/AssignedCourseEnrollmentCard"
 import LearnerLoadingProps from "../modalsandprops/LearnerLoadingProps"
 import { useStateContext } from "../contexts/ContextProvider"
+import CourseLoading from "../assets/Course_Loading.svg";
 
 export default function BulkEnrollment() {
 
@@ -141,6 +142,17 @@ export default function BulkEnrollment() {
     //Fetch Learners
     useEffect(() =>{
         setLoading(true)
+
+        //fetch courses
+        axiosClient.get('/courses').then(({data})=>{
+            console.log(data.data[0].types?.[0]?.type_name);
+            setAssigned_courses(data.data);
+            selectCourse(data.data[0].name);
+
+        }).catch((err)=>
+        console.log(err)
+        );
+
         axiosClient.get('/index-user/enrolees',{
             params: {
                 page: pageState.currentPage,
@@ -156,16 +168,7 @@ export default function BulkEnrollment() {
         })
         .catch((err) => console.log(err))
 
-        //fetch courses
-        axiosClient.get('/courses').then(({data})=>{
-            console.log(data);
-            setAssigned_courses(data.data);
-            console.log(data.data[0].id)
-            selectCourse(data.data[0].name);
-
-        }).catch((err)=>
-        console.log(err)
-        );
+        console.log(learners)
     },[pageState.currentPage, pageState.perPage]);
     useEffect(() => {
         pageChangeState('startNumber', (pageState.currentPage - 1) * pageState.perPage + 1)
@@ -211,20 +214,27 @@ export default function BulkEnrollment() {
                 {/* Course Props */}
                 <div className="h-full px-4 flex flex-col gap-2">
                     {
-                        assigned_courses.map((Course) => (
+                        isLoading ? (
+                            <div className="flex flex-col gap-2 items-center justify-center text-center h-full">
+                                <img src={CourseLoading} alt="" className="w-44"/>
+                                <p className="text-xs font-text text-primary">Hang tight! 🚀 Loading assigned courses for bulk enrollment—great things take a second!</p>
+                            </div>
+                        )
+                        : (assigned_courses.map((Course) => (
                             <AssignedCourseEnrollmentCard
                                 key={Course.id}
                                 id={Course.id}
                                 name={Course.name}
-                                coursetype={Course.type}
-                                coursecategory={Course.category}
+                                coursetype={Course.types?.[0]?.type_name}
+                                coursecategory={Course.categories?.[0]?.category_name}
                                 duration={Course.duration}
                                 trainingmode={Course.trainingMode}
                                 course={course}
                                 selected={selected}
                                 onclick={() => handleCourseChange(Course.name)}
                                 numberOfEnrollees={numberOfEnrollees}/>
-                        ))
+                        )))
+
                     }
                 </div>
             </div>
@@ -248,7 +258,12 @@ export default function BulkEnrollment() {
 
             {/* Learner table */}
             {
-                assigned_courses.map((Course) => (
+                isLoading ? (
+                    <EnrollmentTableProps>
+                        <LearnerLoadingProps/>
+                    </EnrollmentTableProps>
+                ):
+                (assigned_courses.map((Course) => (
                     course === Course.name ? (
                     <EnrollmentTableProps selectAll={selectAll} onchange={handleSelectAll} course={Course.name} key={Course.name}>
                         {
@@ -260,7 +275,7 @@ export default function BulkEnrollment() {
                                     key={learner.id}
                                     id={learner.id}
                                     profile_image={learner.profile_image}
-                                    name={learner.name}
+                                    name={[learner.first_name, learner.middle_name, learner.last_name].filter(Boolean).join(" ")}
                                     employeeID={learner.employeeID}
                                     department={learner.department}
                                     title={learner.title}
@@ -274,7 +289,9 @@ export default function BulkEnrollment() {
                         )
                         }
                     </EnrollmentTableProps>) : (null)
-                ))
+                )))
+
+
             }
 
             {/* User Pagination */}
