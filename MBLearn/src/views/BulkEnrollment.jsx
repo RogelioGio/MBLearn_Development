@@ -135,6 +135,7 @@ export default function BulkEnrollment() {
         console.log(selected)
         axiosClient.post('enrollments/bulk', selected).catch((err)=>console.log(err));
     }
+
     useEffect(()=>{
         console.log(selected)
     },[selected])
