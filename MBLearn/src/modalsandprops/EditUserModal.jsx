@@ -14,7 +14,7 @@ const EditUserModal = ({open, close, classname, ID, EmployeeID}) =>{
     useEffect (()=>{
         setSelectedUser(null)
         if(ID) {
-            axiosClient.get(`/select-employeeid/${ID}`)
+            axiosClient.get(`/select-user/${ID}`)
             .then(response => {
                 setSelectedUser(response.data.data)
             }).catch(err => console.log(err))
