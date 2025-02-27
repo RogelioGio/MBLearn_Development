@@ -22,7 +22,7 @@ class TypeController extends Controller
      */
     public function store(StoreTypeRequest $request)
     {
-        $type = Type::create($request->all());
+        $type = Type::create($request->validated());
         return $type;
     }
 
@@ -39,7 +39,7 @@ class TypeController extends Controller
      */
     public function update(StoreTypeRequest $request, Type $type)
     {
-        $temp = $type->update($request->all());
+        $temp = $type->update($request->validated());
         return $temp;
     }
 

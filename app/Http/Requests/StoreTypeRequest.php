@@ -22,13 +22,7 @@ class StoreTypeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "typeName" => "required"
+            "type_name" => "required"
         ];
-    }
-
-    public function prepareForValidation(){
-        $this->merge([
-            "type_name"=> $this->typeName
-        ]);
     }
 }
