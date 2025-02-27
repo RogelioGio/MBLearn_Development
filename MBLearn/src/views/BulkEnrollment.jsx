@@ -141,6 +141,18 @@ export default function BulkEnrollment() {
     //Fetch Learners
     useEffect(() =>{
         setLoading(true)
+
+        //fetch courses
+        axiosClient.get('/courses').then(({data})=>{
+            console.log(data);
+            setAssigned_courses(data.data);
+            console.log(data.data[0].id)
+            selectCourse(data.data[0].name);
+
+        }).catch((err)=>
+        console.log(err)
+        );
+
         axiosClient.get('/index-user/enrolees',{
             params: {
                 page: pageState.currentPage,
@@ -156,16 +168,7 @@ export default function BulkEnrollment() {
         })
         .catch((err) => console.log(err))
 
-        //fetch courses
-        axiosClient.get('/courses').then(({data})=>{
-            console.log(data);
-            setAssigned_courses(data.data);
-            console.log(data.data[0].id)
-            selectCourse(data.data[0].name);
-
-        }).catch((err)=>
-        console.log(err)
-        );
+        console.log(learners)
     },[pageState.currentPage, pageState.perPage]);
     useEffect(() => {
         pageChangeState('startNumber', (pageState.currentPage - 1) * pageState.perPage + 1)
@@ -260,7 +263,7 @@ export default function BulkEnrollment() {
                                     key={learner.id}
                                     id={learner.id}
                                     profile_image={learner.profile_image}
-                                    name={learner.name}
+                                    name={[learner.first_name, learner.middle_name, learner.last_name].filter(Boolean).join(" ")}
                                     employeeID={learner.employeeID}
                                     department={learner.department}
                                     title={learner.title}

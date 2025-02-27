@@ -42,7 +42,7 @@ const Learner = ({profile_image, id, name, employeeID, department, title, branch
                     <img src={profile_image} alt="" className="w-10 rounded-full"/>
 
                     <div>
-                    <h1 className={`text-unactive ${selectedEnrollee ? '!text-primary':''}`}>{name}</h1>
+                    <h1 className={`text-unactive ${selectedEnrollee ? '!text-primary':''} font-text`}>{name}</h1>
                     <p className="font-text text-unactive text-xs">ID: {employeeID}</p>
                     </div>
                 </td>
