@@ -11,8 +11,7 @@ const AssignedCourseEnrollmentCard = ({name, id, coursetype, coursecategory, dur
 
             {/* Duration & Training Method */}
             <div className="flex flex-col gap-0.5 text-xs row-start-2 items-start justify-end">
-                <p>{duration}</p>
-                <p>{trainingmode}</p>
+                <p>Online Training</p>
             </div>
 
             <div className="flex items-end justify-end">
