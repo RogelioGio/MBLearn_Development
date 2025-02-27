@@ -95,6 +95,11 @@ class CourseController extends Controller
         ]);
     }
 
+    public function getCourseUsers(Course $course){
+        $users = $course->enrolledUsers;
+        return $users;
+    }
+
     /**
      * Display the specified resource.
      */

@@ -133,6 +133,11 @@ class userInfo_controller extends Controller
         ]);
     }
 
+    public function getUserCourses(UserInfos $userInfos){
+        $courses = $userInfos->enrolledCourses;
+        return $courses;
+    }
+
     /**
      * Display the specified user info.
      *

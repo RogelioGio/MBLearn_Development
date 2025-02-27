@@ -46,6 +46,8 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('/select-employeeid/{employeeID}',[userInfo_controller::class, 'findUser_EmployeeID']);
     Route::put('/update-user-info/{userInfos}',[userInfo_controller::class, 'updateUser']);
     Route::delete('/delete-user/{userInfos}',[userInfo_controller::class, 'deleteUser']);
+    //User enrolled course list
+    Route::get('/select-user-courses/{userInfos}', [userInfo_controller::class, 'getUserCourses']);
 
 
     Route::get('/reset-user',[userInfo_controller::class, 'resetUser']); //reset user table
@@ -78,6 +80,8 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::apiResource('/categories', CategoryController::class);
     Route::apiResource('/modes', Training_ModeController::class);
     Route::apiResource('/types', TypeController::class);
+    //Course enrolled users
+    Route::get('/select-course-users/{course}', [CourseController::class, 'getCourseUsers']);
     Route::post('/addType/{course}/{type}', [CourseController::class, 'addType']);
     Route::post('/removeType/{course}/{type}', [CourseController::class, 'removeType']);
     Route::post('/addCategory/{course}/{category}', [CourseController::class, 'addCategory']);

@@ -79,4 +79,8 @@ class UserInfos extends Model
     public function cities():BelongsToMany{
         return $this->belongsToMany(City::class, 'city_user_info', 'userinfo_id', 'city_id');
     }
+
+    public function enrolledCourses(): HasManyThrough{
+        return $this->hasManyThrough(Course::class, Enrollment::class, 'user_id', 'id', 'id', 'course_id');
+    }
 }
