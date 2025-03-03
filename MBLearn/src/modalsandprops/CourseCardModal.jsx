@@ -56,9 +56,9 @@ const CourseCardModal = ({open,close,classname,selectedCourse}) => {
                                         {/* Course Modules & Assigned Course Admins */}
                                         <div className='bg-white py-5'>
                                             {/* Tabs for module and course admin */}
-                                            <div className='mx-5 w-full'>
+                                            {/* <div className='mx-5 w-full'>
                                                 <nav className='isolate inline-flex round-md shadow-md'>
-                                                    <a href="#" className='flex flex-row gap-5 items-center text-md text-white font-header ring-1 ring-primary rounded-l-md px-5 py-3 bg-primary hover:bg-primaryhover transition-all ease-in-out'>{/*Active state*/}
+                                                    <a href="#" className='flex flex-row gap-5 items-center text-md text-white font-header ring-1 ring-primary rounded-l-md px-5 py-3 bg-primary hover:bg-primaryhover transition-all ease-in-out'>
                                                         <FontAwesomeIcon icon={faLaptopFile}/>
                                                         <p>Modules</p>
                                                     </a>
@@ -67,7 +67,7 @@ const CourseCardModal = ({open,close,classname,selectedCourse}) => {
                                                         <p>Assigned Course Admin</p>
                                                     </a>
                                                 </nav>
-                                            </div>
+                                            </div> */}
                                             {/* Module Contents*/}
                                             {/* This only a sample and will be dealt with in the future */}
                                             <div className='mx-5'>

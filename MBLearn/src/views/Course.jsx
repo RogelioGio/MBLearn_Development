@@ -5,9 +5,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Stepper } from "@mantine/core"
 import React from "react"
 import { Helmet } from "react-helmet"
+import { useNavigate } from "react-router-dom"
 
 
 export default function Course() {
+    const navigate = useNavigate();
     return(
         <div className='grid  grid-cols-4 grid-rows-[6.25rem_min-content_1fr_min-content] h-full w-full overflow-hidden'>
             <Helmet>
@@ -18,7 +20,7 @@ export default function Course() {
             {/* Header */}
             <div className="flex flex-row col-span-3 row-span-1 item-center pr-5 ml-5">
                 <div className="text-primary flex flex-row justify-center items-center border-b border-divider">
-                    <FontAwesomeIcon icon={faCircleLeftRegular} className="text-3xl"/>
+                    <FontAwesomeIcon icon={faCircleLeftRegular} className="text-3xl" onClick={() => navigate(-1)}/>
                 </div>
                 <div className=' pl-5 flex flex-col justify-center border-b border-divider w-full'>
                     <h1 className='text-primary text-4xl font-header'>Course Name Here </h1>
@@ -30,9 +32,6 @@ export default function Course() {
             <div className='row-start-2 col-span-3 w-auto grid grid-cols-5 ml-5 py-3 h-fit gap-3'>
                 <div className={`flex flex-row justify-center items-center border-2 border-primary py-2 px-4 font-header bg-secondarybackground rounded-md text-primary gap-2 w-full hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md`}>
                     <p>Modules</p>
-                </div>
-                <div className={`flex flex-row justify-center items-center border-2 border-primary py-2 px-4 font-header bg-secondarybackground rounded-md text-primary gap-2 w-full hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md`}>
-                    <p>Course Admins</p>
                 </div>
                 <div className={`flex flex-row justify-center items-center border-2 border-primary py-2 px-4 font-header bg-secondarybackground rounded-md text-primary gap-2 w-full hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md`}>
                     <p>Learners</p>
@@ -51,6 +50,7 @@ export default function Course() {
                     </div>
                     <div>
                         {/* Will be inputted Later on */}
+                        Enrolled Employees
                     </div>
                 </div>
             </div>

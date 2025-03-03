@@ -1,14 +1,16 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFolderPlus, faSearch, faArrowDownWideShort, faPlus, faMinus, faChevronUp, faChevronDown, faPenToSquare, faTrash, faChevronLeft, faChevronRight, faLaptopFile, faChalkboardTeacher, faCheck } from '@fortawesome/free-solid-svg-icons'
+import { useNavigate } from "react-router-dom";
 
 
 const CourseListCard = ({courseList, classname, onclick, action}) => {
+    const navigate = useNavigate();
     return (
         <div className={classname}>
             {
                 courseList.map((course) => (
                     // card
-                    <div key={course.id} className='w-full h-fit flex flex-row rounded-md bg-white shadow-md hover:scale-105 hover:cursor-pointer transition-all ease-in-out' onClick={() => onclick(course)}>
+                    <div key={course.id} className='w-full h-fit flex flex-row rounded-md bg-white shadow-md hover:scale-105 hover:cursor-pointer transition-all ease-in-out'  onClick={() => navigate(`/systemadmin/course/${course.id}`)}>
                         {/* Course Image */}
                         <div className='w-32 h-full rounded-tl-md rounded-bl-md bg-primary'>
                             <img src="" alt="" className='w-full' />
@@ -24,6 +26,10 @@ const CourseListCard = ({courseList, classname, onclick, action}) => {
                                 </div>
                                 {/* Course Action */}
                                 <div className='flex flex-row gap-2'>
+                                    <div className='relative border-2 border-primary h-10 w-10 rounded-full flex items-center justify-center text-primary text-sm hover:text-white hover:bg-primary hover:cursor-pointer transition-all ease-in-out group' onClick={(e) => action(e, "assignCourseAdmin")}>
+                                        <FontAwesomeIcon icon={faChalkboardTeacher}/>
+                                        <p className='absolute w-auto bottom-10 z-10 bg-tertiary text-white p-2 rounded-md text-xs scale-0 font-text group-hover:scale-100'>Assign Course Admin</p>
+                                    </div>
                                     <div className='relative border-2 border-primary h-10 w-10 rounded-full flex items-center justify-center text-primary text-sm hover:text-white hover:bg-primary hover:cursor-pointer transition-all ease-in-out group' onClick={(e) => action(e, "openEditCourse")}>
                                         <FontAwesomeIcon icon={faPenToSquare}/>
                                         <p className='absolute w-auto bottom-10 z-10 bg-tertiary text-white p-2 rounded-md text-xs scale-0 font-text group-hover:scale-100'>Edit</p>

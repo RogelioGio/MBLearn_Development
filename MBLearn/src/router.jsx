@@ -41,7 +41,11 @@ const router = createBrowserRouter([
                     },
                     {
                         path: "courselistmaintenance",
-                        element: <CourseListMaintenance/>
+                        element: <CourseListMaintenance/>,
+                    },
+                    {
+                        path:"course/:id",
+                        element: <Course/>
                     },
                     {
                         path: "usermanagementmaintenance",
@@ -62,10 +66,6 @@ const router = createBrowserRouter([
                     {
                         path: "activitylogs",
                         element: <ActivityLog/>
-                    },
-                    {
-                        path: "course",
-                        element: <Course/>
                     },
                 ]
             },

@@ -11,6 +11,7 @@ import DeleteCourseModal from '../modalsandprops/DeleteCourseModal';
 import React from 'react';
 import { useStateContext } from '../contexts/ContextProvider';
 import CourseFilterProps from '../modalsandprops/CourseFilterProps';
+import AssignCourseAdmin from '../modalsandprops/AssignCourseAdminModal';
 
 
 //Sort Options Array
@@ -108,7 +109,8 @@ const [modalState, setModalState] = useState({
         insertNewCategory: false,
         openEditCourse: false,
         openDeleteCourse: false,
-        editFilter: false
+        editFilter: false,
+        assignCourseAdmin:false
     });
 
 const [sort, setSort] = useState({
@@ -268,6 +270,8 @@ const handleFilter = (sectionId, value) => {
             <EditCourseModal open={modalState.openEditCourse} close={()=>toggleModal('openEditCourse', false)}/>
             {/* Delete */}
             <DeleteCourseModal open={modalState.openDeleteCourse} close={()=>toggleModal('openDeleteCourse', false)}/>
+            {/* Assign Course Admin */}
+            <AssignCourseAdmin open={modalState.assignCourseAdmin} close={()=>toggleModal('assignCourseAdmin',false)}></AssignCourseAdmin>
         </div>
 
     )
