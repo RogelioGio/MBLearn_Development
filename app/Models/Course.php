@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Znck\Eloquent\Relations\BelongsToThrough;
 
@@ -29,6 +30,10 @@ class Course extends Model
 
     public function enrollments(): HasMany{
         return $this->hasMany(Enrollment::class);
+    }
+
+    public function enrolledUsers(): HasManyThrough{
+        return $this->hasManyThrough(UserInfos::class, Enrollment::class, 'course_id', 'id', 'id', 'user_id');
     }
 
     //help with better name, basically system admin na nag add ng course

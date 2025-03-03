@@ -10,8 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Mockery\Generator\StringManipulation\Pass\Pass;
+use Znck\Eloquent\Relations\BelongsToThrough;
 
 #[ObservedBy([UserInfosObserver::class])]
 class UserInfos extends Model
@@ -32,10 +31,6 @@ class UserInfos extends Model
         'last_name',
         'middle_name',
         'name_suffix',
-        'department',
-        'title',
-        'branch',
-        'city',
         'status',
         'profile_image',
         'user_credentials_id',
@@ -72,11 +67,25 @@ class UserInfos extends Model
         return $this->belongsToMany(Permission::class, 'permission_userinfo', 'userinfo_id', 'permission_id');
     }
 
-    public function branches():BelongsToMany{
-        return $this->belongsToMany(Branch::class, 'branch_user_info', 'userinfo_id', 'branch_id');
+
+    public function branch(): BelongsTo{
+        return $this->belongsTo(Branch::class);
     }
 
-    public function cities():BelongsToMany{
-        return $this->belongsToMany(City::class, 'city_user_info', 'userinfo_id', 'city_id');
+    public function title():BelongsTo{
+        return $this->belongsTo(Title::class);
+    }
+
+    use \Znck\Eloquent\Traits\BelongsToThrough;
+    public function city():BelongsToThrough{
+        return $this->belongsToThrough(City::class, Branch::class);
+    }
+
+    public function department():BelongsTo{
+        return $this->belongsTo(Department::class);
+    }
+
+    public function enrolledCourses(): HasManyThrough{
+        return $this->hasManyThrough(Course::class, Enrollment::class, 'user_id', 'id', 'id', 'course_id');
     }
 }

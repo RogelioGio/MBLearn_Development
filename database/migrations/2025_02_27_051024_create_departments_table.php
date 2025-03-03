@@ -11,10 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('branch_user_info', function (Blueprint $table) {
+        Schema::create('departments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('branch_id')->constrained('branches', 'id')->cascadeOnDelete();
-            $table->foreignId('userinfo_id')->constrained('userInfo', 'id')->cascadeOnDelete();
+            $table->string('department_name');
             $table->timestamps();
         });
     }
@@ -24,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('branch_user_info');
+        Schema::dropIfExists('departments');
     }
 };

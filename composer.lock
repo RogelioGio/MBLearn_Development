@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1678921275a9f20b5d51771593306c5c",
+    "content-hash": "e4e13966879d69ce1361741fce5a2533",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -4062,16 +4062,16 @@
         },
         {
             "name": "staudenmeir/belongs-to-through",
-            "version": "v2.16",
+            "version": "v2.16.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/staudenmeir/belongs-to-through.git",
-                "reference": "79667db6660fa0065b24415bab29a5f85a0128c7"
+                "reference": "451496e4272c11d87b404791acdd352c606f29c0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/staudenmeir/belongs-to-through/zipball/79667db6660fa0065b24415bab29a5f85a0128c7",
-                "reference": "79667db6660fa0065b24415bab29a5f85a0128c7",
+                "url": "https://api.github.com/repos/staudenmeir/belongs-to-through/zipball/451496e4272c11d87b404791acdd352c606f29c0",
+                "reference": "451496e4272c11d87b404791acdd352c606f29c0",
                 "shasum": ""
             },
             "require": {
@@ -4080,9 +4080,11 @@
             },
             "require-dev": {
                 "barryvdh/laravel-ide-helper": "^3.0",
-                "orchestra/testbench": "^9.0",
-                "phpstan/phpstan": "^1.10",
-                "phpunit/phpunit": "^10.5"
+                "larastan/larastan": "^3.0",
+                "laravel/framework": "^11.0",
+                "mockery/mockery": "^1.5.1",
+                "orchestra/testbench-core": "^9.5",
+                "phpunit/phpunit": "^11.0"
             },
             "type": "library",
             "extra": {
@@ -4115,7 +4117,7 @@
             "description": "Laravel Eloquent BelongsToThrough relationships",
             "support": {
                 "issues": "https://github.com/staudenmeir/belongs-to-through/issues",
-                "source": "https://github.com/staudenmeir/belongs-to-through/tree/v2.16"
+                "source": "https://github.com/staudenmeir/belongs-to-through/tree/v2.16.4"
             },
             "funding": [
                 {
@@ -4123,7 +4125,7 @@
                     "type": "custom"
                 }
             ],
-            "time": "2024-03-09T09:53:11+00:00"
+            "time": "2025-02-20T19:20:43+00:00"
         },
         {
             "name": "symfony/clock",
