@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFolderPlus, faSearch, faArrowDownWideShort, faPlus, faMinus, faChevronUp, faChevronDown, faPenToSquare, faTrash, faChevronLeft, faChevronRight, faLaptopFile, faChalkboardTeacher, faCheck } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from "react-router-dom";
-
+import dayjs from "dayjs";
 
 const CourseListCard = ({courseList, classname, onclick, action}) => {
     const navigate = useNavigate();
@@ -9,6 +9,7 @@ const CourseListCard = ({courseList, classname, onclick, action}) => {
         <div className={classname}>
             {
                 courseList.map((course) => (
+
                     // card
                     <div key={course.id} className='w-full h-fit flex flex-row rounded-md bg-white shadow-md hover:scale-105 hover:cursor-pointer transition-all ease-in-out'  onClick={() => navigate(`/systemadmin/course/${course.id}`)}>
                         {/* Course Image */}
@@ -22,11 +23,11 @@ const CourseListCard = ({courseList, classname, onclick, action}) => {
                                 {/* Course Name */}
                                 <div className='text-primary'>
                                     <h2 className='font-header text-xl'>{course.name}</h2>
-                                    <p className='font-text text-sm text-secodary'>{course.coursetype}-{course.coursecategory}</p>
+                                    <p className='font-text text-sm text-secodary'>{course.types[0]?.type_name || "No Type"} - {course.categories[0]?.category_name || "No Category" }</p>
                                 </div>
                                 {/* Course Action */}
                                 <div className='flex flex-row gap-2'>
-                                    <div className='relative border-2 border-primary h-10 w-10 rounded-full flex items-center justify-center text-primary text-sm hover:text-white hover:bg-primary hover:cursor-pointer transition-all ease-in-out group' onClick={(e) => action(e, "assignCourseAdmin")}>
+                                    <div className='relative border-2 border-primary h-10 w-10 rounded-full flex items-center justify-center text-primary text-sm hover:text-white hover:bg-primary hover:cursor-pointer transition-all ease-in-out group' onClick={(e) => action(e, "assignCourseAdmin",course.id)}>
                                         <FontAwesomeIcon icon={faChalkboardTeacher}/>
                                         <p className='absolute w-auto bottom-10 z-10 bg-tertiary text-white p-2 rounded-md text-xs scale-0 font-text group-hover:scale-100'>Assign Course Admin</p>
                                     </div>
@@ -42,7 +43,7 @@ const CourseListCard = ({courseList, classname, onclick, action}) => {
                             </div>
                             {/* Course Details */}
                             <div className='text-sm text-tertiary grid grid-cols-2 space-y-0.5'>
-                                <span className='font-header flex flex-row gap-2'>Date-Added: <p className='font-text'>{course.dateadded}</p></span>
+                                <span className='font-header flex flex-row gap-2'>Date-Added: <p className='font-text'>{dayjs(course.create_at).format("MMMM DD, YYYY")}</p></span>
                                 <span className='font-header flex flex-row gap-2'>Training Type: <p className='font-text'>{course.trainingmode}</p></span>
                             </div>
                         </div>

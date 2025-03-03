@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import CourseListCard from '../modalsandprops/CourseListCard';
 import CourseCardModal from '../modalsandprops/CourseCardModal';
@@ -12,81 +12,41 @@ import React from 'react';
 import { useStateContext } from '../contexts/ContextProvider';
 import CourseFilterProps from '../modalsandprops/CourseFilterProps';
 import AssignCourseAdmin from '../modalsandprops/AssignCourseAdminModal';
-
-
-//Sort Options Array
-const sortOptions = [
-    { name: 'Most Popular', href: '#', current: true },
-    { name: 'Best Rating', href: '#', current: false },
-    { name: 'Newest', href: '#', current: false },
-]
-
-//Sample Course Information Array
-const Courses = [
-    {
-        id:"effectivecommunication",
-        name: "Effective Communication Skills in the Workplace",
-        coursetype: "Soft Skills Training",
-        coursecategory: "Personal Development",
-        duration: "2 weeks",
-        dateadded: "December 2 2024",
-        trainingmode: "Asynchronous"
-    },
-    {
-        id:"timemanagement",
-        name: "Time Management and Productivity Hacks",
-        coursetype: "Soft Skills Training",
-        coursecategory: "Personal Development",
-        duration: "1 weeks",
-        dateadded: "December 2 2024",
-        trainingmode: "Online Training (Asynchronous)"
-    },
-    {
-        id:"cybersec",
-        name: "Cybersecurity Awareness and Best Practices",
-        coursetype: "Compliance Training",
-        coursecategory: "Information Security",
-        duration: "1 weeks",
-        dateadded: "December 2 2024",
-        trainingmode: "Online Training (Asynchronous)"
-    }
-]
-
-
+import axiosClient from '../axios-client';
 
 export default function CourseListMaintenance() {
 const {user} = useStateContext()
 
-//Filter Options and Categories
-const [filter, setfilter] = useState([
-    {
-        id:'coursetype',
-        name: 'Course Type',
-        option: [
-            {value: 'softskill' , label: 'Soft Skill Training', checked: false },
-            {value: 'technical' , label: 'Technical Training', checked: false },
-            {value: 'leadership' , label: 'Compliance Training', checked: false },
-        ]
-    },
-    {
-        id:'coursecategory',
-        name: 'Course Category',
-        option: [
-            {value: 'professionaldev' , label: 'Professional Development', checked: false },
-            {value: 'dataandanalytics' , label: 'Data and Analystics', checked: false },
-            {value: 'managementandleadership' , label: 'Management and Leadership', checked: false },
-        ]
-    },
-    {
-        id:'coursecategory',
-        name: 'Course Category',
-        option: [
-            {value: 'professionaldev' , label: 'Professional Development', checked: false },
-            {value: 'dataandanalytics' , label: 'Data and Analystics', checked: false },
-            {value: 'managementandleadership' , label: 'Management and Leadership', checked: false },
-        ]
-    }
-])
+// //Filter Options and Categories
+// const [filter, setfilter] = useState([
+//     {
+//         id:'coursetype',
+//         name: 'Course Type',
+//         option: [
+//             {value: 'softskill' , label: 'Soft Skill Training', checked: false },
+//             {value: 'technical' , label: 'Technical Training', checked: false },
+//             {value: 'leadership' , label: 'Compliance Training', checked: false },
+//         ]
+//     },
+//     {
+//         id:'coursecategory',
+//         name: 'Course Category',
+//         option: [
+//             {value: 'professionaldev' , label: 'Professional Development', checked: false },
+//             {value: 'dataandanalytics' , label: 'Data and Analystics', checked: false },
+//             {value: 'managementandleadership' , label: 'Management and Leadership', checked: false },
+//         ]
+//     },
+//     {
+//         id:'coursecategory',
+//         name: 'Course Category',
+//         option: [
+//             {value: 'professionaldev' , label: 'Professional Development', checked: false },
+//             {value: 'dataandanalytics' , label: 'Data and Analystics', checked: false },
+//             {value: 'managementandleadership' , label: 'Management and Leadership', checked: false },
+//         ]
+//     }
+// ])
 
 //Modal State mounting
 const [isOpen, setIsOpen] = useState(false);
@@ -110,7 +70,8 @@ const [modalState, setModalState] = useState({
         openEditCourse: false,
         openDeleteCourse: false,
         editFilter: false,
-        assignCourseAdmin:false
+        assignCourseAdmin:false,
+        CourseID: null
     });
 
 const [sort, setSort] = useState({
@@ -139,10 +100,13 @@ const setOrder = (key) => {
 }
 
 // Action Button
-const handleAction = (e,key) => {
+const handleAction = (e,key,ID) => {
     e.stopPropagation();
     toggleModal(key, true);
+    toggleModal("CourseID", ID);
 }
+
+
 // Checkbox Change state functions
 const [isfilter, isSetfilter] = useState({});
 const handleFilter = (sectionId, value) => {
@@ -151,6 +115,25 @@ const handleFilter = (sectionId, value) => {
         [sectionId]: prev[sectionId] === value ? undefined : value
     }));
 }
+
+//API Calls for the courses
+const [courses, setCourses] = useState([])
+const fetchCourses = () => {
+    axiosClient.get('/courses')
+    .then(({ data }) => {
+        setCourses(data.data)
+    })
+    .catch((err) => {
+        console.log(err);
+    });
+
+}
+
+
+useEffect(() => {
+    fetchCourses()
+}, []);
+
 
 
     return (
@@ -228,7 +211,7 @@ const handleFilter = (sectionId, value) => {
             </div>
 
             {/* Sample Card for course display */}
-            <CourseListCard courseList={Courses} classname='row-start-3 row-span-1 col-start-1 col-span-3 w-full pl-5 py-2 flex flex-col gap-2' onclick={OpenDialog} action={handleAction}/>
+            <CourseListCard courseList={courses} classname='row-start-3 row-span-1 col-start-1 col-span-3 w-full pl-5 py-2 flex flex-col gap-2' onclick={OpenDialog} action={handleAction}/>
 
             {/* Sample Footer Pagenataion */}
             <div className='row-start-4 row-span-1 col-start-1 col-span-3 border-t border-divider mx-5 py-3 flex flex-row items-center justify-between'>
@@ -271,7 +254,7 @@ const handleFilter = (sectionId, value) => {
             {/* Delete */}
             <DeleteCourseModal open={modalState.openDeleteCourse} close={()=>toggleModal('openDeleteCourse', false)}/>
             {/* Assign Course Admin */}
-            <AssignCourseAdmin open={modalState.assignCourseAdmin} close={()=>toggleModal('assignCourseAdmin',false)}></AssignCourseAdmin>
+            <AssignCourseAdmin courseID={modalState.CourseID} open={modalState.assignCourseAdmin} close={()=>toggleModal('assignCourseAdmin',false)}/>
         </div>
 
     )

@@ -19,6 +19,7 @@
     "@mantine/core": "^7.16.3",
     "@mantine/hooks": "^7.16.3",
     "axios": "^1.7.9",
+    "dayjs": "^1.11.13",
     "formik": "^2.4.6",
     "mblearn": "file:",
     "react": "^18.3.1",

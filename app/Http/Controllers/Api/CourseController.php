@@ -31,7 +31,7 @@ class CourseController extends Controller
     public function store(StoreCourseRequest $request)
     {
         $course = Course::create($request->all());
-        return response(new CourseResource($course), 204);
+        return response((new CourseResource($course))->toArray($request), 204);
     }
 
     public function bulkStore(BulkStoreCourseRequest $request){
@@ -105,16 +105,17 @@ class CourseController extends Controller
      */
     public function show(Course $course)
     {
+        $course->load(['categories', 'types', 'training_modes']);
         return new CourseResource($course);
     }
 
 
-    //TODO FIX 
+    //TODO FIX
     // public function showEnrolledUsers(Course $course){
     //     return UserCredentialsResource::collection($course->enrolledUsers);
     // }
 
-    
+
 
     /**
      * Update the specified resource in storage.
@@ -122,7 +123,7 @@ class CourseController extends Controller
     public function update(Request $request, Course $course)
     {
         $temp = $course->update($request->all());
-        return response(new CourseResource($temp), 204);
+        return response((new CourseResource($course))->toArray($request), 204);
     }
 
     /**

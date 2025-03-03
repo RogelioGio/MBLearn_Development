@@ -3,18 +3,41 @@ import { faCircleLeft as faCircleLeftRegular } from "@fortawesome/free-regular-s
 import { faArrowDownShortWide, faArrowDownZA, faArrowUpAZ, faArrowUpWideShort, faCakeCandles, faSort } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Stepper } from "@mantine/core"
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { Helmet } from "react-helmet"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
+import axiosClient from "../axios-client"
 
 
 export default function Course() {
     const navigate = useNavigate();
+    const {id} = useParams();
+    const [course, setCourse] = useState([]);
+    const [isLoading ,setLoading] = useState(true);
+
+
+    //API Call for specific course
+    const fetchCourses = () => {
+        setLoading(true)
+        axiosClient.get(`/courses/${id}`)
+        .then(({data}) => {
+            setCourse(data.data)
+            setLoading(false);
+        }).catch((err) => {
+            console.log(err)
+        })
+    }
+
+    useEffect(()=>{
+        fetchCourses();
+
+    },[])
+
     return(
         <div className='grid  grid-cols-4 grid-rows-[6.25rem_min-content_1fr_min-content] h-full w-full overflow-hidden'>
             <Helmet>
                 {/* Title of the mark-up */}
-                <title>MBLearn | Name of the Course</title>
+                <title>MBLearn | {isLoading ? "Loading..." : course?.name || "No Course Found"}</title>
             </Helmet>
 
             {/* Header */}
@@ -23,8 +46,8 @@ export default function Course() {
                     <FontAwesomeIcon icon={faCircleLeftRegular} className="text-3xl" onClick={() => navigate(-1)}/>
                 </div>
                 <div className=' pl-5 flex flex-col justify-center border-b border-divider w-full'>
-                    <h1 className='text-primary text-4xl font-header'>Course Name Here </h1>
-                    <p className='font-text text-sm text-unactive'>Course Category - Course Type</p>
+                    <h1 className='text-primary text-4xl font-header'> {course?.name || 'Loading...'}</h1>
+                    <p className='font-text text-sm text-unactive'>{course?.category || 'Loading...'} - {course?.type || 'Loading...'}</p>
                 </div>
             </div>
 
@@ -62,7 +85,7 @@ export default function Course() {
                     {/* Course Desription */}
                     <div className="col-span-2 row-span-1 py-5">
                         <p className="font-header text-primary text-2xl">Course Description:</p>
-                        <p className="font-text text-base">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Numquam necessitatibus at doloremque atque veritatis? Commodi nihil vero omnis corporis pariatur unde totam, laboriosam aperiam. Perferendis illo nisi molestiae voluptates asperiores!</p>
+                        <p className="font-text text-base">{course?.description}</p>
                     </div>
                     {/* Course Objective */}
                     <div className="col-span-1 row-span-1 py-5">

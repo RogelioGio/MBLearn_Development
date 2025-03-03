@@ -23,8 +23,8 @@ class Department extends Model
         return $this->belongsToMany(Branch::class, 'branch_department', 'department_id', 'branch_id');
     }
 
-    
+
     public function city(): \Znck\Eloquent\Relations\BelongsToThrough{
-        return $this->belongsToThrough(City::class, Branch::class, 'branch_id', 'country_id', 'branch_department');
+        return $this->belongsToThrough(City::class, Branch::class, 'branch_id', 'country_id', ['branch_department']);
     }
 }

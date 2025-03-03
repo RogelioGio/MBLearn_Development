@@ -1,12 +1,30 @@
 import { faTrashCan, faUserPen, faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axiosClient from "../axios-client";
 
 
 
 
-const AssignCourseAdmin = ({open, close}) => {
+const AssignCourseAdmin = ({courseID ,open, close}) => {
+    const [isLoading, setLoading] = useState();
+    const [course, setCourse] = useState();
+
+    const fetchCourse = () => {
+        setLoading(true)
+        axiosClient.get(`/courses/${courseID}`)
+        .then(({data}) => {
+            setCourse(data.data)
+            setLoading(false);
+        }).catch((err) => {
+            console.log(err)
+        })
+    }
+    useEffect(()=>{
+        fetchCourse();
+    },[courseID])
+
     return (
         <Dialog open={open} onClose={close}>
             <DialogBackdrop transition className="fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in z-10"/>
@@ -28,17 +46,12 @@ const AssignCourseAdmin = ({open, close}) => {
                             {/* Selected Course */}
                             <div className="mx-4 py-2">
                                 <p className="font-text text-unactive">Selected Course</p>
-                                <p className="font-header text-primary text-xl">Course Name here</p>
+                                <p className="font-header text-primary text-xl">{course?.name || "loading.."}</p>
                             </div>
                             {/* Content */}
                             <div className="grid mx-4 pb-4">
                                 {/* Assigned Course Admin */}
                                 <div>
-                                    {/* Header */}
-                                    <div className="py-1">
-                                        <h1 className="font-header text-primary">Currently Assigned Course Admins</h1>
-                                        <p className="font-text text-unactive">List of the current assigned course admin for the selected course</p>
-                                    </div>
                                     {/* Fiter Category */}
                                     <div className="flex flex-row gap-2 py-1">
                                         <div className="text-primary border-2 border-primary h-full py-2 px-4 rounded-md shadow-md flex flex-row gap-2 items-center self-center hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out">
