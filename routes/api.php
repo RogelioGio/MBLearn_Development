@@ -4,8 +4,11 @@ use App\Http\Controllers\Api\FilterOptionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\BranchController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\CityController;
 use App\Http\Controllers\Api\CourseController;
+use App\Http\Controllers\Api\DepartmentController;
 use App\Http\Controllers\Api\EnrollmentController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\userInfo_controller;
@@ -13,6 +16,7 @@ use App\Http\Controllers\Api\userCredentials_controller;
 use App\Http\Controllers\Api\FilterCategoryController;
 use App\Http\Controllers\Api\Filters;
 use App\Http\Controllers\Api\RoleController;
+use App\Http\Controllers\Api\TitleController;
 use App\Http\Controllers\Api\Training_ModeController;
 use App\Http\Controllers\Api\TypeController;
 use App\Http\Controllers\EnrollmentController as ControllersEnrollmentController;
@@ -46,6 +50,15 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('/select-employeeid/{employeeID}',[userInfo_controller::class, 'findUser_EmployeeID']);
     Route::put('/update-user-info/{userInfos}',[userInfo_controller::class, 'updateUser']);
     Route::delete('/delete-user/{userInfos}',[userInfo_controller::class, 'deleteUser']);
+    Route::post('/add-users-department/{userInfos}/{department}', [userInfo_controller::class, 'addDepartment']);
+    Route::post('/add-users-branch/{userInfos}/{branch}', [userInfo_controller::class, 'addBranch']);
+    Route::post('/add-branch-city/{branch}/{city}', [BranchController::class, 'addCity']);
+
+    Route::apiResource('/cities', CityController::class);
+    Route::apiResource('/departments', DepartmentController::class);
+    Route::apiResource('/branches', BranchController::class);
+    Route::apiResource('/titles', TitleController::class);
+
     //User enrolled course list
     Route::get('/select-user-courses/{userInfos}', [userInfo_controller::class, 'getUserCourses']);
 
@@ -107,6 +120,10 @@ Route::post('create-category',[FilterCategoryController::class, 'store']);
 
 route::post('create-option', [FilterOptionController::class, 'store']);
 
-Route::get('/reset-user',[userInfo_controller::class, 'resetUser']); //reset user table
-Route::get('/reset-user-creds',[userCredentials_controller::class, 'resetUsers']); //reset user table
+// Route::get('/reset-user',[userInfo_controller::class, 'resetUser']); //reset user table
+// Route::get('/reset-user-creds',[userCredentials_controller::class, 'resetUsers']); //reset user table
+
+
+
+
 

@@ -23,8 +23,9 @@ class CityController extends Controller
      */
     public function store(StoreCityRequest $request)
     {
-        $city = $request->validated();
-        City::create($city);
+        $validated = $request->validated();
+        $city = City::create($validated);
+        return $city;
     }
 
     /**

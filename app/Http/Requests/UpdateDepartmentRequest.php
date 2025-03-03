@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class UpdateBranchRequest extends FormRequest
+class UpdateDepartmentRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,7 +23,7 @@ class UpdateBranchRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "branch_name" => ['required', 'string',  Rule::unique('branches')->ignore($this->branch)]
+            "department_name" => ['required', 'string',  Rule::unique('departments')->ignore($this->department)]
         ];
     }
 }

@@ -22,9 +22,9 @@ class StoreEnrollmentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'userId'=> 'required|integer|exists:users,id',
+            'userId'=> 'required|integer|exists:userInfo,id',
             'courseId'=> 'required|integer|exists:courses,id',
-            'enrollerId'=> 'required|integer|exists:users,id'
+            'enrollerId'=> 'required|integer|exists:userInfo,id'
         ];
     }
 

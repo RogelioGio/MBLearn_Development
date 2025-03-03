@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Branch;
 use App\Http\Requests\StoreBranchRequest;
 use App\Http\Requests\UpdateBranchRequest;
+use App\Models\City;
+use App\Models\Department;
 
 class BranchController extends Controller
 {
@@ -25,6 +27,25 @@ class BranchController extends Controller
         $validated = $request->validated();
         $branch = Branch::create($validated);
         return $branch;
+    }
+
+    public function addDepartment(Branch $branch, Department $department){
+        $branch->departments()->syncWithoutDetaching($department->id);
+        return response()->json([
+            "Message" => "Branch Attached",
+            "Data" => $department,
+            "Roles" => $department->branches,
+        ]);
+    }
+
+    public function addCity(Branch $branch, City $city){
+        $branch->city()->associate($city);
+        $branch->save();
+        return response()->json([
+            "Message" => "City Attached",
+            "Data" => $branch,
+            "City" => $branch->city,
+        ]);
     }
 
     /**

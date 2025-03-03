@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class City extends Model
 {
@@ -12,8 +12,7 @@ class City extends Model
     use HasFactory;
     protected $fillable = ['city_name'];
 
-    public function users(): BelongsToMany
-    {
-        return $this->belongsToMany(UserInfos::class, 'city_user_info', 'city_id', 'userinfo_id' );
+    public function branch(): HasMany{
+        return $this->hasMany(Branch::class);
     }
 }

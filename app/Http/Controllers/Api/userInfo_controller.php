@@ -1,11 +1,16 @@
 <?php
 
 namespace App\Http\Controllers\Api;
+
+use App\Filters\UserInfosFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AddUsersRequest;
 use App\Http\Requests\updateUserInfo;
+use App\Models\Branch;
+use App\Models\Department;
 use App\Models\Permission;
 use App\Models\Role;
+use App\Models\Title;
 use App\Models\UserInfos;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -18,6 +23,9 @@ class userInfo_controller extends Controller
     public function addUser(AddUsersRequest $addUsersRequest){
 
         $validatedData = $addUsersRequest->validated();
+        $title = Title::query()->find($validatedData['title_id']);
+        $department = Department::query()->find($validatedData['department_id']);
+        $branch = Branch::query()->find($validatedData['branch_id']);
 
         $profile_image = $this -> generateProfileImageurl($validatedData['first_name'].$validatedData['last_name']);
         $status = $validatedData['status'] ?? 'Active';
@@ -53,20 +61,20 @@ class userInfo_controller extends Controller
             'last_name' => $validatedData['last_name'],
             'middle_name' => $validatedData['middle_name'],
             'name_suffix' => $validatedData['name_suffix'],
-            'department' => $validatedData['department'],
-            'title' => $validatedData['title'],
-            'branch' => $validatedData['branch'],
-            'city' => $validatedData['city'],
             'status' =>$status,
             'profile_image' =>$profile_image
         ]);
 
+        $userInfo->branch()->associate($branch);
+        $userInfo->title()->associate($title);
+        $userInfo->department()->associate($department);
+        $userInfo->save();
         $userCredentials->userInfos()->save($userInfo);
-
         // Return a success response
         return response()->json([
             'message' => 'User registered successfully',
             'user_info' => $userInfo,
+            'branch' => $userInfo->branch,
             'user_credentials' => $userCredentials
         ], 201);
 
@@ -88,7 +96,10 @@ class userInfo_controller extends Controller
         $page = $request->input('page', 1);//Default page
         $perPage = $request->input('perPage',5); //Number of entry per page
 
-        $users =  UserInfos::with('roles')->where('status', 'Active')->paginate($perPage);
+        $filter = new UserInfosFilter();
+        $queryItems = $filter->transform($request);
+
+        $users =  UserInfos::query()->where($queryItems)->with('roles')->paginate($perPage);
 
         return response()->json([
             'data' => $users->items(),
@@ -130,6 +141,66 @@ class userInfo_controller extends Controller
         return response()->json([
             "Message" => "Permission Removed",
             "Data" => $userInfos
+        ]);
+    }
+
+    public function addDepartment(UserInfos $userInfos, Department $department){
+        $userInfos->department()->associate($department);
+        $userInfos->save();
+        return response()->json([
+            "Message" => "Department Attached",
+            "Data" => $userInfos,
+            "department" => $userInfos->department,
+        ]);
+    }
+
+    public function removeDepartment(UserInfos $userInfos, Department $department){
+        $userInfos->department()->dissociate($department);
+        $userInfos->save();
+        return response()->json([
+            "Message" => "Department removed",
+            "Data" => $userInfos,
+            "department" => $userInfos->department,
+        ]);
+    }
+
+    public function addBranch(UserInfos $userInfos, Branch $branch){
+        $userInfos->branch()->associate($branch);
+        $userInfos->save();
+        return response()->json([
+            "Message" => "Branch Attached",
+            "Data" => $userInfos,
+            "branch" => $userInfos->branch,
+        ]);
+    }
+
+    public function removeBranch(UserInfos $userInfos, Branch $branch){
+        $userInfos->branch()->disassociate($branch);
+        $userInfos->save();
+        return response()->json([
+            "Message" => "Branch removed",
+            "Data" => $userInfos,
+            "branch" => $userInfos->branch,
+        ]);
+    }
+
+    public function addTitle(UserInfos $userInfos, Title $title){
+        $userInfos->title()->associate($title);
+        $userInfos->save();
+        return response()->json([
+            "Message" => "Title Attached",
+            "Data" => $userInfos,
+            "title" => $userInfos->title,
+        ]);
+    }
+
+    public function removeTitle(UserInfos $userInfos, Title $title){
+        $userInfos->title()->disassociate($title);
+        $userInfos->save();
+        return response()->json([
+            "Message" => "Title removed",
+            "Data" => $userInfos,
+            "title" => $userInfos->title,
         ]);
     }
 
@@ -181,12 +252,18 @@ class userInfo_controller extends Controller
 
         //Input Validation
         $validatedData = $request->validated();
+        $title = Title::query()->find($validatedData['title_id']);
+        $department = Department::query()->find($validatedData['department_id']);
+        $branch = Branch::query()->find($validatedData['branch_id']);
 
         if(!$userInfos){
             return response()->json(['message' => 'User not found'], 404);
         }
-
-
+        $userInfos->branch()->associate($branch);
+        $userInfos->title()->associate($title);
+        $userInfos->department()->associate($department);
+        $userInfos->save();
+        
         $userInfos->update($validatedData);
         //Update UserInfo
         return response()->json([
