@@ -9,7 +9,7 @@
         "php": "^8.2",
         "doctrine/dbal": "^4.2",
         "inertiajs/inertia-laravel": "^1.0",
-        "laravel/framework": "^11.39",
+        "laravel/framework": "^11.40",
         "laravel/jetstream": "^5.3",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
