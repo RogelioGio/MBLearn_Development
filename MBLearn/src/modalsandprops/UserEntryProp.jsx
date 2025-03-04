@@ -5,7 +5,7 @@ import React from 'react'
 
 const User = ({re_move,click,userID,name,department,title,branch,city,profile_url,employeeID,role,edit,_delete}) => {
     return(
-        <tr className='font-text text-sm hover:bg-gray-200' onClick={() => click({userID})}>
+        <tr className='font-text text-sm hover:bg-gray-200' onClick={() => click(employeeID)}>
                 <td className='text-sm  py-3 px-4'>
                     <div className='flex items-center gap-2'>
                         {/* User Image */}
@@ -14,7 +14,7 @@ const User = ({re_move,click,userID,name,department,title,branch,city,profile_ur
                         </div>
                         {/* Name and employee-id*/}
                         <div>
-                            <p className='font-header'>{name}</p>
+                            <p className='font-text'>{name}</p>
                             <p className='text-unactive text-xs'>ID: {employeeID}</p>
                         </div>
                     </div>

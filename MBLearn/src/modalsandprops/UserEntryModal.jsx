@@ -11,7 +11,7 @@ const UserEntryModal = ({open, close, classname,ID}) =>{
     //API Call for fetching specific user
     const [selectedUser, setSelectedUser] = useState(null)
     const [date, setDate] = useState();
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(true)
 
     //Modal states
     const [modalState, setModalState] = useState({
@@ -29,19 +29,18 @@ const UserEntryModal = ({open, close, classname,ID}) =>{
 
     //UseEffect for fetching specific user
     useEffect(()=>{
-        if(ID?.userID){
+        if(ID){
             setLoading(true)
             setSelectedUser(null)
-            axiosClient.get(`/select-user/${ID.userID}`)
+            axiosClient.get(`/select-employeeid/${ID}`)
             .then(response =>
                 {
                     setSelectedUser(response.data.data);
-                    console.log(selectedUser)
                     setLoading(false)
                 })
             .catch(err => console.log(err))
         }
-    },[ID?.userID]);
+    },[ID]);
 
     //function for readable dates
     useEffect(() => {
@@ -111,7 +110,7 @@ const UserEntryModal = ({open, close, classname,ID}) =>{
                 <div className='col-start-1 col-span-2 row-start-1 py-4 px-4 border-b border-divider'>
                     {/* Name */}
                     <p className='font-header text-sm text-unactive uppercase'>Name:</p>
-                    <h1 className='font-header text-4xl text-primary mb-0.5'>{selectedUser.name}</h1>
+                    <h1 className='font-header text-4xl text-primary mb-0.5'>{selectedUser.first_name} {selectedUser.middle_name} {selectedUser.last_name}</h1>
                     <p className='font-text text-sm uppercase'>{selectedUser.title}</p>
                 </div>
             {actionButton}
@@ -129,7 +128,7 @@ const UserEntryModal = ({open, close, classname,ID}) =>{
             <div className='row-start-2 col-start-3 py-4 px-4 border-b border-divider'>
                 {/* System Admin */}
                 <p className='font-header text-sm text-unactive uppercase'>Role:</p>
-                <p className='font-text text-lg'>{selectedUser.role}</p>
+                <p className='font-text text-lg'>{selectedUser.roles?.[0]?.role_name}</p>
             </div>
                 {/* User Status */}
             <div className='row-start-3 col-span-2 py-4 px-4 border-r border-divider'>
@@ -182,7 +181,7 @@ const UserEntryModal = ({open, close, classname,ID}) =>{
                 </div>
             </div>
         </Dialog>
-        <EditUserModal open={modalState.isEdit} close={CloseEdit} ID={ID?.userID} />
+        <EditUserModal open={modalState.isEdit} close={CloseEdit} ID={ID} />
     </>
     )
 }

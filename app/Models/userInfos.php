@@ -2,10 +2,17 @@
 
 namespace App\Models;
 
-
+use App\Observers\UserInfosObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Znck\Eloquent\Relations\BelongsToThrough;
 
+#[ObservedBy([UserInfosObserver::class])]
 class UserInfos extends Model
 {
     use HasFactory;
@@ -20,14 +27,65 @@ class UserInfos extends Model
      */
     protected $fillable = [
         'employeeID',
-        'name',
-        'department',
-        'title',
-        'branch',
-        'city',
-        'role',
+        'first_name',
+        'last_name',
+        'middle_name',
+        'name_suffix',
         'status',
         'profile_image',
-        // Add all the column names you want to make mass-assignable
+        'user_credentials_id',
     ];
+
+    public function userCredentials(): BelongsTo{
+        return $this->belongsTo(UserCredentials::class, 'user_credentials_id', 'id');
+    }
+
+    //Functions for relationships
+    public function enrollments(): HasMany{
+        return $this->hasMany(Enrollment::class, 'user_id');
+    }
+
+    //TODO change name to be more clear, for knowing who made the enrollment
+    public function enrollings(): HasMany{
+        return $this->hasMany(Enrollment::class, 'enroller_id');
+    }
+
+    public function addedCourses(): HasMany{
+        return $this->hasMany(Course::class, 'system_admin_id');
+    }
+
+    public function assignedCourses(): HasMany{
+        return $this->hasMany(Course::class, 'assigned_course_admin_id');
+    }
+
+
+    public function roles(): BelongsToMany{
+        return $this->belongsToMany(Role::class, 'role_userinfo', 'userinfo_id', 'role_id');
+    }
+
+    public function permissions(): BelongsToMany{
+        return $this->belongsToMany(Permission::class, 'permission_userinfo', 'userinfo_id', 'permission_id');
+    }
+
+
+    public function branch(): BelongsTo{
+        return $this->belongsTo(Branch::class);
+    }
+
+    public function title():BelongsTo{
+        return $this->belongsTo(Title::class);
+    }
+
+    use \Znck\Eloquent\Traits\BelongsToThrough;
+    public function city():BelongsToThrough{
+        return $this->belongsToThrough(City::class, Branch::class);
+    }
+
+    public function department():BelongsTo{
+        return $this->belongsTo(Department::class);
+    }
+
+    public function enrolledCourses(): HasManyThrough{
+        return $this->hasManyThrough(Course::class, Enrollment::class, 'user_id', 'id', 'id', 'course_id');
+    }
 }

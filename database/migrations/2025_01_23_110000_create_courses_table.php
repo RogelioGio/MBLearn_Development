@@ -14,15 +14,14 @@ return new class extends Migration
         Schema::create('courses', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('code');
             $table->string('description');
-            $table->string('type');
-            $table->string('training_mode');
+            $table->integer('type_id');
+            $table->integer('category_id');
+            $table->integer('training_mode_id');
             $table->string('mandatory');
-            $table->string('duration');
             $table->string('archived');
             $table->integer('system_admin_id');
-            $table->integer('assigned_course_admin_id');
+            $table->foreignId('assigned_course_admin_id')->nullable()->constrained('userInfo', 'id')->nullOnDelete();
             $table->timestamps();
         });
     }

@@ -1,39 +1,82 @@
 <?php
 
 namespace App\Http\Controllers\Api;
+
+use App\Filters\UserInfosFilter;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\addUserInfo;
+use App\Http\Requests\AddUsersRequest;
 use App\Http\Requests\updateUserInfo;
+use App\Models\Branch;
+use App\Models\Department;
+use App\Models\Permission;
+use App\Models\Role;
+use App\Models\Title;
 use App\Models\UserInfos;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Cache;
-
+use App\Models\UserCredentials;
 class userInfo_controller extends Controller
 {
+
     //Add user information function
-    public function addUser(addUserInfo $request){
+    //Change, only have 1 request that has information for both the userinfos and usercreds
+    public function addUser(AddUsersRequest $addUsersRequest){
 
-        $validatedData = $request->validated();
+        $validatedData = $addUsersRequest->validated();
+        $title = Title::query()->find($validatedData['title_id']);
+        $department = Department::query()->find($validatedData['department_id']);
+        $branch = Branch::query()->find($validatedData['branch_id']);
 
-        $profile_image = $this -> generateProfileImageurl($validatedData['name']);
+        $profile_image = $this -> generateProfileImageurl($validatedData['first_name'].$validatedData['last_name']);
         $status = $validatedData['status'] ?? 'Active';
+        $existingUser = UserInfos::where('employeeID', $validatedData['employeeID'])->first();
+
+        if ($existingUser) {
+            return response()->json([
+                'message' => 'User already exists',
+                'user' => $existingUser
+            ], 409); // Use 409 Conflict instead of 200
+        }
+
+        // Combine first name, middle initial, last name, and suffix into a full name
+        $fullName = trim("{$validatedData['first_name']} " .
+                            ("{$validatedData['middle_name']}" ? "{$validatedData['middle_name']}. " : "") .
+                            "{$validatedData['last_name']} " .
+                            ("{$validatedData['name_suffix']}" ? $validatedData['name_suffix'] : ""));
+
+        // Generate profile image URL (pass the correct name variable)
+        $profile_image = $this->generateProfileImageUrl($fullName);
+
+        // Default status to 'Active' if not provided
+        $status = $validatedData['status'] ?? 'Active';
+
+        $userCredentials = UserCredentials::create([
+            'MBemail' => $validatedData['MBemail'],
+            'password' => $validatedData['password'],
+        ]);
 
         $userInfo = UserInfos::create([
             'employeeID' => $validatedData['employeeID'],
-            'name' => $validatedData['name'],
-            'department' => $validatedData['department'],
-            'title' => $validatedData['title'],
-            'branch' => $validatedData['branch'],
-            'city' => $validatedData['city'],
-            'role' => $validatedData['role'],
+            'first_name' => $validatedData['first_name'],
+            'last_name' => $validatedData['last_name'],
+            'middle_name' => $validatedData['middle_name'],
+            'name_suffix' => $validatedData['name_suffix'],
             'status' =>$status,
             'profile_image' =>$profile_image
         ]);
 
-        return response()->json(['message' => 'User Info Added Successfully', 'data' => $userInfo],201);
-
-
+        $userInfo->branch()->associate($branch);
+        $userInfo->title()->associate($title);
+        $userInfo->department()->associate($department);
+        $userInfo->save();
+        $userCredentials->userInfos()->save($userInfo);
+        // Return a success response
+        return response()->json([
+            'message' => 'User registered successfully',
+            'user_info' => $userInfo,
+            'branch' => $userInfo->branch,
+            'user_credentials' => $userCredentials
+        ], 201);
 
     }
     /**
@@ -53,12 +96,10 @@ class userInfo_controller extends Controller
         $page = $request->input('page', 1);//Default page
         $perPage = $request->input('perPage',5); //Number of entry per page
 
+        $filter = new UserInfosFilter();
+        $queryItems = $filter->transform($request);
 
-
-
-        $users =  UserInfos::paginate($perPage);
-
-
+        $users =  UserInfos::query()->where($queryItems)->with('roles')->paginate($perPage);
 
         return response()->json([
             'data' => $users->items(),
@@ -68,19 +109,118 @@ class userInfo_controller extends Controller
         ],200);
     }
 
+    //You add user id then role id in url /addRole/{userInfos}/{role}
+    public function addRole(UserInfos $userInfos, Role $role){
+        $userInfos->roles()->syncWithoutDetaching($role->id);
+        return response()->json([
+            "Message" => "Role Added",
+            "Data" => $userInfos,
+            "Roles" => $userInfos->roles,
+        ]);
+    }
+
+    public function removeRole(UserInfos $userInfos, Role $role){
+        $userInfos->roles()->detach($role->id);
+        return response()->json([
+            "Message" => "Role Removed",
+            "Data" => $userInfos,
+            "Roles" => $userInfos->roles,
+        ]);
+    }
+
+    public function addPermission(UserInfos $userInfos, Permission $permission){
+        $userInfos->permissions()->attach($permission->id);
+        return response()->json([
+            "Message" => "Permission Added",
+            "Data" => $userInfos
+        ]);
+    }
+
+    public function RemovePermission(UserInfos $userInfos, Permission $permission){
+        $userInfos->permissions()->detach($permission->id);
+        return response()->json([
+            "Message" => "Permission Removed",
+            "Data" => $userInfos
+        ]);
+    }
+
+    public function addDepartment(UserInfos $userInfos, Department $department){
+        $userInfos->department()->associate($department);
+        $userInfos->save();
+        return response()->json([
+            "Message" => "Department Attached",
+            "Data" => $userInfos,
+            "department" => $userInfos->department,
+        ]);
+    }
+
+    public function removeDepartment(UserInfos $userInfos, Department $department){
+        $userInfos->department()->dissociate($department);
+        $userInfos->save();
+        return response()->json([
+            "Message" => "Department removed",
+            "Data" => $userInfos,
+            "department" => $userInfos->department,
+        ]);
+    }
+
+    public function addBranch(UserInfos $userInfos, Branch $branch){
+        $userInfos->branch()->associate($branch);
+        $userInfos->save();
+        return response()->json([
+            "Message" => "Branch Attached",
+            "Data" => $userInfos,
+            "branch" => $userInfos->branch,
+        ]);
+    }
+
+    public function removeBranch(UserInfos $userInfos, Branch $branch){
+        $userInfos->branch()->disassociate($branch);
+        $userInfos->save();
+        return response()->json([
+            "Message" => "Branch removed",
+            "Data" => $userInfos,
+            "branch" => $userInfos->branch,
+        ]);
+    }
+
+    public function addTitle(UserInfos $userInfos, Title $title){
+        $userInfos->title()->associate($title);
+        $userInfos->save();
+        return response()->json([
+            "Message" => "Title Attached",
+            "Data" => $userInfos,
+            "title" => $userInfos->title,
+        ]);
+    }
+
+    public function removeTitle(UserInfos $userInfos, Title $title){
+        $userInfos->title()->disassociate($title);
+        $userInfos->save();
+        return response()->json([
+            "Message" => "Title removed",
+            "Data" => $userInfos,
+            "title" => $userInfos->title,
+        ]);
+    }
+
+    public function getUserCourses(UserInfos $userInfos){
+        $courses = $userInfos->enrolledCourses;
+        return $courses;
+    }
+
     /**
      * Display the specified user info.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function findUser($id)
+    public function findUser(UserInfos $userInfos)
     {
         // Find the user info by ID
-        $user = UserInfos::find($id);
 
-        if($user){
-            return response() -> json(['data' => $user], 200);
+        if($userInfos){
+            return response() -> json(['data' => $userInfos], 200);
         }else {
             return response()->json(['message' => 'User not found'], 404);  // Return error if not found
         }
@@ -90,7 +230,9 @@ class userInfo_controller extends Controller
     public function findUser_EmployeeID($employeeID)
     {
         // Find the user info by Employee ID
-        $user = UserInfos::where('employeeID', $employeeID)->first();
+        $user = UserInfos::where('employeeID', $employeeID)
+        ->with('roles')
+        ->first();
 
         if($user){
             return response() -> json(['data' => $user], 200);
@@ -106,34 +248,48 @@ class userInfo_controller extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function updateUser($employeeID, updateUserInfo $request){
+    public function updateUser(UserInfos $userInfos, updateUserInfo $request){
 
         //Input Validation
         $validatedData = $request->validated();
+        $title = Title::query()->find($validatedData['title_id']);
+        $department = Department::query()->find($validatedData['department_id']);
+        $branch = Branch::query()->find($validatedData['branch_id']);
 
-        //Find User by Employee ID
-        $employee = UserInfos::where('employeeID', $employeeID)->first();
-        //User Checker
-        if(!$employee){
+        if(!$userInfos){
             return response()->json(['message' => 'User not found'], 404);
         }
-
+        $userInfos->branch()->associate($branch);
+        $userInfos->title()->associate($title);
+        $userInfos->department()->associate($department);
+        $userInfos->save();
+        
+        $userInfos->update($validatedData);
         //Update UserInfo
-        return DB::transaction(function () use ($employee, $validatedData){
-            $employee->update($validatedData);
-
-            return response() -> json(['message' => 'User Info Updated Successfully', 'data' => $employee], 200);
-        });
+        return response()->json([
+            "Message" => 'Updated User',
+            "Data" => $userInfos
+        ]);
     }
 
     //Delete User
-    public function deleteUser($employeeID)
+    public function deleteUser(UserInfos $userInfos)
     {
-        $user = UserInfos::where('employeeID', $employeeID)->first();
+        if($userInfos){
+            $userInfos->status = "Inactive";
+            $userInfos->save();
+            return response()->json(['message' => 'User is now set to inactive'], 200);
+        }else {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+    }
 
-        if($user){
-            $user->delete();
-            return response()->json(['message' => 'User deleted successfully!'], 200);
+    public function restoreUser(UserInfos $userInfos)
+    {
+        if($userInfos){
+            $userInfos->status = "Active";
+            $userInfos->save();
+            return response()->json(['message' => 'User restored'], 200);
         }else {
             return response()->json(['message' => 'User not found'], 404);
         }
@@ -145,6 +301,25 @@ class userInfo_controller extends Controller
         // Truncate the users table
         DB::table('userInfo')->truncate();
         return response()->json(['message' => 'User Info table reset successfully!'], 200);
+    }
+
+    //Fetch UserProfilePhoto for the UserCredentials
+    public function getProfile(Request $request)
+    {
+        $page = $request->input('page', 1);//Default page
+        $perPage = $request->input('perPage',5); //Number of entry per page
+
+        $profile_image = UserInfos::select('profile_image','employeeID')->paginate($perPage);
+        return response()->json([
+            'data' => $profile_image->items(),
+            'total' => $profile_image->total(),
+            'lastPage' => $profile_image->lastPage(),
+            'currentPage' => $profile_image->currentPage()
+        ],200);
+    }
+
+    public function test(){
+        return response()->json(['message' => 'Test'], 200);
     }
 
 }

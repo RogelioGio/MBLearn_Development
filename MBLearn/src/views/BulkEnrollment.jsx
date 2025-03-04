@@ -2,32 +2,107 @@ import { faChevronLeft, faChevronRight, faFilter, faSearch, faUserPlus } from "@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Helmet } from "react-helmet"
 import axiosClient from "../axios-client"
-import { useEffect, useRef, useState } from "react"
+import { act, useEffect, useRef, useState } from "react"
 import Learner from "../modalsandprops/LearnerEnroleeEntryProps"
+import EnrollmentTableProps from "../modalsandprops/EnrollmentTableProps"
+import AssignedCourseEnrollmentCard from "../modalsandprops/AssignedCourseEnrollmentCard"
+import LearnerLoadingProps from "../modalsandprops/LearnerLoadingProps"
+import { useStateContext } from "../contexts/ContextProvider"
+import CourseLoading from "../assets/Course_Loading.svg";
 
 export default function BulkEnrollment() {
 
+    const {user} = useStateContext();
+    const [assigned_courses, setAssigned_courses] = useState([]);
     const [learners, setLearners] = useState([]); //List all learners
     const [selected, setSelected] = useState([]); //Select learner to ernoll
+    const [course, selectCourse] = useState([]); //Select course to enroll
+    const [isLoading, setLoading] = useState(true); //Loading state
     const selectAll = useRef(false) //select all learners
 
+    //Pagenation States
+    const [pageState, setPagination] = useState({
+        currentPage: 1,
+        perPage:5,
+        totalUser: 0,
+        lastPage: 1,
+        startNumber: 0,
+        endNumber: 0,
+        currentPerPage:0
+    })
+
+
+    //Pagination Change State
+    const pageChangeState = (key, value) => {
+        setPagination((prev) => ({
+            ...prev,
+            [key]: value
+        }))
+    }
+
+    //Next and Previous Page
+    const back = () => {
+        if(isLoading) return;
+        if (pageState.currentPage > 1){
+            pageChangeState("currentPage", pageState.currentPage - 1)
+            pageChangeState("startNumber", pageState.perPage - 4)
+        }
+    }
+    const next = () => {
+        if(isLoading) return;
+        if (pageState.currentPage < pageState.lastPage){
+            pageChangeState("currentPage", pageState.currentPage + 1)
+
+        }
+    }
+
+    //Page Navigation
+    const pageChange = (page) => {
+        if(isLoading) return;
+        if(page > 0 && page <= pageState.lastPage){
+            pageChangeState("currentPage", page)
+        }
+    }
+
+    //Handle course change
+    const handleCourseChange = (Course) => {
+        selectCourse(Course);
+    }
+
     //Learner to enroll
-    const handleCheckbox = (employeeID) => {
+    const handleCheckbox = (id, course) => {
         setSelected((prevUsers) => {
-            if(prevUsers.includes(employeeID)){
-                return prevUsers.filter((user) => user !== employeeID);
-            } else {
-                return [...prevUsers, employeeID];
+            if(!id&&!course) return
+
+            const exists = prevUsers.some(
+                (entry) => entry.userId === id && entry.courseId === course
+            );
+
+            if(exists){
+                return prevUsers.filter(
+                    (entry) => !(entry.userId === id && entry.courseId === course )
+                )
+            }else{
+                return [...prevUsers, {userId: id, courseId: course, enrollerId: user.user_info_id}]
             }
-        });
-    };
+        })
+
+    }
 
     //Select All Learners
-    const handleSelectAll = () => {
-        if(selected.length === learners.length){
-            setSelected([]);
+    const handleSelectAll = (Course) => {
+        if(selected[Course] && selected[Course].length === learners.length){
+            setSelected((prevUsers) => {
+                const newUsers = {... prevUsers};
+                newUsers[Course] = [];
+                return newUsers;
+            })
         } else {
-            setSelected(learners.map((enrollees) => enrollees.employeeID));
+            setSelected((prevUsers) => {
+                const newUsers = {... prevUsers};
+                newUsers[Course] = learners.map((user) => user.employeeID);
+                return newUsers;
+            });
         }
     }
 
@@ -35,35 +110,78 @@ export default function BulkEnrollment() {
     useEffect(() => {
         if(!selectAll.current) return;
 
-        if(selected.length === learners.length && learners.length > 0){
+        const courseLearners = learners.map((user) => user.employeeID);
+        const selectedLearners = selected[course] || [];
+
+        if(courseLearners.length === selectedLearners.length && courseLearners.length > 0){
             selectAll.current.indeterminate = false;
             selectAll.current.checked = true;
-        } else if(selected.length > 0){
+        } else if(selectedLearners.length > 0){
             selectAll.current.indeterminate = true;
         } else {
             selectAll.current.indeterminate = false;
             selectAll.current.checked = false;
 
         }
-    },[selected, learners]);
+    },[selected, learners, course]);
 
     //Number of enrollees
-    const numberOfEnrollees = () => {
-        return selected.length;
+    const numberOfEnrollees = (courseName) => {
+        return selected.filter((entry) => entry.courseId === courseName).length
     }
 
     //handle ernollment
     const enrollLearners = () => {
-        console.log("Enrolled Learners", selected)
+        console.log(selected)
+        axiosClient.post('enrollments/bulk', selected).catch((err)=>console.log(err));
     }
+
+    useEffect(()=>{
+        console.log(selected)
+    },[selected])
 
     //Fetch Learners
     useEffect(() =>{
-        axiosClient.get('/index-user/enrolees')
-        .then(({data}) => setLearners(data))
-        .catch((err) => console.log(err))
-    },[]);
+        setLoading(true)
 
+        //fetch courses
+        axiosClient.get('/courses').then(({data})=>{
+            console.log(data.data[0].types?.[0]?.type_name);
+            setAssigned_courses(data.data);
+            selectCourse(data.data[0].name);
+
+        }).catch((err)=>
+        console.log(err)
+        );
+
+        axiosClient.get('/index-user/enrolees',{
+            params: {
+                page: pageState.currentPage,
+                perPage: pageState.perPage
+            }
+        })
+        .then(({data}) => {
+            setLearners(data.data)
+            pageChangeState('totalUser', data.total)
+            pageChangeState('lastPage', data.lastPage)
+            pageChangeState('currentPerPage', data.data.length)
+            setLoading(false)
+        })
+        .catch((err) => console.log(err))
+
+        console.log(learners)
+    },[pageState.currentPage, pageState.perPage]);
+    useEffect(() => {
+        pageChangeState('startNumber', (pageState.currentPage - 1) * pageState.perPage + 1)
+        pageChangeState('endNumber', Math.min(pageState.currentPage * pageState.perPage, pageState.totalUser))
+    },[pageState.currentPerPage])
+
+
+    // Dynamic Page Number
+    const Pages = [];
+    for(let p = 1; p <= pageState.lastPage; p++){
+        Pages.push(p)
+    }
 
     return (
         <div className='grid grid-cols-4 grid-rows-[6.25rem_min-content_auto_auto_3.75rem] h-full w-full'>
@@ -95,18 +213,30 @@ export default function BulkEnrollment() {
             {/* Assigned Courses */}
             <div className="col-start-4 row-start-3 row-span-3 mb-5 border-l border-divider">
                 {/* Course Props */}
-                <div className="h-full p-4 flex flex-col gap-2">
-                    <div className="w-full py-5 px-4 border border-divider bg-primary rounded-md font-text text-white text-center shadow-md hover:cursor-pointer hover:scale-105 transition-all ease-in-out">
-                    Effective Communication Skills in the Workplace
-Soft Skills Training-Personal Development
-Duration:
-2 weeks
-Asynchronous
-                        <p>{selected.length > 0 && <p>{numberOfEnrollees()}</p>}</p>
-                    </div>
-                    <div className="w-full py-5 px-4 border border-divider bg-white rounded-md font-text text-primary text-center shadow-md hover:cursor-pointer hover:scale-105 transition-all ease-in-out">
-                        sample course card
-                    </div>
+                <div className="h-full px-4 flex flex-col gap-2">
+                    {
+                        isLoading ? (
+                            <div className="flex flex-col gap-2 items-center justify-center text-center h-full">
+                                <img src={CourseLoading} alt="" className="w-44"/>
+                                <p className="text-xs font-text text-primary">Hang tight! 🚀 Loading assigned courses for bulk enrollment—great things take a second!</p>
+                            </div>
+                        )
+                        : (assigned_courses.map((Course) => (
+                            <AssignedCourseEnrollmentCard
+                                key={Course.id}
+                                id={Course.id}
+                                name={Course.name}
+                                coursetype={Course.types?.[0]?.type_name}
+                                coursecategory={Course.categories?.[0]?.category_name}
+                                duration={Course.duration}
+                                trainingmode={Course.trainingMode}
+                                course={course}
+                                selected={selected}
+                                onclick={() => handleCourseChange(Course.name)}
+                                numberOfEnrollees={numberOfEnrollees}/>
+                        )))
+
+                    }
                 </div>
             </div>
 
@@ -127,80 +257,50 @@ Asynchronous
                 </button>
             </div>
 
-            {/* User table */}
-            <div className='row-start-3 row-span-2 col-start-1 col-span-3 px-5 py-2'>
-                <div className='w-full border-primary border rounded-md overflow-hidden shadow-md'>
-                <table className='text-left w-full overflow-y-scroll'>
-                    <thead className='font-header text-xs text-primary bg-secondaryprimary'>
-                        <tr>
-                            <th className='py-4 px-4 flex flex-row gap-4'>
-                                {/* Checkbox */}
-                                <div className="group grid size-4 grid-cols-1">
-                                    <input type="checkbox"
-                                        className="col-start-1 row-start-1 appearance-none border border-primary rounded checked:border-primary checked:bg-primary indeterminate:bg-primary focus:ring-2 focus:ring-primary focus:outline-none focus:ring-offset-1"
-                                        ref={selectAll}
-                                        onChange={handleSelectAll}
-                                        />
-                                    {/* Custom Checkbox styling */}
-                                    <svg fill="none" viewBox="0 0 14 14" className="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-[:disabled]:stroke-gray-950/25">
-                                        {/* Checked */}
-                                        <path
-                                            d="M3 8L6 11L11 3.5"
-                                            strokeWidth={2}
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            className="opacity-0 group-has-[:checked]:opacity-100"
-                                        />
-                                        {/* Indeterminate */}
-                                        <path
-                                            d="M3 7H11"
-                                            strokeWidth={2}
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            className="opacity-0 group-has-[:indeterminate]:opacity-100"
-                                            />
-                                    </svg>
-                                </div>
-                                <p>EMPLOYEE NAME</p>
-                            </th>
-                            <th className='py-4 px-4'>DEPARTMENT</th>
-                            <th className='py-4 px-4'>BRANCH</th>
-                        </tr>
-                    </thead>
-                    <tbody className='bg-white divide-y divide-divider'>
-                        {/* <tr>
-                            <td colSpan="5">
-                                <div className="p-5 text-center font-text text-unactive">
-                                    <p>Please choose a course to select employee to enroll</p>
-                                </div>
-                            </td>
-                        </tr> */}
+            {/* Learner table */}
+            {
+                isLoading ? (
+                    <EnrollmentTableProps>
+                        <LearnerLoadingProps/>
+                    </EnrollmentTableProps>
+                ):
+                (assigned_courses.map((Course) => (
+                    course === Course.name ? (
+                    <EnrollmentTableProps selectAll={selectAll} onchange={handleSelectAll} course={Course.name} key={Course.name}>
                         {
+                            isLoading ? (
+                                <LearnerLoadingProps/>
+                            ) :(
                             learners.map((learner)=>(
                                 <Learner
                                     key={learner.id}
+                                    id={learner.id}
                                     profile_image={learner.profile_image}
-                                    name={learner.name}
+                                    name={[learner.first_name, learner.middle_name, learner.last_name].filter(Boolean).join(" ")}
                                     employeeID={learner.employeeID}
                                     department={learner.department}
                                     title={learner.title}
                                     branch={learner.branch}
                                     city={learner.city}
-                                    selectedUser={selected}
-                                    handleCheckbox={handleCheckbox}/>
+                                    enrolled={selected}
+                                    selectedCourse={Course.id}
+                                    handleCheckbox={handleCheckbox}
+                                    selected={selected}/>
                             ))
+                        )
                         }
-                    </tbody>
-                </table>
-                </div>
-            </div>
+                    </EnrollmentTableProps>) : (null)
+                )))
+
+
+            }
 
             {/* User Pagination */}
             <div className='row-start-5 row-span-1 col-start-1 col-span-3 border-t border-divider mx-5 flex flex-row items-center justify-between'>
                 {/* Total number of entries and only be shown */}
                 <div>
                     <p className='text-sm font-text text-unactive'>
-                        Showing <span className='font-header text-primary'>1</span> to <span className='font-header text-primary'>31</span> of <span className='font-header text-primary'>43</span> <span className='text-primary'>results</span>
+                        Showing <span className='font-header text-primary'>{pageState.startNumber}</span> to <span className='font-header text-primary'>{pageState.endNumber}</span> of <span className='font-header text-primary'>{pageState.totalUser}</span> <span className='text-primary'>results</span>
                     </p>
                 </div>
                 {/* Paganation */}
@@ -208,12 +308,13 @@ Asynchronous
                     <nav className='isolate inline-flex -space-x-px round-md shadow-xs'>
                         {/* Previous */}
                         <a href="#"
+                            onClick={back}
                             className='relative inline-flex items-center rounded-l-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
                             <FontAwesomeIcon icon={faChevronLeft}/>
                         </a>
 
                         {/* Current Page & Dynamic Paging */}
-                        {/* {Pages.map((page)=>(
+                        {Pages.map((page)=>(
                             <a href="#"
                                 key={page}
                                 className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset
@@ -224,9 +325,11 @@ Asynchronous
                                     } transition-all ease-in-out`}
                                     onClick={() => pageChange(page)}>
                                 {page}</a>
-                        ))} */}
+                        ))}
 
+                        {/* Next */}
                         <a href="#"
+                            onClick={next}
                             className='relative inline-flex items-center rounded-r-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
                             <FontAwesomeIcon icon={faChevronRight}/>
                         </a>

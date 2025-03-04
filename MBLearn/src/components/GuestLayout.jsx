@@ -5,52 +5,15 @@ import { Navigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 
 //Background Images
-import LoginBackground from '../assets/Login_Background.png';
-import LoginBackground1 from '../assets/Login_Background1.png';
 import LoginBackground2 from '../assets/Login_Background2.png';
 
 //Login Page Layout
 export default function GuestLayout() {
-    const backgrounds = [LoginBackground, LoginBackground1, LoginBackground2];
-    const [backgroundIndex, setBackgroundIndex] = useState(0);
-    const [fade, setFade] = useState(false);
-
-    useEffect(() => {
-        //Change the title of the page
-        const preloadNextImage = (index) => {
-            const img = new Image();
-            img.src = backgrounds[index];
-        };
-
-
-        //The slideshow background image
-        const changeBackground = () => {
-            setFade(false);
-            setTimeout(() => {
-                const nextIndex = (backgroundIndex + 1) % backgrounds.length;
-                setBackgroundIndex(nextIndex);
-                setFade(true);
-
-                // Preload the next image
-                preloadNextImage(nextIndex);
-            }, 500);
-
-        };
-
-        //duration of the slideshow
-        const interval = setInterval(changeBackground, 5000);
-
-        // Preload the first image
-        preloadNextImage(0);
-
-        return () => clearInterval(interval);
-    }, [backgroundIndex]);
-
-
-
+    const {token, role} = useStateContext();
+    if(token) {return <Navigate to= {`/${role.toLowerCase().replace(/\s+/g, '')}/dashboard`} replace/>}
 
     return (
-        <div className="w-full h-screen flex items-center justify-center">
+        <div className="w-full h-screen flex items-center justify-center bg-primary">
 
             <Helmet>
                 {/* Title of the mark-up */}
@@ -58,8 +21,7 @@ export default function GuestLayout() {
             </Helmet>
 
             {/* Background Aesthetics */}
-            <div className={`absolute w-full h-full bg-cover bg-center transition-opacity duration-500 ${fade ? 'opacity-100' : 'opacity-0'}`}
-            style={{ backgroundImage: `url(${backgrounds[backgroundIndex]})` }}>
+            <div className="absolute w-full h-full bg-cover bg-center bg-[url('assets/Login_Background2.png')]">
             </div>
 
             {/*Login Page Component*/}

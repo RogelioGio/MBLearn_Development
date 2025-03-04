@@ -1,61 +1,131 @@
 import React, { useState } from 'react'
 import { useStateContext } from '../contexts/ContextProvider';
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet, useNavigate } from 'react-router-dom';
 import Navigation from '../views/Navigation';
 import { useEffect } from 'react';
 import axiosClient from '../axios-client';
 import { use } from 'react';
+import LogoutWarningmModal from '../modalsandprops/LogoutWarningModal';
 
 export default function DefaultLayout() {
     const {token, role, setRole, setUser, setProfile} = useStateContext();
     const [ loading, setLoading ] = useState(true)
+    const [ warning, setWarning ] = useState(false)
+    const navigate = useNavigate();
+
+    //User Activity handling
+    const logout = () => {
+        console.log('Session ended, user is inactive');
+        localStorage.removeItem('ACCESS_TOKEN');
+        localStorage.removeItem('LAST_ACTIVITY');
+        localStorage.removeItem("SESSION_CLOSED_AT");
+
+        setTimeout(() => {
+            navigate('/login');
+        },300)
+    };
+
+    const update = () => {
+        if(token){
+            localStorage.setItem('LAST_ACTIVITY', Date.now());
+        }
+    };
+
+    useEffect(() => {
+        if(!token) return;
+        if(loading) return;
+
+        const inactivityTime = 5*60*60*1000;
+        let timeout;
+
+        //Check userEvents
+        const checkInactivity = () => {
+            const lastActivity = localStorage.getItem('LAST_ACTIVITY');
+            if(lastActivity && Date.now() - lastActivity > inactivityTime){
+                setWarning(true)
+            } else {
+                timeout = setTimeout(()=> {checkInactivity()}, 30*60*1000);
+            }
+        }
+
+        //Event Listeners
+        const events = ['mousemove', 'click', 'scroll', 'keypress'];
+        events.forEach(event => window.addEventListener(event, update));
+
+        const handleBeforeUnload = () => {
+            localStorage.setItem('SESSION_CLOSED_AT', Date.now());
+        };
+        window.addEventListener('beforeunload', handleBeforeUnload);
+
+        //Actvity checks
+        timeout = setTimeout(checkInactivity, 30*60*1000);
+
+        return () => {
+            clearTimeout(timeout);
+            events.forEach(event => window.removeEventListener(event, update));
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        }
+    },[token,loading])
+
+    //checking the tab inactivity while closed
+    useEffect(() => {
+        if(!token) return;
+
+        const closedSession = localStorage.getItem('SESSION_CLOSED_AT');
+        const maxClosedTime = 30*60*1000; //30 minutes
+
+        if(closedSession && Date.now() - closedSession > maxClosedTime){
+            logout();
+        }
+    },[token])
+
+    //countdown to logout after closing the modal
+
+    //fetching the logged in user
     useEffect(() => {
         axiosClient
         .get('/user')
         .then(({data})=>{
             setUser(data)
-            setRole(data.role)
-
-            axiosClient.get(`/select-employeeid/${data.employeeID}`).then(({data}) => {
-                setProfile(data.data.profile_image);
-                setLoading(false)
-            }).catch((e) => {
-                console.error(e);
-            });
+            setLoading(false)
         }).catch((e)=>{
             console.error(e)
         })
-    },[setUser, setRole])
+    },[setUser])
+
+    //WarningModal
+    const close = () => {
+        setWarning(false);
+        setTimeout(logout(), 1000)
+    }
 
     // Function to check if the user is logged in
-    if (!token) {
-        return <Navigate to="/login" />
+    if(!token){
+        return <Navigate to="/login" replace/>
     }
 
     if(loading){
+        if(!token){
+            return <Navigate to="/login" replace/>
+        }
         return (
             <div className='h-screen w-screen flex flex-col justify-center items-center bg-background gap-3'>
                 <h1 className='font-header text-5xl text-primary'>"Loading your learning journey..."</h1>
                 <p className='font-text'>Empowering you with the knowledge to achieve your goals</p>
             </div>
+
         )
     }
-
-    // if(location.pathname === '/'){
-    //     if(role === 'System Admin'){
-    //             return <Navigate to='/systemadmin/dashboard' />
-    //     }else if(role === 'Course Admin'){
-    //             return <Navigate to='/courseadmin/dashboard' />
-    //     } else if(role === 'Learner'){
-    //             return <Navigate to='/learner/dashboard' />
-    //     }
-    // }
 
 
     return (
         <div className='flex flex-row items-center h-screen bg-background'>
             <Navigation />
             <Outlet />
+
+            {/* Logout warning */}
+            <LogoutWarningmModal open={warning} close={close}/>
         </div>
     )
+
 }

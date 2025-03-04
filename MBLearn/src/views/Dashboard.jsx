@@ -32,7 +32,7 @@ const DashboardLayout = ({role,name}) => {
                     </Helmet>
                     <div className="flex flex-col justify-center col-span-3 row-span-1 pr-5 border-b ml-5 border-divider">
                             <h1 className="text-primary text-4xl font-header">Good Day! {name}</h1>
-                            <p className='font-text text-sm text-unactive'>Course Admin Dashboard, A centralized hub for system administrators to manage users, monitor system activity.</p>
+                            <p className='font-text text-sm text-unactive'>Course Admin Dashboard, A centralized hub for Course administrators to manage Learners, monitor learners progress.</p>
                     </div>
                 </div>
             )
@@ -51,13 +51,17 @@ const DashboardLayout = ({role,name}) => {
 
 export default function Dashboard()
 {
-    const {user} = useStateContext();
+    const {user, role, token} = useStateContext();
+    if(!token){
+        return window.location.href = "/login";
+    }
     if (!user) {
         return <div>Loading...</div>;
     }
 
+
     return (
-            <DashboardLayout role={user.role} name={user.name}/>
+            <DashboardLayout role={role} name={user.user_infos.first_name}/>
     )
 
 }

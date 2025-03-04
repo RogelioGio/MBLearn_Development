@@ -17,7 +17,15 @@ class CourseFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            "name" => fake()->name(),
+            "description" => fake()->paragraph(1),
+            'type_id' => fake()->randomElement(['1']),
+            'category_id'=> fake()->randomElement(['1']),
+            'training_mode_id'=> fake()->randomElement(['1']),
+            "mandatory" => fake()->randomElement(["Mandatory", "Non-Mandatory"]),
+            "archived" => "active",
+            "system_admin_id" => fake()->randomElement(['1']),
+            "assigned_course_admin_id" => fake()->randomElement(['1'])
         ];
     }
 }

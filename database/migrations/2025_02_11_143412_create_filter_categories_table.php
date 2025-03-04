@@ -11,16 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('userinfo', function (Blueprint $table) {
+        Schema::create('filter_categories', function (Blueprint $table) {
             $table->id();
+            $table->string('filter_id')->unique();
             $table->string('name');
-            $table->string('department');
-            $table->string('title');
-            $table->string('branch');
-            $table->string('city');
-            $table->string('role');
-            $table->enum('status', ['active', 'inactive'])->default('active')->nullable(false);
-            $table->text('profile_image');
             $table->timestamps();
         });
     }
@@ -30,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('userinfo');
+        Schema::dropIfExists('filter_categories');
     }
 };

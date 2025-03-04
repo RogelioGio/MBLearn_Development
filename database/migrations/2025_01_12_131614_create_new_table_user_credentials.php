@@ -13,11 +13,9 @@ return new class extends Migration
     {
         Schema::create('userCredentials', function (Blueprint $table) {
             $table->id();
-            $table->string('employeeID',11);
-            $table->string('name',225);
             $table->string('MBemail',225);
-            $table->string('password',8);
-            $table->enum('role', ['System Admin', 'Course Admin', 'Learner']);
+            $table->string('password');
+            $table->foreignId('user_info_id')->nullable()->constrained('userInfo', 'id')->nullOnDelete();
             $table->timestamps();
         });
     }

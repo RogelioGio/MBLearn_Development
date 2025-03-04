@@ -5,28 +5,40 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Models\UserCredentials;
-use Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
     //role dashboard redirections
-    private function redirections(string $role){
-        switch($role){
-
-            case 'System Admin' :
+    private function redirections(array $roles){
+        foreach($roles as $role){
+            if(in_array('System Admin', $role)){
                 return '/systemadmin';
-            case 'Course Admin' :
+            } elseif(in_array('Course Admin', $role)){
                 return '/courseadmin';
-            case 'Learner' :
+            } elseif(in_array('Learner', $role)){
                 return '/learner';
-            default:
+            } else{
                 return '/';
+            }
         }
     }
+
+    // private function redirection($roles){
+    //     if($roles === 'System Admin'){
+    //         return '/systemadmin';
+    //     } elseif($roles === 'Course Admin'){
+    //         return '/courseadmin';
+    //     } elseif($roles === 'Learner'){
+    //         return '/learner';
+    //     } else{
+    //         return '/';
+    //     }
+    // }
 
     //New Login to another table
     public function login(LoginRequest $request){
@@ -35,13 +47,32 @@ class AuthController extends Controller
         $user = UserCredentials::where('MBemail', $credentials['MBemail'])->first();
 
 
+        if(!$user){
+            return response()->json([
+                'message' => 'There is no user with that credentials',
+            ], 401);
+        }
+
+        if(!($user->userInfos->status === "Active")){
+            return response()->json([
+                'message' => 'This user is currently inactive'
+            ]);
+        }
+
+        if(!Hash::check($credentials['password'], $user->password)){
+            return response()->json([
+                'message' => 'Invalid password',
+            ], 401);
+        }
+
         if($user && Hash::check($credentials['password'], $user->password)){
             //Generate Login Token
             $token = $user->createToken('authToken')->plainTextToken;
             //Log
-            Log::info('User Login: ' . $user->MBemail);
+            Log::info('User Login: ' . $user->userInfos->MBemail);
 
-            $redirect = $this->redirections($user->role);
+            $redirect = $this->redirections($user->userInfos->roles->toArray());
+            // $redirect = $this->redirection($user->role);
 
             return response()->json([
                 'message' => 'Login Successful',
@@ -50,10 +81,6 @@ class AuthController extends Controller
                 'redirect' => $redirect
             ], 200);
         };
-
-        return response()->json([
-            'message' => 'Invalid email or password.',
-        ], 401);
     }
 
     public function logout(Request $request){

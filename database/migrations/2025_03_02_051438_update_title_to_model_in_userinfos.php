@@ -11,7 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //
+        Schema::table('userInfo', function (Blueprint $table) {
+            $table->removeColumn('title');
+            $table->foreignId('title_id')->nullable()->constrained('titles', 'id')->nullOnDelete();
+        });
     }
 
     /**
@@ -19,6 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::table('userinfos', function (Blueprint $table) {
+            //
+        });
     }
 };

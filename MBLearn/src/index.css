@@ -23,3 +23,22 @@
         @apply flex items-center place-content-between gap-4 font-text text-unactive min-w-max cursor-pointer hover:text-white transition-all ease-in-out;
     }
 }
+
+/* index.css or styles.css */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear,
+input[type="password"]::-webkit-textfield-decoration-container {
+    display: none;
+}
+.scrollbar-no-arrows::-webkit-scrollbar-button {
+    display: none;
+    width: 0;
+    height: 0;
+    -webkit-appearance: none;
+  }
+  .scrollbar-no-arrows::-webkit-scrollbar-button:vertical:decrement,
+  .scrollbar-no-arrows::-webkit-scrollbar-button:vertical:increment,
+  .scrollbar-no-arrows::-webkit-scrollbar-button:horizontal:decrement,
+  .scrollbar-no-arrows::-webkit-scrollbar-button:horizontal:increment {
+    display: none;
+  }

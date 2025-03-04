@@ -13,6 +13,7 @@ import UserListLoadingProps from '../modalsandprops/UserListLoadingProps';
 import EditUserModal from '../modalsandprops/EditUserModal';
 import DeleteUserModal from '../modalsandprops/DeleteUserModal';
 import DeleteUserSuccessfully from '../modalsandprops/DeleteUserSuccessfully';
+import UserManagemenFilterPopover from '../modalsandprops/UserManagementFilterPopover';
 
 
 //User Filter
@@ -73,9 +74,12 @@ export default function UserManagementMaintenance() {
     //Pagenation States
     const [pageState, setPagination] = useState({
         currentPage: 1,
-        perPage: 5,
+        perPage: 6,
         totalUsers: 0,
         lastPage:1,
+        startNumber: 0,
+        endNumber: 0,
+        currentPerPage:0
     });
 
     const pageChangeState = (key, value) => {
@@ -124,7 +128,7 @@ export default function UserManagementMaintenance() {
     // Open and Close Delete User Modal
     const OpenDelete = (e, EmployeeID) => {
         e.stopPropagation();
-        setEmployeeID(EmployeeID)
+        setUserID(EmployeeID)
         toggleModal("isDelete", true);
     }
 
@@ -162,6 +166,10 @@ export default function UserManagementMaintenance() {
             setLoading(false)
         })
     }
+    useEffect(() => {
+        pageChangeState('startNumber', (pageState.currentPage - 1) * pageState.perPage + 1)
+        pageChangeState('endNumber', Math.min(pageState.currentPage * pageState.perPage, pageState.totalUsers))
+    },[pageState.currentPage, pageState.perPage, pageState.totalUsers])
 
     useEffect(()=>{
         fetchUsers()
@@ -169,11 +177,14 @@ export default function UserManagementMaintenance() {
 
     //Next and Previous
     const back = () => {
+        if (isLoading) return;
         if (pageState.currentPage > 1){
             pageChangeState("currentPage", pageState.currentPage - 1)
+            pageChangeState("startNumber", pageState.perPage - 4)
         }
     }
     const next = () => {
+        if (isLoading) return;
         if (pageState.currentPage < pageState.lastPage){
             pageChangeState("currentPage", pageState.currentPage + 1)
         }
@@ -181,6 +192,7 @@ export default function UserManagementMaintenance() {
 
     //Current page change
     const pageChange = (page) => {
+        if(isLoading) return;
         if(page > 0 && page <= pageState.lastPage){
             pageChangeState("currentPage", page)
         }
@@ -228,10 +240,7 @@ export default function UserManagementMaintenance() {
 
             {/* User Filter */}
             <div className='col-start-1 row-start-2 row-span-1 px-5 py-3'>
-            <button className='flex flex-row items-center border-2 border-primary py-2 px-4 font-header bg-secondarybackground rounded-md text-primary gap-2 w-fit hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md'>
-                <p>Filter</p>
-                <FontAwesomeIcon icon={faFilter}/>
-            </button>
+                <UserManagemenFilterPopover/>
             </div>
 
             {/* Userlist/Table */}
@@ -252,22 +261,27 @@ export default function UserManagementMaintenance() {
                             isLoading ? (
                                 <UserListLoadingProps className="z-10"/>
                             ) : (
-                                users.map(userEntry => (<User
-                                    key={userEntry.id}
-                                    userID={userEntry.id}
-                                    click={OpenDialog}
-                                    name={userEntry.name}
-                                    department={userEntry.department}
-                                    title={userEntry.title}
-                                    branch={userEntry.branch}
-                                    city={userEntry.city}
-                                    profile_url={userEntry.profile_image}
-                                    employeeID={userEntry.employeeID}
-                                    role={userEntry.role}
-                                    edit={OpenEdit}
-                                    _delete={OpenDelete}
-                                    />
-                            ))
+                                users.map(userEntry => {
+                                    const { first_name, middle_name, last_name } = userEntry || {};
+                                    const fullName = [first_name, middle_name, last_name].filter(Boolean).join(" ");
+                                    return(<User
+                                            key={userEntry.id}
+                                            userID={userEntry.id}
+                                            click={OpenDialog}
+                                            name={fullName}
+                                            department={userEntry.department}
+                                            title={userEntry.title}
+                                            branch={userEntry.branch}
+                                            city={userEntry.city}
+                                            profile_url={userEntry.profile_image}
+                                            employeeID={userEntry.employeeID}
+                                            role={userEntry.roles?.[0]?.role_name || "No Role Yet"}
+                                            edit={OpenEdit}
+                                            _delete={OpenDelete}
+                                            />)
+                                    }
+
+                            )
                         )
 
                         }
@@ -281,14 +295,14 @@ export default function UserManagementMaintenance() {
                 {/* Total number of entries and only be shown */}
                 <div>
                     <p className='text-sm font-text text-unactive'>
-                        Showing <span className='font-header text-primary'>1</span> to <span className='font-header text-primary'>{pageState.perPage}</span> of <span className='font-header text-primary'>{pageState.totalUsers}</span> <span className='text-primary'>results</span>
+                        Showing <span className='font-header text-primary'>{pageState.startNumber}</span> to <span className='font-header text-primary'>{pageState.endNumber}</span> of <span className='font-header text-primary'>{pageState.totalUsers}</span> <span className='text-primary'>results</span>
                     </p>
                 </div>
                 {/* Paganation */}
                 <div>
                     <nav className='isolate inline-flex -space-x-px round-md shadow-xs'>
                         {/* Previous */}
-                        <a href="#"
+                        <a
                             onClick={back}
                             className='relative inline-flex items-center rounded-l-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
                             <FontAwesomeIcon icon={faChevronLeft}/>
@@ -296,7 +310,7 @@ export default function UserManagementMaintenance() {
 
                         {/* Current Page & Dynamic Paging */}
                         {Pages.map((page)=>(
-                            <a href="#"
+                            <a
                                 key={page}
                                 className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset
                                     ${
@@ -307,7 +321,7 @@ export default function UserManagementMaintenance() {
                                     onClick={() => pageChange(page)}>
                                 {page}</a>
                         ))}
-                        <a href="#"
+                        <a
                             onClick={next}
                             className='relative inline-flex items-center rounded-r-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
                             <FontAwesomeIcon icon={faChevronRight}/>
@@ -326,7 +340,7 @@ export default function UserManagementMaintenance() {
             <EditUserModal open={modalState.isEdit} close={CloseEdit} ID={userID} EmployeeID={EmployeeID}/>
 
             {/* Delete User Modal */}
-            <DeleteUserModal open={modalState.isDelete} close={CloseDelete} EmployeeID={EmployeeID} close_confirmation={OpenSuccessFullyDelete}/>
+            <DeleteUserModal open={modalState.isDelete} close={CloseDelete} EmployeeID={userID} close_confirmation={OpenSuccessFullyDelete}/>
             <DeleteUserSuccessfully open={modalState.isDeleteSuccess} close={CloseSuccessFullyDelete}/>
         </div>
 

@@ -13,9 +13,10 @@ return new class extends Migration
     {
         Schema::create('enrollments', function (Blueprint $table) {
             $table->id();
-            $table->integer('user_id');
-            $table->integer('course_id');
-            $table->integer('enroller_id');
+            $table->foreignId('user_id')->constrained('userInfo', 'id')->cascadeOnDelete();
+            $table->foreignId('course_id')->constrained('courses', 'id')->cascadeOnDelete();
+            $table->dateTime('deadline');
+            $table->foreignId('enroller_id')->constrained('userInfo', 'id')->cascadeOnDelete();
             $table->timestamps();
         });
     }

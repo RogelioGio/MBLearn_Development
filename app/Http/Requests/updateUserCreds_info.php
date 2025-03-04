@@ -22,8 +22,7 @@ class updateUserCreds_info extends FormRequest
     public function rules(): array
     {
         return [
-            'employeeID' => 'required|string|max:11',
-            'name' => 'required|string|max:255',
+            'password' => 'required|string|min:8',
         ];
     }
 }

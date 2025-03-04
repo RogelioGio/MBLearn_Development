@@ -1,12 +1,11 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBell, faBook, faBookBookmark, faBookOpen, faBookOpenReader, faChartGantt, faChartPie, faGear, faGears, faGraduationCap, faHouse, faMedal, faPersonCirclePlus, faRightFromBracket, faUser, faUserGroup, faUserLock, } from '@fortawesome/free-solid-svg-icons'
+import { faBell, faBook, faBookBookmark, faBookOpen, faBookOpenReader, faChartGantt, faChartPie, faGear, faGears, faGraduationCap, faHouse, faMedal, faPersonCirclePlus, faRightFromBracket, faUser, faUserGroup, faUserLock, faUserShield, } from '@fortawesome/free-solid-svg-icons'
 import Small_Logo from '../assets/Small_Logo.svg'
 import axiosClient from '../axios-client';
 import { useEffect, useState } from 'react';
 import { useStateContext } from '../contexts/ContextProvider';
-import { Link, Links, NavLink, useNavigate } from 'react-router-dom';
+import { Link, Links, Navigate, NavLink, useNavigate } from 'react-router-dom';
 import { use } from 'react';
-
 //Icon props
 const Icons = ({icon, text, to}) => (
     <NavLink to={to} className={({isActive}) => isActive ? 'icon_active':'_icon'}>
@@ -40,9 +39,9 @@ const navItems = {
     ],
     "Course Admin": [
         {icon:faHouse, text:"Home", to:"/courseadmin/dashboard"},
-        {icon:faBookBookmark, text:"Assigened Courses"},
+        {icon:faBookBookmark, text:"Assigned Course Catalog", to:"/courseadmin/assignedcourses"},
         {icon:faPersonCirclePlus, text:"Enroll Trainee", to:"/courseadmin/bulkenrollment"},
-        {icon:faChartPie, text:"Course Reports"},
+        {icon:faChartPie, text:"Assigned Course Reports", to:"/courseadmin/coursereports"},
     ],
     "Learner": [
         {icon:faHouse, text:"Home"},
@@ -52,48 +51,62 @@ const navItems = {
     ]
 }
 
-//Profile Menu per role
-const profileItems = {
-    "System Admin": [
-        {text:"Login as Course Admin", icon:faBookOpenReader},
-        {text:"Login as Learner", icon:faGraduationCap}
-    ],
-    "Course Admin": [
-        {text:"Login as Learner", icon:faGraduationCap}
-    ]
-}
-
 export default function Navigation() {
+    const {user, profile_image, role, availableRoles, setAvailableRoles,setUser, setToken, setRole} = useStateContext();
+    const navigate = useNavigate();
 
-    const {user, profile_image, setUser, setToken} = useStateContext();
+    useEffect(() => {
+        let roles = []
+                //Set Available Roles
+                if(user.user_infos.roles[0]?.role_name === 'System Admin'){
+                    roles = ['System Admin', 'Course Admin', 'Learner']
+                }else if(user.user_infos.roles[0]?.role_name === 'Course Admin'){
+                    roles = ['Course Admin', 'Learner']
+                };
+                setAvailableRoles(roles);
+    }, [role]);
 
-    //fethcing user profile
-    // useEffect(() => {
-    //     axiosClient.get(`/select-employeeid/${user.employeeID}`).then(({data}) => {
-    //         setProfile(data.data.profile_image);
-    //     }).catch((e) => {
-    //         console.error(e);
-    //     });
-    // },[])
+    //Dynamic Role Switching Array
+    const getSelection = (role) => {
+        switch(role){
+            case "System Admin": return faUserShield;
+            case "Course Admin": return faBookOpenReader;
+            case "Learner": return faGraduationCap;
+            default: return faUser;
+        }
+    };
+    const rolesSwitch = availableRoles.reduce((acc, index)=>{
+        acc[index] = availableRoles.filter(r => r !== index)
+        .map((r) => ({
+            text: `Login as ${r}`,
+            icon: <FontAwesomeIcon icon={getSelection(r)} />,
+            onclick: () => handleRoleSwtiching(r),
+        }));
+        return acc;
+    },{})
 
 
-    //Role-based Navigation
-    const Items = navItems[user.role] || [];
-    const PItems = profileItems[user.role] || [];
 
-    //Logout Function
-    const onLogout = () => {
-        setUser('');
-        axiosClient.post('/logout').then(() => {
-            console.log("Logout Success");
-        }).catch((e) => {
-            console.error(e);
-        });
-        setToken(null);
-        localStorage.removeItem('ACCESS_TOKEN');
-
+    //Role Switching
+    const handleRoleSwtiching = (newRole) => {
+        setRole(newRole);
+        navigate(`/${newRole.toLowerCase().replace(" ","")}/dashboard`);
     };
 
+    //Role-based Navigation
+    const Items = navItems[role] || [];
+
+
+    const onLogout = async () => {
+        try{
+            await axiosClient.post('/logout');
+            setRole('');
+            setUser('');
+            setToken(null);
+        }catch (e){
+            console.error(e);
+        }
+    }
 
 
     return (
@@ -116,14 +129,14 @@ export default function Navigation() {
                     <li><Icons icon={<FontAwesomeIcon icon={faGear}/>} text={"Account Setting"}/></li>
                     <li><Icons icon={<FontAwesomeIcon icon={faBell}/>} text={"Notifications"}/></li>
                     <li className='inline-block relative w-auto group p-1'>
-                        <img src={profile_image} alt="" className='w-10 h-10 rounded-full shadow-lg hover:scale-105 transition-all ease-in-out'/>
+                        <img src={user.user_infos.profile_image} alt="" className='w-10 h-10 rounded-full shadow-lg hover:scale-105 transition-all ease-in-out'/>
                         {/* Profile */}
                         <div className='bg-tertiary p-4 rounded-md absolute left-9 min-w-max bottom-0 flex flex-row scale-0 group-hover:scale-100'>
                             <ul>
                                 {
-                                    PItems.map((role, index) => (
+                                    rolesSwitch[role]?.map((option, index) => (
                                         <li key={index}>
-                                            <ProfileIcons text={role.text} icon={<FontAwesomeIcon icon={role.icon}/>}/>
+                                            <ProfileIcons text={option.text} icon={option.icon} onClick={option.onclick}/>
                                         </li>
                                     ))
                                 }
