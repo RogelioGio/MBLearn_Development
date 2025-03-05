@@ -13,6 +13,7 @@ import { useStateContext } from '../contexts/ContextProvider';
 import CourseFilterProps from '../modalsandprops/CourseFilterProps';
 import AssignCourseAdmin from '../modalsandprops/AssignCourseAdminModal';
 import axiosClient from '../axios-client';
+import CourseCardLoading from '../modalsandprops/CourseCardLoading';
 
 export default function CourseListMaintenance() {
 const {user} = useStateContext()
@@ -71,7 +72,8 @@ const [modalState, setModalState] = useState({
         openDeleteCourse: false,
         editFilter: false,
         assignCourseAdmin:false,
-        CourseID: null
+        CourseID: null,
+        loading: true,
     });
 
 const [sort, setSort] = useState({
@@ -119,9 +121,11 @@ const handleFilter = (sectionId, value) => {
 //API Calls for the courses
 const [courses, setCourses] = useState([])
 const fetchCourses = () => {
+    toggleModal('loading', true)
     axiosClient.get('/courses')
     .then(({ data }) => {
         setCourses(data.data)
+        toggleModal('loading', false)
     })
     .catch((err) => {
         console.log(err);
@@ -211,7 +215,15 @@ useEffect(() => {
             </div>
 
             {/* Sample Card for course display */}
-            <CourseListCard courseList={courses} classname='row-start-3 row-span-1 col-start-1 col-span-3 w-full pl-5 py-2 flex flex-col gap-2' onclick={OpenDialog} action={handleAction}/>
+            {
+                modalState.loading ? (
+                    <div className='row-start-3 row-span-1 col-start-1 col-span-3 w-full pl-5 py-2 flex flex-col gap-2'>
+                        <CourseCardLoading/>
+                    </div>
+                ) : (
+                    <CourseListCard courseList={courses} classname='row-start-3 row-span-1 col-start-1 col-span-3 w-full pl-5 py-2 flex flex-col gap-2' onclick={OpenDialog} action={handleAction}/>
+                )
+            }
 
             {/* Sample Footer Pagenataion */}
             <div className='row-start-4 row-span-1 col-start-1 col-span-3 border-t border-divider mx-5 py-3 flex flex-row items-center justify-between'>

@@ -2,7 +2,7 @@ import { useFormik } from "formik"
 import * as Yup from 'yup';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Menu, MenuButton, MenuItem, MenuItems, Disclosure, DisclosureButton, DisclosurePanel, Dialog, DialogBackdrop, DialogPanel, DialogTitle} from '@headlessui/react';
-import { faBook, faBookOpen, faMagnifyingGlass, faCircleXmark as solidXmark } from "@fortawesome/free-solid-svg-icons";
+import { faBook, faBookOpen, faMagnifyingGlass, faSearch, faCircleXmark as solidXmark } from "@fortawesome/free-solid-svg-icons";
 import { faCircleCheck as faCircleCheckRegular, faCircleXmark as regularXmark } from "@fortawesome/free-regular-svg-icons";
 import { Stepper } from '@mantine/core';
 import { useEffect, useState } from 'react';
@@ -28,28 +28,19 @@ const AddCourseModal = ({open,onClose}) => {
         validationSchema: Yup.object({
             courseID: Yup.string()
                 .required('Input CourseID first')
-                .min(11, 'CourseID must be 11 characters')
+                .length(11, 'Course ID must be exactly 11 characters')
         }),
         //submission
         onSubmit: (values, {setFieldError}) => {
             const validCourseID = "12345678abc";
 
-             // Validate course ID
-            if (values.courseID === validCourseID) {
-                console.log("Course ID is valid. Proceeding with submission...");
-            } else {
-                console.log("Invalid Course ID.");
+            // Check if input is valid before allowing step progression
+            if (values.courseID !== validCourseID) {
                 setFieldError("courseID", "Invalid Course ID. Please enter the correct Course ID.");
+                return;
             }
-
-        // Check if input is valid before allowing step progression
-        if (formik.isValid && formik.values.courseID.length >= 11) {
-
+            // Proceed to the next step
             toggleState("steps", (current) => current + 1);
-        } else {
-            formik.setTouched({ courseID: true }); // Show validation error
-            return; // Prevent further execution
-        }
 
         }
     })
@@ -130,7 +121,6 @@ const AddCourseModal = ({open,onClose}) => {
                         <div className='mx-5 py-5'>
                             {/* Form */}
                             <Stepper active={state.steps}
-                                    onStepClick={(step) => toggleState("steps", step)}
                                     classNames={{
                                         step: "transition-all duration-300 !py-2",
                                         stepIcon: "!border-primary",
@@ -139,7 +129,7 @@ const AddCourseModal = ({open,onClose}) => {
                                         separator: "!border-primary border !mx-0"
                                     }}
                                     completedIcon={<FontAwesomeIcon icon={faCircleCheckRegular} className="!text-white"/>}>
-                                <Stepper.Step icon={<FontAwesomeIcon icon={faBook} className="!text-primary"/>}>
+                                <Stepper.Step icon={<FontAwesomeIcon icon={faSearch} className="!text-primary"/>}>
                                     <form onSubmit={formik.handleSubmit}>
                                         <div className='grid grid-cols-[auto_min-content] grid-rows-[min-content_auto] gap-x-2 gap-y-2'>
                                             {/* Header */}
@@ -164,7 +154,7 @@ const AddCourseModal = ({open,onClose}) => {
                                             <button
                                                 type="submit"
                                                 disabled={formik.values.courseID.length < 11}
-                                                className={`h-fit border-2 border-primary rounded-md shadow-md text-center bg-primary text-white flex items-center py-2 px-20 font-header transition-all ease-in-out ${
+                                                className={`h-fit border-2 border-primary rounded-md shadow-md text-center bg-primary text-white flex items-center py-2 px-20 font-header transition-all ease-in-out focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary ${
                                                     formik.values.courseID.length < 11
                                                     ? 'opacity-50 cursor-not-allowed'
                                                     : 'hover:scale-105 hover:bg-primaryhover hover:text-white hover:border-primaryhover cursor-pointer'
@@ -237,6 +227,11 @@ const AddCourseModal = ({open,onClose}) => {
                                                     className='h-32 font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary resize-none'></textarea>
                                                     {formik2.touched.short_desc && formik2.errors.short_desc ? (<div className="text-red-500 text-xs font-text">{formik2.errors.short_desc}</div>):null}
                                             </div>
+                                            <button
+                                            onClick={()=>toggleState("steps", (current) => current - 1)}
+                                            className={`bg-white border-2 border-primary p-4 rounded-md font-header uppercase text-primary text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 hover:text-white hover:border-primaryhover transition-all ease-in-out w-full
+                                            `}>
+                                            Back</button>
                                             <input type="submit"
                                                 value="Add Course"
                                                 className={`bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out w-full
@@ -244,7 +239,7 @@ const AddCourseModal = ({open,onClose}) => {
                                         </div>
                                     </form>
                                 </Stepper.Step>
-                                <Stepper.Step icon={<FontAwesomeIcon icon={faMagnifyingGlass} className="!text-primary"/>}>
+                                <Stepper.Step icon={<FontAwesomeIcon icon={faBook} className="!text-primary"/>}>
                                 <div className="grid grid-cols-2 grid-rows-[min-content_auto] gap-x-3 gap-y-2">
                                     {/* Header */}
                                     <div className='col-span-2 border-b border-divider pb-2'>
@@ -282,6 +277,11 @@ const AddCourseModal = ({open,onClose}) => {
                                         <p className="font-text w-full whitespace-pre-wrap">{formik2.values.short_desc}</p>
                                     </div>
                                     <button
+                                        onClick={()=>toggleState("steps", (current) => current - 1)}
+                                        className={`bg-white border-2 border-primary p-4 rounded-md font-header uppercase text-primary text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 hover:text-white hover:border-primaryhover transition-all ease-in-out w-full
+                                        `}>
+                                        Back</button>
+                                    <button
                                         onClick={()=>toggleState("steps", (current) => current + 1)}
                                         className={`bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out w-full
                                         `}>
@@ -289,9 +289,11 @@ const AddCourseModal = ({open,onClose}) => {
                                 </div>
                                 </Stepper.Step>
                                 <Stepper.Completed>
-                                            <div className="flex flex-col gap-1 py-2 border-b border-b-divider text-center">
+                                            <div className="flex flex-col gap-4 py-2 text-center">
+                                                <div className="flex flex-col">
                                                     <span className="font-header uppercase text-primary">You're All Set!</span>
-                                                    <span className="font-text text-xs text-unactive">Complete the form and click submit to successfully add the user to the system.</span>
+                                                    <span className="font-text text-xs text-unactive">Complete the form and click sconfirm to successfully add the course to the system.</span>
+                                                </div>
                                                     <button
                                                     onClick={onClose}
                                                     className={`bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out w-full`}>

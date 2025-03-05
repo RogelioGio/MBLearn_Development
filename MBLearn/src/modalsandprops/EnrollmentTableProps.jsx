@@ -1,6 +1,6 @@
 const EnrollmentTableProps = ({children, selectAll, onchange, course}) => {
     return (
-        <div className='row-start-3 row-span-2 col-start-1 col-span-3 px-5 py-2'>
+        <div className='row-start-3 row-span-2 col-start-2 col-span-3 px-5 py-2'>
             <div className='w-full border-primary border rounded-md overflow-hidden shadow-md'>
             <table className='text-left min-w-full table-auto table-layout-fixed'>
                 <thead className='font-header text-xs text-primary bg-secondaryprimary'>
