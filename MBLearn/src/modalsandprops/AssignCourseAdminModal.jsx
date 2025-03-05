@@ -12,6 +12,18 @@ const AssignCourseAdmin = ({courseID ,open, close}) => {
     const [isLoading, setLoading] = useState(true);
     const [course, setCourse] = useState();
 
+    const [state, setState] = useState({
+        departments:[],
+        cities:[],
+        branches:[]
+    })
+    const toggleState = (key, value) => {
+        setState((prev) => ({
+            ...prev,
+            [key]: typeof value === "function" ? value(prev[key]) : value, // Support function-based updates
+        }));
+    };
+
     //Add Course Admin
     const [isOpen, setIsOpen] = useState(false)
 
@@ -25,8 +37,27 @@ const AssignCourseAdmin = ({courseID ,open, close}) => {
             console.log(err)
         })
     }
+    const fetchFilter = async () => {
+        try{
+            const [department, city, location] = await Promise.all([
+                axiosClient.get('/departments'),
+                axiosClient.get('/cities'),
+                axiosClient.get('/branches')
+            ]);
+
+            toggleState("departments", department.data.data)
+            toggleState("cities", city.data.data)
+            toggleState("branches", location.data.data)
+
+
+        } catch (error) {
+            console.error("Error: ", error )
+        }
+    }
     useEffect(()=>{
         fetchCourse();
+        fetchFilter()
+        console.log(state.departments)
     },[courseID])
 
     return (
@@ -66,9 +97,10 @@ const AssignCourseAdmin = ({courseID ,open, close}) => {
                                     <div className="flex flex-row gap-2">
                                         <div className="flex flex-row gap-5 border-2 border-primary rounded-md">
                                             <select className="appearance-none font-text col-start-1 row-start-1 p-2 border-none focus:outline-none rounded-md">
-                                                <option>Department</option>
-                                                <option>Option 1</option>
-                                                <option>Option 2</option>
+                                            <option value="">Select a Department</option>
+                                                    {state.departments.map((department) => (
+                                                        <option key={department.id} value={department.id}>{department.department_name}</option>
+                                                    ))}
                                             </select>
                                             <div className="pointer-events-none col-start-1 row-start-1 mr-2 self-center justify-self-end">
                                                 <FontAwesomeIcon icon={faChevronDown} className="text-primary"/>
@@ -76,9 +108,10 @@ const AssignCourseAdmin = ({courseID ,open, close}) => {
                                         </div>
                                         <div className="flex flex-row gap-5 border-2 border-primary rounded-md">
                                             <select className="appearance-none font-text col-start-1 row-start-1 p-2 border-none focus:outline-none rounded-md">
-                                                <option>Branch City</option>
-                                                <option>Option 1</option>
-                                                <option>Option 2</option>
+                                                <option value="">Select a Branch City</option>
+                                                    {state.cities.map((city) => (
+                                                        <option key={city.id} value={city.id}>{city.city_name}</option>
+                                                    ))}
                                             </select>
                                             <div className="pointer-events-none col-start-1 row-start-1 mr-2 self-center justify-self-end">
                                                 <FontAwesomeIcon icon={faChevronDown} className="text-primary"/>
@@ -86,9 +119,10 @@ const AssignCourseAdmin = ({courseID ,open, close}) => {
                                         </div>
                                         <div className="flex flex-row gap-5 border-2 border-primary rounded-md">
                                             <select className="appearance-none font-text col-start-1 row-start-1 p-2 border-none focus:outline-none rounded-md">
-                                                <option>Branch Location</option>
-                                                <option>Option 1</option>
-                                                <option>Option 2</option>
+                                            <option value="">Select a Branch Location</option>
+                                                    {state.branches.map((branch) => (
+                                                        <option key={branch.id} value={branch.id}>{branch.branch_name}</option>
+                                                    ))}
                                             </select>
                                             <div className="pointer-events-none col-start-1 row-start-1 mr-2 self-center justify-self-end">
                                                 <FontAwesomeIcon icon={faChevronDown} className="text-primary"/>

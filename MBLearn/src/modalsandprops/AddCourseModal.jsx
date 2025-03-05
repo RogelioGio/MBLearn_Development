@@ -6,6 +6,7 @@ import { faBook, faBookOpen, faMagnifyingGlass, faSearch, faCircleXmark as solid
 import { faCircleCheck as faCircleCheckRegular, faCircleXmark as regularXmark } from "@fortawesome/free-regular-svg-icons";
 import { Stepper } from '@mantine/core';
 import { useEffect, useState } from 'react';
+import axiosClient from "../axios-client";
 
 
 const AddCourseModal = ({open,onClose}) => {
@@ -74,15 +75,13 @@ const AddCourseModal = ({open,onClose}) => {
         }),
         //on-submit
         onSubmit: (values) => {
-            // console.log("Form submitted successfully!");
+            toggleState("isLoading", true)
+            fetchWIthIDs().finally(()=>toggleState("isLoading", false))
             const finalValues = {
                 ...values,
                 course_id: formik.values.courseID, // Overrides the course_id field
             };
 
-
-            console.log("Submitted Values:", finalValues);
-            console.log("submitted")
             toggleState("steps", (current) => current + 1);
         }
     })
@@ -90,6 +89,13 @@ const AddCourseModal = ({open,onClose}) => {
     //UseState
     const [state, setState] = useState({
         steps: 0,
+        courseTypes: [],
+        courseCategories: [],
+        trainingType: [],
+        trainingMode: [],
+        courseType: "",
+        courseCategory:"",
+        isLoading:false
     })
     const toggleState = (key, value) => {
         setState((prev) => ({
@@ -98,6 +104,39 @@ const AddCourseModal = ({open,onClose}) => {
         }));
     };
 
+    //Fetch Form Inputs
+    const fetchCourses = async () => {
+        try{
+            const [courseTypes, courseCategory] = await Promise.all([
+                axiosClient.get('/types'),
+                axiosClient.get('/categories')
+            ]);
+
+            toggleState("courseTypes", courseTypes.data)
+            toggleState("courseCategories", courseCategory.data)
+        } catch (error) {
+            console.error("Error: ", error )
+        }
+    }
+    useEffect(()=>{
+        fetchCourses()
+    },[])
+
+    // Fetch using ID
+    const fetchWIthIDs = async () => {
+        try{
+            const[coursetype, coursecategory] = await Promise.all([
+                axiosClient.get(`/types/${formik2.values.course_type}`),
+                axiosClient.get(`/categories/${formik2.values.course_category}`)
+            ]);
+
+            toggleState("courseType", coursetype.data.type_name)
+            toggleState("courseCategory", coursecategory.data.category_name)
+            console.log(state.courseType)
+        } catch (error) {
+            console.error("Error: ", error )
+        }
+    }
 
     return(
         <>
@@ -196,11 +235,21 @@ const AddCourseModal = ({open,onClose}) => {
                                                 <label htmlFor="course_type" className="font-header text-xs flex flex-row justify-between">
                                                     <p className="uppercase">Course Type:</p>
                                                 </label>
-                                                <input type="text" name="course_type"
-                                                    value={formik2.values.course_type}
-                                                    onChange={formik2.handleChange}
-                                                    onBlur={formik2.handleBlur}
-                                                    className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
+                                                <div class="grid grid-cols-1">
+                                                    <select id="course_type" name="course_type" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
+                                                        value={formik2.values.course_type}
+                                                        onChange={formik2.handleChange}
+                                                        onBlur={formik2.handleBlur}
+                                                    >
+                                                    <option value="">Select a course type</option>
+                                                    {state.courseTypes.map((type) => (
+                                                        <option key={type.id} value={type.id}>{type.type_name}</option>
+                                                    ))}
+                                                    </select>
+                                                    <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                                    <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                                    </svg>
+                                                </div>
                                                     {formik2.touched.course_type && formik2.errors.course_type ? (<div className="text-red-500 text-xs font-text">{formik2.errors.course_type}</div>):null}
                                             </div>
                                             {/* Course Category */}
@@ -208,12 +257,21 @@ const AddCourseModal = ({open,onClose}) => {
                                                 <label htmlFor="course_category" className="font-header text-xs flex flex-row justify-between">
                                                     <p className="uppercase">Course Category:</p>
                                                 </label>
-                                                <input type="text" name="course_category"
-                                                    value={formik2.values.course_category}
-                                                    onChange={formik2.handleChange}
-                                                    onBlur={formik2.handleBlur}
-                                                    className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
-                                                    {formik2.touched.course_category && formik2.errors.course_category ? (<div className="text-red-500 text-xs font-text">{formik2.errors.course_category}</div>):null}
+                                                <div class="grid grid-cols-1">
+                                                    <select id="course_category" name="course_category" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
+                                                        value={formik2.values.course_category}
+                                                        onChange={formik2.handleChange}
+                                                        onBlur={formik2.handleBlur}
+                                                    >
+                                                    <option value="">Select a course category</option>
+                                                    {state.courseCategories.map((category) => (
+                                                        <option key={category.id} value={category.id}>{category.category_name}</option>
+                                                    ))}
+                                                    </select>
+                                                    <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                                    <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                                    </svg>
+                                                </div>
                                             </div>
                                             {/* Short Description */}
                                             <div className="inline-flex flex-col gap-2 row-start-5 col-span-2">
@@ -246,46 +304,57 @@ const AddCourseModal = ({open,onClose}) => {
                                         <h1 className='text-primary font-header'>Step 3</h1>
                                         <p className='text-unactive font-text'>Review the course information and details</p>
                                     </div>
-                                    <div className="col-span-2 flex flex-row items-center justify-between">
-                                        <h1 className="py-2 font-header text-primary">Course ID:</h1>
-                                        <p className="font-text">{formik.values.courseID}</p>
-                                    </div>
-                                    {/* Course Name */}
-                                    <div className="inline-flex flex-col gap-2 row-start-3 col-span-2">
-                                        <label htmlFor="course_name" className="font-header text-xs flex flex-row justify-between">
-                                            <p className="uppercase">Course Name:</p>
-                                        </label>
-                                        <p className="font-text">{formik2.values.course_name}</p>
-                                    </div>
-                                    {/* Course Type */}
-                                    <div className="inline-flex flex-col gap-2 row-start-4 col-span-1">
-                                        <label htmlFor="course_type" className="font-header text-xs flex flex-row justify-between">
-                                            <p className="uppercase">Course Type:</p>
-                                        </label>
-                                        <p className="font-text">{formik2.values.course_type}</p>
-                                    </div>
-                                    {/* Course Category */}
-                                    <div className="inline-flex flex-col gap-2 row-start-4 col-span-1">
-                                        <label htmlFor="course_category" className="font-header text-xs flex flex-row justify-between">
-                                            <p className="uppercase">Course Category:</p>
-                                        </label>
-                                        <p className="font-text">{formik2.values.course_category}</p>
-                                    </div>
-                                    {/* Short Description */}
-                                    <div className="inline-flex flex-col gap-2 row-start-5 col-span-2">
-                                        <label htmlFor="short_desc" className="font-header text-xs flex flex-row justify-between uppercase">Short Description:</label>
-                                        <p className="font-text w-full whitespace-pre-wrap">{formik2.values.short_desc}</p>
-                                    </div>
-                                    <button
-                                        onClick={()=>toggleState("steps", (current) => current - 1)}
-                                        className={`bg-white border-2 border-primary p-4 rounded-md font-header uppercase text-primary text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 hover:text-white hover:border-primaryhover transition-all ease-in-out w-full
-                                        `}>
-                                        Back</button>
-                                    <button
-                                        onClick={()=>toggleState("steps", (current) => current + 1)}
-                                        className={`bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out w-full
-                                        `}>
-                                        Confirm</button>
+
+                                    {
+                                            state.isLoading ? (
+                                                <p>Loading....</p>
+                                            ):(
+                                                <>
+                                                    <div className=" col-start-1 col-span-2 flex flex-row items-center justify-between">
+                                                        <h1 className="py-2 font-header text-primary">Course ID:</h1>
+                                                        <p className="font-text">{formik.values.courseID}</p>
+                                                    </div>
+                                                    {/* Course Name */}
+                                                    <div className="inline-flex flex-col gap-2 row-start-3 col-span-2 col-start-1">
+                                                        <label htmlFor="course_name" className="font-header text-xs flex flex-row justify-between">
+                                                            <p className="uppercase">Course Name:</p>
+                                                        </label>
+                                                        <p className="font-text">{formik2.values.course_name}</p>
+                                                    </div>
+                                                    {/* Course Type */}
+                                                    <div className="inline-flex flex-col gap-2 row-start-4 col-span-1">
+                                                        <label htmlFor="course_type" className="font-header text-xs flex flex-row justify-between">
+                                                            <p className="uppercase">Course Type:</p>
+                                                        </label>
+                                                        <p className="font-text">{state.courseType}</p>
+                                                    </div>
+                                                    {/* Course Category */}
+                                                    <div className="inline-flex flex-col gap-2 row-start-4 col-span-1">
+                                                        <label htmlFor="course_category" className="font-header text-xs flex flex-row justify-between">
+                                                            <p className="uppercase">Course Category:</p>
+                                                        </label>
+                                                        <p className="font-text">{state.courseCategory}</p>
+                                                    </div>
+                                                    {/* Short Description */}
+                                                    <div className="inline-flex flex-col gap-2 row-start-5 col-span-2">
+                                                        <label htmlFor="short_desc" className="font-header text-xs flex flex-row justify-between uppercase">Short Description:</label>
+                                                        <p className="font-text w-full whitespace-pre-wrap">{formik2.values.short_desc}</p>
+                                                    </div>
+                                                    <button
+                                                        onClick={()=>toggleState("steps", (current) => current - 1)}
+                                                        className={`bg-white border-2 border-primary p-4 rounded-md font-header uppercase text-primary text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 hover:text-white hover:border-primaryhover transition-all ease-in-out w-full
+                                                        `}>
+                                                        Back</button>
+                                                    <button
+                                                        onClick={()=>toggleState("steps", (current) => current + 1)}
+                                                        className={`bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out w-full
+                                                        `}>
+                                                        Confirm</button>
+                                                </>
+                                            )
+                                        }
+
+
                                 </div>
                                 </Stepper.Step>
                                 <Stepper.Completed>

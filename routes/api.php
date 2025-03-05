@@ -93,6 +93,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::apiResource('/categories', CategoryController::class);
     Route::apiResource('/modes', Training_ModeController::class);
     Route::apiResource('/types', TypeController::class);
+
     //Course enrolled users
     Route::get('/select-course-users/{course}', [CourseController::class, 'getCourseUsers']);
     Route::post('/addType/{course}/{type}', [CourseController::class, 'addType']);
