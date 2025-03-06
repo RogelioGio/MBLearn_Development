@@ -24,6 +24,7 @@ class StoreCourseRequest extends FormRequest
         // TODO be more specific
         return [
             'name' => 'required',
+            'CourseID' => 'required',
             'description' => 'required',
             'type_id' => 'required',
             'category_id'=> 'required',
