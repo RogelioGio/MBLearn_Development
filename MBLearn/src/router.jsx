@@ -19,6 +19,7 @@ import Unauthorized from "./views/Unauthorized";
 import AssignedCourse from "./views/AssignedCourseCatalog";
 import AssignedCourseReport from "./views/AssignedCourseResport";
 import Course from "./views/Course";
+import MyEmployee from "./views/MyEmployee";
 
 const router = createBrowserRouter([
 
@@ -93,6 +94,10 @@ const router = createBrowserRouter([
                         path: "coursereports",
                         element: <AssignedCourseReport/>
                     },
+                    {
+                        path: "myemployee",
+                        element:<MyEmployee/>
+                    }
                 ]
             },
             {

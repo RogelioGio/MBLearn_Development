@@ -89,7 +89,7 @@ export default function AssignedCourseCatalog() {
                         <FontAwesomeIcon icon={sort.dateOrder === "asc" ? faArrowUpWideShort : sort.dateOrder === "desc" ? faArrowDownShortWide : faSort}/>
                     </div>
                 </div>
-                <div>
+                {/* <div>
                     <div className="inline-flex round-md shadow-md hover:cursor-pointer">
                         <span className={`flex flex-row gap-5 items-center text-md font-header ring-2 ring-primary rounded-l-md px-5 py-2 hover:bg-primary hover:text-white transition-all ease-in-out ${state.tab === "assigned" ? "bg-primary text-white":"bg-white text-primary"}`} onClick={() => toggleState("tab", "assigned")}>
                             <FontAwesomeIcon icon={faChalkboard}/>
@@ -100,7 +100,7 @@ export default function AssignedCourseCatalog() {
                             <p>Active Assigned Courses</p>
                         </span>
                     </div>
-                </div>
+                </div> */}
             </div>
 
             {/* Course Catalog */}

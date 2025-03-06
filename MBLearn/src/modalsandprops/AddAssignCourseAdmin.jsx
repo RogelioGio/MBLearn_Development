@@ -2,11 +2,44 @@ import { faChevronDown, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import React, { useEffect, useState } from "react";
+import axiosClient from "../axios-client";
 
 const AddAssignCourseAdmin = ({courseID ,open, close}) => {
     useEffect(()=>{
         setIsFiltered(false)
+        fetchFilter()
     },[])
+
+    const [state, setState] = useState({
+            departments:[],
+            cities:[],
+            branches:[]
+        })
+    const toggleState = (key, value) => {
+        setState((prev) => ({
+            ...prev,
+            [key]: typeof value === "function" ? value(prev[key]) : value, // Support function-based updates
+        }));
+    };
+
+    const fetchFilter = async () => {
+        try{
+            const [department, city, location] = await Promise.all([
+                axiosClient.get('/departments'),
+                axiosClient.get('/cities'),
+                axiosClient.get('/branches')
+            ]);
+
+            toggleState("departments", department.data.data)
+            toggleState("cities", city.data.data)
+            toggleState("branches", location.data.data)
+
+
+        } catch (error) {
+            console.error("Error: ", error )
+        }
+    }
+
     //Must be filter first
     const[isfiltered, setIsFiltered] = useState(false);
     return(
@@ -22,45 +55,64 @@ const AddAssignCourseAdmin = ({courseID ,open, close}) => {
                                     <p className="text-unactive font-text text-md">Manage all current assigned course and add selected course admin to the selected course</p>
                             </div>
                             {/* Content */}
-                            <div className="grid mx-4 pt-4">
-                                {/* Header */}
-                                <p className="font-text text-unactive text-sm">Course Admin Filter:</p>
+                            <div className="grid mx-4 pt-4 gap-y-4">
                                 {/* Fiter Category */}
-                                <div className="flex flex-row py-1 w-full justify-between">
-                                    <div className="flex flex-row gap-2">
-                                        <div className="flex flex-row gap-5 border-2 border-primary rounded-md">
-                                            <select className="appearance-none font-text col-start-1 row-start-1 p-2 border-none focus:outline-none rounded-md">
-                                                <option>Department</option>
-                                                <option>Option 1</option>
-                                                <option>Option 2</option>
+                                <div className="grid grid-cols-[auto_min-content] gap-x-10">
+                                    {/* Header */}
+                                    <p className="row-start-1 col-span-2 font-text text-unactive text-sm">Course Admin Filter:</p>
+                                    <div className="row-start-2 flex flex-row gap-2">
+                                        {/* Department */}
+                                        <div class="grid grid-cols-1 w-full">
+                                            <select id="department" name="department" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
+                                                // value={formik2.values.course_type}
+                                                // onChange={formik2.handleChange}
+                                                // onBlur={formik2.handleBlur}
+                                            >
+                                            <option value="">Select a Department</option>
+                                            {state.departments.map((department) => (
+                                                <option key={department.id} value={department.id}>{department.department_name}</option>
+                                            ))}
                                             </select>
-                                            <div className="pointer-events-none col-start-1 row-start-1 mr-2 self-center justify-self-end">
-                                                <FontAwesomeIcon icon={faChevronDown} className="text-primary"/>
-                                            </div>
+                                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                            <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                            </svg>
                                         </div>
-                                        <div className="flex flex-row gap-5 border-2 border-primary rounded-md">
-                                            <select className="appearance-none font-text col-start-1 row-start-1 p-2 border-none focus:outline-none rounded-md">
-                                                <option>Branch City</option>
-                                                <option>Option 1</option>
-                                                <option>Option 2</option>
+                                        {/* City */}
+                                        <div class="grid grid-cols-1 w-full">
+                                            <select id="course_type" name="course_type" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
+                                                // value={formik2.values.course_type}
+                                                // onChange={formik2.handleChange}
+                                                // onBlur={formik2.handleBlur}
+                                            >
+                                            <option value="">Select a Branch City</option>
+                                                    {state.cities.map((city) => (
+                                                        <option key={city.id} value={city.id}>{city.city_name}</option>
+                                                    ))}
                                             </select>
-                                            <div className="pointer-events-none col-start-1 row-start-1 mr-2 self-center justify-self-end">
-                                                <FontAwesomeIcon icon={faChevronDown} className="text-primary"/>
-                                            </div>
+                                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                            <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                            </svg>
                                         </div>
-                                        <div className="flex flex-row gap-5 border-2 border-primary rounded-md">
-                                            <select className="appearance-none font-text col-start-1 row-start-1 p-2 border-none focus:outline-none rounded-md">
-                                                <option>Branch Location</option>
-                                                <option>Option 1</option>
-                                                <option>Option 2</option>
+                                        {/* Location */}
+                                        <div class="grid grid-cols-1 w-full">
+                                            <select id="course_type" name="course_type" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
+                                                // value={formik2.values.course_type}
+                                                // onChange={formik2.handleChange}
+                                                // onBlur={formik2.handleBlur}
+                                            >
+                                            <option value="">Select a Branch Location</option>
+                                                    {state.branches.map((branch) => (
+                                                        <option key={branch.id} value={branch.id}>{branch.branch_name}</option>
+                                                    ))}
                                             </select>
-                                            <div className="pointer-events-none col-start-1 row-start-1 mr-2 self-center justify-self-end">
-                                                <FontAwesomeIcon icon={faChevronDown} className="text-primary"/>
-                                            </div>
+                                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                            <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                            </svg>
                                         </div>
                                     </div>
-                                    <div className="font-header text-center text-white border-2 border-primary py-2 px-14 rounded-md shadow-md bg-primary hover: cursor-pointer hover:scale-105 transition-all ease-in-out hover:bg-primaryhover hover:text-white" onClick={()=>setIsFiltered(true)}>Filter</div>
+                                    <div className="w-full font-header text-center text-white border-2 border-primary py-2 px-14 rounded-md shadow-md bg-primary hover: cursor-pointer hover:scale-105 transition-all ease-in-out hover:bg-primaryhover hover:text-white" onClick={()=>setIsFiltered(true)}>Filter</div>
                                 </div>
+
                                 <div>
                                     {/* Course Admin Table */}
                                     <div className="py-1">
