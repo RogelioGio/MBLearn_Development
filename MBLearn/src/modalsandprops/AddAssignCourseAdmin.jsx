@@ -1,22 +1,20 @@
-import { faChevronDown, faTrashCan, faUserPen, faUserPlus } from "@fortawesome/free-solid-svg-icons";
+import { faChevronDown, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import React, { useEffect, useState } from "react";
 import axiosClient from "../axios-client";
-import AddAssignCourseAdmin from "./AddAssignCourseAdmin";
 
-
-
-
-const AssignCourseAdmin = ({courseID ,open, close}) => {
-    const [isLoading, setLoading] = useState(true);
-    const [course, setCourse] = useState();
+const AddAssignCourseAdmin = ({courseID ,open, close}) => {
+    useEffect(()=>{
+        setIsFiltered(false)
+        fetchFilter()
+    },[])
 
     const [state, setState] = useState({
-        departments:[],
-        cities:[],
-        branches:[]
-    })
+            departments:[],
+            cities:[],
+            branches:[]
+        })
     const toggleState = (key, value) => {
         setState((prev) => ({
             ...prev,
@@ -24,19 +22,6 @@ const AssignCourseAdmin = ({courseID ,open, close}) => {
         }));
     };
 
-    //Add Course Admin
-    const [isOpen, setIsOpen] = useState(false)
-
-    const fetchCourse = () => {
-        setLoading(true)
-        axiosClient.get(`/courses/${courseID}`)
-        .then(({data}) => {
-            setCourse(data.data)
-            setLoading(false);
-        }).catch((err) => {
-            console.log(err)
-        })
-    }
     const fetchFilter = async () => {
         try{
             const [department, city, location] = await Promise.all([
@@ -55,42 +40,22 @@ const AssignCourseAdmin = ({courseID ,open, close}) => {
         }
     }
 
-    useEffect(()=>{
-        fetchCourse();
-        fetchFilter()
-    },[courseID])
-
-    useEffect(()=>{
-        setCourse("")
-    },[close])
-
-
-    return (
-        <>
+    //Must be filter first
+    const[isfiltered, setIsFiltered] = useState(false);
+    return(
         <Dialog open={open} onClose={close}>
-            <DialogBackdrop transition className="fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in z-10"/>
-            <div className='fixed inset-0 z-10 w-screen overflow-y-auto'>
+        <DialogBackdrop transition className="fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in z-20"/>
+            <div className='fixed inset-0 z-20 w-screen overflow-y-auto'>
                 <div className='flex min-h-full items-center justify-center p-4'>
-                    <DialogPanel transition className='relative overflow-hidden transform rounded-md w-3/4 bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in'>
+                    <DialogPanel transition className='z-20 relative overflow-hidden transform rounded-md w-3/4 bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in'>
                         <div className='bg-white rounded-md h-full p-5 flex flex-col'>
-                            {/* Header */}
-                            <div className="pt-2 pb-4 mx-4 border-b border-divider flex flex-row justify-between item-center">
-                                <div>
-                                    <h1 className="text-primary font-header text-3xl">Assigned Course Admins</h1>
+                           {/* Header */}
+                            <div className="pt-2 pb-4 mx-4 border-b border-divider flex flex-col justify-between item-center">
+                                    <h1 className="text-primary font-header text-3xl">Add Assigned Course Admins</h1>
                                     <p className="text-unactive font-text text-md">Manage all current assigned course and add selected course admin to the selected course</p>
-                                </div>
-                                <div className={`text-primary border-2 border-primary h-full py-2 px-4 rounded-md shadow-md flex flex-row gap-2 items-center self-center transition-all ease-in-out ${isLoading ? 'cursor-progress':'cursor-pointer'}`} onClick={()=>{isLoading ? null : setIsOpen(true);}}>
-                                    <FontAwesomeIcon icon={faUserPlus} />
-                                    <p className="font-header">Assign Course Admin</p>
-                                </div>
-                            </div>
-                            {/* Selected Course */}
-                            <div className="mx-4 py-2">
-                                <p className="font-text text-unactive text-sm">Selected Course:</p>
-                                <p className="font-header text-primary text-xl">{course?.name || "Loading.."}</p>
                             </div>
                             {/* Content */}
-                            <div className="grid mx-4 pb-4 space-y-2">
+                            <div className="grid mx-4 pt-4 gap-y-4">
                                 {/* Fiter Category */}
                                 <div className="grid grid-cols-[auto_min-content] gap-x-10">
                                     {/* Header */}
@@ -145,8 +110,9 @@ const AssignCourseAdmin = ({courseID ,open, close}) => {
                                             </svg>
                                         </div>
                                     </div>
-                                    <div className="w-full font-header text-center text-white border-2 border-primary py-2 px-14 rounded-md shadow-md bg-primary hover: cursor-pointer hover:scale-105 transition-all ease-in-out hover:bg-primaryhover hover:text-white">Filter</div>
+                                    <div className="w-full font-header text-center text-white border-2 border-primary py-2 px-14 rounded-md shadow-md bg-primary hover: cursor-pointer hover:scale-105 transition-all ease-in-out hover:bg-primaryhover hover:text-white" onClick={()=>setIsFiltered(true)}>Filter</div>
                                 </div>
+
                                 <div>
                                     {/* Course Admin Table */}
                                     <div className="py-1">
@@ -157,44 +123,50 @@ const AssignCourseAdmin = ({courseID ,open, close}) => {
                                                         <th className='py-4 px-4'>EMPLOYEE NAME</th>
                                                         <th className='py-4 px-4'>DEPARTMENT</th>
                                                         <th className='py-4 px-4'>BRANCH</th>
-                                                        <th className='py-4 px-4'></th>
                                                     </tr>
                                                 </thead>
                                                 <tbody className='bg-white divide-y divide-divider'>
                                                     <tr className='font-text text-sm hover:bg-gray-200' onClick={() => click(employeeID)}>
-                                                            <td className='text-sm  py-3 px-4'>
-                                                                <div className='flex items-center gap-2'>
-                                                                    {/* User Image */}
-                                                                    <div className='bg-blue-500 h-10 w-10 rounded-full'>
-                                                                        {/* //<img src={profile_url} alt="" className='rounded-full'/> */}
-                                                                    </div>
-                                                                    {/* Name and employee-id*/}
-                                                                    <div>
-                                                                        <p className='font-text'>SampleName</p>
-                                                                        <p className='text-unactive text-xs'>ID: 1234567789</p>
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                            <td className='py-3 px-4'>
-                                                                <div className='flex flex-col'>
-                                                                    {/* Department */}
-                                                                    <p className='text-unactive'>IT</p>
-                                                                    {/* Title */}
-                                                                    <p className='text-unactive text-xs'>Developer</p>
-                                                                </div>
-                                                            </td>
-                                                            <td className='py-3 px-4'>
-                                                                <div className='flex flex-col'>
-                                                                {/* Branch Location */}
-                                                                <p className='text-unactive'>General Santos</p>
-                                                                {/* City Location */}
-                                                                <p className='text-unactive text-xs'>Novaliches</p>
-                                                                </div>
-                                                            </td>
-                                                            {/* Action */}
-                                                            <td className='py-3 px-4 flex justify-end'>
-                                                                    <FontAwesomeIcon icon={faTrashCan} className="p-3 border border-primary rounded-md text-primary hover:bg-primary hover:text-white hover:scale-105 transition-all ease-in-out hover:cursor-pointer"/>
-                                                            </td>
+                                                            {
+                                                                //need to be filtered first
+                                                                !isfiltered ? (
+                                                                    <td colSpan={4} className="text-center py-3 px-4 font-text text-primary">
+                                                                        Filter first the course admin you want to add for the course
+                                                                    </td>
+                                                                ):(
+                                                                    <>
+                                                                        <td className='text-sm  py-3 px-4'>
+                                                                            <div className='flex items-center gap-2'>
+                                                                                {/* User Image */}
+                                                                                <div className='bg-blue-500 h-10 w-10 rounded-full'>
+                                                                                    {/* //<img src={profile_url} alt="" className='rounded-full'/> */}
+                                                                                </div>
+                                                                                {/* Name and employee-id*/}
+                                                                                <div>
+                                                                                    <p className='font-text'>SampleName</p>
+                                                                                    <p className='text-unactive text-xs'>ID: 1234567789</p>
+                                                                                </div>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td className='py-3 px-4'>
+                                                                            <div className='flex flex-col'>
+                                                                                {/* Department */}
+                                                                                <p className='text-unactive'>IT</p>
+                                                                                {/* Title */}
+                                                                                <p className='text-unactive text-xs'>Developer</p>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td className='py-3 px-4'>
+                                                                            <div className='flex flex-col'>
+                                                                            {/* Branch Location */}
+                                                                            <p className='text-unactive'>General Santos</p>
+                                                                            {/* City Location */}
+                                                                            <p className='text-unactive text-xs'>Novaliches</p>
+                                                                            </div>
+                                                                        </td>
+                                                                    </>
+                                                                )
+                                                            }
 
                                                     </tr>
                                                 </tbody>
@@ -202,14 +174,22 @@ const AssignCourseAdmin = ({courseID ,open, close}) => {
                                         </div>
                                     </div>
                                 </div>
+                                    {/* Action Buttons */}
+                                <div className="flex flex-row gap-4 py-4">
+                                    <div className="flex flex-row justify-center items-center border-2 border-primary py-2 px-4 font-header bg-secondarybackground rounded-md text-primary gap-2 w-full hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md" onClick={close}>
+                                        <p>Cancel</p>
+                                    </div>
+                                    <div className="flex flex-row justify-center items-center border-2 border-primary py-2 px-4 font-header bg-primary rounded-md text-white gap-2 w-full hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md" >
+                                        <p>Add Course Admin</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </DialogPanel>
                 </div>
             </div>
-        </Dialog>
-        <AddAssignCourseAdmin courseID={courseID} open={isOpen} close={()=> setIsOpen(false)}/>
-        </>
-    );
-}
-export default AssignCourseAdmin;
+    </Dialog>
+    )
+};
+
+export default AddAssignCourseAdmin;

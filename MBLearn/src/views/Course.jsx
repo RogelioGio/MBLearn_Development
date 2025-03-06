@@ -1,19 +1,36 @@
 
-import { faCircleLeft as faCircleLeftRegular } from "@fortawesome/free-regular-svg-icons"
-import { faArrowDownShortWide, faArrowDownZA, faArrowUpAZ, faArrowUpWideShort, faCakeCandles, faSort } from "@fortawesome/free-solid-svg-icons"
+import { faCircleCheck as faCircleCheckRegular, faCircleLeft as faCircleLeftRegular } from "@fortawesome/free-regular-svg-icons"
+import { faArrowDownShortWide, faArrowDownZA, faArrowLeft, faArrowUpAZ, faArrowUpWideShort, faBook, faCakeCandles, faGraduationCap, faPenToSquare, faSort, faSquareCheck, faTrash, faUser, faUserGroup, faUserPlus } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Stepper } from "@mantine/core"
 import React, { useEffect, useState } from "react"
 import { Helmet } from "react-helmet"
 import { useNavigate, useParams } from "react-router-dom"
 import axiosClient from "../axios-client"
+import { ContextProvider, useStateContext } from "../contexts/ContextProvider"
+import CourseOverview from "../modalsandprops/courseComponents/CourseOverview"
+import CourseText from "../modalsandprops/courseComponents/courseText"
+import CourseVideo from "../modalsandprops/courseComponents/courseVideo"
+import CourseModuleProps from "../modalsandprops/CourseModuleProps"
+import CourseLearenerProps from "../modalsandprops/CourseLearnerProps"
+import CourseEnrollmentProps from "../modalsandprops/CourseEnrollmentProps"
+
+
 
 
 export default function Course() {
     const navigate = useNavigate();
+    const {user} = useStateContext();
     const {id} = useParams();
     const [course, setCourse] = useState([]);
     const [isLoading ,setLoading] = useState(true);
+    const [tab, setTab] = useState("module");
+
+    const tabComponents = {
+        module: <CourseModuleProps />,
+        learner: <CourseLearenerProps />,
+        enrollment: <CourseEnrollmentProps />,
+    };
 
 
     //API Call for specific course
@@ -33,6 +50,10 @@ export default function Course() {
 
     },[])
 
+    useEffect(() => {
+        console.log("Active Tab:", tab);
+    }, [tab]);
+
     return(
         <div className='grid  grid-cols-4 grid-rows-[6.25rem_min-content_1fr_min-content] h-full w-full overflow-hidden'>
             <Helmet>
@@ -41,9 +62,11 @@ export default function Course() {
             </Helmet>
 
             {/* Header */}
-            <div className="flex flex-row col-span-3 row-span-1 item-center pr-5 ml-5">
+            <div className="flex flex-row col-span-3 row-span-1 item-center ml-5">
                 <div className="text-primary flex flex-row justify-center items-center border-b border-divider">
-                    <FontAwesomeIcon icon={faCircleLeftRegular} className="text-3xl" onClick={() => navigate(-1)}/>
+                    <div className="flex flex-row justify-center items-center w-10 aspect-square border-2 border-primary rounded-full hover:scale-105 hover:bg-primary hover:text-white hover:cursor-pointer transition-all ease-in-out">
+                        <FontAwesomeIcon icon={faArrowLeft} className="text-2xl" onClick={() => navigate(-1)}/>
+                    </div>
                 </div>
                 <div className=' pl-5 flex flex-col justify-center border-b border-divider w-full'>
                     <h1 className='text-primary text-4xl font-header'> {course?.name || 'Loading...'}</h1>
@@ -52,69 +75,47 @@ export default function Course() {
             </div>
 
             {/* Tab Buttons */}
-            <div className='row-start-2 col-span-3 w-auto grid grid-cols-5 ml-5 py-3 h-fit gap-3'>
-                <div className={`flex flex-row justify-center items-center border-2 border-primary py-2 px-4 font-header bg-secondarybackground rounded-md text-primary gap-2 w-full hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md`}>
-                    <p>Modules</p>
-                </div>
-                <div className={`flex flex-row justify-center items-center border-2 border-primary py-2 px-4 font-header bg-secondarybackground rounded-md text-primary gap-2 w-full hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md`}>
-                    <p>Learners</p>
-                </div>
-                <div className={`flex flex-row justify-center items-center border-2 border-primary py-2 px-4 font-header bg-secondarybackground rounded-md text-primary gap-2 w-full hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md`}>
-                    <p>Enrollment</p>
+            <div className='row-start-2 col-span-3 w-auto mx-5 py-3 gap-3'>
+                <div className="w-full flex flex-row rounded-md shadow-md hover:cursor-pointer">
+                    <span className={`w-1/2 flex flex-row gap-5 items-center text-md font-header ring-2 ring-primary rounded-l-md px-5 py-2 text-primary hover:bg-primary hover:text-white transition-all ease-in-out ${tab === "module" ? "bg-primary text-white" : "bg-white text-primary"}`} onClick={()=> setTab("module")}>
+                        <FontAwesomeIcon icon={faBook}/>
+                        Module
+                    </span>
+                    <span className={` w-1/2 flex flex-row gap-5 items-center text-md font-header ring-2 ring-primary px-5 py-2 text-primary hover:bg-primary hover:text-white transition-all ease-in-out ${tab === "learner" ? "bg-primary text-white" : "bg-white text-primary"}`} onClick={()=> setTab("learner")}>
+                        <FontAwesomeIcon icon={faGraduationCap}/>
+                        Learners
+                    </span>
+                    <span className={` w-1/2 flex flex-row gap-5 items-center text-md font-header ring-2 ring-primary rounded-r-md px-5 py-2 text-primary hover:bg-primary hover:text-white transition-all ease-in-out ${tab === "enrollment" ? "bg-primary text-white" : "bg-white text-primary"}`} onClick={()=> setTab("enrollment")}>
+                        <FontAwesomeIcon icon={faUserPlus}/>
+                        Expected Audience
+                    </span>
+
                 </div>
             </div>
 
-            {/* Course status */}
-            <div className="row-start-1 row-span-2 col-start-4 col-span-1 py-5 mr-5">
-                <div className="flex flex-col h-full w-full border-primary border-2 rounded-md shadow-md">
-                    {/* Header */}
-                    <div className="w-auto py-2 px-4 bg-primary text-white font-header">
-                        <p>Course Status:</p>
-                    </div>
-                    <div>
-                        {/* Will be inputted Later on */}
-                        Enrolled Employees
-                    </div>
+            {/* Action Button */}
+            <div className="grid grid-rows-1 grid-cols-2 py-3 gap-2 mr-5">
+                <div className="flex flex-row justify-center items-center border-2 border-primary py-2 px-4 font-header bg-secondarybackground rounded-md text-primary gap-2 w-full hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md">
+                    <FontAwesomeIcon icon={faPenToSquare}/>
+                    <p>Edit </p>
+
                 </div>
+                <div className="flex flex-row justify-center items-center border-2 border-primary py-2 px-4 font-header bg-secondarybackground rounded-md text-primary gap-2 w-full hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md`">
+                    <FontAwesomeIcon icon={faTrash}/>
+                    <p>Delete</p>
+
+                </div>
+            </div>
+            {/* Course status */}
+            <div className="row-start-1 row-span-1 col-start-4 col-span-1 pb-2 pl-5 mr-5 mt-5 border-b border-l border-divider">
+                <p className="text-primary font-header"> Course Status:</p>
+                <p className="text-primary font-text text-xs"> Latest Enrollement:</p>
+                <p className="text-primary font-text text-xs"> On-Going Status:</p>
             </div>
 
             {/* Course content */}
-            <div className="row-start-3 col-span-3 ml-5 pr-5">
-                {/* Sample content but needed to be changes as props to be dynamic */}
-                <div className="w-auto h-auto grid grid-cols-2 grid-row-2">
-                    {/* Course Desription */}
-                    <div className="col-span-2 row-span-1 py-5">
-                        <p className="font-header text-primary text-2xl">Course Description:</p>
-                        <p className="font-text text-base">{course?.description}</p>
-                    </div>
-                    {/* Course Objective */}
-                    <div className="col-span-1 row-span-1 py-5">
-                        <p className="font-header text-primary text-2xl">Course Objective:</p>
-                        <p className="font-text text-base">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Numquam necessitatibus at doloremque atque veritatis? Commodi nihil vero omnis corporis pariatur unde totam, laboriosam aperiam. Perferendis illo nisi molestiae voluptates asperiores!</p>
-                    </div>
-                    {/* Course Content */}
-                    <div className="col-span-1 row-span-1 py-5">
-                        <p className="font-header text-primary text-2xl">Course Outcome:</p>
-                        <p className="font-text text-base">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Numquam necessitatibus at doloremque atque veritatis? Commodi nihil vero omnis corporis pariatur unde totam, laboriosam aperiam. Perferendis illo nisi molestiae voluptates asperiores!</p>
-                    </div>
-                </div>
-            </div>
+            {tabComponents[tab] || null}
 
-            {/* Course Sidebar */}
-            <div className="row-start-3 col-start-4 my-2 border-l border-l-divider">
-                {/* Header */}
-                <div className="py-3 px-5">
-                    <p className="font-header text-primary">Module conntent</p>
-                </div>
-                {/* Module List */}
-                <div className="py-3 px-5">
-                    <Stepper orientation="vertical">
-                    <Stepper.Step label="Module 1" description="Module Description" />
-                    <Stepper.Step label="Module 2" description="Module Description" />
-                    <Stepper.Step label="Module 3" description="Module Description" />
-                    </Stepper>
-                </div>
-            </div>
 
         </div>
 
