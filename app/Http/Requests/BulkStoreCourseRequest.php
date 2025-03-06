@@ -25,9 +25,9 @@ class BulkStoreCourseRequest extends FormRequest
         return [
             '*.name' => 'required',
             '*.description' => 'required',
-            '*.type' => 'required',
-            '*.category'=> 'required',
-            '*.trainingMode' => 'required',
+            '*.type_id' => 'required',
+            '*.category_id'=> 'required',
+            '*.training_mode_id' => 'required',
             '*.mandatory' => 'required',
             '*.duration' => 'required',
             '*.archived' => 'required',
@@ -39,7 +39,6 @@ class BulkStoreCourseRequest extends FormRequest
     public function prepareforValidation(){
         $data = [];
         foreach($this->toArray() as $obj){
-            $obj['training_mode'] = $obj['trainingMode'] ?? null;
             $obj['system_admin_id'] = $obj['systemAdminId'] ?? null;
             $obj['assigned_course_admin_id'] = $obj['assignedCourseAdminId'] ?? null;
             $data[] = $obj;

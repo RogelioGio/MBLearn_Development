@@ -22,7 +22,7 @@ class CourseResource extends JsonResource
             'type'=> $this->types->pluck('type_name')->toArray(),
             'category'=> $this->categories->pluck('category_name')->toArray(),
             'trainingMode' => $this->training_modes->pluck('mode_name')->toArray(),
-            'mandatory'=> $this->mandatory,
+            'training_type'=> $this->training_type,
             'duration'=> $this->duration,
             'archived'=>$this->archived,
         ];

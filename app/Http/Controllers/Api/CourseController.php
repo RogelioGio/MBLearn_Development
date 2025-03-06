@@ -12,8 +12,10 @@ use App\Models\Course;
 use App\Models\Training_Mode;
 use App\Models\Type;
 use App\Models\UserCredentials;
+use App\Models\UserInfos;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Auth;
 
 class CourseController extends Controller
 {
@@ -22,7 +24,7 @@ class CourseController extends Controller
      */
     public function index()
     {
-        return Course::with(['categories', 'types', 'training_modes'])->where('archived', '=', 'active')->orderby('name', 'asc')->paginate(3);
+        return Course::with(['categories', 'types', 'training_modes'])->where('archived', '=', 'active')->orderby('id', 'desc')->paginate(3);
     }
 
     /**
@@ -30,13 +32,34 @@ class CourseController extends Controller
      */
     public function store(StoreCourseRequest $request)
     {
-        $course = Course::create($request->all());
+        $data = $request;
+        $type = Type::query()->find($data['type_id']);
+        $category = Category::query()->find($data['category_id']);
+        $training_mode = Training_Mode::query()->find($data['training_mode_id']);
+        $course_admin = UserInfos::query()->find($data['assigned_course_admin_id']);
+        $current_user = Auth::user();
+
+        
+        $course = Course::create([
+            "name" => $data['name'],
+            "CourseID" => $data['CourseID'],
+            "description" => $data['description'],
+            "training_type" =>$data['training_type'],
+            "system_admin_id" => $current_user->id,
+            "archived" => $data['archived'],]
+            );
+
+        $course->training_modes()->syncWithoutDetaching($training_mode->id);
+        $course->types()->syncWithoutDetaching($type->id);
+        $course->categories()->syncWithoutDetaching($category->id);
+        $course->assignedCourseAdmin()->associate($course_admin);
+        $course->save();
         return response((new CourseResource($course))->toArray($request), 204);
     }
 
     public function bulkStore(BulkStoreCourseRequest $request){
         $bulk = collect($request->all())->map(function($arr, $key){
-            return Arr::except($arr,['trainingMode', 'systemAdminId', 'assignedCourseAdminId']);
+            return Arr::except($arr,['systemAdminId', 'assignedCourseAdminId']);
         });
 
         Course::insert($bulk->toArray());
@@ -132,7 +155,7 @@ class CourseController extends Controller
     public function destroy(Course $course)
     {
         $temp = $course->toArray();
-        $temp["archived"] = "archived";
+        $temp["training_type"] = "archived";
         $course->update($temp);
 
         return response()->json([

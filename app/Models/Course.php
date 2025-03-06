@@ -18,8 +18,9 @@ class Course extends Model
 
     protected $fillable = [
         'name',
+        'CourseID',
         'description',
-        'mandatory',
+        'training_type',
         'type_id',
         'category_id',
         'training_mode_id',
@@ -38,12 +39,12 @@ class Course extends Model
 
     //help with better name, basically system admin na nag add ng course
     public function adder(): BelongsTo{
-        return $this->belongsTo(UserInfos::class);
+        return $this->belongsTo(UserInfos::class, 'system_admin_id', 'id');
     }
 
     //IDK if multiple course admin can be assigned to a course, subject to change
     public function assignedCourseAdmin(): BelongsTo{
-        return $this->belongsTo(UserInfos::class);
+        return $this->belongsTo(UserInfos::class, 'assigned_course_admin_id', 'id');
     }
 
     public function categories():BelongsToMany{
@@ -57,4 +58,5 @@ class Course extends Model
     public function training_modes():BelongsToMany{
         return $this->belongsToMany(Training_Mode::class, 'traning__mode__course', 'course_id', 'training_mode_id');
     }
+    
 }
