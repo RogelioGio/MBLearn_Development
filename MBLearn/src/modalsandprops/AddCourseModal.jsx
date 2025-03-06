@@ -138,6 +138,16 @@ const AddCourseModal = ({open,onClose}) => {
         }
     }
 
+    const payload = {
+        name: formik2.values.course_name,
+        CouseID: formik.values.courseID,
+        description: formik2.values.short_desc,
+        type_id: formik2.values.course_type,
+        category_id: formik2.values.course_category,
+        archived: "Active",
+        assignedCourseAdminId: 3,
+    }
+
     return(
         <>
         <Dialog open={open} onClose={onClose}>
@@ -230,28 +240,6 @@ const AddCourseModal = ({open,onClose}) => {
                                                     className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
                                                     {formik2.touched.course_name && formik2.errors.course_name ? (<div className="text-red-500 text-xs font-text">{formik2.errors.course_name}</div>):null}
                                             </div>
-                                            {/* Course Type */}
-                                            <div className="inline-flex flex-col gap-2 row-start-4 col-span-1">
-                                                <label htmlFor="course_type" className="font-header text-xs flex flex-row justify-between">
-                                                    <p className="uppercase">Course Type:</p>
-                                                </label>
-                                                <div class="grid grid-cols-1">
-                                                    <select id="course_type" name="course_type" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
-                                                        value={formik2.values.course_type}
-                                                        onChange={formik2.handleChange}
-                                                        onBlur={formik2.handleBlur}
-                                                    >
-                                                    <option value="">Select a course type</option>
-                                                    {state.courseTypes.map((type) => (
-                                                        <option key={type.id} value={type.id}>{type.type_name}</option>
-                                                    ))}
-                                                    </select>
-                                                    <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                                                    <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                                                    </svg>
-                                                </div>
-                                                    {formik2.touched.course_type && formik2.errors.course_type ? (<div className="text-red-500 text-xs font-text">{formik2.errors.course_type}</div>):null}
-                                            </div>
                                             {/* Course Category */}
                                             <div className="inline-flex flex-col gap-2 row-start-4 col-span-1">
                                                 <label htmlFor="course_category" className="font-header text-xs flex flex-row justify-between">
@@ -272,6 +260,28 @@ const AddCourseModal = ({open,onClose}) => {
                                                     <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
                                                     </svg>
                                                 </div>
+                                            </div>
+                                             {/* Course Type */}
+                                            <div className="inline-flex flex-col gap-2 row-start-4 col-span-1">
+                                                <label htmlFor="course_type" className="font-header text-xs flex flex-row justify-between">
+                                                    <p className="uppercase">Course Type:</p>
+                                                </label>
+                                                <div class="grid grid-cols-1">
+                                                    <select id="course_type" name="course_type" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
+                                                        value={formik2.values.course_type}
+                                                        onChange={formik2.handleChange}
+                                                        onBlur={formik2.handleBlur}
+                                                    >
+                                                    <option value="">Select a course type</option>
+                                                    {state.courseTypes.map((type) => (
+                                                        <option key={type.id} value={type.id}>{type.type_name}</option>
+                                                    ))}
+                                                    </select>
+                                                    <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                                    <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                                    </svg>
+                                                </div>
+                                                    {formik2.touched.course_type && formik2.errors.course_type ? (<div className="text-red-500 text-xs font-text">{formik2.errors.course_type}</div>):null}
                                             </div>
                                             {/* Short Description */}
                                             <div className="inline-flex flex-col gap-2 row-start-5 col-span-2">
