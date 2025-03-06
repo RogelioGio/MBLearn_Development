@@ -205,13 +205,13 @@ export default function BulkEnrollment() {
             </div>
 
             {/* Course list header */}
-            <div className="col-start-1 px-4 pb-3 mt-5 border-r border-divider ">
+            <div className="px-4 pb-3 mt-5 border-l border-divider ">
                 <h1 className='text-primary text-2xl font-header'>Assigned Courses</h1>
                 <p className='font-text text-xs text-unactive' >Assigned courses to enroll users into effortlessly.</p>
             </div>
 
             {/* Assigned Courses */}
-            <div className="col-start-1 row-start-3 row-span-3 mb-5 border-r border-divider">
+            <div className="col-start-4 row-start-3 row-span-3 mb-5 border-l border-divider">
                 {/* Course Props */}
                 <div className="h-full px-4 flex flex-col gap-2">
                     {
@@ -241,7 +241,7 @@ export default function BulkEnrollment() {
             </div>
 
             {/* Search and filter */}
-            <div className="col-start-2 col-span-3 row-start-2 row-span-1 px-5 flex flex-row justify-between items-center gap-5">
+            <div className="col-start-1 col-span-3 row-start-2 row-span-1 px-5 flex flex-row justify-between items-center gap-5">
 
                 <div className=' inline-flex flex-row place-content-between border-2 border-primary rounded-md font-text shadow-md'>
                     <input type="text" className='focus:outline-none text-sm px-4 w-full rounded-md bg-white' placeholder='Search...'/>
@@ -296,7 +296,7 @@ export default function BulkEnrollment() {
             }
 
             {/* User Pagination */}
-            <div className='row-start-5 row-span-1 col-start-2 col-span-3 border-t border-divider mx-5 flex flex-row items-center justify-between'>
+            <div className='row-start-5 row-span-1 col-start-1 col-span-3 border-t border-divider mx-5 flex flex-row items-center justify-between'>
                 {/* Total number of entries and only be shown */}
                 <div>
                     <p className='text-sm font-text text-unactive'>

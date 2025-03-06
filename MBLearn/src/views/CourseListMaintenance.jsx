@@ -137,6 +137,10 @@ const fetchCourses = () => {
 useEffect(() => {
     fetchCourses()
 }, []);
+useEffect(() => {
+    fetchCourses()
+    console.log(modalState.openAddCourse)
+}, [modalState.openAddCourse]);
 
 
 

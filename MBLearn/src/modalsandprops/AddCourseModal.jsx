@@ -33,13 +33,13 @@ const AddCourseModal = ({open,onClose}) => {
         }),
         //submission
         onSubmit: (values, {setFieldError}) => {
-            const validCourseID = "12345678abc";
+            // const validCourseID = "1a2b3c4d5e6";
 
-            // Check if input is valid before allowing step progression
-            if (values.courseID !== validCourseID) {
-                setFieldError("courseID", "Invalid Course ID. Please enter the correct Course ID.");
-                return;
-            }
+            // // Check if input is valid before allowing step progression
+            // if (values.courseID !== validCourseID) {
+            //     setFieldError("courseID", "Invalid Course ID. Please enter the correct Course ID.");
+            //     return;
+            // }
             // Proceed to the next step
             toggleState("steps", (current) => current + 1);
 
@@ -140,12 +140,24 @@ const AddCourseModal = ({open,onClose}) => {
 
     const payload = {
         name: formik2.values.course_name,
-        CouseID: formik.values.courseID,
+        CourseID: formik.values.courseID,
         description: formik2.values.short_desc,
         type_id: formik2.values.course_type,
         category_id: formik2.values.course_category,
-        archived: "Active",
+        training_mode_id: 1,
+        training_type: "Mandatory",
+        archived: "active",
         assignedCourseAdminId: 3,
+    }
+
+    const submitCourse = () => {
+        toggleState("steps", (current) => current + 1)
+        axiosClient.post('/courses', payload)
+        .then((res) => {
+            console.log(res)
+        }).catch((err) => {
+            console.log(err)
+        })
     }
 
     return(
@@ -356,7 +368,7 @@ const AddCourseModal = ({open,onClose}) => {
                                                         `}>
                                                         Back</button>
                                                     <button
-                                                        onClick={()=>toggleState("steps", (current) => current + 1)}
+                                                        onClick={()=>submitCourse()}
                                                         className={`bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out w-full
                                                         `}>
                                                         Confirm</button>
