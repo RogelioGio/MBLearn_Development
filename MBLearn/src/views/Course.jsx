@@ -14,6 +14,8 @@ import CourseVideo from "../modalsandprops/courseComponents/courseVideo"
 import CourseModuleProps from "../modalsandprops/CourseModuleProps"
 import CourseLearenerProps from "../modalsandprops/CourseLearnerProps"
 import CourseEnrollmentProps from "../modalsandprops/CourseEnrollmentProps"
+import { use } from "react"
+import EditCourseModal from "../modalsandprops/EditCourseModal"
 
 
 
@@ -25,6 +27,7 @@ export default function Course() {
     const [course, setCourse] = useState([]);
     const [isLoading ,setLoading] = useState(true);
     const [tab, setTab] = useState("module");
+    const [open, setOpen] = useState(false);
 
     const tabComponents = {
         module: <CourseModuleProps />,
@@ -47,7 +50,6 @@ export default function Course() {
 
     useEffect(()=>{
         fetchCourses();
-
     },[])
 
     useEffect(() => {
@@ -55,6 +57,7 @@ export default function Course() {
     }, [tab]);
 
     return(
+        <>
         <div className='grid  grid-cols-4 grid-rows-[6.25rem_min-content_1fr_min-content] h-full w-full overflow-hidden'>
             <Helmet>
                 {/* Title of the mark-up */}
@@ -72,10 +75,15 @@ export default function Course() {
                     <h1 className='text-primary text-4xl font-header'> {course?.name || 'Loading...'}</h1>
                     <p className='font-text text-sm text-unactive'>{course?.category || 'Loading...'} - {course?.type || 'Loading...'}</p>
                 </div>
+                <div className="flex flex-row justify-center items-center border-b border-divider pr-5">
+                    <div className="hover:scale-105 ease-in-out transition-all hover:cursor-pointer" onClick={()=>setOpen(true)}>
+                        <FontAwesomeIcon icon={faPenToSquare} className="border-2 border-primary rounded-md aspect-square p-3 text-lg text-primary shadow-md hover:bg-primary hover:text-white"/>
+                    </div>
+                </div>
             </div>
 
             {/* Tab Buttons */}
-            <div className='row-start-2 col-span-3 w-auto mx-5 py-3 gap-3'>
+            <div className='row-start-2 col-span-4 w-auto mx-5 py-3 gap-3'>
                 <div className="w-full flex flex-row rounded-md shadow-md hover:cursor-pointer">
                     <span className={`w-1/2 flex flex-row gap-5 items-center text-md font-header ring-2 ring-primary rounded-l-md px-5 py-2 text-primary hover:bg-primary hover:text-white transition-all ease-in-out ${tab === "module" ? "bg-primary text-white" : "bg-white text-primary"}`} onClick={()=> setTab("module")}>
                         <FontAwesomeIcon icon={faBook}/>
@@ -93,19 +101,6 @@ export default function Course() {
                 </div>
             </div>
 
-            {/* Action Button */}
-            <div className="grid grid-rows-1 grid-cols-2 py-3 gap-2 mr-5">
-                <div className="flex flex-row justify-center items-center border-2 border-primary py-2 px-4 font-header bg-secondarybackground rounded-md text-primary gap-2 w-full hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md">
-                    <FontAwesomeIcon icon={faPenToSquare}/>
-                    <p>Edit </p>
-
-                </div>
-                <div className="flex flex-row justify-center items-center border-2 border-primary py-2 px-4 font-header bg-secondarybackground rounded-md text-primary gap-2 w-full hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md`">
-                    <FontAwesomeIcon icon={faTrash}/>
-                    <p>Delete</p>
-
-                </div>
-            </div>
             {/* Course status */}
             <div className="row-start-1 row-span-1 col-start-4 col-span-1 pb-2 pl-5 mr-5 mt-5 border-b border-l border-divider">
                 <p className="text-primary font-header"> Course Status:</p>
@@ -118,7 +113,9 @@ export default function Course() {
 
 
         </div>
-
+        {/* Edit */}
+        <EditCourseModal open={open} close={()=>setOpen(false)} id={course.id}/>
+        </>
 
     )
 }

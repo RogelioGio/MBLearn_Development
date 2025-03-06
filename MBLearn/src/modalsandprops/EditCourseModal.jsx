@@ -2,10 +2,28 @@ import { faCircleXmark as regularXmark } from "@fortawesome/free-regular-svg-ico
 import { faCircleXmark as solidXmark } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import axiosClient from "../axios-client"
 
-const EditCourseModal = ({open, close}) => {
+
+const EditCourseModal = ({open, close, id}) => {
     const [hover, setHover] = useState(false);
+    const [loading, setLoading] = useState(true)
+    const [course, setCourse] = useState([])
+    const fetchCourses = () => {
+        setLoading(true)
+        axiosClient.get(`/courses/${id}`)
+        .then(({data}) => {
+            setCourse(data.data)
+            setLoading(false);
+        }).catch((err) => {
+            console.log(err)
+        })
+    }
+
+    useEffect(()=>{
+        fetchCourses();
+    },[id])
     return(
         <Dialog open={open} onClose={close} className="fixed inset-0 z-10 w-screen overflow-y-auto">
             <DialogBackdrop transition className="fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in" />
@@ -32,28 +50,32 @@ const EditCourseModal = ({open, close}) => {
                                         <p className="uppercase">Course Name:</p>
                                     </label>
                                     <input type="text" name="name"
-                                            className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary" disabled/>
+                                            className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                            value={course.name}/>
                                 </div>
                                 {/* Course Type */}
                                 <div className="inline-flex flex-col gap-2 row-start-2 col-span-1 pr-2">
                                     <label htmlFor="name" className="font-header text-xs flex flex-row justify-between">
                                         <p className="uppercase">Course Type:</p>
                                     </label>
-                                    <input type="text" name="name"
-                                            className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary" disabled/>
+                                    <input type="text" name="coursetype"
+                                            className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                            value={ course.category?.[0] ?? null}
+                                            />
                                 </div>
                                 {/* Course Category */}
                                 <div className="inline-flex flex-col gap-2 row-start-2 col-span-1 pr-2">
                                     <label htmlFor="name" className="font-header text-xs flex flex-row justify-between">
                                         <p className="uppercase">Course Category:</p>
                                     </label>
-                                    <input type="text" name="name"
-                                            className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary" disabled/>
+                                    <input type="text" name="coursecategory"
+                                            className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                            value={ course.category?.[0] ?? null}/>
                                 </div>
                                 {/* Short Description */}
                                 <div className="inline-flex flex-col gap-2 row-start-3 col-span-2 pr-2">
                                     <label htmlFor="desc" className="font-header text-xs flex flex-row justify-between uppercase">Short Description:</label>
-                                    <textarea name="shortDescription" id="" className='h-32 font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary resize-none' disabled></textarea>
+                                    <textarea name="shortDescription" id="" className='h-32 font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary resize-none' value={course.description}></textarea>
                                 </div>
                                 {/* Submit & cancel*/}
                                 <div className='row-start-4 col-span-3 flex justify-center gap-4 py-1'>

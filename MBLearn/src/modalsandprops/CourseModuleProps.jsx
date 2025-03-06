@@ -28,10 +28,10 @@ const CourseModuleProps = () => {
             }
 
             {/* Course Sidebar */}
-            <div className="row-start-3 col-start-4 my-2 border-l border-l-divider">
+            <div className="row-start-3 col-start-1 my-2 border-r border-r-divider">
                 {/* Header */}
                 <div className="py-3 px-5">
-                    <p className="font-header text-primary">Module conntent</p>
+                    <p className="font-header text-primary">Module content</p>
                 </div>
                 {/* Module List */}
                 <div className="py-3 px-5">
