@@ -24,7 +24,7 @@ class CourseController extends Controller
      */
     public function index()
     {
-        return Course::with(['categories', 'types', 'training_modes'])->where('archived', '=', 'active')->orderby('name', 'asc')->paginate(3);
+        return Course::with(['categories', 'types', 'training_modes'])->where('archived', '=', 'active')->orderby('id', 'desc')->paginate(3);
     }
 
     /**
@@ -154,7 +154,7 @@ class CourseController extends Controller
     public function destroy(Course $course)
     {
         $temp = $course->toArray();
-        $temp["archived"] = "archived";
+        $temp["training_type"] = "archived";
         $course->update($temp);
 
         return response()->json([
