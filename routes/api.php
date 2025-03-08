@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\FilterOptionController;
+use App\Http\Controllers\Api\OptionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
@@ -107,6 +108,10 @@ Route::middleware('auth:sanctum')->group(function(){
 
     //Role API (get and post with /roles, get, put, and delete with /roles/{roleid} every api resource is same as this)
     Route::apiResource('/roles', RoleController::class);
+
+
+    //Fetching All Option for dropdown
+    Route::get('/options', [OptionController::class,'index']);
 
 
 

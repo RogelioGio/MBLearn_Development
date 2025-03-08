@@ -14,6 +14,7 @@ import EditUserModal from '../modalsandprops/EditUserModal';
 import DeleteUserModal from '../modalsandprops/DeleteUserModal';
 import DeleteUserSuccessfully from '../modalsandprops/DeleteUserSuccessfully';
 import UserManagemenFilterPopover from '../modalsandprops/UserManagementFilterPopover';
+import { OptionProvider } from '../contexts/AddUserOptionProvider';
 
 
 //User Filter
@@ -110,6 +111,7 @@ export default function UserManagementMaintenance() {
     //Close Add User Modal
     const CloseAddUser = () => {
         toggleModal("isOpenAdd", false)
+        fetchUsers()
     }
 
 
@@ -269,10 +271,10 @@ export default function UserManagementMaintenance() {
                                             userID={userEntry.id}
                                             click={OpenDialog}
                                             name={fullName}
-                                            department={userEntry.department}
-                                            title={userEntry.title}
-                                            branch={userEntry.branch}
-                                            city={userEntry.city}
+                                            department={userEntry.department?.department_name || "No Department Yet"}
+                                            title={userEntry.title?.title_name || "No Title Yet"}
+                                            branch={userEntry.branch?.branch_name || "No Branch Yet"}
+                                            city={userEntry.city?.city_name || "No City Yet"}
                                             profile_url={userEntry.profile_image}
                                             employeeID={userEntry.employeeID}
                                             role={userEntry.roles?.[0]?.role_name || "No Role Yet"}
@@ -333,11 +335,14 @@ export default function UserManagementMaintenance() {
             {/* User Profile Card */}
             <UserEntryModal open={modalState.isOpen} close={CloseDialog} classname='relative z-10' ID={userID}/>
 
-            {/* Add User Modal */}
-            <AddUserModal open={modalState.isOpenAdd} close={CloseAddUser} updateTable={fetchUsers}/>
+            <OptionProvider>
+                {/* Add User Modal */}
+                <AddUserModal open={modalState.isOpenAdd} close={CloseAddUser} updateTable={fetchUsers}/>
 
-            {/* Edit User Modal */}
-            <EditUserModal open={modalState.isEdit} close={CloseEdit} ID={userID} EmployeeID={EmployeeID}/>
+
+                {/* Edit User Modal */}
+                <EditUserModal open={modalState.isEdit} close={CloseEdit} ID={userID} EmployeeID={EmployeeID}/>
+            </OptionProvider>
 
             {/* Delete User Modal */}
             <DeleteUserModal open={modalState.isDelete} close={CloseDelete} EmployeeID={userID} close_confirmation={OpenSuccessFullyDelete}/>
