@@ -31,7 +31,7 @@ const CourseListCard = ({courseList, classname, onclick, action}) => {
                                         <FontAwesomeIcon icon={faChalkboardTeacher}/>
                                         <p className='absolute w-auto bottom-10 z-10 bg-tertiary text-white p-2 rounded-md text-xs scale-0 font-text group-hover:scale-100'>Assign Course Admin</p>
                                     </div>
-                                    <div className='relative border-2 border-primary h-10 w-10 rounded-full flex items-center justify-center text-primary text-sm hover:text-white hover:bg-primary hover:cursor-pointer transition-all ease-in-out group' onClick={(e) => action(e, "openEditCourse")}>
+                                    <div className='relative border-2 border-primary h-10 w-10 rounded-full flex items-center justify-center text-primary text-sm hover:text-white hover:bg-primary hover:cursor-pointer transition-all ease-in-out group' onClick={(e) => action(e, "openEditCourse",course.id)}>
                                         <FontAwesomeIcon icon={faPenToSquare}/>
                                         <p className='absolute w-auto bottom-10 z-10 bg-tertiary text-white p-2 rounded-md text-xs scale-0 font-text group-hover:scale-100'>Edit</p>
                                     </div>
