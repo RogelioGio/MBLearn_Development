@@ -20,6 +20,7 @@ import AssignedCourse from "./views/AssignedCourseCatalog";
 import AssignedCourseReport from "./views/AssignedCourseResport";
 import Course from "./views/Course";
 import MyEmployee from "./views/MyEmployee";
+import { CourseListProvider } from "./contexts/CourseListProvider";
 
 const router = createBrowserRouter([
 
@@ -42,7 +43,10 @@ const router = createBrowserRouter([
                     },
                     {
                         path: "courselistmaintenance",
-                        element: <CourseListMaintenance/>,
+                        element:
+                        <CourseListProvider>
+                            <CourseListMaintenance/>,
+                        </CourseListProvider>
                     },
                     {
                         path:"course/:id",

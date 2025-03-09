@@ -4,19 +4,16 @@ import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import React, { useEffect, useState } from "react";
 import axiosClient from "../axios-client";
 import AddAssignCourseAdmin from "./AddAssignCourseAdmin";
+import { useCourseContext } from "../contexts/CourseListProvider";
 
 
 
 
 const AssignCourseAdmin = ({courseID ,open, close}) => {
+    const {departments, cities, branches} = useCourseContext()
     const [isLoading, setLoading] = useState(true);
     const [course, setCourse] = useState();
 
-    const [state, setState] = useState({
-        departments:[],
-        cities:[],
-        branches:[]
-    })
     const toggleState = (key, value) => {
         setState((prev) => ({
             ...prev,
@@ -37,27 +34,10 @@ const AssignCourseAdmin = ({courseID ,open, close}) => {
             console.log(err)
         })
     }
-    const fetchFilter = async () => {
-        try{
-            const [department, city, location] = await Promise.all([
-                axiosClient.get('/departments'),
-                axiosClient.get('/cities'),
-                axiosClient.get('/branches')
-            ]);
-
-            toggleState("departments", department.data.data)
-            toggleState("cities", city.data.data)
-            toggleState("branches", location.data.data)
-
-
-        } catch (error) {
-            console.error("Error: ", error )
-        }
-    }
 
     useEffect(()=>{
+        if(!courseID)return;
         fetchCourse();
-        fetchFilter()
     },[courseID])
 
     useEffect(()=>{
@@ -79,7 +59,7 @@ const AssignCourseAdmin = ({courseID ,open, close}) => {
                                     <h1 className="text-primary font-header text-3xl">Assigned Course Admins</h1>
                                     <p className="text-unactive font-text text-md">Manage all current assigned course and add selected course admin to the selected course</p>
                                 </div>
-                                <div className={`text-primary border-2 border-primary h-full py-2 px-4 rounded-md shadow-md flex flex-row gap-2 items-center self-center transition-all ease-in-out ${isLoading ? 'cursor-progress':'cursor-pointer'}`} onClick={()=>{isLoading ? null : setIsOpen(true);}}>
+                                <div className={`text-primary border-2 border-primary h-full py-2 px-4 rounded-md shadow-md flex flex-row gap-2 items-center self-center transition-all ease-in-out hover:scale-105 hover:bg-primary hover:text-white ${isLoading ? 'cursor-progress':'cursor-pointer'}`} onClick={()=>{isLoading ? null : setIsOpen(true);}}>
                                     <FontAwesomeIcon icon={faUserPlus} />
                                     <p className="font-header">Assign Course Admin</p>
                                 </div>
@@ -104,7 +84,7 @@ const AssignCourseAdmin = ({courseID ,open, close}) => {
                                                 // onBlur={formik2.handleBlur}
                                             >
                                             <option value="">Select a Department</option>
-                                            {state.departments.map((department) => (
+                                            {departments.map((department) => (
                                                 <option key={department.id} value={department.id}>{department.department_name}</option>
                                             ))}
                                             </select>
@@ -120,7 +100,7 @@ const AssignCourseAdmin = ({courseID ,open, close}) => {
                                                 // onBlur={formik2.handleBlur}
                                             >
                                             <option value="">Select a Branch City</option>
-                                                    {state.cities.map((city) => (
+                                                    {cities.map((city) => (
                                                         <option key={city.id} value={city.id}>{city.city_name}</option>
                                                     ))}
                                             </select>
@@ -136,7 +116,7 @@ const AssignCourseAdmin = ({courseID ,open, close}) => {
                                                 // onBlur={formik2.handleBlur}
                                             >
                                             <option value="">Select a Branch Location</option>
-                                                    {state.branches.map((branch) => (
+                                                    {branches.map((branch) => (
                                                         <option key={branch.id} value={branch.id}>{branch.branch_name}</option>
                                                     ))}
                                             </select>

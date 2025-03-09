@@ -3,11 +3,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import React, { useEffect, useState } from "react";
 import axiosClient from "../axios-client";
+import { useCourseContext } from "../contexts/CourseListProvider";
 
 const AddAssignCourseAdmin = ({courseID ,open, close}) => {
+    const {departments, cities, branches} = useCourseContext()
     useEffect(()=>{
         setIsFiltered(false)
-        fetchFilter()
     },[])
 
     const [state, setState] = useState({
@@ -22,28 +23,28 @@ const AddAssignCourseAdmin = ({courseID ,open, close}) => {
         }));
     };
 
-    const fetchFilter = async () => {
-        try{
-            const [department, city, location] = await Promise.all([
-                axiosClient.get('/departments'),
-                axiosClient.get('/cities'),
-                axiosClient.get('/branches')
-            ]);
+    // const fetchFilter = async () => {
+    //     try{
+    //         const [department, city, location] = await Promise.all([
+    //             axiosClient.get('/departments'),
+    //             axiosClient.get('/cities'),
+    //             axiosClient.get('/branches')
+    //         ]);
 
-            toggleState("departments", department.data.data)
-            toggleState("cities", city.data.data)
-            toggleState("branches", location.data.data)
+    //         toggleState("departments", department.data.data)
+    //         toggleState("cities", city.data.data)
+    //         toggleState("branches", location.data.data)
 
 
-        } catch (error) {
-            console.error("Error: ", error )
-        }
-    }
+    //     } catch (error) {
+    //         console.error("Error: ", error )
+    //     }
+    // }
 
     //Must be filter first
     const[isfiltered, setIsFiltered] = useState(false);
     return(
-        <Dialog open={open} onClose={close}>
+        <Dialog open={open} onClose={()=>{}}>
         <DialogBackdrop transition className="fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in z-20"/>
             <div className='fixed inset-0 z-20 w-screen overflow-y-auto'>
                 <div className='flex min-h-full items-center justify-center p-4'>
@@ -69,7 +70,7 @@ const AddAssignCourseAdmin = ({courseID ,open, close}) => {
                                                 // onBlur={formik2.handleBlur}
                                             >
                                             <option value="">Select a Department</option>
-                                            {state.departments.map((department) => (
+                                            {departments.map((department) => (
                                                 <option key={department.id} value={department.id}>{department.department_name}</option>
                                             ))}
                                             </select>
@@ -85,7 +86,7 @@ const AddAssignCourseAdmin = ({courseID ,open, close}) => {
                                                 // onBlur={formik2.handleBlur}
                                             >
                                             <option value="">Select a Branch City</option>
-                                                    {state.cities.map((city) => (
+                                                    {cities.map((city) => (
                                                         <option key={city.id} value={city.id}>{city.city_name}</option>
                                                     ))}
                                             </select>
@@ -101,7 +102,7 @@ const AddAssignCourseAdmin = ({courseID ,open, close}) => {
                                                 // onBlur={formik2.handleBlur}
                                             >
                                             <option value="">Select a Branch Location</option>
-                                                    {state.branches.map((branch) => (
+                                                    {branches.map((branch) => (
                                                         <option key={branch.id} value={branch.id}>{branch.branch_name}</option>
                                                     ))}
                                             </select>

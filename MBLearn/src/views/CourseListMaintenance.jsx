@@ -18,37 +18,6 @@ import CourseCardLoading from '../modalsandprops/CourseCardLoading';
 export default function CourseListMaintenance() {
 const {user} = useStateContext()
 
-// //Filter Options and Categories
-// const [filter, setfilter] = useState([
-//     {
-//         id:'coursetype',
-//         name: 'Course Type',
-//         option: [
-//             {value: 'softskill' , label: 'Soft Skill Training', checked: false },
-//             {value: 'technical' , label: 'Technical Training', checked: false },
-//             {value: 'leadership' , label: 'Compliance Training', checked: false },
-//         ]
-//     },
-//     {
-//         id:'coursecategory',
-//         name: 'Course Category',
-//         option: [
-//             {value: 'professionaldev' , label: 'Professional Development', checked: false },
-//             {value: 'dataandanalytics' , label: 'Data and Analystics', checked: false },
-//             {value: 'managementandleadership' , label: 'Management and Leadership', checked: false },
-//         ]
-//     },
-//     {
-//         id:'coursecategory',
-//         name: 'Course Category',
-//         option: [
-//             {value: 'professionaldev' , label: 'Professional Development', checked: false },
-//             {value: 'dataandanalytics' , label: 'Data and Analystics', checked: false },
-//             {value: 'managementandleadership' , label: 'Management and Leadership', checked: false },
-//         ]
-//     }
-// ])
-
 //Modal State mounting
 const [isOpen, setIsOpen] = useState(false);
 const [selectedCourse, setSelectedCourse] = useState(null)
@@ -133,14 +102,9 @@ const fetchCourses = () => {
 
 }
 
-
 useEffect(() => {
     fetchCourses()
 }, []);
-useEffect(() => {
-    fetchCourses()
-    console.log(modalState.openAddCourse)
-}, [modalState.openAddCourse]);
 
 
 
@@ -266,7 +230,7 @@ useEffect(() => {
             {/* Add Modal */}
             <AddCourseModal open={modalState.openAddCourse} onClose={()=>toggleModal('openAddCourse',false)}/>
             {/* Edit */}
-            <EditCourseModal open={modalState.openEditCourse} close={()=>toggleModal('openEditCourse', false)}/>
+            <EditCourseModal open={modalState.openEditCourse} close={()=>toggleModal('openEditCourse', false)} id={modalState.CourseID}/>
             {/* Delete */}
             <DeleteCourseModal open={modalState.openDeleteCourse} close={()=>toggleModal('openDeleteCourse', false)}/>
             {/* Assign Course Admin */}

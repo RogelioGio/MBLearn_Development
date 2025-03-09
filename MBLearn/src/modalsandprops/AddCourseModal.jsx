@@ -7,9 +7,11 @@ import { faCircleCheck as faCircleCheckRegular, faCircleXmark as regularXmark } 
 import { Stepper } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import axiosClient from "../axios-client";
+import { useCourseContext } from "../contexts/CourseListProvider";
 
 
 const AddCourseModal = ({open,onClose}) => {
+    const {coursetypes, coursecategories, traingmodes} = useCourseContext();
     const [hover, setHover] = useState(false);
 
     useEffect(() => {
@@ -75,8 +77,6 @@ const AddCourseModal = ({open,onClose}) => {
         }),
         //on-submit
         onSubmit: (values) => {
-            toggleState("isLoading", true)
-            fetchWIthIDs().finally(()=>toggleState("isLoading", false))
             const finalValues = {
                 ...values,
                 course_id: formik.values.courseID, // Overrides the course_id field
@@ -89,10 +89,7 @@ const AddCourseModal = ({open,onClose}) => {
     //UseState
     const [state, setState] = useState({
         steps: 0,
-        courseTypes: [],
-        courseCategories: [],
         trainingType: [],
-        trainingMode: [],
         courseType: "",
         courseCategory:"",
         isLoading:false
@@ -104,39 +101,21 @@ const AddCourseModal = ({open,onClose}) => {
         }));
     };
 
-    //Fetch Form Inputs
-    const fetchCourses = async () => {
-        try{
-            const [courseTypes, courseCategory] = await Promise.all([
-                axiosClient.get('/types'),
-                axiosClient.get('/categories')
-            ]);
-
-            toggleState("courseTypes", courseTypes.data)
-            toggleState("courseCategories", courseCategory.data)
-        } catch (error) {
-            console.error("Error: ", error )
-        }
-    }
-    useEffect(()=>{
-        fetchCourses()
-    },[])
-
     // Fetch using ID
-    const fetchWIthIDs = async () => {
-        try{
-            const[coursetype, coursecategory] = await Promise.all([
-                axiosClient.get(`/types/${formik2.values.course_type}`),
-                axiosClient.get(`/categories/${formik2.values.course_category}`)
-            ]);
+    // const fetchWIthIDs = async () => {
+    //     try{
+    //         const[coursetype, coursecategory] = await Promise.all([
+    //             axiosClient.get(`/types/${formik2.values.course_type}`),
+    //             axiosClient.get(`/categories/${formik2.values.course_category}`)
+    //         ]);
 
-            toggleState("courseType", coursetype.data.type_name)
-            toggleState("courseCategory", coursecategory.data.category_name)
-            console.log(state.courseType)
-        } catch (error) {
-            console.error("Error: ", error )
-        }
-    }
+    //         toggleState("courseType", coursetype.data.type_name)
+    //         toggleState("courseCategory", coursecategory.data.category_name)
+    //         console.log(state.courseType)
+    //     } catch (error) {
+    //         console.error("Error: ", error )
+    //     }
+    // }
 
     const payload = {
         name: formik2.values.course_name,
@@ -264,7 +243,7 @@ const AddCourseModal = ({open,onClose}) => {
                                                         onBlur={formik2.handleBlur}
                                                     >
                                                     <option value="">Select a course category</option>
-                                                    {state.courseCategories.map((category) => (
+                                                    {coursecategories.map((category) => (
                                                         <option key={category.id} value={category.id}>{category.category_name}</option>
                                                     ))}
                                                     </select>
@@ -285,7 +264,7 @@ const AddCourseModal = ({open,onClose}) => {
                                                         onBlur={formik2.handleBlur}
                                                     >
                                                     <option value="">Select a course type</option>
-                                                    {state.courseTypes.map((type) => (
+                                                    {coursetypes.map((type) => (
                                                         <option key={type.id} value={type.id}>{type.type_name}</option>
                                                     ))}
                                                     </select>
@@ -348,14 +327,14 @@ const AddCourseModal = ({open,onClose}) => {
                                                         <label htmlFor="course_type" className="font-header text-xs flex flex-row justify-between">
                                                             <p className="uppercase">Course Type:</p>
                                                         </label>
-                                                        <p className="font-text">{state.courseType}</p>
+                                                        <p className="font-text">{coursetypes.find(coursetype => coursetype.id === Number(formik2.values.course_type))?.type_name || "Not selected"}</p>
                                                     </div>
                                                     {/* Course Category */}
                                                     <div className="inline-flex flex-col gap-2 row-start-4 col-span-1">
                                                         <label htmlFor="course_category" className="font-header text-xs flex flex-row justify-between">
                                                             <p className="uppercase">Course Category:</p>
                                                         </label>
-                                                        <p className="font-text">{state.courseCategory}</p>
+                                                        <p className="font-text">{coursecategories.find(coursecategory => coursecategory.id === Number(formik2.values.course_category))?.category_name || "Not selected"}</p>
                                                     </div>
                                                     {/* Short Description */}
                                                     <div className="inline-flex flex-col gap-2 row-start-5 col-span-2">

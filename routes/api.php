@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\CourseContextController;
 use App\Http\Controllers\Api\FilterOptionController;
 use App\Http\Controllers\Api\OptionController;
 use Illuminate\Http\Request;
@@ -112,10 +113,11 @@ Route::middleware('auth:sanctum')->group(function(){
 
     //Fetching All Option for dropdown
     Route::get('/options', [OptionController::class,'index']);
-
-
+    //Fetching All nessesary call for courselist maintenance
+    Route::get('/coursecontext',[CourseContextController::class,'index']);
 
 });
+
 Route::post('/add-user', [userInfo_controller::class, 'addUser']);
 Route::post('/addusercredentials', [userCredentials_controller::class, 'addUserCredentials']);
 Route::get('/test', [userInfo_controller::class, 'test']);
