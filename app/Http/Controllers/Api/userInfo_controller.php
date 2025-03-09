@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Filters\UserInfosFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AddUsersRequest;
+use App\Http\Requests\BulkStoreUserRequest;
 use App\Http\Requests\updateUserInfo;
 use App\Models\Branch;
 use App\Models\Department;
@@ -78,6 +79,10 @@ class userInfo_controller extends Controller
             'user_credentials' => $userCredentials
         ], 201);
 
+    }
+
+    public function bulkStoreUsers(BulkStoreUserRequest $bulkStoreUserRequest){
+        
     }
     /**
     * Generate a default profile image URL based on the user's name
