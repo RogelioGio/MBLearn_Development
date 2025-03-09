@@ -6,28 +6,20 @@ import { use, useEffect, useState } from "react"
 import * as Yup from "yup"
 import axiosClient from "../axios-client"
 import { useOption } from "../contexts/AddUserOptionProvider"
+import { useUser } from "../contexts/selecteduserContext"
 
-const EditUserModal = ({open, close, classname, ID, EmployeeID}) =>{
-    const { roles = [], departments = [], titles = [], location = [], cities = [], } = useOption() || {};;
+const EditUserModal = ({open, close, classname, ID,}) =>{
+    const { roles = [], departments = [], titles = [], location = [], cities = [], } = useOption() || {};
+    const {selectedUser, selectUser} = useUser();
     const [loading, setLoading] = useState(true);
-    const [selectedUser, setSelectedUser] = useState(null);
     const [user, setUser] = useState();
 
-
-    useEffect (()=>{
-        setSelectedUser(null)
-        if(ID) {
-            axiosClient.get(`/select-user/${ID}`)
-            .then(response => {
-                setSelectedUser(response.data.data)
-            }).catch(err => console.log(err))
-            .finally(()=>{
-                setLoading(false)
-            })
-        }
-    },[ID])
-
-
+    useEffect(() => {
+            if (ID) {
+                selectUser(ID);
+            }
+            console.log(selectedUser)
+        }, [ID]);
 
     //payload and validation schema
     const formik = useFormik({
@@ -41,7 +33,7 @@ const EditUserModal = ({open, close, classname, ID, EmployeeID}) =>{
             department: selectedUser?.department_id || 'Loading...',
             title: selectedUser?.title_id||'Loading...',
             branch: selectedUser?.branch_id||'Loading...',
-            city: selectedUser?.city_id||'Loading...',
+            city: selectedUser?.city?.id||'Loading...',
             role: selectedUser?.role||'Loading...',
             status: 'Active',
         },
@@ -261,9 +253,15 @@ const EditUserModal = ({open, close, classname, ID, EmployeeID}) =>{
                                                     </div>
                                             </div>
                                             {/* Submit */}
-                                            <input type="submit"
-                                            value='Submit'
-                                            className="inline-flex flex-col gap-2 row-start-7 col-span-3 bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out" />
+                                            <div className="row-start-7 col-span-3 py-2 flex flex-row gap-2">
+                                                <button className="w-full inline-flex flex-col items-center gap-2 row-start-7 col-span-3 p-4 rounded-md font-header uppercase text-primary border-2 border-primary text-xs hover:text-white hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out"
+                                                    onClick={close}>
+                                                    <p>Cancel</p>
+                                                </button>
+                                                <input type="submit"
+                                                value='Submit'
+                                                className="w-full inline-flex flex-col items-center gap-2 row-start-7 col-span-3 bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out" />
+                                            </div>
                                         </form>
                                     </div>
                             </div>

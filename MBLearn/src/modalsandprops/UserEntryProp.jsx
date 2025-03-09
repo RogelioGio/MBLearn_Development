@@ -5,7 +5,7 @@ import React from 'react'
 
 const User = ({re_move,click,userID,name,department,title,branch,city,profile_url,employeeID,role,edit,_delete}) => {
     return(
-        <tr className='font-text text-sm hover:bg-gray-200' onClick={() => click(employeeID)}>
+        <tr className='font-text text-sm hover:bg-gray-200' onClick={() => click(userID)}>
                 <td className='text-sm  py-3 px-4'>
                     <div className='flex items-center gap-2'>
                         {/* User Image */}
@@ -47,7 +47,7 @@ const User = ({re_move,click,userID,name,department,title,branch,city,profile_ur
                         <FontAwesomeIcon icon={faUserPen}/>
                         <p>Edit</p>
                     </button>
-                    <button onClick={(e) => _delete(e,employeeID)}
+                    <button onClick={(e) => _delete(e,userID)}
                             className='flex flex-row items-center justify-center gap-2 px-5 py-2 border border-primary rounded-md text-primary hover:bg-primary hover:text-white hover:scale-105 transition-all ease-in-out'>
                         <FontAwesomeIcon icon={faTrashCan}/>
                         <p>Remove</p>

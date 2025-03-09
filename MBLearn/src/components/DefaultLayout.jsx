@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import axiosClient from '../axios-client';
 import { use } from 'react';
 import LogoutWarningmModal from '../modalsandprops/LogoutWarningModal';
+import { SelectedUserProvider } from '../contexts/selecteduserContext';
 
 export default function DefaultLayout() {
     const {token, role, setRole, setUser, setProfile} = useStateContext();
@@ -122,7 +123,6 @@ export default function DefaultLayout() {
         <div className='flex flex-row items-center h-screen bg-background'>
             <Navigation />
             <Outlet />
-
             {/* Logout warning */}
             <LogoutWarningmModal open={warning} close={close}/>
         </div>

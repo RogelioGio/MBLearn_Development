@@ -15,6 +15,7 @@ import DeleteUserModal from '../modalsandprops/DeleteUserModal';
 import DeleteUserSuccessfully from '../modalsandprops/DeleteUserSuccessfully';
 import UserManagemenFilterPopover from '../modalsandprops/UserManagementFilterPopover';
 import { OptionProvider } from '../contexts/AddUserOptionProvider';
+import { SelectedUserProvider, useUser } from '../contexts/selecteduserContext';
 
 
 //User Filter
@@ -55,6 +56,7 @@ const Userfilter = [
 
 export default function UserManagementMaintenance() {
 
+
     //Modal State
     const [modalState, setModalState] = useState({
         isOpen: false,
@@ -66,6 +68,19 @@ export default function UserManagementMaintenance() {
 
     //Modal state changes
     const toggleModal = (key,value) => {
+        setModalState((prev => ({
+            ...prev,
+            [key]:value,
+        })));
+    }
+
+    //Action User Button State
+    const [userID, setUserID] = useState({
+        isEdit:'',
+        isDelete:'',
+        isSelect:'',
+    })
+    const toggleUserID = (key,value) => {
         setModalState((prev => ({
             ...prev,
             [key]:value,
@@ -91,8 +106,6 @@ export default function UserManagementMaintenance() {
     }
 
     //User State
-    const [userID, setUserID] = useState(null); //Fethcing the selected user in the list
-    const [EmployeeID, setEmployeeID] = useState(null); //Fetching the selected user's employee ID
     const [users, setUsers] = useState([]) //Fetching the user list
 
     //Loading State
@@ -116,10 +129,9 @@ export default function UserManagementMaintenance() {
 
 
     // Open and Close Edit User Modal
-    const OpenEdit = (e, ID, EmployeeID) => {
+    const OpenEdit = (e, ID) => {
         e.stopPropagation();
-        setUserID(ID)
-        setEmployeeID(EmployeeID)
+        toggleUserID("isEdit", ID);
         toggleModal("isEdit", true);
     }
     const CloseEdit = () => {
@@ -204,7 +216,6 @@ export default function UserManagementMaintenance() {
     for(let p = 1; p <= pageState.lastPage; p++){
         Pages.push(p)
     }
-
 
     return (
         <div className='grid grid-cols-4 grid-rows-[6.25rem_min-content_auto_auto_min-content] h-full w-full'>
@@ -332,21 +343,22 @@ export default function UserManagementMaintenance() {
                 </div>
             </div>
 
-            {/* User Profile Card */}
-            <UserEntryModal open={modalState.isOpen} close={CloseDialog} classname='relative z-10' ID={userID}/>
+            <SelectedUserProvider>
+                <OptionProvider>
+                    {/* User Profile Card */}
+                    <UserEntryModal open={modalState.isOpen} close={CloseDialog} classname='relative z-10' ID={userID}/>
 
-            <OptionProvider>
-                {/* Add User Modal */}
-                <AddUserModal open={modalState.isOpenAdd} close={CloseAddUser} updateTable={fetchUsers}/>
+                    {/* Add User Modal */}
+                    <AddUserModal open={modalState.isOpenAdd} close={CloseAddUser} updateTable={fetchUsers}/>
 
+                    {/* Edit User Modal */}
+                    <EditUserModal open={modalState.isEdit} close={CloseEdit} ID={userID.isEdit}/>
 
-                {/* Edit User Modal */}
-                <EditUserModal open={modalState.isEdit} close={CloseEdit} ID={userID} EmployeeID={EmployeeID}/>
-            </OptionProvider>
-
-            {/* Delete User Modal */}
-            <DeleteUserModal open={modalState.isDelete} close={CloseDelete} EmployeeID={userID} close_confirmation={OpenSuccessFullyDelete}/>
-            <DeleteUserSuccessfully open={modalState.isDeleteSuccess} close={CloseSuccessFullyDelete}/>
+                    {/* Delete User Modal */}
+                    <DeleteUserModal open={modalState.isDelete} close={CloseDelete} EmployeeID={userID.isDelete} close_confirmation={OpenSuccessFullyDelete}/>
+                    <DeleteUserSuccessfully open={modalState.isDeleteSuccess} close={CloseSuccessFullyDelete}/>
+                </OptionProvider>
+            </SelectedUserProvider>
         </div>
 
     )
