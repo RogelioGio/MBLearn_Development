@@ -76,9 +76,10 @@ const AddUserModal = ({open, close, updateTable}) => {
                 title_id: values.title,
                 branch_id: values.branch,
                 city_id: values.city,
+                role_id: values.role,
                 status: "Active",
-                MBemail: `${values.firstname}_${values.lastname}@mbtc.com`,
-                password: `${values.firstname}_${values.employeeID}`,
+                MBemail: `${values.firstname.replace(/\s+/g, '').trim()}_${values.lastname.replace(/\s+/g, '').trim()}@mbtc.com`.toLowerCase(),
+                password: `${values.firstname.replace(/\s+/g, '').trim()}_${values.employeeID}`
             }
             axiosClient.post('/add-user',payload).
             then((res) => {
