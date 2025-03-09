@@ -12,9 +12,11 @@ class UserInfosObserver
      */
     public function created(UserInfos $userInfos): void
     {
-        $userRole = Role::where('role_name', 'Learner')->first();
-        if($userRole){
-            $userInfos->roles()->attach($userRole->id);
+        if($userInfos->roles === []){
+            $userRole = Role::where('role_name', 'Learner')->first();
+            if($userRole){
+                $userInfos->roles()->attach($userRole->id);
+            }
         }
     }
 

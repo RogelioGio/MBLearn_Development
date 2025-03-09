@@ -27,6 +27,7 @@ class userInfo_controller extends Controller
         $title = Title::query()->find($validatedData['title_id']);
         $department = Department::query()->find($validatedData['department_id']);
         $branch = Branch::query()->find($validatedData['branch_id']);
+        $role = Role::query()->find($validatedData['role_id']);
 
         $profile_image = $this -> generateProfileImageurl($validatedData['first_name'].$validatedData['last_name']);
         $status = $validatedData['status'] ?? 'Active';
@@ -69,12 +70,14 @@ class userInfo_controller extends Controller
         $userInfo->branch()->associate($branch);
         $userInfo->title()->associate($title);
         $userInfo->department()->associate($department);
+        $userInfo->roles()->attach($role);
         $userInfo->save();
         $userCredentials->userInfos()->save($userInfo);
         // Return a success response
         return response()->json([
             'message' => 'User registered successfully',
             'user_info' => $userInfo,
+            'role' => $userInfo->roles,
             'branch' => $userInfo->branch,
             'user_credentials' => $userCredentials
         ], 201);
