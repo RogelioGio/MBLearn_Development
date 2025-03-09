@@ -5,11 +5,12 @@ import React, { useEffect, useMemo, useState } from 'react'
 import axiosClient from '../axios-client'
 import { InfinitySpin } from 'react-loader-spinner'
 import EditUserModal from './EditUserModal'
+import { useUser } from '../contexts/selecteduserContext'
 
 
 const UserEntryModal = ({open, close, classname,ID}) =>{
+    const {selectUser, selectedUser} = useUser()
     //API Call for fetching specific user
-    const [selectedUser, setSelectedUser] = useState(null)
     const [date, setDate] = useState();
     const [loading, setLoading] = useState(true)
 
@@ -27,20 +28,33 @@ const UserEntryModal = ({open, close, classname,ID}) =>{
         })));
     }
 
-    //UseEffect for fetching specific user
-    useEffect(()=>{
-        if(ID){
-            setLoading(true)
-            setSelectedUser(null)
-            axiosClient.get(`/select-employeeid/${ID}`)
-            .then(response =>
-                {
-                    setSelectedUser(response.data.data);
-                    setLoading(false)
-                })
-            .catch(err => console.log(err))
+    useEffect(() => {
+        if (ID) {
+            selectUser(ID);
         }
-    },[ID]);
+        console.log(selectedUser)
+    }, [ID]);
+    useEffect(() => {
+        if (selectedUser) {
+            setLoading(false);
+        }
+    }, [selectedUser]);
+
+    //UseEffect for fetching specific user
+    // useEffect(()=>{
+    //     if(ID){
+    //         setLoading(true)
+    //         setSelectedUser(null)
+    //         axiosClient.get(`/select-employeeid/${ID}`)
+    //         .then(response =>
+    //             {
+    //                 setSelectedUser(response.data.data);
+    //                 setLoading(false)
+    //             })
+    //         .catch(err => console.log(err))
+    //     }
+    // },[ID]);
+
 
     //function for readable dates
     useEffect(() => {
@@ -117,13 +131,14 @@ const UserEntryModal = ({open, close, classname,ID}) =>{
             <div className='row-start-2 col-start-1 py-4 px-4 border-b border-r border-divider'>
                 {/* Department */}
                 <p className='font-header text-sm text-unactive uppercase'>Department:</p>
-                <p className='font-text text-lg'>{selectedUser.department}</p>
+                <p className='font-text text-lg'>{selectedUser.department.department_name}</p>
+                {/* <p className='font-text text-xs uppercase'>{selectedUser?.title.title_name}</p> */}
             </div>
             <div className='row-start-2 col-start-2 py-4 px-4 border-b border-r border-divider'>
                 {/* Branch & City */}
                 <p className='font-header text-sm text-unactive uppercase'>Branch:</p>
-                <p className='font-text text-lg'>{selectedUser.branch}</p>
-                <p className='font-text text-xs uppercase'>{selectedUser.city}</p>
+                <p className='font-text text-lg'>{selectedUser.branch.branch_name}</p>
+                <p className='font-text text-xs uppercase'>{selectedUser?.city.city_name}</p>
             </div>
             <div className='row-start-2 col-start-3 py-4 px-4 border-b border-divider'>
                 {/* System Admin */}

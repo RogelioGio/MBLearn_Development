@@ -104,7 +104,7 @@ class userInfo_controller extends Controller
         $filter = new UserInfosFilter();
         $queryItems = $filter->transform($request);
 
-        $users =  UserInfos::query()->where($queryItems)->with('roles')->paginate($perPage);
+        $users =  UserInfos::query()->where($queryItems)->where('status', '=', 'Active')->with('roles','department','title','branch','city')->paginate($perPage);
 
         return response()->json([
             'data' => $users->items(),
@@ -223,9 +223,17 @@ class userInfo_controller extends Controller
     public function findUser(UserInfos $userInfos)
     {
         // Find the user info by ID
-
+        $city = $userInfos->city;
+        $branch = $userInfos->branch;
+        $department = $userInfos->department;
+        $title = $userInfos->title;
         if($userInfos){
-            return response() -> json(['data' => $userInfos], 200);
+            return response() -> json([
+                'data' => $userInfos,
+                'city' => $city,
+                'branch' => $branch,
+                "department" => $department,
+                'title' => $title], 200);
         }else {
             return response()->json(['message' => 'User not found'], 404);  // Return error if not found
         }
@@ -268,7 +276,7 @@ class userInfo_controller extends Controller
         $userInfos->title()->associate($title);
         $userInfos->department()->associate($department);
         $userInfos->save();
-        
+
         $userInfos->update($validatedData);
         //Update UserInfo
         return response()->json([
