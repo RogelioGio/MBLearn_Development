@@ -70,14 +70,14 @@ class userInfo_controller extends Controller
         $userInfo->branch()->associate($branch);
         $userInfo->title()->associate($title);
         $userInfo->department()->associate($department);
-        $userInfo->roles()->attach($role);
+        $userInfo->roles()->sync($role->id);
         $userInfo->save();
         $userCredentials->userInfos()->save($userInfo);
         // Return a success response
         return response()->json([
             'message' => 'User registered successfully',
             'user_info' => $userInfo,
-            'role' => $userInfo->roles,
+            'user_role' => $userInfo->roles,
             'branch' => $userInfo->branch,
             'user_credentials' => $userCredentials
         ], 201);
