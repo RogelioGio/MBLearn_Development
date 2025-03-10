@@ -85,7 +85,7 @@ class userInfo_controller extends Controller
     }
 
     public function bulkStoreUsers(BulkStoreUserRequest $bulkStoreUserRequest){
-        
+
     }
     /**
     * Generate a default profile image URL based on the user's name
@@ -230,12 +230,14 @@ class userInfo_controller extends Controller
         $branch = $userInfos->branch;
         $department = $userInfos->department;
         $title = $userInfos->title;
+        $credentials = $userInfos->userCredentials;
         if($userInfos){
             return response() -> json([
                 'data' => $userInfos,
                 'city' => $city,
                 'branch' => $branch,
                 "department" => $department,
+                'credentails' => $credentials,
                 'title' => $title], 200);
         }else {
             return response()->json(['message' => 'User not found'], 404);  // Return error if not found

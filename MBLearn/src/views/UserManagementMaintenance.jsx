@@ -14,48 +14,10 @@ import EditUserModal from '../modalsandprops/EditUserModal';
 import DeleteUserModal from '../modalsandprops/DeleteUserModal';
 import DeleteUserSuccessfully from '../modalsandprops/DeleteUserSuccessfully';
 import UserManagemenFilterPopover from '../modalsandprops/UserManagementFilterPopover';
-import { OptionProvider } from '../contexts/AddUserOptionProvider';
-import { SelectedUserProvider, useUser } from '../contexts/selecteduserContext';
-
-
-//User Filter
-const Userfilter = [
-    {
-        id:'role',
-        name: 'User Role',
-        option: [
-            {value: 'system_admin' , label: 'System-Administrator', checked: false },
-            {value: 'course_admin' , label: 'Course-Administrator', checked: false },
-            {value: 'learner' , label: 'Learner', checked: false },
-        ]
-    },
-    {
-        id:'department',
-        name: 'Department/Business Unit',
-        option: [
-            {value: 'humanresources' , label: 'Human Resources (HR)', checked: false },
-            {value: 'infotech' , label: 'Information Technology Support', checked: false },
-            {value: 'customersupport' , label: 'Customer Support', checked: false },
-            {value: 'facility' , label: 'Facility Management', checked: false },
-        ]
-    },
-
-    {
-        id:'branch_location',
-        name: 'Branch & Location',
-        option: [
-            {value: 'makati' , label: 'Makati', checked: false },
-            {value: 'taguig' , label: 'Taguig', checked: false },
-            {value: 'manila' , label: 'Manila', checked: false },
-            {value: 'quezon_city' , label: 'Quezon City', checked: false },
-            {value: 'pasig' , label: 'Pasig', checked: false },
-        ]
-    },
-]
-
+import { useOption } from '../contexts/AddUserOptionProvider';
 
 export default function UserManagementMaintenance() {
-
+    const {departments,cities,location} = useOption();
 
     //Modal State
     const [modalState, setModalState] = useState({
@@ -241,7 +203,7 @@ export default function UserManagementMaintenance() {
 
 
             {/* Search bar */}
-            <div className='inline-flex items-center col-start-4 row-start-2 px-5 py-3 h-fit'>
+            <div className='inline-flex items-center justify-center col-start-4 row-start-2 px-5 py-3 h-full'>
                 <div className=' inline-flex flex-row place-content-between border-2 border-primary rounded-md w-full font-text shadow-md'>
                     <input type="text" className='focus:outline-none text-sm px-4 w-full rounded-md bg-white' placeholder='Search...'/>
                     <div className='bg-primary py-2 px-4 text-white'>
@@ -252,12 +214,12 @@ export default function UserManagementMaintenance() {
 
 
             {/* User Filter */}
-            <div className='col-start-1 col-span-3 row-start-2 row-span-1 px-5 py-3 grid grid-cols-5 w-full gap-2'>
+            <div className='col-start-1 col-span-3 row-start-2 row-span-1 px-5 py-3 grid grid-cols-[auto_auto_auto_auto_min-content] w-full gap-2'>
                 {/* <UserManagemenFilterPopover/> */}
 
                 <div className="inline-flex flex-col gap-1">
                 <label htmlFor="role" className="font-header text-xs flex flex-row justify-between">
-                    <p className="text-xs font-text text-unactive">Employee's Account Role *</p>
+                    <p className="text-xs font-text text-unactive">Employees Name Section </p>
                 </label>
                 <div className="grid grid-cols-1">
                     <select id="role" name="role" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
@@ -265,12 +227,11 @@ export default function UserManagementMaintenance() {
                         // onChange={formik.handleChange}
                         // onBlur={formik.handleBlur}
                         >
-                        <option value=''>Select Role</option>
-                        {/* {
-                            roles.map((role) => (
-                                <option key={role.id} value={role.id}>{role.role_name}</option>
-                            ))
-                        } */}
+                        <option value=''>Select an Option</option>
+                        <option value=''>A-G</option>
+                        <option value=''>H-N</option>
+                        <option value=''>O-T</option>
+                        <option value=''>U-Z</option>
                     </select>
                     <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
                     <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
@@ -280,7 +241,7 @@ export default function UserManagementMaintenance() {
 
                 <div className="inline-flex flex-col gap-1">
                 <label htmlFor="role" className="font-header text-xs flex flex-row justify-between">
-                    <p className="text-xs font-text text-unactive">Employee's Account Role *</p>
+                    <p className="text-xs font-text text-unactive">Employees Department </p>
                 </label>
                 <div className="grid grid-cols-1">
                     <select id="role" name="role" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
@@ -288,12 +249,12 @@ export default function UserManagementMaintenance() {
                         // onChange={formik.handleChange}
                         // onBlur={formik.handleBlur}
                         >
-                        <option value=''>Select Role</option>
-                        {/* {
-                            roles.map((role) => (
-                                <option key={role.id} value={role.id}>{role.role_name}</option>
+                        <option value=''>Select Department</option>
+                        {
+                            departments.map((department) => (
+                                <option key={department.id} value={department.id}>{department.department_name}</option>
                             ))
-                        } */}
+                        }
                     </select>
                     <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
                     <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
@@ -303,7 +264,7 @@ export default function UserManagementMaintenance() {
 
                 <div className="inline-flex flex-col gap-1">
                 <label htmlFor="role" className="font-header text-xs flex flex-row justify-between">
-                    <p className="text-xs font-text text-unactive">Employee's Account Role *</p>
+                    <p className="text-xs font-text text-unactive">Branch City</p>
                 </label>
                 <div className="grid grid-cols-1">
                     <select id="role" name="role" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
@@ -311,12 +272,12 @@ export default function UserManagementMaintenance() {
                         // onChange={formik.handleChange}
                         // onBlur={formik.handleBlur}
                         >
-                        <option value=''>Select Role</option>
-                        {/* {
-                            roles.map((role) => (
-                                <option key={role.id} value={role.id}>{role.role_name}</option>
+                        <option value=''>Select Branch City</option>
+                        {
+                            cities.map((city) => (
+                                <option key={city.id} value={city.id}>{city.city_name}</option>
                             ))
-                        } */}
+                        }
                     </select>
                     <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
                     <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
@@ -326,7 +287,7 @@ export default function UserManagementMaintenance() {
 
                 <div className="inline-flex flex-col gap-1">
                 <label htmlFor="role" className="font-header text-xs flex flex-row justify-between">
-                    <p className="text-xs font-text text-unactive">Employee's Account Role *</p>
+                    <p className="text-xs font-text text-unactive">Branch Location</p>
                 </label>
                 <div className="grid grid-cols-1">
                     <select id="role" name="role" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
@@ -334,12 +295,12 @@ export default function UserManagementMaintenance() {
                         // onChange={formik.handleChange}
                         // onBlur={formik.handleBlur}
                         >
-                        <option value=''>Select Role</option>
-                        {/* {
-                            roles.map((role) => (
-                                <option key={role.id} value={role.id}>{role.role_name}</option>
+                        <option value=''>Select Branch Location</option>
+                        {
+                            location.map((location) => (
+                                <option key={location.id} value={location.id}>{location.branch_name}</option>
                             ))
-                        } */}
+                        }
                     </select>
                     <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
                     <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
@@ -347,10 +308,16 @@ export default function UserManagementMaintenance() {
                 </div>
                 </div>
 
+                {/* Filter Button */}
+                <div className='w-4/5 flex-col flex justify-end py-1'>
+                    <div className='aspect-square px-4 flex flex-row justify-center items-center bg-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 ease-in-out transition-all '>
+                        <FontAwesomeIcon icon={faFilter} className='text-white text-sm'/>
+                    </div>
+                </div>
 
             </div>
 
-            {/* Userlist/Table */}
+            {/* Userlist Table */}
             <div className='row-start-3 row-span-2 col-start-1 col-span-4 px-5 py-2'>
                 <div className='w-full border-primary border rounded-md overflow-hidden shadow-md'>
                 <table className='text-left w-full overflow-y-scroll'>
@@ -437,8 +404,7 @@ export default function UserManagementMaintenance() {
                 </div>
             </div>
 
-            <SelectedUserProvider>
-                <OptionProvider>
+
                     {/* User Profile Card */}
                     <UserEntryModal open={modalState.isOpen} close={CloseDialog} classname='relative z-10' ID={userID}/>
 
@@ -451,8 +417,7 @@ export default function UserManagementMaintenance() {
                     {/* Delete User Modal */}
                     <DeleteUserModal open={modalState.isDelete} close={CloseDelete} EmployeeID={userID.isDelete} close_confirmation={OpenSuccessFullyDelete}/>
                     <DeleteUserSuccessfully open={modalState.isDeleteSuccess} close={CloseSuccessFullyDelete}/>
-                </OptionProvider>
-            </SelectedUserProvider>
+
         </div>
 
     )

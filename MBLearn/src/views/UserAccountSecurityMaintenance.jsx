@@ -3,21 +3,72 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Helmet } from "react-helmet"
 import UserListLoadingProps from "../modalsandprops/UserListLoadingProps"
 import UserSecEntyProps from "../modalsandprops/UserSecEntyProps"
-import { use } from "react"
 import axiosClient from "../axios-client"
 import User from "../modalsandprops/UserEntryProp"
 import { useEffect, useState } from "react"
-import React from "react"
 import UserCredentialsLoadingProps from "../modalsandprops/UserCredentialsLoadingProps"
+import { useOption } from "../contexts/AddUserOptionProvider"
+import EditUserCredsModal from "../modalsandprops/EditUserCredsModal"
+
 
 
 export default function UserAccountSecurityMaintenance(){
+    const {departments,cities,location,roles,titles} = useOption();
     const [isLoading, setIsLoading] = useState(true)
-    const [users, setUsers] = useState([]) //Fetching the user list
+    const [isReady, setIsReady] = useState(false);
+    const [users, setUsers] = useState([])
+
+    const [modalState, setModalState] = useState({
+        isOpen: false,
+        isOpenAdd:false,
+        isEdit:false,
+        isDelete: false,
+        isDeleteSuccess: false,
+    });
+
+
+    //Modal state changes
+    const toggleModal = (key,value) => {
+        setModalState((prev => ({
+            ...prev,
+            [key]:value,
+        })));
+    }
+
+    //Action User Button State
+    const [userID, setUserID] = useState({
+        isEdit:'',
+        isDelete:'',
+        isSelect:'',
+    })
+    const toggleUserID = (key,value) => {
+        setUserID((prev => ({
+            ...prev,
+            [key]:value,
+        })));
+    }
+
+    useEffect(()=>{console.log(userID.isEdit)},[userID.isEdit])
+    //Open and CLose Modals
+    const OpenEdit = (e,ID) => {
+        e.stopPropagation();
+        toggleUserID("isEdit", ID);
+        toggleModal("isEdit", true);
+    }
+    const CloseEdit = (e) => {
+        toggleModal("isEdit", false);
+        e.preventDefault()
+    }
+
+    useEffect(() => {
+        if (departments && cities && location && roles && titles) {
+            setIsReady(true); // Mark as ready when all options are loaded
+        }
+    }, [departments, cities, location, roles, titles]);
 
     const [pageState, setPagination] = useState({
             currentPage: 1,
-            perPage: 6,
+            perPage: 5,
             totalUsers: 0,
             lastPage: 1,
             startNumber: 0,
@@ -43,6 +94,8 @@ export default function UserAccountSecurityMaintenance(){
         .then((response) => {
             setUsers(response.data.data)
             setIsLoading(false)
+            pageChangeState("totalUsers", response.data.total)
+            pageChangeState("lastPage", response.data.lastPage)
             console.log(response.data.data)
         }).catch((e)=>{
             console.log(e)
@@ -56,8 +109,10 @@ export default function UserAccountSecurityMaintenance(){
 
     //fetchUsers
     useEffect(() => {
-        fetchUsers()
-    }, [pageState.currentPage, pageState.perPage])
+        if (isReady) {
+            fetchUsers(); // Fetch users only when options are ready
+        }
+    }, [isReady,pageState.currentPage, pageState.perPage])
 
 
     //Pagination Navigations
@@ -115,11 +170,128 @@ export default function UserAccountSecurityMaintenance(){
             </div>
 
             {/* User Filter */}
-            <div className='col-start-1 row-start-2 row-span-1 px-5 pt-3'>
-            <button className='flex flex-row items-center border-2 border-primary py-2 px-4 font-header bg-secondarybackground rounded-md text-primary gap-2 w-fit hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md'>
-                <p>Filter</p>
-                <FontAwesomeIcon icon={faFilter}/>
-            </button>
+            <div className='col-start-1 col-span-4 row-start-2 row-span-1 px-5 py-3 grid grid-cols-[auto_auto_auto_auto_auto_min-content] w-full gap-2'>
+            <div className="inline-flex flex-col gap-1">
+                <label htmlFor="role" className="font-header text-xs flex flex-row justify-between">
+                    <p className="text-xs font-text text-unactive">Employees Name Section </p>
+                </label>
+                <div className="grid grid-cols-1">
+                    <select id="role" name="role" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                        // value={formik.values.role}
+                        // onChange={formik.handleChange}
+                        // onBlur={formik.handleBlur}
+                        >
+                        <option value=''>Select an Option</option>
+                        <option value=''>A-G</option>
+                        <option value=''>H-N</option>
+                        <option value=''>O-T</option>
+                        <option value=''>U-Z</option>
+                    </select>
+                    <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                    <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                </div>
+
+                <div className="inline-flex flex-col gap-1">
+                <label htmlFor="role" className="font-header text-xs flex flex-row justify-between">
+                    <p className="text-xs font-text text-unactive">Employees Department </p>
+                </label>
+                <div className="grid grid-cols-1">
+                    <select id="role" name="role" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                        // value={formik.values.role}
+                        // onChange={formik.handleChange}
+                        // onBlur={formik.handleBlur}
+                        >
+                        <option value=''>Select Department</option>
+                        {
+                            departments.map((department) => (
+                                <option key={department.id} value={department.id}>{department.department_name}</option>
+                            ))
+                        }
+                    </select>
+                    <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                    <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                </div>
+
+                <div className="inline-flex flex-col gap-1">
+                <label htmlFor="role" className="font-header text-xs flex flex-row justify-between">
+                    <p className="text-xs font-text text-unactive">Branch City</p>
+                </label>
+                <div className="grid grid-cols-1">
+                    <select id="role" name="role" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                        // value={formik.values.role}
+                        // onChange={formik.handleChange}
+                        // onBlur={formik.handleBlur}
+                        >
+                        <option value=''>Select Branch City</option>
+                        {
+                            cities.map((city) => (
+                                <option key={city.id} value={city.id}>{city.city_name}</option>
+                            ))
+                        }
+                    </select>
+                    <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                    <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                </div>
+
+                <div className="inline-flex flex-col gap-1">
+                <label htmlFor="role" className="font-header text-xs flex flex-row justify-between">
+                    <p className="text-xs font-text text-unactive">Branch Location</p>
+                </label>
+                <div className="grid grid-cols-1">
+                    <select id="role" name="role" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                        // value={formik.values.role}
+                        // onChange={formik.handleChange}
+                        // onBlur={formik.handleBlur}
+                        >
+                        <option value=''>Select Branch Location</option>
+                        {
+                            location.map((location) => (
+                                <option key={location.id} value={location.id}>{location.branch_name}</option>
+                            ))
+                        }
+                    </select>
+                    <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                    <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                </div>
+
+                <div className="inline-flex flex-col gap-1">
+                <label htmlFor="role" className="font-header text-xs flex flex-row justify-between">
+                    <p className="text-xs font-text text-unactive">Employee Account Role</p>
+                </label>
+                <div className="grid grid-cols-1">
+                    <select id="role" name="role" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                        // value={formik.values.role}
+                        // onChange={formik.handleChange}
+                        // onBlur={formik.handleBlur}
+                        >
+                        <option value=''>Employee Account Role</option>
+                        {
+                            roles.map((role) => (
+                                <option key={role.id} value={role.id}>{role.role_name}</option>
+                            ))
+                        }
+                    </select>
+                    <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                    <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                </div>
+
+
+                {/* Filter Button */}
+                <div className='w-4/5 flex-col flex justify-end py-1'>
+                    <div className='aspect-square px-4 flex flex-row justify-center items-center bg-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 ease-in-out transition-all '>
+                        <FontAwesomeIcon icon={faFilter} className='text-white text-sm'/>
+                    </div>
+                </div>
             </div>
 
             {/* UserList Table */}
@@ -128,11 +300,11 @@ export default function UserAccountSecurityMaintenance(){
                 <table className='text-left min-w-full table-layout-fixed'>
                     <thead className='font-header text-xs text-primary bg-secondaryprimary uppercase'>
                         <tr>
-                            <th className='p-4 w-1/5'>EMPLOYEE NAME</th>
-                            <th className='p-4 w-1/5'>Employee ID</th>
-                            <th className='p-4 w-1/5'>Metrobank Working Email</th>
-                            <th className='p-4 w-1/5'>ROLE</th>
-                            <th className='p-4 w-1/5'></th>
+                            <th className='p-4 w-2/7'>EMPLOYEE NAME</th>
+                            <th className='p-4 w-2/7'>Employee Location & Department</th>
+                            <th className='p-4 w-1/7'>Metrobank Working Email</th>
+                            <th className='p-4 w-1/7'>ROLE</th>
+                            <th className='p-4 w-1/7'></th>
                         </tr>
                     </thead>
                     <tbody className='bg-white divide-y divide-divider'>
@@ -141,7 +313,19 @@ export default function UserAccountSecurityMaintenance(){
                                 <UserCredentialsLoadingProps/>
                             ) : (
                                 users.map(user => (
-                                    <UserSecEntyProps key={user.id} name={[user.user_infos?.first_name, user.user_infos?.middle_name, user.user_infos?.last_name].join("")} employeeID={user.user_infos.employeeID} MBEmail={user.MBemail} role={user.user_infos?.roles?.[0]?.role_name} image={user.user_infos?.profile_image }/>
+                                    <UserSecEntyProps
+                                        key={user.id}
+                                        user={user}
+                                        name={[user.user_infos?.first_name, user.user_infos?.middle_name, user.user_infos?.last_name].join("")}
+                                        MBEmail={user.MBemail}
+                                        city={1}
+                                        branch={1}
+                                        department={1}
+                                        title={1}
+                                        role={user.user_infos?.roles?.[0]?.role_name}
+                                        image={user.user_infos?.profile_image }
+                                        edit={OpenEdit}
+                                        />
                                 ))
                             )
 
@@ -194,6 +378,7 @@ export default function UserAccountSecurityMaintenance(){
 
             {/* View User Credentials Modal */}
             {/* Edit User Credentials Modal */}
+            <EditUserCredsModal open={modalState.isEdit} close={CloseEdit} ID={userID.isEdit}/>
             {/* Delete User Credentials Modal */}
         </div>
     )

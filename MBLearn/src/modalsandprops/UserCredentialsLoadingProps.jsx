@@ -2,7 +2,7 @@ const UserCredentialsLoadingProps = () => {
     return(
         <>
             {
-                Array(6).fill().map((item, index) => (
+                Array(5).fill().map((item, index) => (
                     <tr key={index}>
                         <td className="animate-pulse py-3 px-4">
                             <div className='flex items-center gap-2'>

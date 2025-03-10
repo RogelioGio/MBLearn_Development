@@ -60,9 +60,8 @@ class userCredentials_controller extends Controller
         $userCredentials = UserCredentials::with(['userInfos', 'userInfos.roles'])->paginate($perPage);
 
         return response()->json([
-            'message' => 'User Credentials List',
             'total' => $userCredentials->total(),
-            'last' => $userCredentials->lastPage(),
+            'lastPage' => $userCredentials->lastPage(),
             'currentPage' => $userCredentials->currentPage(),
             'data' => $userCredentials->items()
         ]);
