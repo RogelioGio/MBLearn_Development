@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class BulkStoreCourseRequest extends FormRequest
+class BulkAssignCourseAdmins extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -21,17 +21,8 @@ class BulkStoreCourseRequest extends FormRequest
      */
     public function rules(): array
     {
-        // TODO be more specific
         return [
-            '*.name' => 'required',
-            '*.description' => 'required',
-            '*.type_id' => 'required',
-            '*.category_id'=> 'required',
-            '*.training_mode_id' => 'required',
-            '*.mandatory' => 'required',
-            '*.duration' => 'required',
-            '*.archived' => 'required',
+            "data.*.user_id" => "required|integer|exists:userInfo,id"
         ];
     }
-
 }

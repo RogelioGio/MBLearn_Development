@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\BulkAssignCourseAdmins;
 use App\Http\Requests\BulkStoreCourseRequest;
 use App\Http\Requests\StoreCourseRequest;
 use App\Http\Resources\CourseResource;
@@ -32,11 +33,10 @@ class CourseController extends Controller
      */
     public function store(StoreCourseRequest $request)
     {
-        $data = $request;
+        $data = $request->all();
         $type = Type::query()->find($data['type_id']);
         $category = Category::query()->find($data['category_id']);
         $training_mode = Training_Mode::query()->find($data['training_mode_id']);
-        $course_admin = UserInfos::query()->find($data['assigned_course_admin_id']);
         $current_user = Auth::user();
 
         
@@ -52,20 +52,29 @@ class CourseController extends Controller
         $course->training_modes()->syncWithoutDetaching($training_mode->id);
         $course->types()->syncWithoutDetaching($type->id);
         $course->categories()->syncWithoutDetaching($category->id);
-        $course->assignedCourseAdmin()->associate($course_admin);
         $course->save();
         return response((new CourseResource($course))->toArray($request), 204);
     }
 
     public function bulkStore(BulkStoreCourseRequest $request){
         $bulk = collect($request->all())->map(function($arr, $key){
-            return Arr::except($arr,['systemAdminId', 'assignedCourseAdminId']);
+            return $arr;
         });
 
         Course::insert($bulk->toArray());
         return response()->json([
             "Message" => "Bulk Store complete",
             "Data" => $bulk
+        ]);
+    }
+
+    public function assignCourseAdmin(BulkAssignCourseAdmins $bulkAssignCourseAdmins, Course $course){
+        $bulk = collect($bulkAssignCourseAdmins->all())->map(function($arr, $key){
+            return $arr;
+        });
+        $course->assignedCourseAdmins()->syncWithoutDetaching($bulk);
+        return response()->json([
+            'message' => "Course Admins Assigned to $course->name"
         ]);
     }
 

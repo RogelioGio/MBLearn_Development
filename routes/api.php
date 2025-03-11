@@ -40,6 +40,7 @@ Route::middleware('auth:sanctum')->group(function(){
 
     //Userlist API for the frontend
     Route::post('/add-user', [userInfo_controller::class, 'addUser']);
+    Route::post('/add-many-users', [userInfo_controller::class, 'bulkStoreUsers']);
     //Send the id for both the userinfos and roleid
     Route::post('/addRole/{userInfos}/{role}', [userInfo_controller::class, 'addRole']);
     Route::post('/removeRole/{userInfos}/{role}', [userInfo_controller::class, 'removeRole']);
@@ -95,6 +96,9 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::apiResource('/categories', CategoryController::class);
     Route::apiResource('/modes', Training_ModeController::class);
     Route::apiResource('/types', TypeController::class);
+    
+    //Assigning Course Admin to Course
+    Route::post('/assign-course-admin/{course}', [CourseController::class, 'assignCourseAdmin']);
 
     //Course enrolled users
     Route::get('/select-course-users/{course}', [CourseController::class, 'getCourseUsers']);

@@ -23,15 +23,14 @@ class StoreCourseRequest extends FormRequest
     {
         // TODO be more specific
         return [
-            'name' => 'required',
-            'CourseID' => 'required',
+            'name' => 'required|unique:courses,name',
+            'CourseID' => 'required|unique:courses,CourseID',
             'description' => 'required',
-            'type_id' => 'required',
-            'category_id'=> 'required',
-            'training_mode_id' => 'required',
+            'type_id' => 'required|exists:types,type_name',
+            'category_id'=> 'required|exists:categories,category_name',
+            'training_mode_id' => 'required|exists:training__modes,mode_name',
             'training_type' => 'required',
             'archived' => 'required',
-            'assignedCourseAdminId' => 'required|integer',
         ];
     }
 

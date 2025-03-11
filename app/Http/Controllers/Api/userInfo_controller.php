@@ -16,6 +16,8 @@ use App\Models\UserInfos;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\UserCredentials;
+use Illuminate\Support\Arr;
+
 class userInfo_controller extends Controller
 {
 
@@ -48,9 +50,6 @@ class userInfo_controller extends Controller
 
         // Generate profile image URL (pass the correct name variable)
         $profile_image = $this->generateProfileImageUrl($fullName);
-
-        // Default status to 'Active' if not provided
-        $status = $validatedData['status'] ?? 'Active';
 
         $userCredentials = UserCredentials::create([
             'MBemail' => $validatedData['MBemail'],
@@ -86,6 +85,72 @@ class userInfo_controller extends Controller
 
     public function bulkStoreUsers(BulkStoreUserRequest $bulkStoreUserRequest){
 
+        $bulk = collect($bulkStoreUserRequest->all())->map(function ($arr, $key){
+            $messyArray = [];
+            $oneDArray = [];
+            foreach($arr as $key => $value){
+                switch($key){
+                    case 'role':
+                        $role = (Role::query()->where('role_name', '=', $value)->first());
+                        $messyArray[] = [$key => $role];
+                        break;
+                    case 'title':
+                        $title = (Title::query()->where('title_name', '=', $value)->first());
+                        $messyArray[] = [$key => $title];
+                        break;
+                    case 'department':
+                        $department = (Department::query()->where('department_name', '=', $value)->first());
+                        $messyArray[] = [$key => $department];
+                        break;
+                    case 'branch':
+                        $branch = (Branch::query()->where('branch_name', '=', $value)->first());
+                        $messyArray[] = [$key => $branch];
+                        break;
+                    default:
+                        $messyArray[] = [$key => $value];
+                }
+            }
+            $oneDArray = array_reduce($messyArray, 'array_merge', []);
+            return $oneDArray;
+        });
+        foreach($bulk as $single){
+
+            // Combine first name, middle initial, last name, and suffix into a full name
+            $fullName = trim("{$single['first_name']} " .
+                                ("{$single['middle_name']}" ? "{$single['middle_name']}. " : "") .
+                                "{$single['last_name']} " .
+                                ("{$single['name_suffix']}" ? $single['name_suffix'] : ""));
+
+            // Generate profile image URL (pass the correct name variable)
+            $profile_image = $this->generateProfileImageUrl($fullName);
+
+            // Default status to 'Active' if not provided
+            $status = $single['status'] ?? 'Active';
+            $userCredentials = UserCredentials::create([
+                "MBemail" => $single['MBemail'],
+                "password" => $single['password']
+            ]);
+
+            $userInfo = UserInfos::create([
+                'employeeID' => $single['employeeID'],
+                'first_name' => $single['first_name'],
+                'last_name' => $single['last_name'],
+                'middle_name' => $single['middle_name'],
+                'name_suffix' => $single['name_suffix'],
+                'status' =>$status,
+                'profile_image' =>$profile_image
+            ]);
+
+            $userInfo->branch()->associate($single['branch']);
+            $userInfo->title()->associate($single['title']);
+            $userInfo->department()->associate($single['department']);
+            $userInfo->roles()->sync($single['role']['id']);
+            $userInfo->save();
+            $userCredentials->userInfos()->save($userInfo);
+        }
+        return response()->json([
+            'Message' => "Users added"
+        ]);
     }
     /**
     * Generate a default profile image URL based on the user's name

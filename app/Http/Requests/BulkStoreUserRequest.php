@@ -27,6 +27,7 @@ class BulkStoreUserRequest extends FormRequest
             'data.*.last_name' => 'required|string|max:30',
             'data.*.middle_name' => 'nullable|string|max:30',
             'data.*.name_suffix' => 'nullable|string|max:10',
+            'data.*.role' => 'required|string|exists:roles,role_name',
             'data.*.department' => 'required|string|exists:departments,department_name',
             'data.*.title' => 'required|string|exists:titles,title_name',
             'data.*.branch' => 'required|string|exists:branches,branch_name',

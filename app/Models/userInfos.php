@@ -54,8 +54,8 @@ class UserInfos extends Model
         return $this->hasMany(Course::class, 'system_admin_id');
     }
 
-    public function assignedCourses(): HasMany{
-        return $this->hasMany(Course::class, 'assigned_course_admin_id');
+    public function assignedCourses(): BelongsToMany{
+        return $this->belongsToMany(Course::class, 'course_userinfo_assignment', 'user_id', 'course_id');
     }
 
 
