@@ -42,7 +42,7 @@ const User = ({re_move,click,userID,name,department,title,branch,city,profile_ur
                 {/* Action */}
                 <td className='py-3 px-4'>
                     <div className='flex gap-1 justify-end'>
-                    <button onClick={(e) => edit(e,userID,employeeID)}
+                    <button onClick={(e) => edit(e,userID)}
                             className='flex flex-row items-center justify-center gap-2 px-5 py-2 border border-primary rounded-md text-primary hover:bg-primary hover:text-white hover:scale-105 transition-all ease-in-out'>
                         <FontAwesomeIcon icon={faUserPen}/>
                         <p>Edit</p>

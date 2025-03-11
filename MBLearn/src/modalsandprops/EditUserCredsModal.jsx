@@ -66,7 +66,7 @@ const EditUserCredsModal = ({open, close,ID}) => {
                                                     </div>
                                                     <div className="py-4">
                                                         <p className="font-text text-xs text-unactive">Department & Branch:</p>
-                                                        <p className="font-text">{selectedUser?.department.department_name}</p>
+                                                        <p className="font-text">{selectedUser?.department?.department_name}</p>
                                                         <p className="font-text text-xs">{selectedUser?.title_id}</p>
                                                     </div>
                                                     <div className="py-4">

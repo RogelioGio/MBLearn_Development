@@ -43,7 +43,7 @@ export default function UserManagementMaintenance() {
         isSelect:'',
     })
     const toggleUserID = (key,value) => {
-        setModalState((prev => ({
+        setUserID((prev => ({
             ...prev,
             [key]:value,
         })));
@@ -179,6 +179,9 @@ export default function UserManagementMaintenance() {
         Pages.push(p)
     }
 
+    useEffect(() => {
+        console.log(userID.isEdit)
+    },[userID.isEdit])
     return (
         <div className='grid grid-cols-4 grid-rows-[6.25rem_min-content_auto_auto_min-content] h-full w-full'>
             <Helmet>
