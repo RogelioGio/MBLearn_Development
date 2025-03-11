@@ -46,7 +46,7 @@ const UserSecEntyProps = ({user,name,employeeID,MBEmail,city,branch,department,t
                         {/* Action */}
                         <td className='py-3 px-4'>
                             <div className='flex gap-1 justify-end'>
-                            <button onClick={(e) => edit(e,user.id)}
+                            <button
                                     className='flex flex-row items-center justify-center gap-2 px-5 py-2 border border-primary rounded-md text-primary hover:bg-primary hover:text-white hover:scale-105 transition-all ease-in-out'
                                     >
                                 <FontAwesomeIcon icon={faUserPen}/>

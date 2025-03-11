@@ -56,20 +56,11 @@ const router = createBrowserRouter([
                     },
                     {
                         path: "usermanagementmaintenance",
-                        element:
-                            <SelectedUserProvider>
-                                <OptionProvider>
-                                    <UserManagementMaintenance/>
-                                </OptionProvider>
-                            </SelectedUserProvider>
+                        element:<UserManagementMaintenance/>
                     },
                     {
                         path: "useraccountsmaintenance",
-                        element: <SelectedUserProvider>
-                                    <OptionProvider>
-                                        <UserAccountSecurityMaintenance/>
-                                    </OptionProvider>
-                                </SelectedUserProvider>
+                        element: <UserAccountSecurityMaintenance/>
                     },
                     {
                         path: "systemconfigurationmaintenance",
