@@ -14,6 +14,7 @@ import CourseFilterProps from '../modalsandprops/CourseFilterProps';
 import AssignCourseAdmin from '../modalsandprops/AssignCourseAdminModal';
 import axiosClient from '../axios-client';
 import CourseCardLoading from '../modalsandprops/CourseCardLoading';
+import CourseLoading from "../assets/Course_Loading.svg"
 
 export default function CourseListMaintenance() {
 const {user} = useStateContext()
@@ -185,9 +186,10 @@ useEffect(() => {
             {/* Sample Card for course display */}
             {
                 modalState.loading ? (
-                    <div className='row-start-3 row-span-1 col-start-1 col-span-3 w-full pl-5 py-2 flex flex-col gap-2'>
-                        <CourseCardLoading/>
-                    </div>
+                    <div className=" row-start-3 col-span-3 flex flex-col gap-4 items-center justify-center text-center h-full">
+                                <img src={CourseLoading} alt="" className="w-80"/>
+                                <p className="text-sm font-text text-primary">Hang tight! 🚀 Loading courses for — great things take a second!</p>
+                            </div>
                 ) : (
                     <CourseListCard courseList={courses} classname='row-start-3 row-span-1 col-start-1 col-span-3 w-full pl-5 py-2 flex flex-col gap-2' onclick={OpenDialog} action={handleAction}/>
                 )

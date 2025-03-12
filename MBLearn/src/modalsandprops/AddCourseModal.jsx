@@ -56,6 +56,8 @@ const AddCourseModal = ({open,onClose}) => {
             course_name:'',
             course_type:'',
             course_category:'',
+            traingmodes:'',
+            training_type:'',
             short_desc:'',
         },
         //validation
@@ -141,7 +143,7 @@ const AddCourseModal = ({open,onClose}) => {
 
     return(
         <>
-        <Dialog open={open} onClose={onClose}>
+        <Dialog open={open} onClose={()=>{}}>
             <DialogBackdrop transition className="fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"/>
                 <div className='fixed inset-0 z-10 w-screen overflow-y-auto'>
                     <div className='flex min-h-full items-center justify-center p-4 text center'>
@@ -274,8 +276,49 @@ const AddCourseModal = ({open,onClose}) => {
                                                 </div>
                                                     {formik2.touched.course_type && formik2.errors.course_type ? (<div className="text-red-500 text-xs font-text">{formik2.errors.course_type}</div>):null}
                                             </div>
+                                            <div className="inline-flex flex-col gap-2 row-start-5 col-span-1">
+                                                <label htmlFor="course_type" className="font-header text-xs flex flex-row justify-between">
+                                                    <p className="uppercase">Training Mode:</p>
+                                                </label>
+                                                <div class="grid grid-cols-1">
+                                                    <select id="traing_mode" name="traing_mode" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
+                                                        value={formik2.values.traing_mode}
+                                                        onChange={formik2.handleChange}
+                                                        onBlur={formik2.handleBlur}
+                                                    >
+                                                    <option value="">Select a training mode</option>
+                                                    <option value="Online Training">Online Training</option>
+
+                                                    </select>
+                                                    <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                                    <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                                    </svg>
+                                                </div>
+                                                    {formik2.touched.traingmodes && formik2.errors.traingmodes ? (<div className="text-red-500 text-xs font-text">{formik2.errors.traingmodes}</div>):null}
+                                            </div>
+                                            <div className="inline-flex flex-col gap-2 row-start-5 col-span-1">
+                                                <label htmlFor="course_type" className="font-header text-xs flex flex-row justify-between">
+                                                    <p className="uppercase">Training Type:</p>
+                                                </label>
+                                                <div class="grid grid-cols-1">
+                                                    <select id="training_type" name="training_type" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
+                                                        value={formik2.values.training_type}
+                                                        onChange={formik2.handleChange}
+                                                        onBlur={formik2.handleBlur}
+                                                    >
+                                                    <option value="">Select a Training type</option>
+                                                    <option value="Mandatory">Mandatory</option>
+                                                    <option value="Unmandatory">Unmandatory</option>
+
+                                                    </select>
+                                                    <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                                    <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                                    </svg>
+                                                </div>
+                                                    {formik2.touched.course_type && formik2.errors.course_type ? (<div className="text-red-500 text-xs font-text">{formik2.errors.course_type}</div>):null}
+                                            </div>
                                             {/* Short Description */}
-                                            <div className="inline-flex flex-col gap-2 row-start-5 col-span-2">
+                                            <div className="inline-flex flex-col gap-2 row-start-6 col-span-2">
                                                 <label htmlFor="short_desc" className="font-header text-xs flex flex-row justify-between uppercase">Short Description:</label>
                                                 <textarea
                                                     name="short_desc"

@@ -32,7 +32,7 @@ const navItems = {
         {icon:faHouse, text:"Home", to:'/systemadmin/dashboard'},
         {icon:faBook, text:"Course List Maintenance", to:"/systemadmin/courselistmaintenance"},
         {icon:faUserGroup, text:"User Management Maintenance", to:"/systemadmin/usermanagementmaintenance"},
-        {icon:faUserLock, text:"User Accounts Maintenance", to:"/systemadmin/useraccountsmaintenance"},
+        {icon:faUserLock, text:"System Access Maintenance", to:"/systemadmin/useraccountsmaintenance"},
         {icon:faGears, text:"System Configuration Maintenance", to:"/systemadmin/systemconfigurationmaintenance"},
         {icon:faChartPie, text:"System-Level Reports", to:"/systemadmin/systemlevelreports"},
         {icon:faChartGantt, text:"Activity Logs", to:"/systemadmin/activitylogs"},

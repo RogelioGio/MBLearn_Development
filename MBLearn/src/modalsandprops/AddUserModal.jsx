@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react"
 import { useRef, useState } from "react"
 import axiosClient from "../axios-client"
-import * as Yup from 'yup';
+import * as Yup from "yup"
 import { useFormik } from "formik"
 import axios from "axios"
 import UserAddedSuccessfullyModal from "./UserAddedSuccessfullyModal"
@@ -54,7 +54,7 @@ const AddUserModal = ({open, close, updateTable}) => {
         //validation
         validationSchema: Yup.object({
 
-            employeeID: Yup.string().required('required *').min(11, 'Employee ID must have 11 characters'),
+            employeeID: Yup.string().required('required *').length(11, 'Employee ID must be exactly 11 characters'),
             lastname: Yup.string().required('required *'),
             firstname: Yup.string().required('required *'),
             department: Yup.string().required('required *'),
@@ -78,7 +78,7 @@ const AddUserModal = ({open, close, updateTable}) => {
                 city_id: values.city,
                 role_id: values.role,
                 status: "Active",
-                MBemail: `${values.firstname.replace(/\s+/g, '').trim()}_${values.lastname.replace(/\s+/g, '').trim()}@mbtc.com`.toLowerCase(),
+                MBemail: `${values.firstname.replace(/\s+/g, '').trim()}.${values.lastname.replace(/\s+/g, '').trim()}@mbtc.com`.toLowerCase(),
                 password: `${values.firstname.replace(/\s+/g, '').trim()}_${values.employeeID}`
             }
             axiosClient.post('/add-user',payload).
@@ -209,7 +209,7 @@ const AddUserModal = ({open, close, updateTable}) => {
                                                 {/* Last Name */}
                                                 <div className="inline-flex flex-col gap-1 row-start-2 col-span-1 py-2">
                                                 <label htmlFor="name" className="font-text text-xs flex flex-row justify-between">
-                                                    <p>Employee's Last Name *</p>
+                                                    <p>Employee's Last Name <span className="text-red-500">*</span></p>
                                                 </label>
                                                 <input type="text" name="lastname"
                                                         value={formik.values.lastname}
@@ -221,7 +221,7 @@ const AddUserModal = ({open, close, updateTable}) => {
                                                 {/* First Name */}
                                                 <div className="inline-flex flex-col gap-1 row-start-2 col-span-1 py-2">
                                                 <label htmlFor="name" className="font-text  text-xs flex flex-row justify-between">
-                                                    <p>Employee's First Name *</p>
+                                                    <p>Employee's First Name <span className="text-red-500">*</span></p>
                                                 </label>
                                                 <input type="text" name="firstname"
                                                         value={formik.values.firstname}
@@ -266,7 +266,7 @@ const AddUserModal = ({open, close, updateTable}) => {
                                                     {/* EmployeeID */}
                                                     <div className="inline-flex flex-col gap-1 row-start-2 col-start-1 py-2">
                                                         <label htmlFor="employeeID" className="font-text text-xs flex flex-row justify-between">
-                                                            <p>Employee ID Number *</p>
+                                                            <p>Employee ID Number <span className="text-red-500">*</span></p>
                                                         </label>
                                                         <input type="text" name="employeeID"
                                                                 value={formik.values.employeeID}
@@ -278,7 +278,7 @@ const AddUserModal = ({open, close, updateTable}) => {
                                                     {/*Department*/}
                                                     <div className="inline-flex flex-col gap-1 row-start-2 col-span-1 py-2">
                                                         {/* Must be dropdown */}
-                                                        <label htmlFor="department" className="font-text text-xs flex">Employee Deparment *</label>
+                                                        <label htmlFor="department" className="font-text text-xs flex">Employee Deparment <span className="text-red-500">*</span></label>
                                                         <div className="grid grid-cols-1">
                                                             <select id="department" name="department" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
                                                                 value={formik.values.department}
@@ -299,7 +299,7 @@ const AddUserModal = ({open, close, updateTable}) => {
                                                     </div>
                                                     {/* Employee Posistion */}
                                                     <div className="inline-flex flex-col gap-1 row-start-2 col-span-1 py-2">
-                                                    <label htmlFor="title" className="font-text text-xs">Employee Position *</label>
+                                                    <label htmlFor="title" className="font-text text-xs">Employee Position <span className="text-red-500">*</span></label>
                                                     <div className="grid grid-cols-1">
                                                             <select id="title" name="title" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
                                                                 value={formik.values.title}
@@ -320,7 +320,7 @@ const AddUserModal = ({open, close, updateTable}) => {
                                                     </div>
                                                     {/* Branch City Location */}
                                                     <div className="inline-flex flex-col gap-1 row-start-3 col-span-1 py-2">
-                                                    <label htmlFor="city" className="font-text text-xs flex flex-row justify-between">Branch City *</label>
+                                                    <label htmlFor="city" className="font-text text-xs flex flex-row justify-between">Branch City <span className="text-red-500">*</span></label>
                                                     <div className="grid grid-cols-1">
                                                             <select id="city" name="city" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
                                                             value={formik.values.city}
@@ -341,7 +341,7 @@ const AddUserModal = ({open, close, updateTable}) => {
                                                     </div>
                                                      {/* Branch Location */}
                                                     <div className="inline-flex flex-col gap-1 row-start-3 col-span-2 py-2">
-                                                        <label htmlFor="branch" className="font-text text-xs">Branch Location *</label>
+                                                        <label htmlFor="branch" className="font-text text-xs">Branch Location <span className="text-red-500">*</span></label>
                                                         <div className="grid grid-cols-1">
                                                                 <select id="branch" name="branch" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
                                                                     value={formik.values.branch}
@@ -372,7 +372,7 @@ const AddUserModal = ({open, close, updateTable}) => {
                                                     {/* Role */}
                                                     <div className="inline-flex flex-col gap-1 row-start-2 col-span-3 py-2">
                                                         <label htmlFor="role" className="font-header text-xs flex flex-row justify-between">
-                                                            <p className="text-xs font-text">Employee's Account Role *</p>
+                                                            <p className="text-xs font-text">Employee's Account Role <span className="text-red-500">*</span></p>
                                                         </label>
                                                         <div className="grid grid-cols-1">
                                                             <select id="role" name="role" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"

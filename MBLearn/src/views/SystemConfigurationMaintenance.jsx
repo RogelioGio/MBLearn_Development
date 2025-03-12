@@ -1,24 +1,14 @@
-import { faFileSignature, faUserClock, faUserLock, faUsers, faUsersLine } from "@fortawesome/free-solid-svg-icons"
+import { faBookAtlas, faBookOpen, faFileSignature, faUserClock, faUserLock, faUsers, faUsersLine } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Helmet } from "react-helmet"
 import axiosClient from "../axios-client"
 import { act, useEffect, useRef, useState } from "react"
+import RoleManagementSetting from "../modalsandprops/SystemSettingComponents.jsx/RoleManagementSetting"
+import FormInputSetting from "../modalsandprops/SystemSettingComponents.jsx/FormInputSetting"
+import ReactivationAccountSetting from "../modalsandprops/SystemSettingComponents.jsx/ReactivationAccountSetting"
 
 export default function SystemConfiguration() {
-    const [roles, setRoles] = useState([])
-    const [loading, setLoading] = useState(true)
-
-
-    // Fetch Roles
-    useEffect(() => {
-        axiosClient.get('/roles')
-        .then((Response) => {
-            setRoles(Response.data.data)
-            setLoading(false)
-        })
-        .catch(error => console.error(error));
-    },[])
-
+    const [tab, setTab] = useState(1)
 
     return (
         <div className='grid  grid-cols-4 grid-rows-[6.25rem_min-content_auto_auto_min-content] h-full w-full'>
@@ -33,83 +23,35 @@ export default function SystemConfiguration() {
                 <p className='font-text text-sm text-unactive' >Module for managing and customizing system settings to ensure optimal performance and functionality.</p>
             </div>
             {/* Settings Tabs */}
-            <div className="col-start-4 col-span-1 row-span-3 border-l border-divider px-3 py-3 flex items-center flex-col">
-                <div className='flex flex-row  items-center w-full px-3 py-3 gap-4 text-sm text-unactive hover:text-primary hover:bg-divider rounded-md cursor-pointer transition-all ease-in-out'>
+            <div className="col-start-1 col-span-1 row-span-3 border-r border-divider px-3 py-3 flex items-center flex-col gap-1">
+                <div className= {`flex flex-row  items-center w-full px-3 py-3 gap-4 text-sm text-unactive hover:text-primary hover:bg-divider rounded-md cursor-pointer transition-all ease-in-out ${tab === 1 ? '!bg-divider !text-primary':null}`} onClick={() => setTab(1)}>
                     <FontAwesomeIcon icon={faUsersLine}/>
                     <h1 className="uppercase font-text">Role Management</h1>
                 </div>
-                <div className='flex flex-row items-center w-full px-3 py-3 gap-4 text-sm text-unactive hover:text-primary hover:bg-divider rounded-md cursor-pointer transition-all ease-in-out'>
+                <div className= {`flex flex-row  items-center w-full px-3 py-3 gap-4 text-sm text-unactive hover:text-primary hover:bg-divider rounded-md cursor-pointer transition-all ease-in-out ${tab === 2 ? '!bg-divider !text-primary':null}`} onClick={() => setTab(2)}>
                     <FontAwesomeIcon icon={faFileSignature}/>
                     <h1 className="uppercase font-text">Form Input Setting</h1>
                 </div>
-                <div className='flex flex-row items-center w-full px-3 py-3 gap-4 text-sm text-unactive hover:text-primary hover:bg-divider rounded-md cursor-pointer transition-all ease-in-out'>
+                <div className= {`flex flex-row  items-center w-full px-3 py-3 gap-4 text-sm text-unactive hover:text-primary hover:bg-divider rounded-md cursor-pointer transition-all ease-in-out ${tab === 3 ? '!bg-divider !text-primary':null}`} onClick={() => setTab(3)}>
                     <FontAwesomeIcon icon={faUserClock}/>
                     <h1 className="uppercase font-text">Re-Activation Account</h1>
                 </div>
+                <div className= {`flex flex-row  items-center w-full px-3 py-3 gap-4 text-sm text-unactive hover:text-primary hover:bg-divider rounded-md cursor-pointer transition-all ease-in-out ${tab === 4 ? '!bg-divider !text-primary':null}`} onClick={() => setTab(4)}>
+                    <FontAwesomeIcon icon={faBookAtlas}/>
+                    <h1 className="uppercase font-text">Archived Courses Management</h1>
+                </div>
             </div>
             {/* Setting Content */}
-            <div className="mx-5 py-5 row-span-2 col-span-3 grid grid-cols-2 grid-rows-[min-content_auto] gap-2">
-                {/* Header */}
-                <div className="row-span-1 col-span-2 flex flex-row justify-between items-center py-3">
-                    <div>
-                        <h1 className="font-header text-primary text-xl">Role Management</h1>
-                        <p className="font-text text-unactive">Create and manage roles function and permission in the system</p>
-                    </div>
-                    <div>
-                        <div className={`flex flex-row justify-center items-center border-2 border-primary py-2 px-8 font-header bg-secondarybackground rounded-md text-primary gap-5 w-full hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md`}>
-                            <FontAwesomeIcon icon={faUserLock}/>
-                            <p>Add Role</p>
-                        </div>
-                    </div>
-                </div>
-                {/* Available Role*/}
-                <div className="row-span-1 col-span-2 flex flex-col gap-5">
-                    <div>
-                        <h1 className="font-header text-primary text-base">Available Roles</h1>
-                        <p className="font-text text-unactive text-xs">Available roles and user that has different roles</p>
-                    </div>
-                    <div className="w-full border-primary border rounded-md overflow-hidden shadow-md">
-                        <table className='text-left w-full overflow-y-scroll'>
-                        <thead className='font-header text-xs text-primary bg-secondaryprimary'>
-                            <tr>
-                                <th className='py-4 px-4 uppercase'>Role Name</th>
-                                <th className='py-4 px-4 uppercase'>Users</th>
-                            </tr>
-                        </thead>
-                        <tbody className='bg-white divide-y divide-divider'>
-                            {
-                                loading ? (
-                                    "Loading..."
-                                ):(
-                                    roles.map((role) =>(
-                                        <tr key={role.id} className={`font-text text-md text-primary hover:bg-gray-200 cursor-pointer`}>
-                                            <td className={`font-text p-4 flex flex-row items-center gap-4 border-l-2 border-transparent transition-all ease-in-out`}>{role.role_name}</td>
-                                            <td className={`font-text p-4 gap-4 border-l-2 border-transparent transition-all ease-in-out`}>
-                                                <div className='flex flex-row items-center gap-2'>
-                                                    <FontAwesomeIcon icon={faUsers}/>
-                                                    <p>{role.users_count} Users</p>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))
-                                )
-                            }
-                        </tbody>
-                        </table>
-                    </div>
-
-                </div>
-
-                {/* Permision Settings */}
-                <div className="row-span-1 col-span-2 flex flex-col gap-5">
-                    <div className="row-span-1 col-span-2 flex flex-row justify-between items-center py-5">
-                        <div>
-                            <h1 className="font-header text-primary text-base">Role Permission</h1>
-                            <p className="font-text text-unactive">Cutomize the selected role's permission to the system funtionalities</p>
-                        </div>
-                    </div>
-                </div>
-
+            <div className="col-span-3 row-span-3 overflow-y-auto max-h-[calc(100vh-6.25rem)]">
+                {
+                    tab === 1 ? (
+                        <RoleManagementSetting/>
+                    ) : tab === 2 ? (
+                        <FormInputSetting/>
+                    ) : tab === 3 ? (
+                        <ReactivationAccountSetting/>
+                    ) : (null)
+                }
             </div>
 
         </div>

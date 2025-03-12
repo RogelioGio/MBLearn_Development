@@ -10,33 +10,50 @@ import { useUser } from "../contexts/selecteduserContext"
 
 const EditUserModal = ({open, close, classname, ID,}) =>{
     const { roles = [], departments = [], titles = [], location = [], cities = [], } = useOption() || {};
-    const {selectedUser, selectUser} = useUser();
+    const {selectedUser, selectUser, isFetching} = useUser();
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState();
 
     useEffect(() => {
-            if (ID) {
-                selectUser(ID);
-            }
-            console.log(selectedUser)
-        }, [ID]);
+        setLoading(true);
+        if (ID) {
+            selectUser(ID);
+        }
+    }, [ID]);
+
+    useEffect(() => {
+        setLoading(isFetching);
+    }, [isFetching]);
 
     //payload and validation schema
     const formik = useFormik({
         //references
         enableReinitialize: true,
-        initialValues: {
-            employeeID: selectedUser?.employeeID || 'Loading...',
-            first_name: selectedUser?.first_name || 'Loading...',
-            middle_name: selectedUser?.middle_name || 'Loading...',
-            last_name: selectedUser?.last_name || 'Loading...',
-            department: selectedUser?.department_id || 'Loading...',
-            title: selectedUser?.title_id||'Loading...',
-            branch: selectedUser?.branch_id||'Loading...',
-            city: selectedUser?.city?.id||'Loading...',
-            role: selectedUser?.role||'Loading...',
-            status: 'Active',
-        },
+        initialValues: loading
+            ? {
+                employeeID: 'Loading...',
+                first_name: 'Loading...',
+                middle_name: 'Loading...',
+                last_name: 'Loading...',
+                department: 'Loading...',
+                title: 'Loading...',
+                branch: 'Loading...',
+                city: 'Loading...',
+                role: 'Loading...',
+                status: 'Active',
+            }
+            : {
+                employeeID: selectedUser?.employeeID || '',
+                first_name: selectedUser?.first_name || '',
+                middle_name: selectedUser?.middle_name || '',
+                last_name: selectedUser?.last_name || '',
+                department: selectedUser?.department_id || '',
+                title: selectedUser?.title_id || '',
+                branch: selectedUser?.branch_id || '',
+                city: selectedUser?.city?.id || '',
+                role: selectedUser?.role || '',
+                status: 'Active',
+            },
         //validation
         validationSchema: Yup.object({
             //userInfo

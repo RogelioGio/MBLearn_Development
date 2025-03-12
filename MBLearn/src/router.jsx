@@ -21,6 +21,8 @@ import AssignedCourseReport from "./views/AssignedCourseResport";
 import Course from "./views/Course";
 import MyEmployee from "./views/MyEmployee";
 import { CourseListProvider } from "./contexts/CourseListProvider";
+import { SelectedUserProvider } from "./contexts/selecteduserContext";
+import { OptionProvider } from "./contexts/AddUserOptionProvider";
 
 const router = createBrowserRouter([
 
@@ -54,7 +56,7 @@ const router = createBrowserRouter([
                     },
                     {
                         path: "usermanagementmaintenance",
-                        element: <UserManagementMaintenance/>
+                        element:<UserManagementMaintenance/>
                     },
                     {
                         path: "useraccountsmaintenance",

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Filters\BranchFilter;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Branch;
 use App\Http\Requests\StoreBranchRequest;
@@ -14,9 +16,15 @@ class BranchController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return Branch::paginate();
+        $filter = new BranchFilter();
+        $queryItems = $filter->transform($request);
+
+        if(count($queryItems) > 0){
+            return Branch::where($queryItems)->get();
+        }
+        return Branch::all();
     }
 
     /**

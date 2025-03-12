@@ -84,6 +84,7 @@ class userInfo_controller extends Controller
     }
 
     public function bulkStoreUsers(BulkStoreUserRequest $bulkStoreUserRequest){
+
         $bulk = collect($bulkStoreUserRequest->all())->map(function ($arr, $key){
             $messyArray = [];
             $oneDArray = [];
@@ -106,14 +107,14 @@ class userInfo_controller extends Controller
                         $messyArray[] = [$key => $branch];
                         break;
                     default:
-                        $messyArray[] = [$key => $value];                            
+                        $messyArray[] = [$key => $value];
                 }
             }
             $oneDArray = array_reduce($messyArray, 'array_merge', []);
             return $oneDArray;
         });
         foreach($bulk as $single){
-            
+
             // Combine first name, middle initial, last name, and suffix into a full name
             $fullName = trim("{$single['first_name']} " .
                                 ("{$single['middle_name']}" ? "{$single['middle_name']}. " : "") .
@@ -294,12 +295,14 @@ class userInfo_controller extends Controller
         $branch = $userInfos->branch;
         $department = $userInfos->department;
         $title = $userInfos->title;
+        $credentials = $userInfos->userCredentials;
         if($userInfos){
             return response() -> json([
                 'data' => $userInfos,
                 'city' => $city,
                 'branch' => $branch,
                 "department" => $department,
+                'credentails' => $credentials,
                 'title' => $title], 200);
         }else {
             return response()->json(['message' => 'User not found'], 404);  // Return error if not found
