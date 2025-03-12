@@ -241,7 +241,7 @@ export default function BulkEnrollment() {
             </div>
 
             {/* Search and filter */}
-            <div className="col-start-2 col-span-3 row-start-2 row-span-1 px-5 flex flex-row justify-between items-center gap-5">
+            <div className="col-start-2 col-span-3 row-start-2 row-span-1 px-5 flex flex-row justify-end items-center gap-5">
 
                 <div className=' inline-flex flex-row place-content-between border-2 border-primary rounded-md font-text shadow-md'>
                     <input type="text" className='focus:outline-none text-sm px-4 w-full rounded-md bg-white' placeholder='Search...'/>
@@ -249,12 +249,6 @@ export default function BulkEnrollment() {
                         <FontAwesomeIcon icon={faSearch}/>
                     </div>
                 </div>
-
-
-                <button className='flex flex-row items-center border-2 border-primary py-2 px-4 font-header bg-secondarybackground rounded-md text-primary gap-2 w-fit hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md'>
-                    <p>Filter</p>
-                    <FontAwesomeIcon icon={faFilter}/>
-                </button>
             </div>
 
             {/* Learner table */}
@@ -273,15 +267,15 @@ export default function BulkEnrollment() {
                             ) :(
                             learners.map((learner)=>(
                                 <Learner
-                                    key={learner.id}
-                                    id={learner.id}
-                                    profile_image={learner.profile_image}
-                                    name={[learner.first_name, learner.middle_name, learner.last_name].filter(Boolean).join(" ")}
-                                    employeeID={learner.employeeID}
-                                    department={learner.department}
-                                    title={learner.title}
-                                    branch={learner.branch}
-                                    city={learner.city}
+                                    key={learner?.id}
+                                    id={learner?.id}
+                                    profile_image={learner?.profile_image}
+                                    name={[learner?.first_name, learner?.middle_name, learner?.last_name].filter(Boolean).join(" ")}
+                                    employeeID={learner?.employeeID}
+                                    department={learner?.department.department_name}
+                                    title={learner?.title.title_name}
+                                    branch={learner?.branch.branch_name}
+                                    city={learner?.city.city_name}
                                     enrolled={selected}
                                     selectedCourse={Course.id}
                                     handleCheckbox={handleCheckbox}
@@ -296,7 +290,7 @@ export default function BulkEnrollment() {
             }
 
             {/* User Pagination */}
-            <div className='row-start-5 row-span-1 col-start-2 col-span-3 border-t border-divider mx-5 flex flex-row items-center justify-between'>
+            <div className='row-start-5 row-span-1 col-start-2 col-span-3 mx-5 flex flex-row items-center justify-between'>
                 {/* Total number of entries and only be shown */}
                 <div>
                     <p className='text-sm font-text text-unactive'>

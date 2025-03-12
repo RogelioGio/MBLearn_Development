@@ -17,6 +17,8 @@ use App\Models\UserInfos;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 
 class CourseController extends Controller
 {
@@ -39,7 +41,7 @@ class CourseController extends Controller
         $training_mode = Training_Mode::query()->find($data['training_mode_id']);
         $current_user = Auth::user();
 
-        
+
         $course = Course::create([
             "name" => $data['name'],
             "CourseID" => $data['CourseID'],
@@ -130,6 +132,24 @@ class CourseController extends Controller
     public function getCourseUsers(Course $course){
         $users = $course->enrolledUsers;
         return $users;
+    }
+
+    public function getAssignedCourseAdmin(Course $course){
+        $perPage = 5;
+        $currentPage = request()->get('page', 1);
+        $admins = $course->assignedCourseAdmins->load(['branch', 'department', 'branch.city', 'title']);
+        $userCollection = collect($admins);
+
+        $paginatedAdmins = new LengthAwarePaginator(
+            $userCollection->forPage($currentPage, $perPage),
+            $userCollection->count(),
+            $perPage,
+            $currentPage,
+            ['path' => request()->url()]
+        );
+
+
+        return $paginatedAdmins;
     }
 
     /**

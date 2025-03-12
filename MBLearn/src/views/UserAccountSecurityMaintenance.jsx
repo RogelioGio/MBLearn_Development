@@ -148,12 +148,12 @@ export default function UserAccountSecurityMaintenance(){
         <div className='grid  grid-cols-4 grid-rows-[6.25rem_min-content_auto_auto_min-content] h-full w-full'>
             <Helmet>
                 {/* Title of the mark-up */}
-                <title>MBLearn | User Account Security Maintenance</title>
+                <title>MBLearn | System Access Maintenance</title>
             </Helmet>
 
             {/* Header */}
             <div className='flex flex-col justify-center col-span-3 row-span-1 pr-5 border-b ml-5 border-divider'>
-                <h1 className='text-primary text-4xl font-header'>User Account Security Maintenance</h1>
+                <h1 className='text-primary text-4xl font-header'>System Access Maintenance</h1>
                 <p className='font-text text-sm text-unactive' >Handles user credentials, account status, and last login tracking for secure access management..</p>
             </div>
 
@@ -315,8 +315,8 @@ export default function UserAccountSecurityMaintenance(){
                                 users.map(user => (
                                     <UserSecEntyProps
                                         key={user.id}
-                                        user={user}
-                                        name={[user.user_infos?.first_name, user.user_infos?.middle_name, user.user_infos?.last_name].join("")}
+                                        user={user.id}
+                                        name={[user.user_infos?.first_name, user.user_infos?.middle_name, user.user_infos?.last_name].join(" ")}
                                         MBEmail={user.MBemail}
                                         city={1}
                                         branch={1}

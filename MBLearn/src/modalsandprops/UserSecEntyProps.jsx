@@ -5,6 +5,7 @@ import { useEffect } from "react";
 
 const UserSecEntyProps = ({user,name,employeeID,MBEmail,city,branch,department,title,role,image,edit}) => {
     const {departments,cities,location,titles} = useOption();
+
     return (
         <tr className='font-text text-sm hover:bg-gray-200'>
                         <td className='text-sm py-3 px-4'>
@@ -48,7 +49,7 @@ const UserSecEntyProps = ({user,name,employeeID,MBEmail,city,branch,department,t
                             <div className='flex gap-1 justify-end'>
                             <button
                                     className='flex flex-row items-center justify-center gap-2 px-5 py-2 border border-primary rounded-md text-primary hover:bg-primary hover:text-white hover:scale-105 transition-all ease-in-out'
-                                    >
+                                    onClick={(e) => edit(e,user)}>
                                 <FontAwesomeIcon icon={faUserPen}/>
                                 <p>Edit</p>
                             </button>

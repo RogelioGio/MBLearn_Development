@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react"
 import { useRef, useState } from "react"
 import axiosClient from "../axios-client"
-import * as Yup from 'yup';
+import * as Yup from "yup"
 import { useFormik } from "formik"
 import axios from "axios"
 import UserAddedSuccessfullyModal from "./UserAddedSuccessfullyModal"
@@ -54,7 +54,7 @@ const AddUserModal = ({open, close, updateTable}) => {
         //validation
         validationSchema: Yup.object({
 
-            employeeID: Yup.string().required('required *').min(11, 'Employee ID must have 11 characters'),
+            employeeID: Yup.string().required('required *').length(11, 'Employee ID must be exactly 11 characters'),
             lastname: Yup.string().required('required *'),
             firstname: Yup.string().required('required *'),
             department: Yup.string().required('required *'),
@@ -78,7 +78,7 @@ const AddUserModal = ({open, close, updateTable}) => {
                 city_id: values.city,
                 role_id: values.role,
                 status: "Active",
-                MBemail: `${values.firstname.replace(/\s+/g, '').trim()}_${values.lastname.replace(/\s+/g, '').trim()}@mbtc.com`.toLowerCase(),
+                MBemail: `${values.firstname.replace(/\s+/g, '').trim()}.${values.lastname.replace(/\s+/g, '').trim()}@mbtc.com`.toLowerCase(),
                 password: `${values.firstname.replace(/\s+/g, '').trim()}_${values.employeeID}`
             }
             axiosClient.post('/add-user',payload).

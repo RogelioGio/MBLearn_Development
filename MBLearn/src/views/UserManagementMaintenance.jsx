@@ -15,7 +15,7 @@ import DeleteUserModal from '../modalsandprops/DeleteUserModal';
 import DeleteUserSuccessfully from '../modalsandprops/DeleteUserSuccessfully';
 import UserManagemenFilterPopover from '../modalsandprops/UserManagementFilterPopover';
 import { useOption } from '../contexts/AddUserOptionProvider';
-
+import * as Yup from 'yup';
 export default function UserManagementMaintenance() {
     const {departments,cities,location} = useOption();
 
