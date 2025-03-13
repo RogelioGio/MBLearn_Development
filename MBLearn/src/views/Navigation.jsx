@@ -30,7 +30,6 @@ const ProfileIcons = ({text ,icon, onClick}) => (
 const navItems = {
     "System Admin": [
         {icon:faHouse, text:"Home", to:'/systemadmin/dashboard'},
-        {icon:faBook, text:"Course List Maintenance", to:"/systemadmin/courselistmaintenance"},
         {icon:faUserGroup, text:"User Management Maintenance", to:"/systemadmin/usermanagementmaintenance"},
         {icon:faUserLock, text:"System Access Maintenance", to:"/systemadmin/useraccountsmaintenance"},
         {icon:faGears, text:"System Configuration Maintenance", to:"/systemadmin/systemconfigurationmaintenance"},
@@ -40,6 +39,7 @@ const navItems = {
     "Course Admin": [
         {icon:faHouse, text:"Home", to:"/courseadmin/dashboard"},
         {icon:faBookBookmark, text:"Assigned Course Catalog", to:"/courseadmin/assignedcourses"},
+        {icon:faBook, text:"Course List Maintenance", to:"/courseadmin/courselistmaintenance"},
         {icon:faPersonCirclePlus, text:"Enroll Trainee", to:"/courseadmin/bulkenrollment"},
         {icon:faChartPie, text:"Assigned Course Reports", to:"/courseadmin/coursereports"},
         {icon:faUsersRays, text:"My Employees", to:"/courseadmin/myemployee"}
