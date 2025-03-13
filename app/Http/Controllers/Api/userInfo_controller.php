@@ -182,6 +182,20 @@ class userInfo_controller extends Controller
         ],200);
     }
 
+    public function indexNotLearnerUsers(Request $request){
+        $perPage = $request->input('perPage',5); //Number of entry per page
+        $admins = UserInfos::query()->whereHas('roles',function($query){
+            $query->where('role_name', '!=', 'Learner');
+        })->with('roles','department','title','branch','city')->paginate($perPage);
+
+        return response()->json([
+            'data' => $admins->items(),
+            'total' => $admins->total(),
+            'lastPage' => $admins->lastPage(),
+            'currentPage' => $admins->currentPage()
+        ]);
+    }
+
     //You add user id then role id in url /addRole/{userInfos}/{role}
     public function addRole(UserInfos $userInfos, Role $role){
         $userInfos->roles()->syncWithoutDetaching($role->id);
