@@ -34,7 +34,7 @@ const DeleteUserModal = ({open,close,classname,EmployeeID,close_confirmation,upd
                                         <div className="py-4 mx-4 flex flex-row justify-between item-center gap-6 border-b border-divider">
                                             <div>
                                                 <h1 className="text-primary font-header text-3xl">Remove User?</h1>
-                                                <p className="text-unactive font-text text-md">Confirms the permanent deletion of the selected information from the system.</p>
+                                                <p className="text-unactive font-text text-md">Confirms the archival of the selected user.</p>
                                             </div>
                                             <div className="bg-primarybg p-5 rounded-full">
                                                 <div className="w-fit h-fit aspect-square flex items-center justify-center p-1">

@@ -9,6 +9,7 @@ import { useEffect, useState } from "react"
 import UserCredentialsLoadingProps from "../modalsandprops/UserCredentialsLoadingProps"
 import { useOption } from "../contexts/AddUserOptionProvider"
 import EditUserCredsModal from "../modalsandprops/EditUserCredsModal"
+import { useFormik } from "formik"
 
 
 
@@ -141,6 +142,16 @@ export default function UserAccountSecurityMaintenance(){
     const Pages = [];
     for(let p = 1; p <= pageState.lastPage; p++){
         Pages.push(p)
+    }
+
+    const handleBranchesOptions = (e) =>{
+        const city = e.target.value;
+        formik.setFieldValue('city', city)
+        formik.setFieldValue('branch', '')
+
+        //Filtering
+        const filteredBranches = branches.filter((branch) => branch.city_id.toString() === city)
+        setSelectedBranches(filteredBranches)
     }
 
 
@@ -317,6 +328,7 @@ export default function UserAccountSecurityMaintenance(){
                                         key={user.id}
                                         user={user.id}
                                         name={[user.user_infos?.first_name, user.user_infos?.middle_name, user.user_infos?.last_name].join(" ")}
+                                        employeeID={user.user_infos.employeeID}
                                         MBEmail={user.MBemail}
                                         city={1}
                                         branch={1}

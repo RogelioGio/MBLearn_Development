@@ -16,6 +16,7 @@ const AddAssignCourseAdmin = ({courseID ,open, close}) => {
     const [selectedBranches, setSelectedBranches] = useState([])
     const [filteredEmployee, setFilteredEmployee] = useState([])
     const [selectedCourseAdmin, setSelectedCourseAdmin] = useState([])
+
     useEffect(()=>{
         setIsFiltered(false)
     },[])
