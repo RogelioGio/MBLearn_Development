@@ -16,8 +16,42 @@ import DeleteUserSuccessfully from '../modalsandprops/DeleteUserSuccessfully';
 import UserManagemenFilterPopover from '../modalsandprops/UserManagementFilterPopover';
 import { useOption } from '../contexts/AddUserOptionProvider';
 import * as Yup from 'yup';
+import { Formik, useFormik } from 'formik';
+
 export default function UserManagementMaintenance() {
     const {departments,cities,location} = useOption();
+
+    const [selectedBranches, setSelectedBranches] = useState([])
+    const handleBranchesOptions = (e) =>{
+        const city = e.target.value;
+        filterformik.setFieldValue('city', city)
+        filterformik.setFieldValue('branch', '')
+
+        //Filtering
+        const filteredBranches = location.filter((branch) => branch.city_id.toString() === city)
+        setSelectedBranches(filteredBranches)
+    }
+
+    //filterFormik
+    const filterformik = useFormik({
+        initialValues: {
+            employee_name: '',
+            department: '',
+            branch: '',
+            city:'',
+            role: '',
+        },
+        validationSchema: Yup.object({
+            employee_name: Yup.string(),
+            department: Yup.string(),
+            city: Yup.string(),
+            branch: Yup.string(),
+            role: Yup.string(),
+        }),
+        onSubmit: values => {
+            console.log(values)
+        }
+    })
 
     //Modal State
     const [modalState, setModalState] = useState({
@@ -217,40 +251,37 @@ export default function UserManagementMaintenance() {
 
 
             {/* User Filter */}
-            <div className='col-start-1 col-span-3 row-start-2 row-span-1 px-5 py-3 grid grid-cols-[auto_auto_auto_auto_min-content] w-full gap-2'>
-                {/* <UserManagemenFilterPopover/> */}
-
+            <form onSubmit={filterformik.handleSubmit} className='col-start-1 col-span-3 row-start-2 row-span-1 px-5 py-3 grid grid-cols-[auto_auto_auto_auto_min-content] w-full gap-2'>
+                    <div className="inline-flex flex-col gap-1">
+                    <label htmlFor="employee_name" className="font-header text-xs flex flex-row justify-between">
+                        <p className="text-xs font-text text-unactive">Employees Name Section </p>
+                    </label>
+                    <div className="grid grid-cols-1">
+                        <select id="employee_name" name="employee_name" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                            value={filterformik.values.employee_name}
+                            onChange={filterformik.handleChange}
+                            onBlur={filterformik.handleBlur}
+                            >
+                            <option value=''>Select an Section</option>
+                            <option value='1'>A-G</option>
+                            <option value='2'>H-N</option>
+                            <option value='3'>O-T</option>
+                            <option value='4'>U-Z</option>
+                        </select>
+                        <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                        <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    </div>
                 <div className="inline-flex flex-col gap-1">
-                <label htmlFor="role" className="font-header text-xs flex flex-row justify-between">
-                    <p className="text-xs font-text text-unactive">Employees Name Section </p>
-                </label>
-                <div className="grid grid-cols-1">
-                    <select id="role" name="role" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                        // value={formik.values.role}
-                        // onChange={formik.handleChange}
-                        // onBlur={formik.handleBlur}
-                        >
-                        <option value=''>Select an Option</option>
-                        <option value=''>A-G</option>
-                        <option value=''>H-N</option>
-                        <option value=''>O-T</option>
-                        <option value=''>U-Z</option>
-                    </select>
-                    <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                    <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                    </svg>
-                </div>
-                </div>
-
-                <div className="inline-flex flex-col gap-1">
-                <label htmlFor="role" className="font-header text-xs flex flex-row justify-between">
+                <label htmlFor="department" className="font-header text-xs flex flex-row justify-between">
                     <p className="text-xs font-text text-unactive">Employees Department </p>
                 </label>
                 <div className="grid grid-cols-1">
-                    <select id="role" name="role" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                        // value={formik.values.role}
-                        // onChange={formik.handleChange}
-                        // onBlur={formik.handleBlur}
+                    <select id="department" name="department" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                        value={filterformik.values.department}
+                        onChange={filterformik.handleChange}
+                        onBlur={filterformik.handleBlur}
                         >
                         <option value=''>Select Department</option>
                         {
@@ -264,16 +295,15 @@ export default function UserManagementMaintenance() {
                     </svg>
                 </div>
                 </div>
-
                 <div className="inline-flex flex-col gap-1">
-                <label htmlFor="role" className="font-header text-xs flex flex-row justify-between">
+                <label htmlFor="city" className="font-header text-xs flex flex-row justify-between">
                     <p className="text-xs font-text text-unactive">Branch City</p>
                 </label>
                 <div className="grid grid-cols-1">
-                    <select id="role" name="role" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                        // value={formik.values.role}
-                        // onChange={formik.handleChange}
-                        // onBlur={formik.handleBlur}
+                    <select id="city" name="city" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                        value={filterformik.values.city}
+                        onChange={handleBranchesOptions}
+                        onBlur={filterformik.handleBlur}
                         >
                         <option value=''>Select Branch City</option>
                         {
@@ -287,38 +317,34 @@ export default function UserManagementMaintenance() {
                     </svg>
                 </div>
                 </div>
-
                 <div className="inline-flex flex-col gap-1">
-                <label htmlFor="role" className="font-header text-xs flex flex-row justify-between">
+                <label htmlFor="branch" className="font-header text-xs flex flex-row justify-between">
                     <p className="text-xs font-text text-unactive">Branch Location</p>
                 </label>
                 <div className="grid grid-cols-1">
-                    <select id="role" name="role" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                        // value={formik.values.role}
-                        // onChange={formik.handleChange}
-                        // onBlur={formik.handleBlur}
+                    <select id="branch" name="branch" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                        value={filterformik.values.branch}
+                        onChange={filterformik.handleChange}
+                        onBlur={filterformik.handleBlur}
                         >
                         <option value=''>Select Branch Location</option>
-                        {
-                            location.map((location) => (
-                                <option key={location.id} value={location.id}>{location.branch_name}</option>
-                            ))
-                        }
+                        {selectedBranches.map((branch) => (
+                            <option key={branch.id} value={branch.id}>{branch.branch_name}</option>
+                        ))}
                     </select>
                     <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
                     <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
                     </svg>
                 </div>
                 </div>
-
                 {/* Filter Button */}
                 <div className='w-4/5 flex-col flex justify-end py-1'>
                     <div className='aspect-square px-4 flex flex-row justify-center items-center bg-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 ease-in-out transition-all '>
                         <FontAwesomeIcon icon={faFilter} className='text-white text-sm'/>
                     </div>
                 </div>
+            </form>
 
-            </div>
 
             {/* Userlist Table */}
             <div className='row-start-3 row-span-2 col-start-1 col-span-4 px-5 py-2'>

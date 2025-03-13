@@ -16,6 +16,18 @@ import { useOption } from "../contexts/AddUserOptionProvider"
 const AddUserModal = ({open, close, updateTable}) => {
     //Option Context
     const {cities,departments,location,titles,roles} = useOption();
+    const [selectedBranches, setSelectedBranches] = useState([])
+
+    const handleBranchesOptions = (e) =>{
+        const city = e.target.value;
+        formik.setFieldValue('city', city)
+        formik.setFieldValue('branch', '')
+
+        //Filtering
+        const filteredBranches = location.filter((branch) => branch.city_id.toString() === city)
+        setSelectedBranches(filteredBranches)
+    }
+
 
     // Modals state(subject to change)
     const [OpenError, setError] = useState(false)
@@ -190,12 +202,20 @@ const AddUserModal = ({open, close, updateTable}) => {
                                     <div className="mx-4 flex flex-col gap-5">
                                         <Stepper
                                             active={state.steps}
-                                            classNames={{
-                                                step: "transition-all duration-300 !py-2",
-                                                stepIcon: "!border-primary",
-                                                stepCompletedIcon: "!bg-primary !rounded-full !border-primary !border-2",
-                                                content: "!pt-0",
-                                                separator: "!border-primary border !mx-0"
+                                            style={{
+                                            "--Primary-Color": "hsl(218,97%,26%)",
+                                            "--Active-Step-Bg-Color": "hsl(218,97%,36%)" // Custom background color for active step
+                                            }}
+                                            styles={{
+                                            step: { transition: "all 0.3s", paddingTop: "8px", paddingBottom: "8px" },
+                                            stepCompletedIcon: {
+                                                backgroundColor: "var(--Primary-Color)",
+                                                borderRadius: "50%",
+                                                border: "2px solid var(--Primary-Color)",
+                                            },
+                                            stepBody: { backgroundColor: "var(--Primary-Color)", color: "#fff" },
+                                            stepActive: { backgroundColor: "var(--Active-Step-Bg-Color)" }, // Apply custom background color to active step
+                                            separator: { border: "1px solid var(--Primary-Color)", margin: "0" },
                                             }}
                                             completedIcon={<FontAwesomeIcon icon={faCircleCheckRegular} className="!text-white"/>}>
                                             <Stepper.Step icon={<FontAwesomeIcon icon={faUserRegular} className="!text-primary"/>}>
@@ -324,7 +344,7 @@ const AddUserModal = ({open, close, updateTable}) => {
                                                     <div className="grid grid-cols-1">
                                                             <select id="city" name="city" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
                                                             value={formik.values.city}
-                                                            onChange={formik.handleChange}
+                                                            onChange={handleBranchesOptions}
                                                             onBlur={formik.handleBlur}>
                                                                 <option value="">Select City</option>
                                                                 {
@@ -349,7 +369,7 @@ const AddUserModal = ({open, close, updateTable}) => {
                                                                     onBlur={formik.handleBlur}>
                                                                     <option value="">Select Location</option>
                                                                     {
-                                                                    location.map((location) => (
+                                                                    selectedBranches.map((location) => (
                                                                         <option key={location.id} value={location.id}>{location.branch_name}</option>
                                                                     ))
                                                                     }

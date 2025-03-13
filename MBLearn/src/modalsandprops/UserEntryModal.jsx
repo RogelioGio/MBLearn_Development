@@ -125,7 +125,7 @@ const UserEntryModal = ({open, close, classname,ID}) =>{
                     {/* Name */}
                     <p className='font-header text-sm text-unactive uppercase'>Name:</p>
                     <h1 className='font-header text-4xl text-primary mb-0.5'>{selectedUser.first_name} {selectedUser.middle_name} {selectedUser.last_name}</h1>
-                    <p className='font-text text-sm uppercase'>{selectedUser.title}</p>
+                    <p className='font-text text-sm uppercase'>{selectedUser.title?.title_name}</p>
                 </div>
             {actionButton}
             <div className='row-start-2 col-start-1 py-4 px-4 border-b border-r border-divider'>
