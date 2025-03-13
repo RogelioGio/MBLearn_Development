@@ -2,31 +2,32 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Filters\CourseFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BulkAssignCourseAdmins;
 use App\Http\Requests\BulkStoreCourseRequest;
 use App\Http\Requests\StoreCourseRequest;
 use App\Http\Resources\CourseResource;
-use App\Http\Resources\UserCredentialsResource;
 use App\Models\Category;
 use App\Models\Course;
 use App\Models\Training_Mode;
 use App\Models\Type;
-use App\Models\UserCredentials;
 use App\Models\UserInfos;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Collection;
+
 
 class CourseController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $filter = new CourseFilter();
+        $queryItems = $filter->transform($request);
+
         return Course::with(['categories', 'types', 'training_modes'])->where('archived', '=', 'active')->orderby('id', 'desc')->paginate(3);
     }
 
@@ -72,7 +73,18 @@ class CourseController extends Controller
 
     public function assignCourseAdmin(BulkAssignCourseAdmins $bulkAssignCourseAdmins, Course $course){
         $bulk = collect($bulkAssignCourseAdmins->all())->map(function($arr, $key){
-            return $arr;
+            $messyArray = [];
+            $oneDArray = [];
+            foreach($arr as $key => $value){
+                $temp = UserInfos::find($value);
+                $roles = $temp->roles->toArray();
+                foreach($roles as $role)
+                if(in_array('Course Admin',$role) || in_array('System Admin', $role)){
+                    $messyArray[] = [$key => $value];
+                }
+            }
+            $oneDArray = array_reduce($messyArray, 'array_merge', []);
+            return $oneDArray;
         });
         $course->assignedCourseAdmins()->syncWithoutDetaching($bulk);
         return response()->json([
