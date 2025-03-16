@@ -10,6 +10,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -44,6 +46,14 @@ class AuthController extends Controller
     public function login(LoginRequest $request){
 
         $credentials = $request->validated();
+        $key = 'login attempts:'. Str::lower($request->input('MBemail'));
+
+        if(RateLimiter::tooManyAttempts($key, 5)){
+            return response()->json([
+                'message' => "Account has been locked due to too many log in attempts"
+            ]);
+        }
+
         $user = UserCredentials::where('MBemail', $credentials['MBemail'])->first();
 
 
@@ -60,12 +70,14 @@ class AuthController extends Controller
         }
 
         if(!Hash::check($credentials['password'], $user->password)){
+            RateLimiter::hit($key,60*15);
             return response()->json([
                 'message' => 'Invalid password',
             ], 401);
         }
 
-        if($user && Hash::check($credentials['password'], $user->password)){
+        if(Auth::attempt($credentials)){
+            RateLimiter::clear($key);
             //Generate Login Token
             $token = $user->createToken('authToken')->plainTextToken;
             //Log
