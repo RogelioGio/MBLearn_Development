@@ -18,6 +18,7 @@ const AddUserModal = ({open, close, updateTable}) => {
     const {cities,departments,location,titles,roles} = useOption();
     const [selectedBranches, setSelectedBranches] = useState([])
 
+
     const handleBranchesOptions = (e) =>{
         const city = e.target.value;
         formik.setFieldValue('city', city)

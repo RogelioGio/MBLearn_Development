@@ -1,10 +1,10 @@
-import { faTrash } from "@fortawesome/free-solid-svg-icons"
+import { faTrash, faUserPen } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react"
 import axiosClient from "../axios-client"
 import { useEffect, useState } from "react"
 
-const DeleteUserSuccessfully = ({open,close,classname}) => {
+const EditUserSuccessfully = ({open,close,classname}) => {
     return (
         <Dialog open={open} onClose={close} className={classname}>
             <DialogBackdrop transition className="fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in" />
@@ -15,11 +15,11 @@ const DeleteUserSuccessfully = ({open,close,classname}) => {
                             {/* Header */}
                                 <div className="py-4 mx-4 border-divider flex flex-col items-center justify-center gap-2">
                                     <div className="w-fit aspect-square bg-secondaryprimary rounded-full text-center">
-                                        <FontAwesomeIcon icon={faTrash} className="text-primary text-2xl p-6"/>
+                                        <FontAwesomeIcon icon={faUserPen} className="text-primary text-2xl p-6"/>
                                     </div>
                                     <div className="text-center flex-col flex gap-2">
-                                        <h1 className="text-primary font-header text-3xl">User Removed</h1>
-                                        <p className="text-unactive font-text text-sm">The selected user is successfuly removed in the system  <br/> and user list and become unactive</p>
+                                        <h1 className="text-primary font-header text-3xl">Updated</h1>
+                                        <p className="text-unactive font-text text-sm">The selected user is successfuly updated with the given <br /> new information in the form</p>
                                     </div>
                                 </div>
                                 <div className="text-center flex-col flex p-4 w-full bg-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 hover:bg-primaryhover ease-in-out transition-all"
@@ -34,4 +34,4 @@ const DeleteUserSuccessfully = ({open,close,classname}) => {
 
     )
 }
-export default DeleteUserSuccessfully
+export default EditUserSuccessfully

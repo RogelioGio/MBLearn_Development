@@ -312,9 +312,10 @@ export default function UserAccountSecurityMaintenance(){
                     <thead className='font-header text-xs text-primary bg-secondaryprimary uppercase'>
                         <tr>
                             <th className='p-4 w-2/7'>EMPLOYEE NAME</th>
-                            <th className='p-4 w-2/7'>Employee Location & Department</th>
                             <th className='p-4 w-1/7'>Metrobank Working Email</th>
                             <th className='p-4 w-1/7'>ROLE</th>
+                            <th className='p-4 w-1/7'>Last Login Timestamp</th>
+                            <th className='p-4 w-1/7'>Account Status</th>
                             <th className='p-4 w-1/7'></th>
                         </tr>
                     </thead>
@@ -336,6 +337,7 @@ export default function UserAccountSecurityMaintenance(){
                                         title={1}
                                         role={user.user_infos?.roles?.[0]?.role_name}
                                         image={user.user_infos?.profile_image }
+                                        status={user.user_infos?.status}
                                         edit={OpenEdit}
                                         />
                                 ))

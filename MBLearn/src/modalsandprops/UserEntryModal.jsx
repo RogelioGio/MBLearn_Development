@@ -6,13 +6,26 @@ import axiosClient from '../axios-client'
 import { InfinitySpin } from 'react-loader-spinner'
 import EditUserModal from './EditUserModal'
 import { useUser } from '../contexts/selecteduserContext'
+import { use } from 'react'
 
 
 const UserEntryModal = ({open, close, classname,ID}) =>{
-    const {selectUser, selectedUser} = useUser()
+    const {selectUser, selectedUser, isFetching} = useUser()
     //API Call for fetching specific user
     const [date, setDate] = useState();
     const [loading, setLoading] = useState(true)
+
+
+    //branch choice handelling
+    const handleBranchesOptions = (e) =>{
+        const city = e.target.value;
+        formik.setFieldValue('city', city)
+        formik.setFieldValue('branch', '')
+
+        //Filtering
+        const filteredBranches = location.filter((branch) => branch.city_id.toString() === city)
+        setSelectedBranches(filteredBranches)
+    }
 
     //Modal states
     const [modalState, setModalState] = useState({
@@ -29,32 +42,20 @@ const UserEntryModal = ({open, close, classname,ID}) =>{
     }
 
     useEffect(() => {
-        if (ID) {
-            selectUser(ID);
+        if (open && ID) {
+            if (selectedUser?.id === ID) {
+                setLoading(false);
+            } else {
+                setLoading(true);
+                selectUser(ID);
+            }
         }
-        console.log(selectedUser)
-    }, [ID]);
+    }, [ID, selectedUser, open]);
     useEffect(() => {
-        if (selectedUser) {
+        if (selectedUser && !isFetching) {
             setLoading(false);
         }
-    }, [selectedUser]);
-
-    //UseEffect for fetching specific user
-    // useEffect(()=>{
-    //     if(ID){
-    //         setLoading(true)
-    //         setSelectedUser(null)
-    //         axiosClient.get(`/select-employeeid/${ID}`)
-    //         .then(response =>
-    //             {
-    //                 setSelectedUser(response.data.data);
-    //                 setLoading(false)
-    //             })
-    //         .catch(err => console.log(err))
-    //     }
-    // },[ID]);
-
+    }, [selectedUser, isFetching]);
 
     //function for readable dates
     useEffect(() => {

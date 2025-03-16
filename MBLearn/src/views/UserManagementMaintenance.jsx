@@ -17,6 +17,7 @@ import UserManagemenFilterPopover from '../modalsandprops/UserManagementFilterPo
 import { useOption } from '../contexts/AddUserOptionProvider';
 import * as Yup from 'yup';
 import { Formik, useFormik } from 'formik';
+import EditUserSuccessfully from '../modalsandprops/EditUserSuccesfuly';
 
 export default function UserManagementMaintenance() {
     const {departments,cities,location} = useOption();
@@ -58,6 +59,7 @@ export default function UserManagementMaintenance() {
         isOpen: false,
         isOpenAdd:false,
         isEdit:false,
+        isEditSuccess: false,
         isDelete: false,
         isDeleteSuccess: false,
     });
@@ -138,7 +140,7 @@ export default function UserManagementMaintenance() {
     // Open and Close Delete User Modal
     const OpenDelete = (e, EmployeeID) => {
         e.stopPropagation();
-        setUserID(EmployeeID)
+        toggleUserID("isDelete", EmployeeID);
         toggleModal("isDelete", true);
     }
 
@@ -149,13 +151,25 @@ export default function UserManagementMaintenance() {
 
     //Close DeleteSuccess Modal
     const OpenSuccessFullyDelete = () => {
-        toggleModal("isDeleteSuccess", true);
+        toggleModal("isDeleteSuccess", true)
+        pageChangeState("currentPage", 1);
     }
 
     const CloseSuccessFullyDelete = () => {
         toggleModal("isDeleteSuccess", false);
         fetchUsers()
     }
+
+    //Close Edit Success
+    const OpenSuccessFullyEdit = () => {
+        toggleModal("isEditSuccess", true)
+        pageChangeState("currentPage", 1);
+    }
+    const CloseSuccessFullyEdit = () => {
+        toggleModal("isEditSuccess", false)
+        fetchUsers()
+    }
+
 
     //Fetching Users in the database using axios
     const fetchUsers = () => {
@@ -441,7 +455,9 @@ export default function UserManagementMaintenance() {
                     <AddUserModal open={modalState.isOpenAdd} close={CloseAddUser} updateTable={fetchUsers}/>
 
                     {/* Edit User Modal */}
-                    <EditUserModal open={modalState.isEdit} close={CloseEdit} ID={userID.isEdit}/>
+                    <EditUserModal open={modalState.isEdit} close={CloseEdit} ID={userID.isEdit} close_confirmation={OpenSuccessFullyEdit}/>
+                    <EditUserSuccessfully open={modalState.isEditSuccess} close={CloseSuccessFullyEdit}/>
+
 
                     {/* Delete User Modal */}
                     <DeleteUserModal open={modalState.isDelete} close={CloseDelete} EmployeeID={userID.isDelete} close_confirmation={OpenSuccessFullyDelete}/>
