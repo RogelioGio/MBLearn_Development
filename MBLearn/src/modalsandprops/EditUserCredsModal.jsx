@@ -1,4 +1,4 @@
-import { faUserPen } from "@fortawesome/free-solid-svg-icons"
+import { faUserGroup, faUserLock, faUserPen } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react"
 import { useUser } from "../contexts/selecteduserContext";
@@ -12,15 +12,24 @@ const EditUserCredsModal = ({open, close,ID}) => {
     const {cities=[], titles=[], location=[], roles=[], departments=[]} = useOption();
 
     useEffect(() => {
-        setLoading(true);
-        if (ID) {
-            selectUser(ID);
+        if (open && ID) {
+            if (selectedUser?.id === ID) {
+                setLoading(false);
+            } else {
+                setLoading(true);
+                selectUser(ID);
+            }
         }
-    }, [ID]);
+    }, [ID, selectedUser, open]);
+    useEffect(() => {
+        if (selectedUser && !isFetching) {
+            setLoading(false);
+        }
+    }, [selectedUser, isFetching]);
 
     useEffect(() => {
         setLoading(isFetching);
-    }, [isFetching]);
+    }, [isFetching])
 
     const formik = useFormik({
         enableReinitialize: true,
@@ -57,6 +66,20 @@ const EditUserCredsModal = ({open, close,ID}) => {
                                     isLoading ? (
                                         <p className="px-40 py-32 self-center font-text text-unactive">Loading User Credentials....</p>
                                     ):(
+                                        <>
+                                         {/* Tab for Editing */}
+                                            <div className='row-start-2 col-span-4 w-auto mx-5 py-3 gap-3'>
+                                            <div className="w-full flex flex-row rounded-md shadow-md hover:cursor-pointer">
+                                                <span className={`w-1/2 flex flex-row gap-5 items-center text-md font-header ring-2 ring-primary rounded-l-md px-5 py-2 text-primary hover:bg-primary hover:text-white transition-all ease-in-out`}>
+                                                    <FontAwesomeIcon icon={faUserLock}/>
+                                                    Account Credentials
+                                                </span>
+                                                <span className={` w-1/2 flex flex-row gap-5 items-center text-md font-header ring-2 ring-primary rounded-r-md px-5 py-2 text-primary hover:bg-primary hover:text-white transition-all ease-in-out`}>
+                                                    <FontAwesomeIcon icon={faUserGroup}/>
+                                                    Roles and Permission
+                                                </span>
+                                            </div>
+                                        </div>
                                         <div className="mx-4 flex flex-row gap-5">
                                             <form className="grid grid-cols-3 gap-2  pb-4 w-full">
                                                 {/* Employee Information */}
@@ -67,14 +90,14 @@ const EditUserCredsModal = ({open, close,ID}) => {
                                                     <div className="py-4">
                                                         <p className="font-text text-xs text-unactive">Department & Branch:</p>
                                                         <p className="font-text">{selectedUser?.department?.department_name}</p>
-                                                        <p className="font-text text-xs">{selectedUser?.title_id}</p>
+                                                        <p className="font-text text-xs">{selectedUser?.title?.title_name}</p>
                                                     </div>
                                                     <div className="py-4">
                                                         <p className="font-text text-xs text-unactive">Metrobank Branch</p>
                                                         <p className="font-text">{selectedUser?.branch.branch_name}</p>
                                                         <p className="font-text text-xs">{selectedUser?.city?.city_name}</p>
                                                     </div>
-                                                <div className="inline-flex flex-col gap-1 row-start-2 col-span-1 py-2">
+                                                <div className="inline-flex flex-col gap-1 row-start-2 col-span-2 py-2">
                                                         <label htmlFor="MBEmail" className="font-text text-xs flex flex-row justify-between">
                                                             <p>Employee's Metrobank Email *</p>
                                                         </label>
@@ -94,26 +117,6 @@ const EditUserCredsModal = ({open, close,ID}) => {
                                                                 onBlur={formik.handleBlur}
                                                                 className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
                                                 </div>
-                                                <div className="inline-flex flex-col gap-1 row-start-2 col-span-1 py-2">
-                                                <label htmlFor="department" className="font-text text-xs flex">Employee's Account Role</label>
-                                                    <div className="grid grid-cols-1">
-                                                            <select id="department" name="department" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                                                                // value={formik.values.department}
-                                                                // onChange={formik.handleChange}
-                                                                // onBlur={formik.handleBlur}
-                                                                >
-                                                                <option value="">Select Account Role</option>
-                                                                {
-                                                                    roles.map((role) => (
-                                                                        <option key={role.id} value={role.id}>{role.role_name}</option>
-                                                                    ))
-                                                                }
-                                                            </select>
-                                                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                                                            <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                                                            </svg>
-                                                        </div>
-                                                </div>
 
                                                 <div className="row-start-3 col-span-3 py-2 flex flex-row gap-2">
                                                     <button className="w-full inline-flex flex-col items-center gap-2 row-start-7 col-span-3 p-4 rounded-md font-header uppercase text-primary border-2 border-primary text-xs hover:text-white hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out"
@@ -126,6 +129,7 @@ const EditUserCredsModal = ({open, close,ID}) => {
                                                 </div>
                                             </form>
                                         </div>
+                                        </>
                                     )
                                 }
 

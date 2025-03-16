@@ -305,7 +305,7 @@ class userInfo_controller extends Controller
     public function findUser(UserInfos $userInfos)
     {
         // Find the user info by ID
-        $user = UserInfos::with(['city', 'branch', 'department', 'title', 'roles']) // Added 'roles'
+        $user = UserInfos::with(['city', 'branch', 'department', 'title', 'roles', 'userCredentials']) // Added 'roles'
         ->find($userInfos->id);
 
     if (!$user) {

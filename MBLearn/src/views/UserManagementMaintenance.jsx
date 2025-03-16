@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import Navigation from './Navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChevronDown, faChevronLeft, faChevronRight, faChevronUp, faFilter, faSearch, faTrash, faTrashCan, faUser, faUserPen, faUserPlus } from '@fortawesome/free-solid-svg-icons';
+import { faChevronDown, faChevronLeft, faChevronRight, faChevronUp, faCross, faFilter, faSearch, faTrash, faTrashCan, faUser, faUserPen, faUserPlus, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { Menu, MenuButton, MenuItem, MenuItems, Disclosure, DisclosureButton, DisclosurePanel, Dialog, DialogBackdrop, DialogPanel, DialogTitle} from '@headlessui/react';
 import User from '../modalsandprops/UserEntryProp';
 import UserEntryModal from '../modalsandprops/UserEntryModal';
@@ -33,6 +33,14 @@ export default function UserManagementMaintenance() {
         setSelectedBranches(filteredBranches)
     }
 
+    // State to track if the user list is filtered
+    const [isFiltered, setIsFiltered] = useState(false);
+    const resetFilter = () => {
+        filterformik.resetForm();
+        setIsFiltered(false);
+        fetchUsers();
+    }
+
     //filterFormik
     const filterformik = useFormik({
         initialValues: {
@@ -40,17 +48,22 @@ export default function UserManagementMaintenance() {
             department: '',
             branch: '',
             city:'',
-            role: '',
         },
         validationSchema: Yup.object({
             employee_name: Yup.string(),
             department: Yup.string(),
             city: Yup.string(),
             branch: Yup.string(),
-            role: Yup.string(),
         }),
         onSubmit: values => {
             console.log(values)
+            setLoading(true)
+            setIsFiltered(true); // Set to true when filtered
+            axiosClient.get(`/index-user?department_id[eq]=${values.department}&branch_id[eq]=${values.branch}`)
+            .then((res) => {
+                setUsers(res.data.data);
+                setLoading(false)
+            }).catch((err) => {console.log(err)})
         }
     })
 
@@ -184,6 +197,7 @@ export default function UserManagementMaintenance() {
             pageChangeState("totalUsers", response.data.total)
             pageChangeState("lastPage", response.data.lastPage)
             setLoading(false)
+            setIsFiltered(false); // Set to false when not filtered
         }).catch(err => {
             console.log(err)
         }).finally(()=>{
@@ -352,10 +366,22 @@ export default function UserManagementMaintenance() {
                 </div>
                 </div>
                 {/* Filter Button */}
-                <div className='w-4/5 flex-col flex justify-end py-1'>
+                <div className='flex-row flex justify-end py-1 gap-2 items-center'>
+                <button type='submit'>
                     <div className='aspect-square px-4 flex flex-row justify-center items-center bg-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 ease-in-out transition-all '>
                         <FontAwesomeIcon icon={faFilter} className='text-white text-sm'/>
                     </div>
+                </button>
+                {
+                    isFiltered ? (
+                    <button type='button' onClick={resetFilter}>
+                        <div className='aspect-square px-4 flex flex-row justify-center items-center border-2 border-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 ease-in-out transition-all '>
+                            <FontAwesomeIcon icon={faXmark} className='text-primary text-sm'/>
+                        </div>
+                    </button>):(
+                        null
+                    )
+                }
                 </div>
             </form>
 
