@@ -22,9 +22,10 @@ export default function UserAccountSecurityMaintenance(){
     const [users, setUsers] = useState([])
     const [selectedBranches, setSelectedBranches] = useState([])
 
+
     const [modalState, setModalState] = useState({
         isEdit:false,
-        isEditSuccess: true,
+        isEditSuccess: false,
     });
 
     //CloserSuccess
@@ -332,16 +333,16 @@ export default function UserAccountSecurityMaintenance(){
                 </div>
 
                 {/* Filter Button */}
-                <div className='flex-row flex justify-end py-1 gap-2 items-center'>
+                <div className='flex-row flex justify-end py-1 gap-2 items-end'>
                 <button type='submit'>
-                    <div className='aspect-square px-4 flex flex-row justify-center items-center bg-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 ease-in-out transition-all '>
+                    <div className='aspect-square px-3 flex flex-row justify-center items-center bg-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 ease-in-out transition-all '>
                         <FontAwesomeIcon icon={faFilter} className='text-white text-sm'/>
                     </div>
                 </button>
                 {
                     isFiltered ? (
                     <button type='button' onClick={resetFilter}>
-                        <div className='aspect-square px-4 flex flex-row justify-center items-center border-2 border-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 ease-in-out transition-all '>
+                        <div className='aspect-square px-3 flex flex-row justify-center items-center border-2 border-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 ease-in-out transition-all '>
                             <FontAwesomeIcon icon={faXmark} className='text-primary text-sm'/>
                         </div>
                     </button>):(

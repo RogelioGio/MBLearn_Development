@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Helmet } from 'react-helmet';
 import Navigation from './Navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -21,6 +21,12 @@ import EditUserSuccessfully from '../modalsandprops/EditUserSuccesfuly';
 
 export default function UserManagementMaintenance() {
     const {departments,cities,location} = useOption();
+    const [checkedUsers, setCheckedUser] = useState([]);
+    const selectAllRef = useRef(null);
+
+    useEffect(()=>{
+        setCheckedUser([])
+    },[])
 
     const [selectedBranches, setSelectedBranches] = useState([])
     const handleBranchesOptions = (e) =>{
@@ -76,6 +82,41 @@ export default function UserManagementMaintenance() {
         isDelete: false,
         isDeleteSuccess: false,
     });
+
+    //Handle Checkbox
+    const handleCheckbox = (e, id) => {
+        e.stopPropagation();
+        setCheckedUser((prev) => {
+            if (!id) return;
+
+            const exists = prev.some(
+                (user) => user.Selected_ID === id
+            );
+
+            if (exists) {
+                return prev.filter(
+                    (user) => user.Selected_ID !== id
+                );
+            } else {
+                return [...prev, { Selected_ID: id }];
+            }
+        });
+    };
+
+    // Handle Select All Checkbox
+    const handleSelectAll = (e) => {
+        if (e.target.checked) {
+            const allUserIds = users.map(user => ({ Selected_ID: user.id }));
+            setCheckedUser(allUserIds);
+        } else {
+            setCheckedUser([]);
+        }
+    };
+
+    // Function to count checked users
+    const countCheckedUsers = () => {
+        return checkedUsers.length;
+    };
 
     //Modal state changes
     const toggleModal = (key,value) => {
@@ -244,6 +285,12 @@ export default function UserManagementMaintenance() {
     useEffect(() => {
         console.log(userID.isEdit)
     },[userID.isEdit])
+
+    useEffect(() => {
+        if (selectAllRef.current) {
+            selectAllRef.current.indeterminate = checkedUsers.length > 0 && checkedUsers.length < users.length;
+        }
+    }, [checkedUsers, users]);
     return (
         <div className='grid grid-cols-4 grid-rows-[6.25rem_min-content_auto_auto_min-content] h-full w-full'>
             <Helmet>
@@ -366,16 +413,16 @@ export default function UserManagementMaintenance() {
                 </div>
                 </div>
                 {/* Filter Button */}
-                <div className='flex-row flex justify-end py-1 gap-2 items-center'>
+                <div className='flex-row flex justify-end py-1 gap-2 items-end'>
                 <button type='submit'>
-                    <div className='aspect-square px-4 flex flex-row justify-center items-center bg-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 ease-in-out transition-all '>
+                    <div className='aspect-square px-3 flex flex-row justify-center items-center bg-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 ease-in-out transition-all '>
                         <FontAwesomeIcon icon={faFilter} className='text-white text-sm'/>
                     </div>
                 </button>
                 {
                     isFiltered ? (
                     <button type='button' onClick={resetFilter}>
-                        <div className='aspect-square px-4 flex flex-row justify-center items-center border-2 border-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 ease-in-out transition-all '>
+                        <div className='aspect-square px-3 flex flex-row justify-center items-center border-2 border-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 ease-in-out transition-all '>
                             <FontAwesomeIcon icon={faXmark} className='text-primary text-sm'/>
                         </div>
                     </button>):(
@@ -387,12 +434,44 @@ export default function UserManagementMaintenance() {
 
 
             {/* Userlist Table */}
-            <div className='row-start-3 row-span-2 col-start-1 col-span-4 px-5 py-2'>
+            <div className='flex flex-col gap-2 row-start-3 row-span-2 col-start-1 col-span-4 px-5 py-2'>
                 <div className='w-full border-primary border rounded-md overflow-hidden shadow-md'>
                 <table className='text-left w-full overflow-y-scroll'>
-                    <thead className='font-header text-xs text-primary bg-secondaryprimary'>
+                    <thead className='font-header text-xs text-primary bg-secondaryprimary border-l-2 border-secondaryprimary'>
                         <tr>
-                            <th className='py-4 px-4'>EMPLOYEE NAME</th>
+                            <th className='py-4 px-4 flex items-center flex-row gap-4'>
+                                 {/* Checkbox */}
+                                    <div className="group grid size-4 grid-cols-1">
+                                        <input
+                                            type="checkbox"
+                                            ref={selectAllRef}
+                                            className="col-start-1 row-start-1 appearance-none border border-primary rounded checked:border-primary checked:bg-primary indeterminate:bg-primary focus:ring-2 focus:ring-primary focus:outline-none focus:ring-offset-1"
+                                            onChange={handleSelectAll}
+                                            checked={checkedUsers.length === users.length && users.length > 0}
+                                            disabled={isLoading}
+                                        />
+                                        {/* Custom Checkbox styling */}
+                                        <svg fill="none" viewBox="0 0 14 14" className="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-[:disabled]:stroke-gray-950/25">
+                                            {/* Checked */}
+                                            <path
+                                                d="M3 8L6 11L11 3.5"
+                                                strokeWidth={2}
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                className="opacity-0 group-has-[:checked]:opacity-100"
+                                            />
+                                            {/* Indeterminate */}
+                                            <path
+                                                d="M3 7H11"
+                                                strokeWidth={2}
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                className="opacity-0 group-has-[:indeterminate]:opacity-100"
+                                                />
+                                        </svg>
+                                    </div>
+                                    <p> EMPLOYEE NAME</p>
+                            </th>
                             <th className='py-4 px-4'>DEPARTMENT</th>
                             <th className='py-4 px-4'>BRANCH</th>
                             <th className='py-4 px-4'>ROLE</th>
@@ -421,6 +500,9 @@ export default function UserManagementMaintenance() {
                                             role={userEntry.roles?.[0]?.role_name || "No Role Yet"}
                                             edit={OpenEdit}
                                             _delete={OpenDelete}
+                                            handleCheckbox = {handleCheckbox}
+                                            selected = {checkedUsers}
+                                            isChecked={checkedUsers.some(user => user.Selected_ID === userEntry.id)}
                                             />)
                                     }
 
@@ -431,6 +513,17 @@ export default function UserManagementMaintenance() {
                     </tbody>
                 </table>
                 </div>
+                {
+                    checkedUsers.length > 0 ? (
+                    <div className='flex flex-row justify-between font-text text-sm text-unactive items-center'>
+                        <p><span className='font-header text-primary'>{countCheckedUsers()}</span> Users Selected</p>
+                        <div className='text-white bg-primary flex flex-row items-center gap-4 py-2 px-5 rounded-md hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out'>
+                            <FontAwesomeIcon icon={faTrashCan}/>
+                            <p>Delete Users</p>
+                        </div>
+                    </div>
+                    ) : (null)
+                }
             </div>
 
             {/* Sample Footer Pagenataion */}

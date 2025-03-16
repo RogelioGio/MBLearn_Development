@@ -23,6 +23,7 @@ import MyEmployee from "./views/MyEmployee";
 import { CourseListProvider } from "./contexts/CourseListProvider";
 import { SelectedUserProvider } from "./contexts/selecteduserContext";
 import { OptionProvider } from "./contexts/AddUserOptionProvider";
+import SelectUser from "./views/SelectedUser";
 
 const router = createBrowserRouter([
 
@@ -49,7 +50,11 @@ const router = createBrowserRouter([
                     },
                     {
                         path: "usermanagementmaintenance",
-                        element:<UserManagementMaintenance/>
+                        element:<UserManagementMaintenance/>,
+                    },
+                    {
+                        path: "userdetail",
+                        element: <SelectUser/>
                     },
                     {
                         path: "useraccountsmaintenance",
