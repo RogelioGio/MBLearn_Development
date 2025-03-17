@@ -4,31 +4,46 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react"
 import { useEffect, useState } from "react"
 import axiosClient from "../axios-client"
+import { useCourse } from "../contexts/selectedcourseContext"
 
 
 const EditCourseModal = ({open, close, id}) => {
     const [hover, setHover] = useState(false);
     const [loading, setLoading] = useState(true)
     const [course, setCourse] = useState([])
+    const {selectedCourse, selectCourse, isFetching} = useCourse()
 
-    const fetchCourses = () => {
-        setLoading(true)
-        axiosClient.get(`/courses/${id}`)
-        .then(({data}) => {
-            setCourse(data.data)
-            setLoading(false);
-        }).catch((err) => {
-            console.log(err)
-        })
-    }
+    // const fetchCourses = () => {
+    //     setLoading(true)
+    //     axiosClient.get(`/courses/${id}`)
+    //     .then(({data}) => {
+    //         setCourse(data.data)
+    //         setLoading(false);
+    //     }).catch((err) => {
+    //         console.log(err)
+    //     })
+    // }
 
-    useEffect(()=>{
-        if(!id)return;
-        fetchCourses();
-    },[id])
-    useEffect(()=>{
-        setCourse("")
-    },[close])
+    useEffect(() => {
+            if (open && id) {
+                if (selectedCourse?.id === id) {
+                    setLoading(false);
+                } else {
+                    setLoading(true);
+                    selectCourse(id);
+                }
+            }
+        }, [id, selectedCourse, open]);
+        useEffect(() => {
+            if (selectedCourse && !isFetching) {
+                setLoading(false);
+            }
+        }, [selectedCourse, isFetching]);
+
+        useEffect(() => {
+            setLoading(isFetching);
+        }, [isFetching]);
+
     return(
         <Dialog open={open} onClose={close} className="fixed inset-0 z-10 w-screen overflow-y-auto">
             <DialogBackdrop transition className="fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in" />

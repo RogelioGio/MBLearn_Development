@@ -8,9 +8,11 @@ import { useCourseContext } from "../contexts/CourseListProvider";
 import { faCircleXmark as regularXmark } from "@fortawesome/free-regular-svg-icons";
 import { useFormik } from "formik";
 import * as Yup from 'yup';
+import { useCourse } from "../contexts/selectedcourseContext";
 
 const AssignCourseAdmin = ({courseID ,open, close}) => {
     const {departments, cities, branches} = useCourseContext()
+    const {selectedCourse, selectCourse, isFetching} = useCourse();
     const [isLoading, setLoading] = useState(true);
     const [course, setCourse] = useState();
     const [AssignedCourseAdmins, setAssignedCourseAdmins] = useState([]);
@@ -24,20 +26,33 @@ const AssignCourseAdmin = ({courseID ,open, close}) => {
         }));
     };
 
+    useEffect(() => {
+        if (open && courseID) {
+            if (selectedCourse?.id === courseID) {
+                setLoading(false);
+
+            } else {
+                setLoading(true);
+                selectCourse(courseID);
+            }
+        }
+    }, [courseID, selectedCourse, open]);
+    useEffect(() => {
+        if (selectedCourse && !isFetching) {
+            setLoading(false);
+        }
+    }, [selectedCourse, isFetching]);
+
+    useEffect(() => {
+        setLoading(isFetching);
+    }, [isFetching]);
+
+    useEffect(()=>{
+        setCourse(selectedCourse)
+    },[selectedCourse])
+
     //Add Course Admin
     const [isOpen, setIsOpen] = useState(false)
-
-    const fetchCourse = () => {
-        setLoading(true)
-        axiosClient.get(`/courses/${courseID}`)
-        .then(({data}) => {
-            setCourse(data.data)
-            setLoading(false);
-            console.log(data)
-        }).catch((err) => {
-            console.log(err)
-        })
-    }
 
     const fetchAssignedCourseAdmins = () => {
         setLoading(true)
@@ -50,17 +65,6 @@ const AssignCourseAdmin = ({courseID ,open, close}) => {
             console.log(err)
         })
     }
-
-    useEffect(()=>{
-        if(!courseID)return;
-        fetchCourse()
-        fetchAssignedCourseAdmins();
-    },[courseID])
-
-    useEffect(()=>{
-        setCourse("")
-        setAssignedCourseAdmins([])
-    },[close])
 
     const handleBranchesOptions = (e) =>{
         const city = e.target.value;
@@ -211,25 +215,25 @@ const AssignCourseAdmin = ({courseID ,open, close}) => {
                                                                     </div>
                                                                     {/* Name and employee-id*/}
                                                                     <div>
-                                                                        <p className='font-text'>{`${courseadmins.first_name} ${courseadmins.middle_name} ${courseadmins.last_name} ${courseadmins.name_suffix || ""}`.trim()}</p>
-                                                                        <p className='text-unactive text-xs'>ID: {courseadmins.employeeID}</p>
+                                                                        <p className='font-text'>{`${courseadmins?.first_name} ${courseadmins?.middle_name} ${courseadmins?.last_name} ${courseadmins?.name_suffix || ""}`.trim()}</p>
+                                                                        <p className='text-unactive text-xs'>ID: {courseadmins?.employeeID}</p>
                                                                     </div>
                                                                 </div>
                                                             </td>
                                                             <td className='py-3 px-4'>
                                                                 <div className='flex flex-col'>
                                                                     {/* Department */}
-                                                                    <p className='text-unactive'>{courseadmins.department.department_name}</p>
+                                                                    <p className='text-unactive'>{courseadmins?.department?.department_name}</p>
                                                                     {/* Title */}
-                                                                    <p className='text-unactive text-xs'>{courseadmins.title.title_name}</p>
+                                                                    <p className='text-unactive text-xs'>{courseadmins?.title?.title_name}</p>
                                                                 </div>
                                                             </td>
                                                             <td className='py-3 px-4'>
                                                                 <div className='flex flex-col'>
                                                                 {/* Branch Location */}
-                                                                <p className='text-unactive'>{courseadmins.branch.branch_name}</p>
+                                                                <p className='text-unactive'>{courseadmins?.branch?.branch_name}</p>
                                                                 {/* City Location */}
-                                                                <p className='text-unactive text-xs'>{courseadmins.branch.city.city_name}</p>
+                                                                <p className='text-unactive text-xs'>{courseadmins?.branch?.city?.city_name}</p>
                                                                 </div>
                                                             </td>
                                                             {/* Action */}

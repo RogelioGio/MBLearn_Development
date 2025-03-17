@@ -24,6 +24,7 @@ import { CourseListProvider } from "./contexts/CourseListProvider";
 import { SelectedUserProvider } from "./contexts/selecteduserContext";
 import { OptionProvider } from "./contexts/AddUserOptionProvider";
 import SelectUser from "./views/SelectedUser";
+import { SelectedCourseProvider } from "./contexts/selectedcourseContext";
 
 const router = createBrowserRouter([
 
@@ -93,9 +94,11 @@ const router = createBrowserRouter([
                     {
                         path: "courselistmaintenance",
                         element:
+                        <SelectedCourseProvider>
                         <CourseListProvider>
                             <CourseListMaintenance/>,
                         </CourseListProvider>
+                        </SelectedCourseProvider>
                     },
                     {
                         path: "assignedcourses",

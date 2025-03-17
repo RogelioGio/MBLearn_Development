@@ -121,6 +121,8 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('/options', [OptionController::class,'index']);
     //Fetching All nessesary call for courselist maintenance
     Route::get('/coursecontext',[CourseContextController::class,'index']);
+    Route::get('/coursecontext/{id}',[CourseContextController::class,'getSelectedCourse']);
+
 
 });
 
