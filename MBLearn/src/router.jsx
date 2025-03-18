@@ -46,16 +46,15 @@ const router = createBrowserRouter([
                         element: <Dashboard/>
                     },
                     {
-                        path:"course/:id",
-                        element: <Course/>
-                    },
-                    {
                         path: "usermanagementmaintenance",
                         element:<UserManagementMaintenance/>,
                     },
                     {
-                        path: "userdetail",
-                        element: <SelectUser/>
+                        path: "userdetail/:id",
+                        element:
+                        <SelectedUserProvider>
+                            <SelectUser/>
+                        </SelectedUserProvider>
                     },
                     {
                         path: "useraccountsmaintenance",
@@ -98,6 +97,15 @@ const router = createBrowserRouter([
                         <CourseListProvider>
                             <CourseListMaintenance/>,
                         </CourseListProvider>
+                        </SelectedCourseProvider>
+                    },
+                    {
+                        path:"course/:id",
+                        element:
+                        <SelectedCourseProvider>
+                            <CourseListProvider>
+                                <Course/>
+                            </CourseListProvider>
                         </SelectedCourseProvider>
                     },
                     {

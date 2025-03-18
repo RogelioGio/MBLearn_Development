@@ -1,9 +1,9 @@
-import { faChevronLeft, faChevronRight, faTrashCan, faUserPen } from '@fortawesome/free-solid-svg-icons'
+import { faChevronLeft, faChevronRight, faEllipsis, faTrashCan, faUserPen } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react'
 import React from 'react'
 
-const User = ({re_move,click,userID,name,department,title,branch,city,profile_url,employeeID,role,edit,_delete,handleCheckbox,selected,isChecked}) => {
+const User = ({re_move,click,userID,name,department,title,branch,city,profile_url,employeeID,role,edit,_delete,handleCheckbox,selected,isChecked,userDetail}) => {
     const selectedUsers = selected.some(
         (user) => user.Selected_ID === userID
     )
@@ -78,6 +78,10 @@ const User = ({re_move,click,userID,name,department,title,branch,city,profile_ur
                 {/* Action */}
                 <td className='py-3 px-4'>
                     <div className='flex gap-1 justify-end'>
+                    <button className='text-primary border border-primary rounded-md px-3 hover:bg-primary hover:text-white hover:scale-105 transition-all ease-in-out'
+                        onClick={(e) => userDetail(e, userID)}>
+                        <FontAwesomeIcon icon={faEllipsis}/>
+                    </button>
                     <button onClick={(e) => edit(e,userID)}
                             className='flex flex-row items-center justify-center gap-2 px-5 py-2 border border-primary rounded-md text-primary hover:bg-primary hover:text-white hover:scale-105 transition-all ease-in-out'>
                         <FontAwesomeIcon icon={faUserPen}/>

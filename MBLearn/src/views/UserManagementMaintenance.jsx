@@ -18,11 +18,14 @@ import { useOption } from '../contexts/AddUserOptionProvider';
 import * as Yup from 'yup';
 import { Formik, useFormik } from 'formik';
 import EditUserSuccessfully from '../modalsandprops/EditUserSuccesfuly';
+import { useNavigate } from 'react-router-dom';
+
 
 export default function UserManagementMaintenance() {
     const {departments,cities,location} = useOption();
     const [checkedUsers, setCheckedUser] = useState([]);
     const selectAllRef = useRef(null);
+    const navigate = useNavigate();
 
     useEffect(()=>{
         setCheckedUser([])
@@ -131,6 +134,7 @@ export default function UserManagementMaintenance() {
         isEdit:'',
         isDelete:'',
         isSelect:'',
+        isDetail:'',
     })
     const toggleUserID = (key,value) => {
         setUserID((prev => ({
@@ -222,6 +226,12 @@ export default function UserManagementMaintenance() {
     const CloseSuccessFullyEdit = () => {
         toggleModal("isEditSuccess", false)
         fetchUsers()
+    }
+
+    //Open the user detail page
+    const OpenDetailView = (e, id) => {
+        e.stopPropagation()
+        navigate(`/systemadmin/userdetail/${id}`)
     }
 
 
@@ -503,6 +513,7 @@ export default function UserManagementMaintenance() {
                                             handleCheckbox = {handleCheckbox}
                                             selected = {checkedUsers}
                                             isChecked={checkedUsers.some(user => user.Selected_ID === userEntry.id)}
+                                            userDetail = {OpenDetailView}
                                             />)
                                     }
 

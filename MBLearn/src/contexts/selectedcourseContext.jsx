@@ -14,6 +14,7 @@ export const SelectedCourseProvider = ({children}) => {
             axiosClient.get(`/coursecontext/${courseID}`)
             .then(({data}) => {
                 setSelectedCourse(data)
+                setIsFetching(false)
             }).catch((err) => {
                 console.log(err)
             })
@@ -29,8 +30,15 @@ export const SelectedCourseProvider = ({children}) => {
         setCourseID(id);
     }
 
+    const resetSelectedCourse = (id) => {
+        if (id !== courseID && selectedCourse) {
+            setIsFetching(true);
+            setSelectedCourse(null);
+        }
+    }
+
     return (
-        <SelectedCourse.Provider value={{selectedCourse, selectCourse, isFetching}}>
+        <SelectedCourse.Provider value={{selectedCourse, selectCourse, resetSelectedCourse,isFetching}}>
             {children}
         </SelectedCourse.Provider>
     )

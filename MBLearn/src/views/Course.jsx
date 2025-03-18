@@ -1,4 +1,3 @@
-
 import { faCircleCheck as faCircleCheckRegular, faCircleLeft as faCircleLeftRegular } from "@fortawesome/free-regular-svg-icons"
 import { faArrowDownShortWide, faArrowDownZA, faArrowLeft, faArrowUpAZ, faArrowUpWideShort, faBook, faCakeCandles, faGraduationCap, faPenToSquare, faSort, faSquareCheck, faTrash, faUser, faUserGroup, faUserPlus } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -16,6 +15,8 @@ import CourseLearenerProps from "../modalsandprops/CourseLearnerProps"
 import CourseEnrollmentProps from "../modalsandprops/CourseEnrollmentProps"
 import { use } from "react"
 import EditCourseModal from "../modalsandprops/EditCourseModal"
+import { useCourse } from "../contexts/selectedcourseContext"
+import { set } from "date-fns"
 
 
 
@@ -28,6 +29,7 @@ export default function Course() {
     const [isLoading ,setLoading] = useState(true);
     const [tab, setTab] = useState("module");
     const [open, setOpen] = useState(false);
+    const {selectCourse, selectedCourse, isFetching, resetSelectedCourse} = useCourse();
 
     const tabComponents = {
         module: <CourseModuleProps />,
@@ -35,22 +37,17 @@ export default function Course() {
         enrollment: <CourseEnrollmentProps />,
     };
 
+    useEffect(() => {
+        resetSelectedCourse(id);
+        selectCourse(id);
+        setLoading(isFetching);
+        setCourse(selectedCourse);
+    }, [selectedCourse,id, isFetching]);
 
-    //API Call for specific course
-    const fetchCourses = () => {
-        setLoading(true)
-        axiosClient.get(`/courses/${id}`)
-        .then(({data}) => {
-            setCourse(data.data)
-            setLoading(false);
-        }).catch((err) => {
-            console.log(err)
-        })
-    }
-
-    useEffect(()=>{
-        fetchCourses();
-    },[])
+    useEffect(() => {
+        console.log(`Fetching: ${isFetching} Loading: ${isLoading}`);
+        console.log(course)
+    },[isFetching, isLoading])
 
     useEffect(() => {
         console.log("Active Tab:", tab);
@@ -72,8 +69,22 @@ export default function Course() {
                     </div>
                 </div>
                 <div className=' pl-5 flex flex-col justify-center border-b border-divider w-full'>
-                    <h1 className='text-primary text-4xl font-header'> {course?.name || 'Loading...'}</h1>
-                    <p className='font-text text-sm text-unactive'>{course?.category || 'Loading...'} - {course?.type || 'Loading...'}</p>
+                    <div className="w-fit flex flex-col gap-1">
+                        {
+                            !isLoading ? (
+                                <>
+                                    <h1 className='text-primary text-4xl font-header'> {course?.name}</h1>
+                                    <div className="flex flex-row justify-between">
+                                        <p className='font-text text-sm text-unactive'>{course?.categories?.[0]?.category_name} - {course?.types?.[0]?.type_name}</p>
+                                        <p className='font-text text-sm text-unactive'>{course?.training_type} - {course?.training_modes?.[0]?.mode_name}</p>
+                                    </div>
+                                </>
+                            ) : (
+                                <h1 className='text-primary text-4xl font-header'>Loading Course Information....</h1>
+                            )
+                        }
+
+                    </div>
                 </div>
                 <div className="flex flex-row justify-center items-center border-b border-divider pr-5">
                     <div className="hover:scale-105 ease-in-out transition-all hover:cursor-pointer" onClick={()=>setOpen(true)}>
@@ -114,7 +125,7 @@ export default function Course() {
 
         </div>
         {/* Edit */}
-        <EditCourseModal open={open} close={()=>setOpen(false)} id={course.id}/>
+        <EditCourseModal open={open} close={()=>setOpen(false)} id={course?.id}/>
         </>
 
     )

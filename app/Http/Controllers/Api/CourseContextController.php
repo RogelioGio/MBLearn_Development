@@ -28,7 +28,7 @@ class CourseContextController extends Controller
     }
 
     public function getSelectedCourse($id){
-        $course = Course::with('assignedCourseAdmins')->find($id);
+        $course = Course::with('assignedCourseAdmins','categories','types','training_modes')->find($id);
         if ($course) {
             return response()->json($course);
         } else {
