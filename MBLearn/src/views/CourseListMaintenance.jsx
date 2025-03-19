@@ -8,7 +8,6 @@ import { Menu, MenuButton, MenuItem, MenuItems, Disclosure, DisclosureButton, Di
 import AddCourseModal from '../modalsandprops/AddCourseModal';
 import EditCourseModal from '../modalsandprops/EditCourseModal';
 import DeleteCourseModal from '../modalsandprops/DeleteCourseModal';
-import React from 'react';
 import { useStateContext } from '../contexts/ContextProvider';
 import CourseFilterProps from '../modalsandprops/CourseFilterProps';
 import AssignCourseAdmin from '../modalsandprops/AssignCourseAdminModal';
@@ -92,9 +91,16 @@ const handleFilter = (sectionId, value) => {
 const [courses, setCourses] = useState([])
 const fetchCourses = () => {
     toggleModal('loading', true)
-    axiosClient.get('/courses')
+    axiosClient.get('/courses',{
+        params: {
+            page: pageState.currentPage,
+            perPage: pageState.perPage,
+        }
+    })
     .then(({ data }) => {
         setCourses(data.data)
+        pageChangeState("totalCourses", data.total)
+        pageChangeState("lastPage", data.lastPage)
         toggleModal('loading', false)
     })
     .catch((err) => {
@@ -103,11 +109,53 @@ const fetchCourses = () => {
 
 }
 
-useEffect(() => {
-    fetchCourses()
-}, []);
 
+//Pagenation States
+const [pageState, setPagination] = useState({
+        currentPage: 1,
+        perPage: 3,
+        totalCourses: 0,
+        lastPage:1,
+        startNumber: 0,
+        endNumber: 0,
+        currentPerPage:0
+    });
 
+    const pageChangeState = (key, value) => {
+        setPagination ((prev) => ({
+            ...prev,
+            [key]: value
+        }))
+    }
+
+    useEffect(() => {
+            pageChangeState('startNumber', (pageState.currentPage - 1) * pageState.perPage + 1)
+            pageChangeState('endNumber', Math.min(pageState.currentPage * pageState.perPage, pageState.totalCourses))
+        },[pageState.currentPage, pageState.perPage, pageState.totalCourses])
+
+        useEffect(()=>{
+            fetchCourses()
+        },[pageState.currentPage, pageState.perPage])
+
+        //Next and Previous
+        const back = () => {
+            if (isLoading) return;
+            if (pageState.currentPage > 1){
+                pageChangeState("currentPage", pageState.currentPage - 1)
+                pageChangeState("startNumber", pageState.perPage - 4)
+            }
+        }
+        const next = () => {
+            if (isLoading) return;
+            if (pageState.currentPage < pageState.lastPage){
+                pageChangeState("currentPage", pageState.currentPage + 1)
+            }
+        }
+
+        const Pages = [];
+        for(let p = 1; p <= pageState.lastPage; p++){
+            Pages.push(p)
+        }
 
     return (
         <div className='grid  grid-cols-4 grid-rows-[6.25rem_min-content_1fr_min-content] h-full w-full overflow-hidden'>
@@ -200,8 +248,7 @@ useEffect(() => {
                 {/* Total number of entries and only be shown */}
                 <div>
                     <p className='text-sm font-text text-unactive'>
-                        Showing <span className='font-header text-primary'>1</span> to <span className='font-header text-primary'>3</span> of {/*here is the backend code for total entries*/}
-                        <span className='font-header text-primary'>97</span> <span className='text-primary'>results</span>
+                        Showing <span className='font-header text-primary'>{pageState.startNumber}</span> to <span className='font-header text-primary'>{pageState.endNumber}</span> of <span className='font-header text-primary'>{pageState.totalCourses}</span> <span className='text-primary'>results</span>
                     </p>
                 </div>
                 {/* Paganation */}
@@ -211,14 +258,18 @@ useEffect(() => {
                         <a href="#" className='relative inline-flex items-center rounded-l-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
                             <FontAwesomeIcon icon={faChevronLeft}/>
                         </a>
-                        {/* Current: "z-10 bg-indigo-600 text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600", Default: "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0" */}
-                        <a href="#" className='relative z-10 inline-flex item center bg-primary px-4 py-2 text-sm font-header text-white ring-1 ring-divider ring-inset'>1</a>
-                        <a href="#" className='relative z-10 inline-flex item center bg-secondarybackground px-4 py-2 text-sm font-header text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>2</a>
-                        <a href="#" className= 'relative z-10 inline-flex item center bg-secondarybackground px-4 py-2 text-sm font-header text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>3</a>
-                        <span className='relative inline-flex item center bg-secondarybackground px-4 py-2 text-sm font-header text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all eas'>...</span>
-                        <a href="#" className='relative z-10 inline-flex item center bg-secondarybackground px-4 py-2 text-sm font-header text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>8</a>
-                        <a href="#" className='relative z-10 inline-flex item center bg-secondarybackground px-4 py-2 text-sm font-header text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>9</a>
-                        <a href="#" className='relative z-10 inline-flex item center bg-secondarybackground px-4 py-2 text-sm font-header text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>10</a>
+                        {Pages.map((page)=>(
+                            <a
+                                key={page}
+                                className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset
+                                    ${
+                                        page === pageState.currentPage
+                                        ? 'bg-primary text-white'
+                                        : 'bg-secondarybackground text-primary hover:bg-primary hover:text-white'
+                                    } transition-all ease-in-out`}
+                                    onClick={() => pageChange(page)}>
+                                {page}</a>
+                        ))}
                         {/* Next */}
                         <a href="#" className='relative inline-flex items-center rounded-r-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
                             <FontAwesomeIcon icon={faChevronRight}/>

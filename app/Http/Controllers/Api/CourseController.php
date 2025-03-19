@@ -28,7 +28,18 @@ class CourseController extends Controller
         $filter = new CourseFilter();
         $queryItems = $filter->transform($request);
 
-        return Course::with(['categories', 'types', 'training_modes'])->where('archived', '=', 'active')->orderby('id', 'desc')->paginate(3);
+        $page = $request->input('page',1); // default page
+        $perPage = $request->input('per_page', 3); // default per page
+
+        $courses = Course::with(['categories', 'types', 'training_modes'])->where('archived', '=', 'active')->orderby('id', 'desc')->paginate($perPage);
+
+        return response() -> json([
+            'data' => $courses-> items(),
+            'total' => $courses->total(),
+            'lastPage' => $courses->lastPage(),
+            'currentPage' => $courses->currentPage(),
+        ],200);
+
     }
 
     /**
