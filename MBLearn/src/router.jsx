@@ -23,6 +23,8 @@ import MyEmployee from "./views/MyEmployee";
 import { CourseListProvider } from "./contexts/CourseListProvider";
 import { SelectedUserProvider } from "./contexts/selecteduserContext";
 import { OptionProvider } from "./contexts/AddUserOptionProvider";
+import SelectUser from "./views/SelectedUser";
+import { SelectedCourseProvider } from "./contexts/selectedcourseContext";
 
 const router = createBrowserRouter([
 
@@ -44,12 +46,15 @@ const router = createBrowserRouter([
                         element: <Dashboard/>
                     },
                     {
-                        path:"course/:id",
-                        element: <Course/>
+                        path: "usermanagementmaintenance",
+                        element:<UserManagementMaintenance/>,
                     },
                     {
-                        path: "usermanagementmaintenance",
-                        element:<UserManagementMaintenance/>
+                        path: "userdetail/:id",
+                        element:
+                        <SelectedUserProvider>
+                            <SelectUser/>
+                        </SelectedUserProvider>
                     },
                     {
                         path: "useraccountsmaintenance",
@@ -88,9 +93,20 @@ const router = createBrowserRouter([
                     {
                         path: "courselistmaintenance",
                         element:
+                        <SelectedCourseProvider>
                         <CourseListProvider>
                             <CourseListMaintenance/>,
                         </CourseListProvider>
+                        </SelectedCourseProvider>
+                    },
+                    {
+                        path:"course/:id",
+                        element:
+                        <SelectedCourseProvider>
+                            <CourseListProvider>
+                                <Course/>
+                            </CourseListProvider>
+                        </SelectedCourseProvider>
                     },
                     {
                         path: "assignedcourses",

@@ -1,6 +1,7 @@
 import { Children, createContext, useContext, useEffect, useState } from "react";
 import axiosClient from "../axios-client";
 import { faTruckFieldUn } from "@fortawesome/free-solid-svg-icons";
+import { set } from "date-fns";
 
 const SelectedUser = createContext()
 
@@ -10,8 +11,8 @@ export const SelectedUserProvider = ({children}) => {
     const [isFetching, setIsFetching] = useState(false);
 
     useEffect(() => {
-        if (userId !== undefined && userId !== null) { // Ensuring userId is valid
             setIsFetching(true)
+        if (userId !== undefined && userId !== null) { // Ensuring userId is valid
             axiosClient.get(`/select-user/${userId}`)
             .then(response => {
                 setSelectedUser(response.data.data);
@@ -23,13 +24,22 @@ export const SelectedUserProvider = ({children}) => {
     }, [userId]);
 
     const selectUser = (id) => {
-        if (id !== userId) {
-            setUserId(id);
+        if (id === userId && selectedUser) {
+            setIsFetching(false);
+            return; // Prevent unnecessary state updates
         }
+        setIsFetching(true);
+        setUserId(id);
     };
 
+    const resetUser = () => {
+        if (selectedUser) {
+            setSelectedUser(null);
+        }
+    }
+
     return(
-        <SelectedUser.Provider value={{selectedUser, selectUser, isFetching}}>
+        <SelectedUser.Provider value={{selectedUser, selectUser, isFetching, resetUser}}>
             {children}
         </SelectedUser.Provider>
     )

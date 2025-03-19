@@ -56,6 +56,7 @@ export default function Navigation() {
     const {user, profile_image, role, availableRoles, setAvailableRoles,setUser, setToken, setRole} = useStateContext();
     const navigate = useNavigate();
 
+
     useEffect(() => {
         let roles = []
                 //Set Available Roles

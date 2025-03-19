@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useOption } from "../contexts/AddUserOptionProvider";
 import { useEffect } from "react";
 
-const UserSecEntyProps = ({user,name,employeeID,MBEmail,city,branch,department,title,role,image,edit}) => {
+const UserSecEntyProps = ({user,name,employeeID,MBEmail,city,branch,department,title,role,image,status,edit}) => {
     const {departments,cities,location,titles} = useOption();
 
     return (
@@ -23,19 +23,6 @@ const UserSecEntyProps = ({user,name,employeeID,MBEmail,city,branch,department,t
                         </td>
                         <td className='py-3 px-4'>
                             <div className='flex flex-col'>
-                                {/* City-Branch */}
-                                <p>
-                                    {cities?.find(c => c.id === city).city_name} - {location?.find(b=>b.id === branch).branch_name}
-                                </p>
-                                {/* Department-Title */}
-                                <p className="text-unactive">
-                                    {departments?.find(d=>d.id === department).department_name} - {titles?.find(t => t.id === title).title_name}
-                                </p>
-
-                            </div>
-                        </td>
-                        <td className='py-3 px-4'>
-                            <div className='flex flex-col'>
                             {/* Metrobank Working Email */}
                             <p className='text-unactive'>{MBEmail}</p>
                             </div>
@@ -44,6 +31,14 @@ const UserSecEntyProps = ({user,name,employeeID,MBEmail,city,branch,department,t
                             <p className='text-unactive'>{role}</p>
                         </td>
 
+                        {/* Last Login */}
+                        <td>
+                        </td>
+
+                        {/* Account Status */}
+                        <td className='py-3 px-4'>
+                            <p className='text-unactive'>{status}</p>
+                        </td>
                         {/* Action */}
                         <td className='py-3 px-4'>
                             <div className='flex gap-1 justify-end'>

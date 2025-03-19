@@ -18,6 +18,7 @@ const AddUserModal = ({open, close, updateTable}) => {
     const {cities,departments,location,titles,roles} = useOption();
     const [selectedBranches, setSelectedBranches] = useState([])
 
+
     const handleBranchesOptions = (e) =>{
         const city = e.target.value;
         formik.setFieldValue('city', city)
@@ -386,7 +387,7 @@ const AddUserModal = ({open, close, updateTable}) => {
                                                 {/* Employee Account Status and Role */}
                                                 <div className="grid grid-cols-3 grid-rows-[1fr_auto] gap-2">
                                                     <div className="col-span-3 flex flex-col gap-1 py-2 border-b border-b-divider">
-                                                        <span className="font-header uppercase text-primary">Employee's Account Role</span>
+                                                        <span className="font-header uppercase text-primary">Employee's Account Role & Permission</span>
                                                         <span className="font-text text-xs text-unactive">Assign the appropriate system role to define user access and permissions.</span>
                                                     </div>
                                                     {/* Role */}
@@ -411,6 +412,11 @@ const AddUserModal = ({open, close, updateTable}) => {
                                                             </svg>
                                                         </div>
                                                         {formik.touched.role && formik.errors.role ? (<div className="text-red-500 text-xs font-text">{formik.errors.role}</div>):null}
+                                                    </div>
+                                                    <div>
+                                                        <label htmlFor="role" className="font-header text-xs flex flex-row justify-between">
+                                                            <p className="text-xs font-text">Account Role Permissions<span className="text-red-500">*</span></p>
+                                                        </label>
                                                     </div>
 
                                                 </div>

@@ -11,7 +11,7 @@ const CourseListCard = ({courseList, classname, onclick, action}) => {
                 courseList.map((course) => (
 
                     // card
-                    <div key={course.id} className='w-full h-fit flex flex-row rounded-md bg-white shadow-md hover:scale-105 hover:cursor-pointer transition-all ease-in-out'  onClick={() => navigate(`/systemadmin/course/${course.id}`)}>
+                    <div key={course.id} className='w-full h-fit flex flex-row rounded-md bg-white shadow-md hover:scale-105 hover:cursor-pointer transition-all ease-in-out'  onClick={() => navigate(`/courseadmin/course/${course.id}`)}>
                         {/* Course Image */}
                         <div className='w-32 h-full rounded-tl-md rounded-bl-md bg-primary'>
                             <img src="" alt="" className='w-full' />
