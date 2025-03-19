@@ -48,6 +48,7 @@ class AuthController extends Controller
         $credentials = $request->validated();
         $key = 'login-attempts:'. Str::lower($credentials['MBemail']);
         $user = UserCredentials::where('MBemail', $credentials['MBemail'])->first();
+        $remaining = RateLimiter::remaining($key, 5);
 
         if(!$user){
             return response()->json([
@@ -58,7 +59,7 @@ class AuthController extends Controller
         if(!($user->userInfos->status === "Active")){
             return response()->json([
                 'message' => 'This user is currently inactive'
-            ]);
+            ], 401);
         }
 
         if(Auth::attempt($credentials)){
@@ -90,7 +91,7 @@ class AuthController extends Controller
 
         RateLimiter::hit($key,60);
         return response()->json([
-            'message' => 'Invalid password',
+            'message' => 'Invalid password, you have '. $remaining.' tries remaining',
         ], 401);
     }
 

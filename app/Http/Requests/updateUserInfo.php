@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class updateUserInfo extends FormRequest
 {
@@ -22,11 +23,12 @@ class updateUserInfo extends FormRequest
     public function rules(): array
     {
         return [
-            'employeeID' => 'required|string|max:11',
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'middle_initial' => 'nullable|string|max:1',
+            'employeeID' => ['required', 'string',  'min:11', Rule::unique('userInfo')->ignoreModel($this,$this->employeeID)],
+            'first_name' => 'required|string|max:30',
+            'last_name' => 'required|string|max:30',
+            'middle_name' => 'nullable|string|max:30',
             'name_suffix' => 'nullable|string|max:10',
+            'role_id' => 'required|integer|exists:roles,id',
             'department_id' => 'required|integer|exists:departments,id',
             'title_id' => 'required|integer|exists:titles,id',
             'branch_id' => 'required|integer|exists:branches,id',
