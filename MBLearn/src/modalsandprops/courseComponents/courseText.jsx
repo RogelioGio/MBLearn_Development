@@ -1,3 +1,4 @@
+import ReactPlayer from "react-player"
 const CourseText = () => {
     return(
         <div className="row-start-3 col-span-3 ml-5 pr-5">
@@ -7,6 +8,15 @@ const CourseText = () => {
                 <div className="col-span-2 row-span-1 py-5">
                     <p className="font-header text-primary text-2xl">Overview of Financial Analysis in Excel</p>
                     <p className="font-text text-base">Financial analysis in Excel involves using built-in functions, formulas, and tools to assess financial data, forecast trends, and make informed business decisions. Analysts use Excel for tasks such as budgeting, financial modeling, and performance evaluation. Key features like PivotTables, financial functions (e.g., NPV, IRR), and data visualization help streamline the analysis process, making it easier to interpret complex financial datasets.</p>
+                    <div className="col-span-2 row-span-1 py-5">
+                                        <p className="font-header text-primary text-2xl">Sample Video</p>
+                                        <ReactPlayer
+                                            url="https://www.youtube.com/watch?v=D95Djm6Y_2k&ab_channel=JanlouBty"
+                                            width="600px"
+                                            height="340px"
+                                            controls
+                                        />
+                                    </div>
                 </div>
                 {/* Attachment */}
                 <div className="border-t border-divider col-span-2 py-4 h-fit">
