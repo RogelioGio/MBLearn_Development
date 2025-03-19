@@ -46,16 +46,8 @@ class AuthController extends Controller
     public function login(LoginRequest $request){
 
         $credentials = $request->validated();
-        $key = 'login attempts:'. Str::lower($request->input('MBemail'));
-
-        if(RateLimiter::tooManyAttempts($key, 5)){
-            return response()->json([
-                'message' => "Account has been locked due to too many log in attempts"
-            ]);
-        }
-
+        $key = 'login-attempts:'. Str::lower($credentials['MBemail']);
         $user = UserCredentials::where('MBemail', $credentials['MBemail'])->first();
-
 
         if(!$user){
             return response()->json([
@@ -69,14 +61,8 @@ class AuthController extends Controller
             ]);
         }
 
-        if(!Hash::check($credentials['password'], $user->password)){
-            RateLimiter::hit($key,60*15);
-            return response()->json([
-                'message' => 'Invalid password',
-            ], 401);
-        }
-
         if(Auth::attempt($credentials)){
+            $user->update(['timeout_count' => 0]);
             RateLimiter::clear($key);
             //Generate Login Token
             $token = $user->createToken('authToken')->plainTextToken;
@@ -93,6 +79,19 @@ class AuthController extends Controller
                 'redirect' => $redirect
             ], 200);
         };
+
+        if(RateLimiter::tooManyAttempts($key, 5)){
+            $secondsUntilUnlocked = RateLimiter::availableIn($key);
+            $minutes = ceil($secondsUntilUnlocked/60);
+            return response()->json([
+                'message' => "Maximum number of attempts tried, please try again in ". $minutes." minutes",
+            ]);
+        }
+
+        RateLimiter::hit($key,60);
+        return response()->json([
+            'message' => 'Invalid password',
+        ], 401);
     }
 
     public function logout(Request $request){
