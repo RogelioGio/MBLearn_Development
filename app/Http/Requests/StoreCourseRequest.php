@@ -26,9 +26,9 @@ class StoreCourseRequest extends FormRequest
             'name' => 'required|unique:courses,name',
             'CourseID' => 'required|unique:courses,CourseID',
             'description' => 'required',
-            'type_id' => 'required|exists:types,type_name',
-            'category_id'=> 'required|exists:categories,category_name',
-            'training_mode_id' => 'required|exists:training__modes,mode_name',
+            'type_id' => 'required|exists:types,type_id',
+            'category_id'=> 'required|exists:categories,category_id',
+            'training_mode_id' => 'required|exists:training__modes,mode_id',
             'training_type' => 'required',
             'archived' => 'required',
         ];
