@@ -23,20 +23,20 @@ class StoreCourseRequest extends FormRequest
     {
         // TODO be more specific
         return [
-            'name' => 'required|unique:courses,name',
-            'CourseID' => 'required|unique:courses,CourseID',
-            'description' => 'required',
-            'type_id' => 'required|exists:types,id',
-            'category_id'=> 'required|exists:categories,id',
-            'training_mode_id' => 'required|exists:training__modes,id',
-            'training_type' => 'required',
-            'archived' => 'required',
+            "name" => "required|unique:courses,name",
+            "CourseID" => "required|unique:courses,CourseID",
+            "description" => "required",
+            "type_id" => "required|exists:types,id",
+            "category_id"=> "required|exists:categories,id",
+            "training_mode_id" => "required|exists:training__modes,id",
+            "training_type" => "required",
+            "archived" => "required",
         ];
     }
 
     public function prepareforValidation(){
         $this->merge([
-            'assigned_course_admin_id'=>$this->assignedCourseAdminId,
+            "assigned_course_admin_id"=>$this->assignedCourseAdminId,
         ]);
     }
 }
