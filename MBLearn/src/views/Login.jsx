@@ -77,8 +77,10 @@ export default function Login() {
             .catch(({response})=>{
                 if(response){
                     setError(response.data.message);
+                    console.log(response.data.message);
                     setIsLoading(false);
                     formik.resetForm();
+                    setIsLoading(false);
                 }
             })
         }

@@ -56,7 +56,7 @@ const EditCourseModal = ({open, close, id}) => {
             }
         })
         return(
-        <Dialog open={open} onClose={close} className="fixed inset-0 z-10 w-screen overflow-y-auto">
+        <Dialog open={open} onClose={()=>{}} className="fixed inset-0 z-10 w-screen overflow-y-auto">
             <DialogBackdrop transition className="fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in" />
                 <div className='fixed inset-0 z-10 w-screen overflow-y-auto'>
                     <div className='flex min-h-full items-center justify-center p-4 text center'>
@@ -80,7 +80,7 @@ const EditCourseModal = ({open, close, id}) => {
                                     <label htmlFor="courseName" className="font-text text-xs flex flex-row justify-between">
                                         <p className="">Course Name</p>
                                     </label>
-                                    <input type="text" name="name"
+                                    <input type="text" name="courseName"
                                             className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
                                             value={formik.values.courseName}
                                             onChange={formik.handleChange}
