@@ -58,7 +58,7 @@ class AuthController extends Controller
         if(!($user->userInfos->status === "Active")){
             return response()->json([
                 'message' => 'This user is currently inactive'
-            ]);
+            ],401);
         }
 
         if(Auth::attempt($credentials)){
@@ -85,10 +85,10 @@ class AuthController extends Controller
             $minutes = ceil($secondsUntilUnlocked/60);
             return response()->json([
                 'message' => "Maximum number of attempts tried, please try again in ". $minutes." minutes",
-            ]);
+            ],401);
         }
 
-        RateLimiter::hit($key,60);
+        RateLimiter::hit($key,60*5);
         return response()->json([
             'message' => 'Invalid password',
         ], 401);

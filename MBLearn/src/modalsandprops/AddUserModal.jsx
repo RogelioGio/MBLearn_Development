@@ -293,6 +293,7 @@ const AddUserModal = ({open, close, updateTable}) => {
                                                                 value={formik.values.employeeID}
                                                                 onChange={formik.handleChange}
                                                                 onBlur={formik.handleBlur}
+                                                                maxLength={11}
                                                                 className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
                                                         {formik.touched.employeeID && formik.errors.employeeID ? (<div className="text-red-500 text-xs font-text">{formik.errors.employeeID}</div>):null}
                                                     </div>

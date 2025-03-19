@@ -128,13 +128,13 @@ const AddCourseModal = ({open,onClose}) => {
         training_mode_id: 1,
         training_type: "Mandatory",
         archived: "active",
-        assignedCourseAdminId: 3,
+        assignedCourseAdminId:"",
     }
 
     const submitCourse = () => {
-        toggleState("steps", (current) => current + 1)
         axiosClient.post('/courses', payload)
         .then((res) => {
+            toggleState("steps", (current) => current + 1)
             console.log(res)
         }).catch((err) => {
             console.log(err)
@@ -188,6 +188,7 @@ const AddCourseModal = ({open,onClose}) => {
                                                 value={formik.values.courseID}
                                                 onChange={formik.handleChange}
                                                 onBlur={formik.handleBlur}
+                                                maxLength={11}
                                                 className="w-full font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
                                                 {/* Validation Errors */}
                                             </div>
@@ -308,7 +309,7 @@ const AddCourseModal = ({open,onClose}) => {
                                                     >
                                                     <option value="">Select a Training type</option>
                                                     <option value="Mandatory">Mandatory</option>
-                                                    <option value="Unmandatory">Unmandatory</option>
+                                                    <option value="Unmandatory">Non-mandatory</option>
 
                                                     </select>
                                                     <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
