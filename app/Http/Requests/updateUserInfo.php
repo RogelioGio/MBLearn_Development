@@ -23,7 +23,7 @@ class updateUserInfo extends FormRequest
     public function rules(): array
     {
         return [
-            'employeeID' => ['required', 'string',  'min:11', Rule::unique('userInfo')->ignoreModel($this,$this->employeeID)],
+            'employeeID' => ['required', 'string',  'min:11', Rule::unique('userInfo')->ignore($this->employeeID, 'employeeID')],
             'first_name' => 'required|string|max:30',
             'last_name' => 'required|string|max:30',
             'middle_name' => 'nullable|string|max:30',

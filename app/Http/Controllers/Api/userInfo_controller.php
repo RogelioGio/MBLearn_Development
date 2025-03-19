@@ -182,6 +182,23 @@ class userInfo_controller extends Controller
         ],200);
     }
 
+    public function indexArchivedUsers(Request $request){
+        $page = $request->input('page', 1);//Default page
+        $perPage = $request->input('perPage',5); //Number of entry per page
+
+        $filter = new UserInfosFilter();
+        $queryItems = $filter->transform($request);
+
+        $users =  UserInfos::query()->where($queryItems)->where('status', '=', 'Inactive')->with('roles','department','title','branch','city')->paginate($perPage);
+
+        return response()->json([
+            'data' => $users->items(),
+            'total' => $users->total(),
+            'lastPage' => $users->lastPage(),
+            'currentPage' => $users->currentPage()
+        ],200);
+    }
+
     public function indexNotLearnerUsers(Request $request){
         $perPage = $request->input('perPage',5); //Number of entry per page
         $admins = UserInfos::query()->whereHas('roles',function($query){

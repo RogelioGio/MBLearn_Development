@@ -49,6 +49,7 @@ Route::middleware('auth:sanctum')->group(function(){
 
     //Userlist API for the frontend
     Route::get('/index-user',[userInfo_controller::class, 'indexUsers']);
+    Route::get('/index-archived-users', [userInfo_controller::class, 'indexArchivedUsers']);
     Route::get('/index-course-admins', [userInfo_controller::class, 'indexNotLearnerUsers']);
     Route::get('/select-user/{userInfos}', [userInfo_controller::class, 'findUser']);
     Route::get('/select-employeeid/{employeeID}',[userInfo_controller::class, 'findUser_EmployeeID']);
