@@ -28,7 +28,6 @@ class updateUserInfo extends FormRequest
             'last_name' => 'required|string|max:30',
             'middle_name' => 'nullable|string|max:30',
             'name_suffix' => 'nullable|string|max:10',
-            'role_id' => 'required|integer|exists:roles,id',
             'department_id' => 'required|integer|exists:departments,id',
             'title_id' => 'required|integer|exists:titles,id',
             'branch_id' => 'required|integer|exists:branches,id',
