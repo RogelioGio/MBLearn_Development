@@ -85,7 +85,7 @@ class AuthController extends Controller
             $minutes = ceil($secondsUntilUnlocked/60);
             return response()->json([
                 'message' => "Maximum number of attempts tried, please try again in ". $minutes." minutes",
-            ]);
+            ], 401);
         }
 
         RateLimiter::hit($key,60);
