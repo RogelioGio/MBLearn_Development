@@ -67,7 +67,12 @@ class CourseController extends Controller
         $course->types()->syncWithoutDetaching($type->id);
         $course->categories()->syncWithoutDetaching($category->id);
         $course->save();
-        return response((new CourseResource($course))->toArray($request), 204);
+        return response()->json([
+            "course" => $course,
+            "training_modes" => $course->training_modes,
+            "types" => $course->types,
+            "categories" => $course->categories, 
+        ], 200);
     }
 
     public function bulkStore(BulkStoreCourseRequest $request){
