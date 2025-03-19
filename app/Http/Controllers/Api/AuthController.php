@@ -62,6 +62,7 @@ class AuthController extends Controller
         }
 
         if(Auth::attempt($credentials)){
+            $user->update(['timeout_count' => 0]);
             RateLimiter::clear($key);
             //Generate Login Token
             $token = $user->createToken('authToken')->plainTextToken;
@@ -87,7 +88,7 @@ class AuthController extends Controller
             ]);
         }
 
-        RateLimiter::hit($key,60*5);
+        RateLimiter::hit($key,60);
         return response()->json([
             'message' => 'Invalid password',
         ], 401);
