@@ -139,14 +139,14 @@ const [pageState, setPagination] = useState({
 
         //Next and Previous
         const back = () => {
-            if (isLoading) return;
+            if (modalState.loading) return;
             if (pageState.currentPage > 1){
                 pageChangeState("currentPage", pageState.currentPage - 1)
                 pageChangeState("startNumber", pageState.perPage - 4)
             }
         }
         const next = () => {
-            if (isLoading) return;
+            if (modalState.loading) return;
             if (pageState.currentPage < pageState.lastPage){
                 pageChangeState("currentPage", pageState.currentPage + 1)
             }
@@ -155,6 +155,13 @@ const [pageState, setPagination] = useState({
         const Pages = [];
         for(let p = 1; p <= pageState.lastPage; p++){
             Pages.push(p)
+        }
+
+        const pageChange = (page) => {
+            if(modalState.loading) return;
+            if(page > 0 && page <= pageState.lastPage){
+                pageChangeState("currentPage", page)
+            }
         }
 
     return (
@@ -255,13 +262,13 @@ const [pageState, setPagination] = useState({
                 <div>
                     <nav className='isolate inline-flex -space-x-px round-md shadow-xs'>
                         {/* Previous */}
-                        <a href="#" className='relative inline-flex items-center rounded-l-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
+                        <a href="#" className='relative inline-flex items-center rounded-l-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out' onClick={back}>
                             <FontAwesomeIcon icon={faChevronLeft}/>
                         </a>
                         {Pages.map((page)=>(
                             <a
                                 key={page}
-                                className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset
+                                className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset hover:cursor-pointer
                                     ${
                                         page === pageState.currentPage
                                         ? 'bg-primary text-white'
@@ -271,8 +278,8 @@ const [pageState, setPagination] = useState({
                                 {page}</a>
                         ))}
                         {/* Next */}
-                        <a href="#" className='relative inline-flex items-center rounded-r-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
-                            <FontAwesomeIcon icon={faChevronRight}/>
+                        <a href="#" className='relative inline-flex items-center rounded-r-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out' onClick={next}>
+                            <FontAwesomeIcon icon={faChevronRight} />
                         </a>
                     </nav>
                 </div>

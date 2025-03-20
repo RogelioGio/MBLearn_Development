@@ -15,6 +15,7 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation}) =>{
     const [user, setUser] = useState();
     const [selectedBranches, setSelectedBranches] = useState([])
     const [editing, setEditing] = useState(false)
+    const [updating, setUpdating] = useState(false)
 
     const handleBranchesOptions = (e) =>{
         const city = e.target.value;
@@ -56,11 +57,10 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation}) =>{
                 first_name: 'Loading...',
                 middle_name: 'Loading...',
                 last_name: 'Loading...',
-                department: 'Loading...',
-                title: 'Loading...',
-                branch: 'Loading...',
+                department_id: 'Loading...',
+                title_id: 'Loading...',
+                branch_id: 'Loading...',
                 city: 'Loading...',
-                role: 'Loading...',
                 status: 'Active',
             }
             : {
@@ -68,9 +68,9 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation}) =>{
                 first_name: selectedUser?.first_name || '',
                 middle_name: selectedUser?.middle_name || '',
                 last_name: selectedUser?.last_name || '',
-                department: selectedUser?.department_id || '',
-                title: selectedUser?.title_id || '',
-                branch: selectedUser?.branch_id || '',
+                department_id: selectedUser?.department_id || '',
+                title_id: selectedUser?.title_id || '',
+                branch_id: selectedUser?.branch_id || '',
                 city: selectedUser?.city?.id || '',
                 status: 'Active',
             },
@@ -79,15 +79,21 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation}) =>{
             employeeID: Yup.string().required('required *').length(11, 'Employee ID must be exactly 11 characters'),
             first_name: Yup.string().required('required *'),
             last_name: Yup.string().required('required *'),
-            department: Yup.string().required('required *'),
-            title: Yup.string().required('required *'),
-            branch: Yup.string().required('required *'),
+            title_id: Yup.string().required('required *'),
+            branch_id: Yup.string().required('required *'),
             city: Yup.string().required('required *'),
         }),
         onSubmit: (values) => {
             console.log(values)
-            close_confirmation()
-            close()
+            setUpdating(true)
+            axiosClient.put(`/update-user-info/${ID}`,values)
+            .then((response) => {console.log(response)
+                setUpdating(false)
+                close_confirmation()
+                close()
+            })
+            .catch((error) => {console.log(error)})
+
         }
     })
 
@@ -190,8 +196,8 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation}) =>{
                                                 {/* Must be dropdown */}
                                                 <label htmlFor="department" className="font-text text-xs flex">Deparment:</label>
                                                 <div className="grid grid-cols-1">
-                                                            <select id="department" name="department" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                                                                value={formik.values.department}
+                                                            <select id="department_id" name="department_id" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                                                value={formik.values.department_id}
                                                                 onChange={formik.handleChange}
                                                                 onBlur={formik.handleBlur}
                                                                 disabled={loading}>
@@ -207,7 +213,7 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation}) =>{
                                                             </svg>
                                                         </div>
                                                 <div className="h-4">
-                                                    {formik.touched.department && formik.errors.department ? (<div className="text-red-500 text-xs font-text">{formik.errors.department}</div>):null}
+                                                    {formik.touched.department_id && formik.errors.department_id ? (<div className="text-red-500 text-xs font-text">{formik.errors.department_id}</div>):null}
                                                 </div>
                                             </div>
 
@@ -216,8 +222,8 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation}) =>{
                                                 {/* Must be dropdown */}
                                                 <label htmlFor="title" className="font-text text-xs">Title:</label>
                                                 <div className="grid grid-cols-1">
-                                                            <select id="title" name="title" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                                                                value={formik.values.title}
+                                                            <select id="title_id" name="title_id" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                                                value={formik.values.title_id}
                                                                 onChange={formik.handleChange}
                                                                 onBlur={formik.handleBlur}
                                                                 disabled={loading}>
@@ -233,7 +239,7 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation}) =>{
                                                             </svg>
                                                     </div>
                                                 <div className="h-4">
-                                                    {formik.touched.title && formik.errors.title ? (<div className="text-red-500 text-xs font-text">{formik.errors.title}</div>):null}
+                                                    {formik.touched.title_id && formik.errors.title_id ? (<div className="text-red-500 text-xs font-text">{formik.errors.title_id}</div>):null}
                                                 </div>
                                             </div>
 
@@ -270,8 +276,8 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation}) =>{
                                             <div className="inline-flex flex-col gap-2 row-start-4 col-span-2 pr-2">
                                                 <label htmlFor="branch" className="font-text text-xs">Branch Location:</label>
                                                 <div className="grid grid-cols-1">
-                                                                <select id="branch" name="branch" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                                                                    value={formik.values.branch}
+                                                                <select id="branch_id" name="branch_id" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                                                    value={formik.values.branch_id}
                                                                     onChange={formik.handleChange}
                                                                     onBlur={formik.handleBlur}
                                                                     disabled={loading}>
@@ -287,7 +293,7 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation}) =>{
                                                                 </svg>
                                                     </div>
                                                 <div className="h-4">
-                                                    {formik.touched.branch && formik.errors.branch ? (<div className="text-red-500 text-xs font-text">{formik.errors.branch}</div>):null}
+                                                    {formik.touched.branch_id && formik.errors.branch_id ? (<div className="text-red-500 text-xs font-text">{formik.errors.branch_id}</div>):null}
                                                 </div>
                                             </div>
                                             {/* Submit */}
@@ -297,7 +303,7 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation}) =>{
                                                     <p>Cancel</p>
                                                 </button>
                                                 <button type="submit" className="w-full inline-flex flex-col items-center gap-2 bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out">
-                                                    <p>Submit</p>
+                                                    <p>{updating ? "Updating..." : "Submit"}</p>
                                                 </button>
                                             </div>
                                         </form>

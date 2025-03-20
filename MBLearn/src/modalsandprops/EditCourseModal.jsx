@@ -45,10 +45,10 @@ const EditCourseModal = ({open, close, id}) => {
                 shortDescription: "Loading...",
             }:{
                 courseName: selectedCourse?.name || "",
-                courseType: selectedCourse?.type_id|| "",
-                courseCategories: selectedCourse?.category_id || "",
-                training_type: selectCourse?.training_type|| "",
-                training_mode: selectedCourse?.training_mode_id || "",
+                courseType: selectedCourse?.types?.[0].id|| "",
+                courseCategories: selectedCourse?.categories?.[0].id || "",
+                training_type: selectCourse?.training_type || "",
+                training_mode: selectedCourse?.training_modes?.[0].id || "",
                 shortDescription: selectedCourse?.description || "",
             },
             onSubmit: (values) => {

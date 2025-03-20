@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { useStateContext } from '../contexts/ContextProvider';
 import axiosClient from '../axios-client';
 import { Helmet } from 'react-helmet';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBookOpenReader, faUserLock } from '@fortawesome/free-solid-svg-icons';
 
 
 
@@ -17,8 +19,32 @@ const DashboardLayout = ({role,name}) => {
                 </Helmet>
 
                 <div className='flex flex-col justify-center col-span-3 row-span-1 pr-5 border-b ml-5 border-divider'>
-                <h1 className='text-primary text-4xl font-header'>Good Day! {name} </h1>
-                <p className='font-text text-sm text-unactive'>System Admin Dashboard, A centralized hub for system administrators to manage users, monitor system activity.</p>
+                    <h1 className='text-primary text-4xl font-header'>Good Day! {name} </h1>
+                    <p className='font-text text-sm text-unactive'>System Admin Dashboard, A centralized hub for system administrators to manage users, monitor system activity.</p>
+                </div>
+                <div className='border-b border-divider mr-5 flex flex-row justify-end items-center'>
+                    <div className='p-6 aspect-square bg-secondaryprimary rounded-full flex justify-center items-center'>
+                        <FontAwesomeIcon icon={faUserLock} className='text-primary text-2xl'/>
+                    </div>
+                </div>
+
+                {/* Announcement */}
+                <div className='col-span-4 row-span-1 mx-5 pb-2 pt-5'>
+                    <div className='bg-white w-full h-full rounded-md shadow-md p-5'>
+
+                    </div>
+                </div>
+
+                {/* Changing Content */}
+                <div className='col-span-3 row-start-3 ml-5 pr-2 pt-2 pb-5'>
+                    <div className='bg-white w-full h-full rounded-md shadow-md'>
+
+                    </div>
+                </div>
+                <div className='col-span-1 row-start-3 mr-5 pt-2 pb-5 flex flex-col justify-between gap-4'>
+                    <div className='bg-white w-full h-full rounded-md shadow-md p-5'></div>
+                    <div className='bg-white w-full h-full rounded-md shadow-md p-5'></div>
+                    <div className='bg-white w-full h-full rounded-md shadow-md p-5'></div>
                 </div>
 
             </div>
@@ -34,6 +60,33 @@ const DashboardLayout = ({role,name}) => {
                             <h1 className="text-primary text-4xl font-header">Good Day! {name}</h1>
                             <p className='font-text text-sm text-unactive'>Course Admin Dashboard, A centralized hub for Course administrators to manage Learners, monitor learners progress.</p>
                     </div>
+                    <div className='border-b border-divider mr-5 flex flex-row justify-end items-center'>
+                        <div className='p-6 aspect-square bg-secondaryprimary rounded-full flex justify-center items-center'>
+                            <FontAwesomeIcon icon={faBookOpenReader} className='text-primary text-2xl'/>
+                        </div>
+                    </div>
+                    <div className='col-span-3 row-span-1 ml-5 pr-2 pb-2 pt-5'>
+                        <div className='bg-white w-full h-full rounded-md shadow-md p-5'>
+
+                        </div>
+                    </div>
+                    <div className='col-span-1 row-span-1 pb-2 pt-5 mr-5 '>
+                        <div className='bg-white w-full h-full rounded-md shadow-md p-5'>
+
+                        </div>
+                    </div>
+                    {/* Changing Content */}
+                    <div className='col-span-3 row-start-3 ml-5 pr-2 pt-2 pb-5'>
+                        <div className='bg-white w-full h-full rounded-md shadow-md'>
+
+                        </div>
+                    </div>
+                    <div className='col-span-1 row-start-3 mr-5 pt-2 pb-5 flex flex-col justify-between gap-4'>
+                        <div className='bg-white w-full h-full rounded-md shadow-md p-5'></div>
+                        <div className='bg-white w-full h-full rounded-md shadow-md p-5'></div>
+                        <div className='bg-white w-full h-full rounded-md shadow-md p-5'></div>
+                    </div>
+
                 </div>
             )
         //Learner Dashboard
