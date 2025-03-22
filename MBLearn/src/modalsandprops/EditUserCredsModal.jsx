@@ -1,17 +1,34 @@
-import { faUserGroup, faUserLock, faUserPen } from "@fortawesome/free-solid-svg-icons"
+import { faEye, faEyeSlash, faUserGroup, faUserLock, faUserPen } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react"
 import { useUser } from "../contexts/selecteduserContext";
 import { useEffect, useState } from "react";
 import { useOption } from "../contexts/AddUserOptionProvider";
 import { useFormik } from "formik";
+import axiosClient from "../axios-client";
 
-const EditUserCredsModal = ({open, close,ID}) => {
+const EditUserCredsModal = ({open, close,ID, editSuccess}) => {
     const {selectedUser, selectUser, isFetching} = useUser();
     const [isLoading, setLoading] = useState(true);
     const {cities=[], titles=[], location=[], roles=[], departments=[]} = useOption();
     const [tab, setTab] = useState(1)
+    const [updating, setUpdating] = useState(false)
 
+    //Handle Password
+        const [showPassword, setShowPassword] = useState(false);
+        const [password, setPassword] = useState('');
+
+        const togglePassword = () =>{
+            setShowPassword(!showPassword);
+        };
+        const handlePassword = (e) =>{
+            const {value} = e.target;
+            formik.setFieldValue('password', value);
+            setPassword(value);
+        }
+    useEffect(() => {
+        formik.resetForm();
+    },[])
     useEffect(() => {
         if (open && ID) {
             if (selectedUser?.id === ID) {
@@ -39,13 +56,29 @@ const EditUserCredsModal = ({open, close,ID}) => {
             password: "",
             role: selectedUser?.roles?.[0].id || "Loading",
         },
-        onsubmit: (values) => {
+        onSubmit: (values) => {
             console.log(values);
+
+            const payload = {
+                MBemail: values.MBEmail,
+                password: values.password
+            }
+
+            setUpdating(true);
+            axiosClient.put(`/update-user-creds/${ID}`, payload)
+            .then((res) => {
+                editSuccess()
+                close()
+                setUpdating(false)
+                console.log(res)
+            }).catch((err) => {
+                console.log(err)
+            })
         }
     })
 
     return(
-        <Dialog open={open} onClose={()=>{}}>
+        <Dialog open={open} onClose={()=>{isLoading ? close : null}}>
             <DialogBackdrop transition className="fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in" />
             <div className='fixed inset-0 z-10 w-screen overflow-y-auto'>
                 <div className='flex min-h-full items-center justify-center p-4 text center'>
@@ -82,7 +115,7 @@ const EditUserCredsModal = ({open, close,ID}) => {
                                             </div>
                                         </div>
                                         <div className="mx-4 flex flex-row gap-5">
-                                            <form className="grid grid-cols-3 gap-2  pb-4 w-full">
+                                            <form className="grid grid-cols-3 gap-2  pb-4 w-full" onSubmit={formik.handleSubmit}>
                                             {
                                                 tab === 1 ? (
                                                     <>
@@ -115,11 +148,16 @@ const EditUserCredsModal = ({open, close,ID}) => {
                                                             <label htmlFor="name" className="font-text text-xs flex flex-row justify-between">
                                                                 <p>Employee's Account Password *</p>
                                                             </label>
-                                                            <input type="text" name="password"
+                                                            <div className="flex flex-row border border-divider rounded-md focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary">
+                                                            <input  type={showPassword ? "text" : "password"} name="password"
                                                                     value={formik.values.password}
-                                                                    onChange={formik.handleChange}
+                                                                    onChange={handlePassword}
                                                                     onBlur={formik.handleBlur}
-                                                                    className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
+                                                                    className="font-text p-2 rounded-md focus:outline-none"/>
+                                                            <div className="flex flex-col justify-center items-center w-11  text-unactive">
+                                                                <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} className='text-primary cursor-pointer' onClick={togglePassword}/>
+                                                            </div>
+                                                            </div>
                                                     </div>
                                                     </>
                                                 ) : tab === 2 ? (
@@ -155,15 +193,16 @@ const EditUserCredsModal = ({open, close,ID}) => {
                                                 ) : (null)
                                             }
 
-                                                <div className="row-start-3 col-span-3 py-2 flex flex-row gap-2">
-                                                    <button className="w-full inline-flex flex-col items-center gap-2 row-start-7 col-span-3 p-4 rounded-md font-header uppercase text-primary border-2 border-primary text-xs hover:text-white hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out"
-                                                        onClick={(e)=>close(e)}>
-                                                        <p>Cancel</p>
-                                                    </button>
-                                                    <input type="submit"
-                                                    value='Submit'
-                                                    className="w-full inline-flex flex-col items-center gap-2 row-start-7 col-span-3 bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out" />
-                                                </div>
+                                                {/* Submit */}
+                                            <div className="row-start-5 col-span-3 py-2 flex flex-row gap-2">
+                                                <button type="button" className="w-full inline-flex flex-col items-center gap-2 p-4 rounded-md font-header uppercase text-primary border-2 border-primary text-xs hover:text-white hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out"
+                                                    onClick={close}>
+                                                    <p>Cancel</p>
+                                                </button>
+                                                <button type="submit" className="w-full inline-flex flex-col items-center gap-2 bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out">
+                                                    <p>{updating ? "Updating..." : "Submit"}</p>
+                                                </button>
+                                            </div>
                                             </form>
                                         </div>
                                         </>

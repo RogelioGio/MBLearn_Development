@@ -28,6 +28,11 @@ export default function UserAccountSecurityMaintenance(){
         isEditSuccess: false,
     });
 
+    //OpenSuccess
+    const OpenSuccessFullyEdit = () => {
+        toggleModal("isEditSuccess", true)
+    }
+
     //CloserSuccess
     const CloseSuccessFullyEdit = () => {
         toggleModal("isEditSuccess", false)
@@ -58,8 +63,14 @@ export default function UserAccountSecurityMaintenance(){
             role: Yup.string(),
         }),
         onSubmit: values => {
-            console.log(values)
+            setIsLoading(true)
             setIsFiltered(true)
+            axiosClient.get(`/index-user?department_id[eq]=${values.department}&branch_id[eq]=${values.branch}`)
+            .then((res) => {
+                setUsers(res.data.data);
+                console.log(res)
+                setIsLoading(false)
+            }).catch((err) => {console.log(err)})
         }
     })
 
@@ -92,9 +103,8 @@ export default function UserAccountSecurityMaintenance(){
         toggleUserID("isEdit", ID);
         toggleModal("isEdit", true);
     }
-    const CloseEdit = (e) => {
+    const CloseEdit = () => {
         toggleModal("isEdit", false);
-        e.preventDefault()
     }
 
     useEffect(() => {
@@ -133,7 +143,6 @@ export default function UserAccountSecurityMaintenance(){
             setIsLoading(false)
             pageChangeState("totalUsers", response.data.total)
             pageChangeState("lastPage", response.data.lastPage)
-            console.log(response.data.data)
         }).catch((e)=>{
             console.log(e)
         })
@@ -149,7 +158,7 @@ export default function UserAccountSecurityMaintenance(){
         if (isReady) {
             fetchUsers(); // Fetch users only when options are ready
         }
-    }, [isReady,pageState.currentPage, pageState.perPage])
+    }, [isReady,pageState.currentPage, pageState.perPage,])
 
 
     //Pagination Navigations
@@ -376,7 +385,7 @@ export default function UserAccountSecurityMaintenance(){
                                         key={user.id}
                                         user={user.id}
                                         name={[user.user_infos?.first_name, user.user_infos?.middle_name, user.user_infos?.last_name].join(" ")}
-                                        employeeID={user.user_infos.employeeID}
+                                        employeeID={user.user_infos?.employeeID}
                                         MBEmail={user.MBemail}
                                         city={1}
                                         branch={1}
@@ -438,7 +447,7 @@ export default function UserAccountSecurityMaintenance(){
             </div>
 
             {/* View User Credentials Modal */}
-            <EditUserCredsModal open={modalState.isEdit} close={CloseEdit} ID={userID.isEdit}/>
+            <EditUserCredsModal open={modalState.isEdit} close={CloseEdit} ID={userID.isEdit} editSuccess={OpenSuccessFullyEdit}/>
             <EditUserSuccessfully open={modalState.isEditSuccess} close={CloseSuccessFullyEdit}/>
         </div>
     )

@@ -42,7 +42,8 @@ class userCredentials_controller extends Controller
         $validatedData = $request->validated();
 
         $userCredentials->update([
-            'password' => bcrypt($validatedData['password'])
+            'password' => bcrypt($validatedData['password']),
+            'MBemail' => $validatedData['MBemail']
         ]);
 
         return response()->json([

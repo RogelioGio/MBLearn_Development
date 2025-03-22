@@ -19,7 +19,7 @@ const EditUserSuccessfully = ({open,close,classname}) => {
                                     </div>
                                     <div className="text-center flex-col flex gap-2">
                                         <h1 className="text-primary font-header text-3xl">Updated</h1>
-                                        <p className="text-unactive font-text text-sm">The selected user is successfuly updated with the given <br /> new information in the form</p>
+                                        <p className="text-unactive font-text text-sm">The selected user is successfuly updated</p>
                                     </div>
                                 </div>
                                 <div className="text-center flex-col flex p-4 w-full bg-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 hover:bg-primaryhover ease-in-out transition-all"
