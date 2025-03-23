@@ -37,10 +37,6 @@ axiosClient.interceptors.response.use(
         // Do something with response error
         const {response} = error;
 
-        if(response.status===401){
-            localStorage.removeItem('ACCESS_TOKEN');
-        }
-
         return Promise.reject(error)
     });
 

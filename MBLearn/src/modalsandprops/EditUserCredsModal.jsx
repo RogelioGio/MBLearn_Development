@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useOption } from "../contexts/AddUserOptionProvider";
 import { useFormik } from "formik";
 import axiosClient from "../axios-client";
+import EdituserErrorModal from "./EdituserErrorModal";
 
 const EditUserCredsModal = ({open, close,ID, editSuccess}) => {
     const {selectedUser, selectUser, isFetching} = useUser();
@@ -28,6 +29,7 @@ const EditUserCredsModal = ({open, close,ID, editSuccess}) => {
         }
     useEffect(() => {
         formik.resetForm();
+        setUpdating(false)
     },[])
     useEffect(() => {
         if (open && ID) {
@@ -72,15 +74,33 @@ const EditUserCredsModal = ({open, close,ID, editSuccess}) => {
                 setUpdating(false)
                 console.log(res)
             }).catch((err) => {
-                console.log(err)
+                setErrorMessage({
+                    message: err.response.data.message,
+                    errors: err.response.data.errors
+                })
+                setError(true)
+                setLoading(false);
             })
         }
     })
 
+    //Update Error
+    const [OpenError, setError] = useState(false)
+    const reset = () => {
+        close();
+        formik.resetForm();
+    }
+    //Data
+        const [errorMessage, setErrorMessage] = useState({
+            message: '',
+            errors: {}
+        })
+
     return(
+        <>
         <Dialog open={open} onClose={()=>{isLoading ? close : null}}>
-            <DialogBackdrop transition className="fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in" />
-            <div className='fixed inset-0 z-10 w-screen overflow-y-auto'>
+            <DialogBackdrop transition className="fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in z-30"/>
+            <div className='fixed inset-0 z-30 w-screen overflow-y-auto'>
                 <div className='flex min-h-full items-center justify-center p-4 text center'>
                     <DialogPanel transition className='relative overflow-hidden transform rounded-md bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in'>
                         <div className='bg-white rounded-md h-full w-fit p-5 flex flex-col justify-center'>
@@ -215,6 +235,8 @@ const EditUserCredsModal = ({open, close,ID, editSuccess}) => {
             </div>
 
         </Dialog>
+        <EdituserErrorModal error={OpenError} close={()=>setError(false)} message={errorMessage.message} desc={errorMessage.errors}/>
+        </>
     )
 }
 export default EditUserCredsModal

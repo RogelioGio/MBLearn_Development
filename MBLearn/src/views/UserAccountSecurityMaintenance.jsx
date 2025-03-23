@@ -12,6 +12,7 @@ import EditUserCredsModal from "../modalsandprops/EditUserCredsModal"
 import { useFormik } from "formik"
 import * as Yup from "yup"
 import EditUserSuccessfully from '../modalsandprops/EditUserSuccesfuly';
+import { resolvePath } from "react-router-dom"
 
 
 
@@ -65,11 +66,13 @@ export default function UserAccountSecurityMaintenance(){
         onSubmit: values => {
             setIsLoading(true)
             setIsFiltered(true)
-            axiosClient.get(`/index-user?department_id[eq]=${values.department}&branch_id[eq]=${values.branch}`)
+            axiosClient.get(`/index-user-creds?department_id[eq]=${values.department}&branch_id[eq]=${values.branch}`)
             .then((res) => {
                 setUsers(res.data.data);
                 console.log(res)
                 setIsLoading(false)
+                pageChangeState("totalUsers", res.data.total)
+                pageChangeState("lastPage", res.data.lastPage)
             }).catch((err) => {console.log(err)})
         }
     })
@@ -368,10 +371,10 @@ export default function UserAccountSecurityMaintenance(){
                     <thead className='font-header text-xs text-primary bg-secondaryprimary uppercase'>
                         <tr>
                             <th className='p-4 w-2/7'>EMPLOYEE NAME</th>
-                            <th className='p-4 w-1/7'>Metrobank Working Email</th>
+                            <th className='p-4 w-1/7'>Branch & Location</th>
+                            <th className='p-4 w-1/7'>Division & Section</th>
                             <th className='p-4 w-1/7'>ROLE</th>
                             <th className='p-4 w-1/7'>Last Login Timestamp</th>
-                            <th className='p-4 w-1/7'>Account Status</th>
                             <th className='p-4 w-1/7'></th>
                         </tr>
                     </thead>

@@ -36,10 +36,6 @@ export default function SystemConfiguration() {
                     <FontAwesomeIcon icon={faUserClock}/>
                     <h1 className="uppercase font-text">Re-Activation Account</h1>
                 </div>
-                <div className= {`flex flex-row  items-center w-full px-3 py-3 gap-4 text-sm text-unactive hover:text-primary hover:bg-divider rounded-md cursor-pointer transition-all ease-in-out ${tab === 4 ? '!bg-divider !text-primary':null}`} onClick={() => setTab(4)}>
-                    <FontAwesomeIcon icon={faBookAtlas}/>
-                    <h1 className="uppercase font-text">Archived Courses Management</h1>
-                </div>
             </div>
             {/* Setting Content */}
             <div className="col-span-3 row-span-3 overflow-y-auto max-h-[calc(100vh-6.25rem)]">

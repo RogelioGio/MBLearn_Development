@@ -7,6 +7,9 @@ import * as Yup from "yup"
 import axiosClient from "../axios-client"
 import { useOption } from "../contexts/AddUserOptionProvider"
 import { useUser } from "../contexts/selecteduserContext"
+import AddUserErrorModal from "./AdduserErrorModal"
+import EditUserCredsModal from "./EditUserCredsModal"
+import EdituserErrorModal from "./EdituserErrorModal"
 
 const EditUserModal = ({open, close, classname, ID, close_confirmation}) =>{
     const { roles = [], departments = [], titles = [], location = [], cities = [], } = useOption() || {};
@@ -92,12 +95,33 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation}) =>{
                 close_confirmation()
                 close()
             })
-            .catch((error) => {console.log(error)})
+            .catch((err) => {
+                setErrorMessage({
+                    message: err.response.data.message,
+                    errors: err.response.data.errors
+                })
+                setError(true)
+                setLoading(false);
+            })
 
         }
     })
 
+    //Update Error
+    const [OpenError, setError] = useState(false)
+    const reset = () => {
+        close();
+        formik.resetForm();
+    }
+    //Data
+        const [errorMessage, setErrorMessage] = useState({
+            message: '',
+            errors: {}
+        })
+
+
     return (
+        <>
         <Dialog open={open} onClose={()=>{}} className={classname}>
             <DialogBackdrop transition className="fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in" />
                 <div className='fixed inset-0 z-10 w-screen overflow-y-auto'>
@@ -314,6 +338,8 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation}) =>{
                     </div>
                 </div>
         </Dialog>
+        <EdituserErrorModal error={OpenError} close={()=>setError(false)} message={errorMessage.message} desc={errorMessage.errors}/>
+        </>
     )
 }
 

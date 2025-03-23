@@ -1,5 +1,6 @@
-import { faBook, faBookOpen, faBuilding, faUserGroup } from "@fortawesome/free-solid-svg-icons"
+import { faBook, faBookOpen, faBuilding, faPeopleGroup, faUserGroup } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import React from "react"
 import { Helmet } from "react-helmet"
 
 
@@ -18,50 +19,24 @@ export default function SystemLevelReports() {
             </div>
 
             {/* Statistical numbers */}
-            <div className='flex flex-row py-4 mx-5 col-span-4 gap-4'>
+            <div className='py-4 mx-5 col-span-4 gap-4 grid grid-cols-4'>
                 {/* Total User Counter */}
-                <div className="flex flex-col gap-2">
-                    <p className="font-text text-unactive text-sm">Total MBLearn Users</p>
-                    <div className="bg-white shadow-md border-primary border-2 rounded-md flex-row flex items-center">
-                        <div className="aspect-square w-12 bg-primary text-lg text-white flex items-center justify-center">
-                            <FontAwesomeIcon icon={faUserGroup}/>
-                        </div>
-                        <p className="text-lg font-text px-10">
-                            <span className="font-header">7,000</span> Users
-                        </p>
+                <div className="bg-white w-full h-full rounded-md shadow-md py-2 px-4 hover:cursor-pointer hover:bg-primary ease-in-out transition-all flex flex-row gap-4 group border-2 border-primary">
+                    <div className='flex justify-center items-center aspect-square px-2'>
+                        <FontAwesomeIcon icon={faUserGroup} className='text-primary text-2xl group-hover:text-white'/>
+                    </div>
+                    <div className='font-text text-sm text-unactive flex flex-col justify-center'>
+                        <p className='group-hover:text-white'>Total MBLearn Users</p>
+                        <p className='font-header text-2xl text-primary group-hover:text-white'>7,000 <span className='font-text text-sm text-unactive group-hover:text-white'>users</span></p>
                     </div>
                 </div>
-                <div className="flex flex-col gap-2">
-                    <p className="font-text text-unactive text-sm">Total Metrobank Branches</p>
-                    <div className="bg-white shadow-md border-primary border-2 rounded-md flex-row flex items-center">
-                        <div className="aspect-square w-12 bg-primary text-lg text-white flex items-center justify-center">
-                            <FontAwesomeIcon icon={faBuilding}/>
-                        </div>
-                        <p className="text-lg font-text px-10">
-                            <span className="font-header">500</span> Branches
-                        </p>
+                <div className="bg-white w-full h-full rounded-md shadow-md py-2 px-4 hover:cursor-pointer hover:bg-primary ease-in-out transition-all flex flex-row gap-4 group border-2 border-primary">
+                    <div className='flex justify-center items-center aspect-square px-2'>
+                        <FontAwesomeIcon icon={faBuilding} className='text-primary text-2xl group-hover:text-white'/>
                     </div>
-                </div>
-                <div className="flex flex-col gap-2">
-                    <p className="font-text text-unactive text-sm">Total On-going Courses</p>
-                    <div className="bg-white shadow-md border-primary border-2 rounded-md flex-row flex items-center">
-                        <div className="aspect-square w-12 bg-primary text-lg text-white flex items-center justify-center">
-                            <FontAwesomeIcon icon={faBookOpen}/>
-                        </div>
-                        <p className="text-lg font-text px-10">
-                            <span className="font-header">275</span> Courses
-                        </p>
-                    </div>
-                </div>
-                <div className="flex flex-col gap-2">
-                    <p className="font-text text-unactive text-sm">Total Available Courses</p>
-                    <div className="bg-white shadow-md border-primary border-2 rounded-md flex-row flex items-center">
-                        <div className="aspect-square w-12 bg-primary text-lg text-white flex items-center justify-center">
-                            <FontAwesomeIcon icon={faBook}/>
-                        </div>
-                        <p className="text-lg font-text px-10">
-                            <span className="font-header">5,000</span> Courses
-                        </p>
+                    <div className='font-text text-sm text-unactive flex flex-col justify-center'>
+                        <p className='group-hover:text-white'>Total Metrobank Branches</p>
+                        <p className='font-header text-2xl text-primary group-hover:text-white'>500 <span className='font-text text-sm text-unactive group-hover:text-white'>branches</span></p>
                     </div>
                 </div>
             </div>
