@@ -38,7 +38,7 @@ const navItems = {
     ],
     "Course Admin": [
         {icon:faHouse, text:"Home", to:"/courseadmin/dashboard"},
-        {icon:faBookBookmark, text:"Assigned Course Catalog", to:"/courseadmin/assignedcourses"},
+        {icon:faBookBookmark, text:"Course Catalog", to:"/courseadmin/assignedcourses"},
         {icon:faBook, text:"Course List Maintenance", to:"/courseadmin/courselistmaintenance"},
         {icon:faPersonCirclePlus, text:"Enroll Trainee", to:"/courseadmin/bulkenrollment"},
         {icon:faChartPie, text:"Assigned Course Reports", to:"/courseadmin/coursereports"},
@@ -118,7 +118,7 @@ export default function Navigation() {
 
 
     return (
-        <div className="flex flex-col items-center h-screen w-24 place-content-between py-2 z-20">
+        <div className="flex flex-col items-center h-screen w-24 place-content-between py-2 z-10">
             <div className='flex flex-col place-content-between w-23 h-full bg-white py-5 px-2 shadow-lg m-1 border-r rounded-full'>
                 <ul className='flex flex-col gap-4 justify-center items-center p-[0.625rem]'>
                     <li><img src={Small_Logo} alt="" className='h-[1.875rem]'/></li>

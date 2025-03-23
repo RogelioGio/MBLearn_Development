@@ -186,10 +186,10 @@ const [pageState, setPagination] = useState({
             </div>
 
             {/* Small Sorter */}
-            <div className='row-start-2 col-start-1 inline-flex items-center px-5 py-3 h-fit gap-3'>
+            <div className='row-start-2 col-start-1  col-span-2 inline-flex items-center px-5 py-3 h-fit gap-3'>
                 {/* Sort by Name */}
                 <div className={`flex flex-row items-center border-2 border-primary py-2 px-4 font-header bg-secondarybackground rounded-md text-primary gap-2 w-fit hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md ${sort.nameOrder === "asc" ? '!bg-primary !text-white' : sort.nameOrder === "desc" ? '!bg-primary !text-white': 'bg-secondarybackground' }`} onClick={() => setOrder("nameOrder")}>
-                    <p>Name</p>
+                    <p>Course Name</p>
                     <FontAwesomeIcon icon={sort.nameOrder === "asc" ? faArrowUpAZ : sort.nameOrder === "desc" ? faArrowDownZA : faSort}/>
                 </div>
                 {/* Sort By Date-Added */}
