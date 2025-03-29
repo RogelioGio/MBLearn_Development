@@ -11,6 +11,9 @@ import { useStateContext } from "../contexts/ContextProvider"
 import CourseLoading from "../assets/Course_Loading.svg";
 import { useFormik } from "formik"
 import React from "react"
+import EnrolledSuccessfullyModal from "../modalsandprops/EnrollmentSuccessfulyModal"
+import EnrollmentFailedModal from "../modalsandprops/EnrollmentFailedModal"
+import NoEmployeeSelectedModal from "../modalsandprops/NoEmployeeSelectedModal"
 
 export default function BulkEnrollment() {
 
@@ -22,6 +25,10 @@ export default function BulkEnrollment() {
     const [isLoading, setLoading] = useState(true); //Loading state
     const selectAll = useRef(false) //select all learners
     const [tab, setTab] = useState(1)//Tabs
+    const [enrolled, setEnrolled] = useState(false) //Modal for successfully Enrolled
+    const [error, setError] = useState([]) //Error state
+    const [enrollmentFailed, setEnrollmentFailed] = useState(false) //Enrollment failed state
+    const [empty, setEmpty] = useState(true) //No selected user state
 
     //Pagenation States
     const [pageState, setPagination] = useState({
@@ -190,6 +197,7 @@ export default function BulkEnrollment() {
     const formik = useFormik({});
 
     return (
+        <>
         <div className='grid grid-cols-4 grid-rows-[6.25rem_min-content_1fr_3.75rem] h-full w-full'>
             <Helmet>
                 {/* Title of the mark-up */}
@@ -229,11 +237,11 @@ export default function BulkEnrollment() {
                     <h1 className='text-primary text-2xl font-header'>Assigned Courses</h1>
                     <p className='font-text text-xs text-unactive' >Assigned courses to enroll users into effortlessly.</p>
                 </div>
-                <div>
+                {/* <div>
                     <div className="aspect-square px-3 flex flex-row justify-center items-center bg-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 ease-in-out transition-all ">
                         <FontAwesomeIcon icon={faGraduationCap} className='text-white text-sm'/>
                     </div>
-                </div>
+                </div> */}
             </div>
 
             {/* Assigned Courses */}
@@ -412,7 +420,14 @@ export default function BulkEnrollment() {
                     </nav>
                 </div>
             </div>
-
         </div>
+
+        {/* Successfully Enrolled */}
+        <EnrolledSuccessfullyModal isOpen={enrolled} onClose={() => setEnrolled(false)}/>
+        {/* Error */}
+        <EnrollmentFailedModal isOpen={enrollmentFailed} onClose={()=>setEnrollmentFailed(false)}/>
+        {/* When no Selected Users */}
+        <NoEmployeeSelectedModal isOpen={empty} onClose={()=>setEmpty(false)} />
+        </>
     )
 }
