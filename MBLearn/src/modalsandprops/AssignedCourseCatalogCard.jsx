@@ -10,8 +10,12 @@ const AssignedCourseCatalogCard = ({name, courseType, courseCategory, trainingTy
             <div className="flex justify-end bg-gradient-to-b from-[hsl(239,94%,19%)] via-[hsl(214,97%,27%)] to-[hsl(201,100%,36%)] rounded-t-md h-1/3 p-4">
                 <div>
                     {
-                        trainingType ? (<span className='text-xs py-1 px-6 rounded-full bg-white text-primary'>{trainingType}</span>)
+                        trainingType ? (<span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-blue-700/10 ring-inset">
+                            {trainingType}
+                        </span>)
                         :(null)
+
+
                     }
                 </div>
             </div>

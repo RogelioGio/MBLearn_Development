@@ -71,7 +71,7 @@ class CourseController extends Controller
             "course" => $course,
             "training_modes" => $course->training_modes,
             "types" => $course->types,
-            "categories" => $course->categories, 
+            "categories" => $course->categories,
         ], 200);
     }
 

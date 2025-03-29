@@ -190,7 +190,7 @@ export default function BulkEnrollment() {
     const formik = useFormik({});
 
     return (
-        <div className='grid grid-cols-4 grid-rows-[6.25rem_min-content_auto_auto_3.75rem] h-full w-full'>
+        <div className='grid grid-cols-4 grid-rows-[6.25rem_min-content_1fr_3.75rem] h-full w-full'>
             <Helmet>
                 {/* Title of the mark-up */}
                 <title>MBLearn | Enroll Trainee</title>
@@ -237,37 +237,32 @@ export default function BulkEnrollment() {
             </div>
 
             {/* Assigned Courses */}
-            <div className="col-start-1 row-start-3 row-span-3 mb-5 border-r border-divider h-full">
-                {/* <div className="px-4 pb-3">
-                <h1 className='text-primary text-2xl font-header'>Assigned Courses</h1>
-                <p className='font-text text-xs text-unactive' >Assigned courses to enroll users into effortlessly.</p>
-                </div> */}
-                {/* Course Props */}
-                <div className="px-4 flex flex-col gap-2 h-auto">
-                    {
-                        isLoading ? (
-                            <div className="flex flex-col gap-2 items-center justify-center text-center h-full">
-                                <img src={CourseLoading} alt="" className="w-44"/>
-                                <p className="text-xs font-text text-primary">Hang tight! 🚀 Loading assigned courses for bulk enrollment—great things take a second!</p>
-                            </div>
-                        )
-                        : (assigned_courses.map((Course) => (
-                            <AssignedCourseEnrollmentCard
-                                key={Course.id}
-                                id={Course.id}
-                                name={Course.name}
-                                coursetype={Course.types?.[0]?.type_name}
-                                coursecategory={Course.categories?.[0]?.category_name}
-                                duration={Course.duration}
-                                trainingmode={Course.trainingMode}
-                                course={course}
-                                selected={selected}
-                                onclick={() => handleCourseChange(Course.name)}
-                                numberOfEnrollees={numberOfEnrollees}/>
-                        )))
+            <div className="col-start-1 row-start-3 row-span-1 mb-5 border-r border-divider h-full px-2 flex flex-col gap-2">
+                {
+                            isLoading ? (
+                                <div className="flex flex-col gap-2 items-center justify-center text-center h-full">
+                                    <img src={CourseLoading} alt="" className="w-44"/>
+                                    <p className="text-xs font-text text-primary">Hang tight! 🚀 Loading assigned courses for bulk enrollment—great things take a second!</p>
+                                </div>
+                            )
+                            : (assigned_courses.map((Course) => (
+                                <AssignedCourseEnrollmentCard
+                                    key={Course.id}
+                                    id={Course.id}
+                                    name={Course.name}
+                                    coursetype={Course.types?.[0]?.type_name}
+                                    coursecategory={Course.categories?.[0]?.category_name}
+                                    duration={Course.duration}
+                                    trainingmode={Course.training_modes?.[0]?.mode_name}
+                                    trainingtype={Course.training_type}
+                                    course={course}
+                                    selected={selected}
+                                    onclick={() => handleCourseChange(Course.name)}
+                                    numberOfEnrollees={numberOfEnrollees}
+                                    />
+                            )))
 
                     }
-                </div>
             </div>
 
             {/* Search and filter */}
@@ -377,7 +372,7 @@ export default function BulkEnrollment() {
             }
 
             {/* User Pagination */}
-            <div className='row-start-5 row-span-1 col-start-2 col-span-3 mx-5 flex flex-row items-center justify-between'>
+            <div className='row-start-4 row-span-1 col-start-2 col-span-3 mx-5 flex flex-row items-center justify-between'>
                 {/* Total number of entries and only be shown */}
                 <div>
                     <p className='text-sm font-text text-unactive'>
