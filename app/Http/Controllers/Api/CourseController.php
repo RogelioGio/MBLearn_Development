@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Filters\CourseFilter;
+use App\Filters\CourseSort;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BulkAssignCourseAdmins;
 use App\Http\Requests\BulkStoreCourseRequest;
@@ -26,12 +27,15 @@ class CourseController extends Controller
     public function index(Request $request)
     {
         $filter = new CourseFilter();
+        $sort = new CourseSort();
+        $builder = Course::query();
         $queryItems = $filter->transform($request);
+        $querySort = $sort->transform($builder, $request);
 
         $page = $request->input('page',1); // default page
         $perPage = $request->input('per_page', 3); // default per page
 
-        $courses = Course::with(['categories', 'types', 'training_modes'])->where('archived', '=', 'active')->orderby('id', 'desc')->paginate($perPage);
+        $courses = $querySort->with(['categories', 'types', 'training_modes'])->where('archived', '=', 'active')->paginate($perPage);
 
         return response() -> json([
             'data' => $courses-> items(),
@@ -39,7 +43,7 @@ class CourseController extends Controller
             'lastPage' => $courses->lastPage(),
             'currentPage' => $courses->currentPage(),
         ],200);
-
+ 
     }
 
     /**
