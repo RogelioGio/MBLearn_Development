@@ -192,7 +192,6 @@ export default function UserManagementMaintenance() {
     }
     const CloseEdit = () => {
         toggleModal("isEdit", false);
-        fetchUsers()
     }
 
     // Open and Close Delete User Modal

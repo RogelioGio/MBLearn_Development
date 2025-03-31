@@ -45,10 +45,10 @@ const EditCourseModal = ({open, close, id}) => {
                 shortDescription: "Loading...",
             }:{
                 courseName: selectedCourse?.name || "",
-                courseType: selectedCourse?.type_id|| "",
-                courseCategories: selectedCourse?.category_id || "",
-                training_type: selectCourse?.training_type|| "",
-                training_mode: selectedCourse?.training_mode_id || "",
+                courseType: selectedCourse?.types?.[0].id|| "",
+                courseCategories: selectedCourse?.categories?.[0]?.id || "",
+                training_type: selectCourse?.training_type || "",
+                training_mode: selectedCourse?.training_modes?.[0]?.id || "",
                 shortDescription: selectedCourse?.description || "",
             },
             onSubmit: (values) => {
@@ -57,8 +57,8 @@ const EditCourseModal = ({open, close, id}) => {
         })
         return(
         <Dialog open={open} onClose={()=>{}} className="fixed inset-0 z-10 w-screen overflow-y-auto">
-            <DialogBackdrop transition className="fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in" />
-                <div className='fixed inset-0 z-10 w-screen overflow-y-auto'>
+            <DialogBackdrop transition className="fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in z-30"/>
+                <div className='fixed inset-0 z-30 w-screen overflow-y-auto'>
                     <div className='flex min-h-full items-center justify-center p-4 text center'>
                         <DialogPanel transition className='relative w-[50rem] overflow-hidden transform rounded-md bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in'>
                             <div className="bg-white rounded-md shadow-md p-5">

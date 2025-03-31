@@ -2,28 +2,33 @@ import { faArrowDownShortWide, faArrowDownZA, faArrowUpAZ, faArrowUpWideShort, f
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Helmet } from "react-helmet"
 import AssignedCourseCatalogCard from "../modalsandprops/AssignedCourseCatalogCard"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import CourseFilterProps from "../modalsandprops/CourseFilterProps"
-import React from "react"
 import { useStateContext } from "../contexts/ContextProvider"
-
+import axiosClient from "../axios-client"
+import { use } from "react"
+import CourseLoading from "../assets/Course_Loading.svg"
+import { set } from "date-fns"
 
 //Assigned Courses
-const assigned_courses = [
-    {name: "Effective Communication Skills in the Workplace", courseType:"Soft Skill Training", courseCategory:"Personal Development", duration: "2 Weeks", method: "Asynchronous"},
-    {name: "Time Management and Productivity Hacks", courseType:"Soft Skill Training", courseCategory:"Personal Development", duration: "1 Weeks", method: "Online Training"},
-    {name: "Advanced Excel for Financial Analysis", courseType:"Technical Training", courseCategory:"Finance & Accounting", duration: "3 Weeks", method: "Blended Learning"},
-    {name: "Cybersecurity Awareness for Employees", courseType:"Compliance Training", courseCategory:"IT Security", duration: "2 Weeks", method: "Asynchronous"},
-    {name: "Customer Service Excellence", courseType:"Soft Skill Training", courseCategory:"Customer Relations", duration: "2 Weeks", method: "Instructor-Led Training"},
-    {name: "Agile Project Management Fundamentals", courseType:"Technical Training", courseCategory:"Project Management", duration: "4 Weeks", method: "Online Training"},
-    {name: "Customer Service Excellence", courseType:"Soft Skill Training", courseCategory:"Customer Relations", duration: "2 Weeks", method: "Instructor-Led Training"},
-    {name: "Agile Project Management Fundamentals", courseType:"Technical Training", courseCategory:"Project Management", duration: "4 Weeks", method: "Online Training"},
-]
+// const assigned_courses = [
+//     {name: "Effective Communication Skills in the Workplace", courseType:"Soft Skill Training", courseCategory:"Personal Development", duration: "2 Weeks", method: "Asynchronous"},
+//     {name: "Time Management and Productivity Hacks", courseType:"Soft Skill Training", courseCategory:"Personal Development", duration: "1 Weeks", method: "Online Training"},
+//     {name: "Advanced Excel for Financial Analysis", courseType:"Technical Training", courseCategory:"Finance & Accounting", duration: "3 Weeks", method: "Blended Learning"},
+//     {name: "Cybersecurity Awareness for Employees", courseType:"Compliance Training", courseCategory:"IT Security", duration: "2 Weeks", method: "Asynchronous"},
+//     {name: "Customer Service Excellence", courseType:"Soft Skill Training", courseCategory:"Customer Relations", duration: "2 Weeks", method: "Instructor-Led Training"},
+//     {name: "Agile Project Management Fundamentals", courseType:"Technical Training", courseCategory:"Project Management", duration: "4 Weeks", method: "Online Training"},
+//     {name: "Customer Service Excellence", courseType:"Soft Skill Training", courseCategory:"Customer Relations", duration: "2 Weeks", method: "Instructor-Led Training"},
+//     {name: "Agile Project Management Fundamentals", courseType:"Technical Training", courseCategory:"Project Management", duration: "4 Weeks", method: "Online Training"},
+// ]
 
 
 
 export default function AssignedCourseCatalog() {
     const {user} = useStateContext();
+    const [loading, setLoading] = useState(false);
+    const [assigned_course, setAssignedCourse] = useState([]);
+
     // Sort Order State
     const [sort, setSort] = useState({
         nameOrder : "none",
@@ -52,16 +57,96 @@ export default function AssignedCourseCatalog() {
         })));
     }
 
+    const fetchCourses = () => {
+        setLoading(true)
+        axiosClient.get('/courses',{
+            params: {
+                page: pageState.currentPage,
+                per_page: pageState.perPage,
+            }
+        })
+        .then(({ data }) => {
+            setAssignedCourse(data.data)
+            pageChangeState("totalCourses", data.total)
+            pageChangeState("lastPage", data.lastPage)
+            setLoading(false)
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+
+    }
+
+    const [pageState, setPagination] = useState({
+        currentPage: 1,
+        perPage: 6,
+        totalCourses: 0,
+        lastPage:1,
+        startNumber: 0,
+        endNumber: 0,
+        currentPerPage:0
+    });
+
+    const pageChangeState = (key, value) => {
+        setPagination ((prev) => ({
+            ...prev,
+            [key]: value
+        }))
+    }
+
+    useEffect(() => {
+            pageChangeState('startNumber', (pageState.currentPage - 1) * pageState.perPage + 1)
+            pageChangeState('endNumber', Math.min(pageState.currentPage * pageState.perPage, pageState.totalCourses))
+        },[pageState.currentPage, pageState.perPage, pageState.totalCourses])
+
+        useEffect(()=>{
+            fetchCourses()
+        },[pageState.currentPage, pageState.perPage])
+
+        //Next and Previous
+        const back = () => {
+            if (modalState.loading) return;
+            if (pageState.currentPage > 1){
+                pageChangeState("currentPage", pageState.currentPage - 1)
+                pageChangeState("startNumber", pageState.perPage - 4)
+            }
+        }
+        const next = () => {
+            if (modalState.loading) return;
+            if (pageState.currentPage < pageState.lastPage){
+                pageChangeState("currentPage", pageState.currentPage + 1)
+            }
+        }
+
+        const Pages = [];
+        for(let p = 1; p <= pageState.lastPage; p++){
+            Pages.push(p)
+        }
+
+        const pageChange = (page) => {
+            if(modalState.loading) return;
+            if(page > 0 && page <= pageState.lastPage){
+                pageChangeState("currentPage", page)
+            }
+        }
+
+        // useEffect(()=> {
+        //     assigned_course.map((course, index) => {
+        //         console.log(course.categories[0].category_name)
+        //     })
+        // },[assigned_course])
+
+
     return(
-        <div className='grid grid-cols-4 grid-rows-[6.25rem_min-content_1fr_3rem] h-full w-full'>
+        <div className='grid grid-cols-4 grid-rows-[6.25rem_min-content_1fr_min-content] h-full w-full'>
             <Helmet>
                 {/* Title of the mark-up */}
-                <title>MBLearn | Assigned Courses Catalog</title>
+                <title>MBLearn | Course Catalog</title>
             </Helmet>
 
             {/* Header */}
             <div className='flex flex-col justify-center col-span-3 row-span-1 pr-5 border-b ml-5 border-divider'>
-                <h1 className='text-primary text-4xl font-header'>Assigned Course Catalog</h1>
+                <h1 className='text-primary text-4xl font-header'>Course Catalog</h1>
                 <p className='font-text text-sm text-unactive' >View and manage the assigned course catalog for easy course access and tracking.</p>
             </div>
 
@@ -104,16 +189,26 @@ export default function AssignedCourseCatalog() {
             </div>
 
             {/* Course Catalog */}
-            <div className="ml-5 col-span-3 row-start-3 row-span-1 grid grid-cols-4 gap-2 auto-rows-auto">
+            <div className="ml-5 col-span-3 row-start-3 row-span-1 grid grid-cols-3 grid-rows-2 gap-2 py-2">
                 {/* Course Card */}
-                {assigned_courses.map((course, index) => {
-                    return(
-                        <AssignedCourseCatalogCard key={index}
-                            name={course.name}
-                            courseType={course.courseType}
-                            courseCategory={course.courseCategory}/>
-                    )
-                })}
+                {
+                    assigned_course && !loading ? assigned_course.map((course, index) => {
+                        return(
+                            <AssignedCourseCatalogCard key={index}
+                                id={course.id}
+                                name={course.name}
+                                courseType={course.types[0]?.type_name}
+                                courseCategory={course.categories[0]?.category_name}
+                                trainingMode={course.training_modes[0]?.modes_name}
+                                trainingType={course.training_type}/>
+                        )}) : (
+                            <div className="col-span-4 row-span-2 flex flex-col gap-4 items-center justify-center text-center h-full">
+                                <img src={CourseLoading} alt="" className="w-80"/>
+                                <p className="text-sm font-text text-primary">Hang tight! 🚀 Loading courses for — great things take a second!</p>
+                            </div>
+                        )
+                }
+
             </div>
 
             {/* Assigned Course Filter */}
@@ -146,7 +241,7 @@ export default function AssignedCourseCatalog() {
             </div>
 
             {/* Pagination */}
-            <div className="ml-5 col-span-3 row-start-4 row-span-1 flex flex-row justify-between items-center">
+            <div className="ml-5 col-span-3 row-start-4 row-span-1 flex flex-row justify-between items-center py-3 border-t border-divider">
                 {/* Total number of entries and only be shown */}
                 <div>
                     <p className='text-sm font-text text-unactive'>

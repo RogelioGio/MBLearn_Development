@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { useStateContext } from '../contexts/ContextProvider';
 import axiosClient from '../axios-client';
 import { Helmet } from 'react-helmet';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBookOpenReader, faGraduationCap, faHeartPulse, faPeopleGroup, faUserLock } from '@fortawesome/free-solid-svg-icons';
 
 
 
@@ -17,8 +19,50 @@ const DashboardLayout = ({role,name}) => {
                 </Helmet>
 
                 <div className='flex flex-col justify-center col-span-3 row-span-1 pr-5 border-b ml-5 border-divider'>
-                <h1 className='text-primary text-4xl font-header'>Good Day! {name} </h1>
-                <p className='font-text text-sm text-unactive'>System Admin Dashboard, A centralized hub for system administrators to manage users, monitor system activity.</p>
+                    <h1 className='text-primary text-4xl font-header'>Good Day! {name} </h1>
+                    <p className='font-text text-sm text-unactive'>System Admin Dashboard, A centralized hub for system administrators to manage users, monitor system activity.</p>
+                </div>
+                <div className='border-b border-divider mr-5 flex flex-row justify-end items-center'>
+                    <div className='p-6 aspect-square bg-secondaryprimary rounded-full flex justify-center items-center'>
+                        <FontAwesomeIcon icon={faUserLock} className='text-primary text-2xl'/>
+                    </div>
+                </div>
+
+                {/* Announcement */}
+                <div className='col-span-4 row-span-1 mx-5 pb-2 pt-5'>
+                    <div className='bg-white w-full h-full rounded-md shadow-md p-5'>
+
+                    </div>
+                </div>
+
+                {/* Changing Content */}
+                <div className='col-span-3 row-start-3 ml-5 pr-2 pt-2 pb-5'>
+                    <div className='bg-white w-full h-full rounded-md shadow-md'>
+
+                    </div>
+                </div>
+                <div className='col-span-1 row-start-3 mr-5 pt-2 pb-5 flex flex-col justify-between gap-4'>
+                    <div className='bg-white w-full h-full rounded-md shadow-md p-5 hover:cursor-pointer hover:bg-primary ease-in-out transition-all flex flex-row gap-4 group border-2 border-primary'>
+                        <div className='flex justify-center items-center'>
+                            <FontAwesomeIcon icon={faPeopleGroup} className='text-primary text-5xl group-hover:text-white'/>
+                        </div>
+                        <div className='font-text text-sm text-unactive'>
+                            <p className='group-hover:text-white'>Current Online Users</p>
+                            <p className='font-header text-3xl text-primary group-hover:text-white'>7,000 <span className='font-text text-sm text-unactive group-hover:text-white'>users</span></p>
+                        </div>
+                    </div>
+                    <div className='bg-white w-full h-full rounded-md shadow-md p-5 hover:cursor-pointer hover:bg-primary ease-in-out transition-all flex flex-row gap-4 group border-2 border-primary'>
+                        <div className='flex justify-center items-center'>
+                                <FontAwesomeIcon icon={faHeartPulse} className='text-primary text-5xl group-hover:text-white'/>
+                            </div>
+                            <div className='font-text text-sm text-unactive'>
+                                <p className='group-hover:text-white'>System Uptime</p>
+                                <p className='font-header text-3xl text-primary group-hover:text-white'>00:00:00</p>
+                            </div>
+                    </div>
+                    <div className='bg-white w-full h-full rounded-md shadow-md p-5 hover:cursor-pointer hover:bg-primary ease-in-out transition-all border-2 border-primary'>
+
+                    </div>
                 </div>
 
             </div>
@@ -34,15 +78,71 @@ const DashboardLayout = ({role,name}) => {
                             <h1 className="text-primary text-4xl font-header">Good Day! {name}</h1>
                             <p className='font-text text-sm text-unactive'>Course Admin Dashboard, A centralized hub for Course administrators to manage Learners, monitor learners progress.</p>
                     </div>
+                    <div className='border-b border-divider mr-5 flex flex-row justify-end items-center'>
+                        <div className='p-6 aspect-square bg-secondaryprimary rounded-full flex justify-center items-center'>
+                            <FontAwesomeIcon icon={faBookOpenReader} className='text-primary text-2xl'/>
+                        </div>
+                    </div>
+                    <div className='col-span-3 row-span-1 ml-5 pr-2 pb-2 pt-5'>
+                        <div className='bg-white w-full h-full rounded-md shadow-md p-5'>
+
+                        </div>
+                    </div>
+                    <div className='col-span-1 row-span-1 pb-2 pt-5 mr-5 '>
+                        <div className='bg-white w-full h-full rounded-md shadow-md p-5'>
+
+                        </div>
+                    </div>
+                    {/* Changing Content */}
+                    <div className='col-span-3 row-start-3 ml-5 pr-2 pt-2 pb-5'>
+                        <div className='bg-white w-full h-full rounded-md shadow-md'>
+
+                        </div>
+                    </div>
+                    <div className='col-span-1 row-start-3 mr-5 pt-2 pb-5 flex flex-col justify-between gap-4'>
+                        <div className='bg-white w-full h-full rounded-md shadow-md p-5'></div>
+                    </div>
+
                 </div>
             )
         //Learner Dashboard
         case 'Learner':
             return (
-                <div className="flex flex-row items-center h-screen ">
-                    <div className="flex flex-col flex-start h-full">
-                        <h1 className="p-3 m-3 text-primary text-4xl font-header">Good Day! {name}</h1>
+                <div className="grid  grid-cols-4 grid-rows-[6.25rem_auto] h-full w-full">
+                    <Helmet>{/* Title of the mark-up */}
+                    <title>MBLearn | Learner Dashboard</title>
+                    </Helmet>
+                    <div className="flex flex-col justify-center col-span-3 row-span-1 pr-5 border-b ml-5 border-divider">
+                        <h1 className="text-primary text-4xl font-header">Good Day! {name}</h1>
+                        <p className='font-text text-sm text-unactive'>Your learning hub! Track progress, access courses, and level up your skills!</p>
                     </div>
+                    <div className='border-b border-divider mr-5 flex flex-row justify-end items-center'>
+                        <div className='p-6 aspect-square bg-secondaryprimary rounded-full flex justify-center items-center'>
+                            <FontAwesomeIcon icon={faGraduationCap} className='text-primary text-2xl'/>
+                        </div>
+                    </div>
+                    <div className='col-span-3 row-span-1 ml-5 pr-2 pb-2 pt-5'>
+                        <div className='bg-white w-full h-full rounded-md shadow-md p-5'>
+
+                        </div>
+                    </div>
+                    <div className='col-span-1 row-span-1 pb-2 pt-5 mr-5 '>
+                        <div className='bg-white w-full h-full rounded-md shadow-md p-5'>
+
+                        </div>
+                    </div>
+                    <div className='col-span-3 row-start-3 ml-5 pr-2 pt-2 pb-5'>
+                        <div className='bg-white w-full h-full rounded-md shadow-md'>
+
+                        </div>
+                    </div>
+                    <div className='col-span-1 row-start-3 mr-5 pt-2 pb-5 flex flex-col justify-between gap-4'>
+                        <div className='bg-white w-full h-full rounded-md shadow-md p-5'></div>
+                        <div className='bg-white w-full h-full rounded-md shadow-md p-5'></div>
+                        <div className='bg-white w-full h-full rounded-md shadow-md p-5'></div>
+                    </div>
+
+
                 </div>
             )
     }

@@ -1,4 +1,4 @@
-import { faChevronDown, faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import { faChevronDown, faFilter, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import React, { useEffect, useState } from "react";
@@ -34,9 +34,11 @@ const AddAssignCourseAdmin = ({courseID ,open, close}) => {
 
     const formik = useFormik({
         initialValues: {
+            division: '',
             department: '',
             branch: '',
             city: '',
+            section:''
         },
         validationSchema: Yup.object({
             department: Yup.string().required('Required'),
@@ -113,11 +115,28 @@ const AddAssignCourseAdmin = ({courseID ,open, close}) => {
                             {/* Content */}
                             <div className="grid mx-4 pt-4 gap-y-4">
                                 {/* Fiter Category */}
-                                <div className="grid grid-cols-[auto_min-content] gap-x-10">
+                                <div className="grid grid-cols-[auto_min-content]">
                                     {/* Header */}
                                     <p className="row-start-1 col-span-2 font-text text-unactive text-sm">Course Admin Filter:</p>
                                     <div className="">
-                                        <form onSubmit={formik.handleSubmit} className="row-start-2 grid  grid-cols-3 gap-x-3">
+                                        <form onSubmit={formik.handleSubmit} className="row-start-2 grid grid-cols-3 gap-x-3">
+                                        {/* Division */}
+                                        <div class="grid grid-cols-1 w-full row-start-1">
+                                            <select id="division" name="division" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
+                                                value={formik.values.division}
+                                                onChange={formik.handleChange}
+                                                onBlur={formik.handleBlur}
+                                            >
+                                            <option value="">Select a Division</option>
+                                            {/* {departments.map((department) => (
+                                                <option key={department.id} value={department.id}>{department.department_name}</option>
+                                            ))} */}
+                                            </select>
+                                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                            <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                            </svg>
+                                        </div>
+                                        <label htmlFor="division" className="font-text text-unactive text-sm col-start-1 pb-4">Division</label>
                                         {/* Department */}
                                         <div class="grid grid-cols-1 w-full row-start-1 ">
                                             <select id="department" name="department" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
@@ -134,9 +153,26 @@ const AddAssignCourseAdmin = ({courseID ,open, close}) => {
                                             <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
                                             </svg>
                                         </div>
-                                        <label htmlFor="department" className="font-text text-unactive text-sm col-start-1">Department</label>
-                                        {/* City */}
+                                        <label htmlFor="department" className="font-text text-unactive text-sm col-start-2 pb-4">Department</label>
+                                        {/* Section */}
                                         <div class="grid grid-cols-1 w-full row-start-1 ">
+                                            <select id="section" name="section" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
+                                                value={formik.values.section}
+                                                onChange={formik.handleChange}
+                                                onBlur={formik.handleBlur}
+                                            >
+                                            <option value="">Select a Section</option>
+                                            {/* {departments.map((department) => (
+                                                <option key={department.id} value={department.id}>{department.department_name}</option>
+                                            ))} */}
+                                            </select>
+                                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                            <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                            </svg>
+                                        </div>
+                                        <label htmlFor="department" className="font-text text-unactive text-sm col-start-3 pb-4">Section</label>
+                                        {/* City */}
+                                        <div class="grid grid-cols-1 w-full row-start-3 ">
                                             <select id="city" name="city" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
                                                 value={formik.values.city}
                                                 onChange={handleBranchesOptions}
@@ -151,9 +187,9 @@ const AddAssignCourseAdmin = ({courseID ,open, close}) => {
                                             <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
                                             </svg>
                                         </div>
-                                        <label htmlFor="department" className="font-text text-unactive text-sm col-start-2">Branch City</label>
+                                        <label htmlFor="department" className="font-text text-unactive text-sm col-start-1">Branch City</label>
                                          {/* Location */}
-                                        <div class="grid grid-cols-1 w-full row-start-1 ">
+                                        <div class="grid grid-cols-1 w-full row-start-3 ">
                                             <select id="branch" name="branch" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
                                                 value={formik.values.branch}
                                                 onChange={formik.handleChange}
@@ -168,14 +204,16 @@ const AddAssignCourseAdmin = ({courseID ,open, close}) => {
                                             <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
                                             </svg>
                                         </div>
-                                        <label htmlFor="department" className="font-text text-unactive text-sm col-start-3">Branch Location</label>
+                                        <label htmlFor="department" className="font-text text-unactive text-sm col-start-2">Branch Location</label>
+                                        <button type="submit" className="row-start-3  flex flex-row gap-2 justify-center items-center w-full h-fit border-2 border-primary py-2 px-14 rounded-md shadow-md bg-primary hover: cursor-pointer hover:scale-105 transition-all ease-in-out hover:bg-primaryhover hover:text-white">
+                                            <FontAwesomeIcon icon={faFilter} className="text-white"/>
+                                            <p className="font-header text-white">
+                                                Filter
+                                            </p>
+                                        </button>
                                         </form>
                                     </div>
-                                    <div className="w-full h-fit  border-2 border-primary py-2 px-14 rounded-md shadow-md bg-primary hover: cursor-pointer hover:scale-105 transition-all ease-in-out hover:bg-primaryhover hover:text-white" onClick={()=>SubmitFilter()}>
-                                        <p className="font-header text-white">
-                                            Filter
-                                        </p>
-                                    </div>
+
                                 </div>
 
                                 <div>

@@ -38,7 +38,7 @@ const navItems = {
     ],
     "Course Admin": [
         {icon:faHouse, text:"Home", to:"/courseadmin/dashboard"},
-        {icon:faBookBookmark, text:"Assigned Course Catalog", to:"/courseadmin/assignedcourses"},
+        {icon:faBookBookmark, text:"Course Catalog", to:"/courseadmin/assignedcourses"},
         {icon:faBook, text:"Course List Maintenance", to:"/courseadmin/courselistmaintenance"},
         {icon:faPersonCirclePlus, text:"Enroll Trainee", to:"/courseadmin/bulkenrollment"},
         {icon:faChartPie, text:"Assigned Course Reports", to:"/courseadmin/coursereports"},
@@ -55,6 +55,12 @@ const navItems = {
 export default function Navigation() {
     const {user, profile_image, role, availableRoles, setAvailableRoles,setUser, setToken, setRole} = useStateContext();
     const navigate = useNavigate();
+
+    const OpenProfile = (e) => {
+        e.stopPropagation()
+        const roleName = user?.user_infos?.roles?.[0]?.role_name?.replace(/\s+/g, '').toLowerCase(); // Remove spaces
+        navigate(`/${roleName}/userdetail/${user?.user_infos?.id}`);
+    }
 
 
     useEffect(() => {
@@ -112,7 +118,7 @@ export default function Navigation() {
 
 
     return (
-        <div className="flex flex-col items-center h-screen w-24 place-content-between py-2">
+        <div className="flex flex-col items-center h-screen w-24 place-content-between py-2 z-10">
             <div className='flex flex-col place-content-between w-23 h-full bg-white py-5 px-2 shadow-lg m-1 border-r rounded-full'>
                 <ul className='flex flex-col gap-4 justify-center items-center p-[0.625rem]'>
                     <li><img src={Small_Logo} alt="" className='h-[1.875rem]'/></li>
@@ -144,7 +150,7 @@ export default function Navigation() {
                                 }
                                 <ProfileIcons text={"Logout"} icon={<FontAwesomeIcon icon={faRightFromBracket}/>} onClick={onLogout}/>
                                 <li><div className='bg-white h-[1px]'></div></li>
-                                <ProfileIcons text={"View Profile"} icon={<FontAwesomeIcon icon={faUser}/>}/>
+                                <ProfileIcons text={"View Profile"} icon={<FontAwesomeIcon icon={faUser}/>} onClick={OpenProfile}/>
                             </ul>
                         </div>
                     </li>

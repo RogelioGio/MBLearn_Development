@@ -1,4 +1,4 @@
-import { faChevronLeft, faChevronRight, faFilter, faSearch, faUserPlus } from "@fortawesome/free-solid-svg-icons"
+import { faBook, faChalkboardUser, faChevronLeft, faChevronRight, faFilter, faGraduationCap, faSearch, faUserPlus } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Helmet } from "react-helmet"
 import axiosClient from "../axios-client"
@@ -9,6 +9,11 @@ import AssignedCourseEnrollmentCard from "../modalsandprops/AssignedCourseEnroll
 import LearnerLoadingProps from "../modalsandprops/LearnerLoadingProps"
 import { useStateContext } from "../contexts/ContextProvider"
 import CourseLoading from "../assets/Course_Loading.svg";
+import { useFormik } from "formik"
+import React from "react"
+import EnrolledSuccessfullyModal from "../modalsandprops/EnrollmentSuccessfulyModal"
+import EnrollmentFailedModal from "../modalsandprops/EnrollmentFailedModal"
+import NoEmployeeSelectedModal from "../modalsandprops/NoEmployeeSelectedModal"
 
 export default function BulkEnrollment() {
 
@@ -19,6 +24,11 @@ export default function BulkEnrollment() {
     const [course, selectCourse] = useState([]); //Select course to enroll
     const [isLoading, setLoading] = useState(true); //Loading state
     const selectAll = useRef(false) //select all learners
+    const [tab, setTab] = useState(1)//Tabs
+    const [enrolled, setEnrolled] = useState(false) //Modal for successfully Enrolled
+    const [error, setError] = useState([]) //Error state
+    const [enrollmentFailed, setEnrollmentFailed] = useState(false) //Enrollment failed state
+    const [empty, setEmpty] = useState(true) //No selected user state
 
     //Pagenation States
     const [pageState, setPagination] = useState({
@@ -183,8 +193,12 @@ export default function BulkEnrollment() {
         Pages.push(p)
     }
 
+    //Formik for filter
+    const formik = useFormik({});
+
     return (
-        <div className='grid grid-cols-4 grid-rows-[6.25rem_min-content_auto_auto_3.75rem] h-full w-full'>
+        <>
+        <div className='grid grid-cols-4 grid-rows-[6.25rem_min-content_1fr_3.75rem] h-full w-full'>
             <Helmet>
                 {/* Title of the mark-up */}
                 <title>MBLearn | Enroll Trainee</title>
@@ -204,45 +218,121 @@ export default function BulkEnrollment() {
                 </button>
             </div>
 
-            {/* Course list header */}
-            <div className="px-4 pb-3 mt-5 border-r border-divider col-start-1 row-start-2">
-                <h1 className='text-primary text-2xl font-header'>Assigned Courses</h1>
-                <p className='font-text text-xs text-unactive' >Assigned courses to enroll users into effortlessly.</p>
+            {/* Tab */}
+            {/* <div className="px-4 pb-3 mt-5 col-start-1 row-start-2">
+                <div className="w-full flex flex-row rounded-md shadow-md hover:cursor-pointer">
+                    <span className={`w-1/2 flex flex-row gap-5 items-center text-md font-header ring-2 ring-primary rounded-l-md px-5 py-2 text-primary hover:bg-primary hover:text-white transition-all ease-in-out ${tab === 1 ? 'bg-primary text-white':null}`} onClick={()=> setTab(1)}>
+                        <FontAwesomeIcon icon={faGraduationCap}/>
+                        Enrollees
+                    </span>
+                    <span className={` w-1/2 flex flex-row gap-5 items-center text-md font-header ring-2 ring-primary rounded-r-md px-5 py-2 text-primary hover:bg-primary hover:text-white transition-all ease-in-out ${tab === 2 ? 'bg-primary text-white':null}`} onClick={()=> setTab(2)}>
+                        <FontAwesomeIcon icon={faChalkboardUser}/>
+                        Enrolled
+                    </span>
+                </div>
+            </div> */}
+
+            <div className="px-4 pb-3 mt-5 col-start-1 row-start-2 flex flex-row items-center border-r border-divider">
+                <div>
+                    <h1 className='text-primary text-2xl font-header'>Assigned Courses</h1>
+                    <p className='font-text text-xs text-unactive' >Assigned courses to enroll users into effortlessly.</p>
+                </div>
+                {/* <div>
+                    <div className="aspect-square px-3 flex flex-row justify-center items-center bg-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 ease-in-out transition-all ">
+                        <FontAwesomeIcon icon={faGraduationCap} className='text-white text-sm'/>
+                    </div>
+                </div> */}
             </div>
 
             {/* Assigned Courses */}
-            <div className="col-start-1 row-start-3 row-span-3 mb-5 border-r border-divider">
-                {/* Course Props */}
-                <div className="h-full px-4 flex flex-col gap-2">
-                    {
-                        isLoading ? (
-                            <div className="flex flex-col gap-2 items-center justify-center text-center h-full">
-                                <img src={CourseLoading} alt="" className="w-44"/>
-                                <p className="text-xs font-text text-primary">Hang tight! 🚀 Loading assigned courses for bulk enrollment—great things take a second!</p>
-                            </div>
-                        )
-                        : (assigned_courses.map((Course) => (
-                            <AssignedCourseEnrollmentCard
-                                key={Course.id}
-                                id={Course.id}
-                                name={Course.name}
-                                coursetype={Course.types?.[0]?.type_name}
-                                coursecategory={Course.categories?.[0]?.category_name}
-                                duration={Course.duration}
-                                trainingmode={Course.trainingMode}
-                                course={course}
-                                selected={selected}
-                                onclick={() => handleCourseChange(Course.name)}
-                                numberOfEnrollees={numberOfEnrollees}/>
-                        )))
+            <div className="col-start-1 row-start-3 row-span-1 mb-5 border-r border-divider h-full px-2 flex flex-col gap-2">
+                {
+                            isLoading ? (
+                                <div className="flex flex-col gap-2 items-center justify-center text-center h-full">
+                                    <img src={CourseLoading} alt="" className="w-44"/>
+                                    <p className="text-xs font-text text-primary">Hang tight! 🚀 Loading assigned courses for bulk enrollment—great things take a second!</p>
+                                </div>
+                            )
+                            : (assigned_courses.map((Course) => (
+                                <AssignedCourseEnrollmentCard
+                                    key={Course.id}
+                                    id={Course.id}
+                                    name={Course.name}
+                                    coursetype={Course.types?.[0]?.type_name}
+                                    coursecategory={Course.categories?.[0]?.category_name}
+                                    duration={Course.duration}
+                                    trainingmode={Course.training_modes?.[0]?.mode_name}
+                                    trainingtype={Course.training_type}
+                                    course={course}
+                                    selected={selected}
+                                    onclick={() => handleCourseChange(Course.name)}
+                                    numberOfEnrollees={numberOfEnrollees}
+                                    />
+                            )))
 
                     }
-                </div>
             </div>
 
             {/* Search and filter */}
-            <div className="col-start-2 col-span-3 row-start-2 row-span-1 px-5 flex flex-row justify-end items-center gap-5">
+            <div className="col-start-2 col-span-3 row-start-2 row-span-1 px-5 flex flex-row justify-between items-center gap-5 py-2">
+                {/* Filter */}
+                <div className="w-full">
+                    <form className="flex flex-row gap-2 items-center w-full">
+                        <div className="inline-flex flex-col gap-1 w-full">
+                        <label htmlFor="employee_name" className="font-header text-xs flex flex-row justify-between">
+                            <p className="text-xs font-text text-unactive">Sample Filter </p>
+                        </label>
+                        <div className="grid grid-cols-1">
+                            <select id="employee_name" name="employee_name" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                >
+                                <option value=''>Select an Section</option>
+                            </select>
+                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                            <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        </div>
+                        <div className="inline-flex flex-col gap-1 w-full">
+                        <label htmlFor="employee_name" className="font-header text-xs flex flex-row justify-between">
+                            <p className="text-xs font-text text-unactive">Sample Filter </p>
+                        </label>
+                        <div className="grid grid-cols-1">
+                            <select id="employee_name" name="employee_name" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                >
+                                <option value=''>Select an Section</option>
+                            </select>
+                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                            <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        </div>
+                        <div className="inline-flex flex-col gap-1 w-full">
+                        <label htmlFor="employee_name" className="font-header text-xs flex flex-row justify-between">
+                            <p className="text-xs font-text text-unactive">Sample Filter </p>
+                        </label>
+                        <div className="grid grid-cols-1">
+                            <select id="employee_name" name="employee_name" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                >
+                                <option value=''>Select an Section</option>
+                            </select>
+                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                            <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        </div>
+                        {/* Submit */}
+                        <div className='flex-row flex justify-end py-1 gap-2'>
+                            <button type='submit'>
+                                <div className='aspect-square px-3 flex flex-row justify-center items-center bg-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 ease-in-out transition-all '>
+                                    <FontAwesomeIcon icon={faFilter} className='text-white text-sm'/>
+                                </div>
+                            </button>
+                        </div>
+                    </form>
 
+                </div>
+
+                {/* Search Bar */}
                 <div className=' inline-flex flex-row place-content-between border-2 border-primary rounded-md font-text shadow-md'>
                     <input type="text" className='focus:outline-none text-sm px-4 w-full rounded-md bg-white' placeholder='Search...'/>
                     <div className='bg-primary py-2 px-4 text-white'>
@@ -290,7 +380,7 @@ export default function BulkEnrollment() {
             }
 
             {/* User Pagination */}
-            <div className='row-start-5 row-span-1 col-start-2 col-span-3 mx-5 flex flex-row items-center justify-between'>
+            <div className='row-start-4 row-span-1 col-start-2 col-span-3 mx-5 flex flex-row items-center justify-between'>
                 {/* Total number of entries and only be shown */}
                 <div>
                     <p className='text-sm font-text text-unactive'>
@@ -330,7 +420,14 @@ export default function BulkEnrollment() {
                     </nav>
                 </div>
             </div>
-
         </div>
+
+        {/* Successfully Enrolled */}
+        <EnrolledSuccessfullyModal isOpen={enrolled} onClose={() => setEnrolled(false)}/>
+        {/* Error */}
+        <EnrollmentFailedModal isOpen={enrollmentFailed} onClose={()=>setEnrollmentFailed(false)}/>
+        {/* When no Selected Users */}
+        <NoEmployeeSelectedModal isOpen={empty} onClose={()=>setEmpty(false)} />
+        </>
     )
 }

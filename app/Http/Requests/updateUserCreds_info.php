@@ -22,6 +22,7 @@ class updateUserCreds_info extends FormRequest
     public function rules(): array
     {
         return [
+            'MBemail' => 'required|email|unique:userCredentials,MBemail',
             'password' => 'required|string|min:8',
         ];
     }

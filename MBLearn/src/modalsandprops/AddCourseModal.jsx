@@ -288,7 +288,7 @@ const AddCourseModal = ({open,onClose}) => {
                                                         onBlur={formik2.handleBlur}
                                                     >
                                                     <option value="">Select a training mode</option>
-                                                    <option value="Online Training">Online Training</option>
+                                                    <option value={1}>Online Training</option>
 
                                                     </select>
                                                     <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">

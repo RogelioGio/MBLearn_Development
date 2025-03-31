@@ -42,7 +42,8 @@ class userCredentials_controller extends Controller
         $validatedData = $request->validated();
 
         $userCredentials->update([
-            'password' => bcrypt($validatedData['password'])
+            'password' => bcrypt($validatedData['password']),
+            'MBemail' => $validatedData['MBemail']
         ]);
 
         return response()->json([
@@ -57,7 +58,40 @@ class userCredentials_controller extends Controller
         $page = $request->input('page', 1);//Default page
         $perPage = $request->input('perPage',5); //Number of entry per page
 
-        $userCredentials = UserCredentials::with(['userInfos', 'userInfos.roles'])->paginate($perPage);
+        // $userCredentials = UserCredentials::with(['userInfos', 'userInfos.roles'])->paginate($perPage);
+
+        // return response()->json([
+        //     'total' => $userCredentials->total(),
+        //     'lastPage' => $userCredentials->lastPage(),
+        //     'currentPage' => $userCredentials->currentPage(),
+        //     'data' => $userCredentials->items()
+        // ]);
+
+        $query = UserCredentials::with(['userInfos', 'userInfos.roles']) ->whereHas('userInfos', function ($subQuery) {
+            $subQuery->where('status', 'Active'); // Ensure only Active users are fetched
+        });
+
+        // Apply filters based on userInfos attributes
+        if ($request->has('status')) {
+            $query->whereHas('userInfos', function ($subQuery) use ($request) {
+                $subQuery->where('status', $request->input('status'));
+            });
+        }
+
+        if ($request->has('department_id')) {
+            $query->whereHas('userInfos', function ($subQuery) use ($request) {
+                $subQuery->where('department_id', $request->input('department_id'));
+            });
+        }
+
+        if ($request->has('branch_id')) {
+            $query->whereHas('userInfos', function ($subQuery) use ($request) {
+                $subQuery->where('branch_id', $request->input('branch_id'));
+            });
+        }
+
+        // Paginate the filtered results
+        $userCredentials = $query->paginate($perPage);
 
         return response()->json([
             'total' => $userCredentials->total(),
@@ -65,6 +99,55 @@ class userCredentials_controller extends Controller
             'currentPage' => $userCredentials->currentPage(),
             'data' => $userCredentials->items()
         ]);
+
+    }
+    public function UnuserCredentialsList(Request $request){
+
+        $page = $request->input('page', 1);//Default page
+        $perPage = $request->input('perPage',5); //Number of entry per page
+
+        // $userCredentials = UserCredentials::with(['userInfos', 'userInfos.roles'])->paginate($perPage);
+
+        // return response()->json([
+        //     'total' => $userCredentials->total(),
+        //     'lastPage' => $userCredentials->lastPage(),
+        //     'currentPage' => $userCredentials->currentPage(),
+        //     'data' => $userCredentials->items()
+        // ]);
+
+        $query = UserCredentials::with(['userInfos', 'userInfos.roles']) ->whereHas('userInfos', function ($subQuery) {
+            $subQuery->where('status', 'Inactive'); // Ensure only Active users are fetched
+        });
+
+        // Apply filters based on userInfos attributes
+        if ($request->has('status')) {
+            $query->whereHas('userInfos', function ($subQuery) use ($request) {
+                $subQuery->where('status', $request->input('status'));
+            });
+        }
+
+        if ($request->has('department_id')) {
+            $query->whereHas('userInfos', function ($subQuery) use ($request) {
+                $subQuery->where('department_id', $request->input('department_id'));
+            });
+        }
+
+        if ($request->has('branch_id')) {
+            $query->whereHas('userInfos', function ($subQuery) use ($request) {
+                $subQuery->where('branch_id', $request->input('branch_id'));
+            });
+        }
+
+        // Paginate the filtered results
+        $userCredentials = $query->paginate($perPage);
+
+        return response()->json([
+            'total' => $userCredentials->total(),
+            'lastPage' => $userCredentials->lastPage(),
+            'currentPage' => $userCredentials->currentPage(),
+            'data' => $userCredentials->items()
+        ]);
+
     }
 
 

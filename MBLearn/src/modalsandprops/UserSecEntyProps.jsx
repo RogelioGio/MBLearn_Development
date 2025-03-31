@@ -17,15 +17,21 @@ const UserSecEntyProps = ({user,name,employeeID,MBEmail,city,branch,department,t
                                 {/* Name */}
                                 <div>
                                     <p className='font-text'>{name}</p>
-                                    <p className='text-unactive'>ID: {employeeID}</p>
+                                    <p className='text-unactive'>{MBEmail}</p>
                                 </div>
                             </div>
                         </td>
                         <td className='py-3 px-4'>
-                            <div className='flex flex-col'>
+                            {/* <div className='flex flex-col'> */}
                             {/* Metrobank Working Email */}
-                            <p className='text-unactive'>{MBEmail}</p>
-                            </div>
+                            {/* <p className='text-unactive'>{MBEmail}</p>
+                            </div> */}
+                        </td>
+                        <td className='py-3 px-4'>
+                            {/* <div className='flex flex-col'> */}
+                            {/* Metrobank Working Email */}
+                            {/* <p className='text-unactive'>{MBEmail}</p>
+                            </div> */}
                         </td>
                         <td className='py-3 px-4'>
                             <p className='text-unactive'>{role}</p>
@@ -35,10 +41,6 @@ const UserSecEntyProps = ({user,name,employeeID,MBEmail,city,branch,department,t
                         <td>
                         </td>
 
-                        {/* Account Status */}
-                        <td className='py-3 px-4'>
-                            <p className='text-unactive'>{status}</p>
-                        </td>
                         {/* Action */}
                         <td className='py-3 px-4'>
                             <div className='flex gap-1 justify-end'>
