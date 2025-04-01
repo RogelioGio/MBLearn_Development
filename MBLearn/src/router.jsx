@@ -25,6 +25,7 @@ import { SelectedUserProvider } from "./contexts/selecteduserContext";
 import { OptionProvider } from "./contexts/AddUserOptionProvider";
 import SelectUser from "./views/SelectedUser";
 import { SelectedCourseProvider } from "./contexts/selectedcourseContext";
+import CsvToJson from "./views/CsvToJson";
 
 const router = createBrowserRouter([
 
@@ -72,6 +73,10 @@ const router = createBrowserRouter([
                         path: "activitylogs",
                         element: <ActivityLog/>
                     },
+                    {
+                        path: "testCsvToJson",
+                        element: <CsvToJson/>
+                    }
                 ]
             },
             {

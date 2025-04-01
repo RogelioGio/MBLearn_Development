@@ -149,7 +149,7 @@ class userInfo_controller extends Controller
             $userCredentials->userInfos()->save($userInfo);
         }
         return response()->json([
-            'Message' => "Users added"
+            'Message' => $bulk
         ]);
     }
     /**
