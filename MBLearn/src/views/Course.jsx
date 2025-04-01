@@ -1,5 +1,5 @@
 import { faCircleCheck as faCircleCheckRegular, faCircleLeft as faCircleLeftRegular } from "@fortawesome/free-regular-svg-icons"
-import { faArrowDownShortWide, faArrowDownZA, faArrowLeft, faArrowUpAZ, faArrowUpWideShort, faBook, faCakeCandles, faGraduationCap, faPenToSquare, faSort, faSquareCheck, faTrash, faUser, faUserGroup, faUserPlus } from "@fortawesome/free-solid-svg-icons"
+import { faArrowDownShortWide, faArrowDownZA, faArrowLeft, faArrowUpAZ, faArrowUpWideShort, faBook, faBookOpenReader, faCakeCandles, faGraduationCap, faPenToSquare, faSort, faSquareCheck, faTrash, faUser, faUserGroup, faUserPlus } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Stepper } from "@mantine/core"
 import React, { useEffect, useState } from "react"
@@ -17,6 +17,7 @@ import { use } from "react"
 import EditCourseModal from "../modalsandprops/EditCourseModal"
 import { useCourse } from "../contexts/selectedcourseContext"
 import { set } from "date-fns"
+import AssignCourseAdmin from "../modalsandprops/AssignCourseAdminModal"
 
 
 
@@ -29,6 +30,7 @@ export default function Course() {
     const [isLoading ,setLoading] = useState(true);
     const [tab, setTab] = useState("module");
     const [open, setOpen] = useState(false);
+    const [assign, setAssign] = useState(false);
     const {selectCourse, selectedCourse, isFetching, resetSelectedCourse} = useCourse();
 
     const tabComponents = {
@@ -86,9 +88,12 @@ export default function Course() {
 
                     </div>
                 </div>
-                <div className="flex flex-row justify-center items-center border-b border-divider pr-5">
+                <div className="flex flex-row justify-center items-center border-b border-divider pr-5 gap-2">
                     <div className="hover:scale-105 ease-in-out transition-all hover:cursor-pointer" onClick={()=>setOpen(true)}>
                         <FontAwesomeIcon icon={faPenToSquare} className="border-2 border-primary rounded-md aspect-square p-3 text-lg text-primary shadow-md hover:bg-primary hover:text-white"/>
+                    </div>
+                    <div className="hover:scale-105 ease-in-out transition-all hover:cursor-pointer" onClick={()=>setAssign(true)}>
+                        <FontAwesomeIcon icon={faBookOpenReader} className="border-2 border-primary rounded-md aspect-square p-3 text-lg text-primary shadow-md hover:bg-primary hover:text-white"/>
                     </div>
                 </div>
             </div>
@@ -114,9 +119,15 @@ export default function Course() {
 
             {/* Course status */}
             <div className="row-start-1 row-span-1 col-start-4 col-span-1 pb-2 pl-5 mr-5 mt-5 border-b border-l border-divider">
-                <p className="text-primary font-header"> Course Status:</p>
-                <p className="text-primary font-text text-xs"> Latest Enrollement:</p>
-                <p className="text-primary font-text text-xs"> On-Going Status:</p>
+                <div className="flex flex-row gap-2">
+                    <p className="text-primary font-header"> Course Status:</p>
+                <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-blue-700/10 ring-inset">
+                    Course Status Sample
+                </span>
+                </div>
+
+                <p className="text-primary font-text text-xs">Date-Added: </p>
+                <p className="text-primary font-text text-xs">Course Duration: </p>
             </div>
 
             {/* Course content */}
@@ -126,6 +137,8 @@ export default function Course() {
         </div>
         {/* Edit */}
         <EditCourseModal open={open} close={()=>setOpen(false)} id={course?.id}/>
+        {/* Assign Course Admin */}
+        <AssignCourseAdmin open={assign} close={()=>setAssign(false)} id={course?.id}/>
         </>
 
     )

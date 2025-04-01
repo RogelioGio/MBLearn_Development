@@ -11,6 +11,7 @@ import UserAddedSuccessfullyModal from "./UserAddedSuccessfullyModal"
 import AddUserErrorModal from "./AdduserErrorModal"
 import { Stepper } from '@mantine/core';
 import { useOption } from "../contexts/AddUserOptionProvider"
+import AddMultipleUserProps from "./AddMultipleUserProps"
 
 
 const AddUserModal = ({open, close, updateTable}) => {
@@ -161,8 +162,8 @@ const AddUserModal = ({open, close, updateTable}) => {
     return(
         <>
         <Dialog open={open} onClose={()=>{}}>
-            <DialogBackdrop transition className="fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"/>
-            <div className='fixed inset-0 z-10 w-screen overflow-y-auto'>
+            <DialogBackdrop transition className="fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in z-30"/>
+            <div className='fixed inset-0 z-30 w-screen overflow-y-auto'>
                 <div className='flex min-h-full items-center justify-center p-4'>
                     <DialogPanel transition className='relative overflow-hidden transform rounded-md w-2/4 bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in'>
                         <div className='bg-white rounded-md h-full p-5 flex flex-col'>
@@ -514,21 +515,22 @@ const AddUserModal = ({open, close, updateTable}) => {
                                     </div>
                                     </>
                                 ) : state.tab === "multiple" ? (
-                                    <div>
-                                        {/* Add user by Import file */}
-                                        <div className="py-3 mx-4">
-                                            <div className="flex flex-col gap-3 justify-center items-center rounded-lg border-2 border-dashed border-unactive px-6 py-10 h-full w-full">
-                                                <FontAwesomeIcon icon={faFileArrowUp} className="text-4xl text-unactive"/>
-                                                <p className="font-text text-center text-xs text-unactive">Upload .csv file to add multiple user in the system</p>
-                                            </div>
-                                        </div>
-                                         {/* Action Buttons */}
-                                        <div className="flex flex-row gap-2 mx-4 py-3">
-                                            <div
-                                            className="font-header text-center text-primary border-2 border-primary w-1/2 py-2 rounded-md shadow-md  hover: cursor-pointer hover:scale-105 transition-all ease-in-out hover:bg-primaryhover hover:text-white">Cancel</div>
-                                            <div className="font-header text-center text-white border-2 border-primary w-1/2 py-2 rounded-md shadow-md bg-primary hover: cursor-pointer hover:scale-105 transition-all ease-in-out hover:bg-primaryhover hover:text-white">Next</div>
-                                        </div>
-                                    </div>
+                                    // <div>
+                                    //     {/* Add user by Import file */}
+                                    //     <div className="py-3 mx-4">
+                                    //         <div className="flex flex-col gap-3 justify-center items-center rounded-lg border-2 border-dashed border-unactive px-6 py-10 h-full w-full">
+                                    //             <FontAwesomeIcon icon={faFileArrowUp} className="text-4xl text-unactive"/>
+                                    //             <p className="font-text text-center text-xs text-unactive">Upload .csv file to add multiple user in the system</p>
+                                    //         </div>
+                                    //     </div>
+                                    //      {/* Action Buttons */}
+                                    //     <div className="flex flex-row gap-2 mx-4 py-3">
+                                    //         <div
+                                    //         className="font-header text-center text-primary border-2 border-primary w-1/2 py-2 rounded-md shadow-md  hover: cursor-pointer hover:scale-105 transition-all ease-in-out hover:bg-primaryhover hover:text-white">Cancel</div>
+                                    //         <div className="font-header text-center text-white border-2 border-primary w-1/2 py-2 rounded-md shadow-md bg-primary hover: cursor-pointer hover:scale-105 transition-all ease-in-out hover:bg-primaryhover hover:text-white">Next</div>
+                                    //     </div>
+                                    // </div>
+                                    <AddMultipleUserProps onClose={close}/>
                                 ) : null
                             }
 
