@@ -18,7 +18,7 @@ const CourseOveriew = () => {
 
 
     return(
-        <div className="row-start-3 col-span-3 ml-5 pr-5">
+        <div className="row-start-2 col-span-3">
             {/* Sample content but needed to be changes as props to be dynamic */}
             {
                 !isLoading ? (
