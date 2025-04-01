@@ -1,8 +1,13 @@
+import { ScrollArea } from "MBLearn/src/components/ui/scroll-area"
 import ReactPlayer from "react-player"
+
 const CourseText = () => {
     return(
         <div className="row-start-3 col-span-3 ml-5 pr-5">
             {/* Sample content but needed to be changes as props to be dynamic */}
+
+            <ScrollArea className="h-[500px] w-full">
+
             <div className="w-auto h-full grid grid-cols-2 grid-rows-[auto_min-content]">
                 {/* Course Desription */}
                 <div className="col-span-2 row-span-1 py-5">
@@ -15,7 +20,7 @@ const CourseText = () => {
                                             width="600px"
                                             height="340px"
                                             controls
-                                        />
+                                            />
                                     </div>
                 </div>
                 {/* Attachment */}
@@ -25,6 +30,7 @@ const CourseText = () => {
                 </div>
 
             </div>
+                                            </ScrollArea>
         </div>
     )
 }
