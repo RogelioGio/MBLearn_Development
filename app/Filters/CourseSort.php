@@ -21,7 +21,7 @@ class CourseSort{
     //TODO: maybe add errors for more than one query
     public function transform(Builder $builder, Request $request){
         $sortBy = "name";
-        $sortDirection = "";
+        $sortDirection = "asc";
 
         foreach($this->allowedParamaters as $parms => $operator){
             if($request->query($parms)){
