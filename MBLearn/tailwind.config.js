@@ -39,7 +39,7 @@ export default {
   			secondaryprimary: 'var(--Secondary-Primary-Color)',
   			secodary: 'var(--Darker-Primary-Color)',
   			tertiary: 'var(--Darker-Unactive-Color)',
-  			background: 'hsl(var(--background))',
+  			background: 'var(--Background-Color)',
   			secondarybackground: 'var(--Secondary-Background-Color)',
   			unactive: 'var(--Unactive-Color)',
   			white: 'var(--White)',

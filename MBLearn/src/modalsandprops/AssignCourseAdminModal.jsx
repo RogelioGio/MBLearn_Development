@@ -9,6 +9,16 @@ import { faCircleXmark as regularXmark } from "@fortawesome/free-regular-svg-ico
 import { useFormik } from "formik";
 import * as Yup from 'yup';
 import { useCourse } from "../contexts/selectedcourseContext";
+import {
+    Drawer,
+    DrawerClose,
+    DrawerContent,
+    DrawerDescription,
+    DrawerFooter,
+    DrawerHeader,
+    DrawerTitle,
+    DrawerTrigger,
+    } from "../components/ui/drawer"
 
 const AssignCourseAdmin = ({courseID ,open, close}) => {
     const {departments, cities, branches} = useCourseContext()
@@ -119,107 +129,131 @@ const AssignCourseAdmin = ({courseID ,open, close}) => {
                             <div className="mx-4 py-2">
                                 <p className="font-text text-unactive text-sm">Selected Course:</p>
                                 <p className="font-header text-primary text-xl">{course?.name || "Loading.."}</p>
+                                <p className="font-text text-xs text-primary">Course ID: </p>
                             </div>
                             {/* Content */}
                             <div className="grid mx-4 pb-4 space-y-2">
                                 {/* Fiter Category */}
-                                <div className="grid grid-cols-[auto_min-content] gap-y-2">
+                                <div className="grid grid-rows-1 grid-cols-6 gap-2">
                                     {/* Header */}
-                                    <p className="row-start-1 col-span-2 font-text text-unactive text-sm">Course Admin Filter:</p>
-                                    <form onSubmit={formik.handleSubmit} className="row-start-2 grid grid-cols-3 gap-x-3">
-                                        {/* Division */}
-                                        <div class="grid grid-cols-1 w-full row-start-1">
-                                            <select id="division" name="division" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
-                                                value={formik.values.division}
-                                                onChange={formik.handleChange}
-                                                onBlur={formik.handleBlur}
-                                            >
-                                            <option value="">Select a Division</option>
-                                            {/* {departments.map((department) => (
-                                                <option key={department.id} value={department.id}>{department.department_name}</option>
-                                            ))} */}
-                                            </select>
-                                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                                            <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                                            </svg>
-                                        </div>
-                                        <label htmlFor="division" className="font-text text-unactive text-sm col-start-1 pb-4">Division</label>
-                                        {/* Department */}
-                                        <div class="grid grid-cols-1 w-full row-start-1 ">
-                                            <select id="department" name="department" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
-                                                value={formik.values.department}
-                                                onChange={formik.handleChange}
-                                                onBlur={formik.handleBlur}
-                                            >
-                                            <option value="">Select a Department</option>
-                                            {departments.map((department) => (
-                                                <option key={department.id} value={department.id}>{department.department_name}</option>
-                                            ))}
-                                            </select>
-                                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                                            <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                                            </svg>
-                                        </div>
-                                        <label htmlFor="department" className="font-text text-unactive text-sm col-start-2 pb-4">Department</label>
-                                        {/* Section */}
-                                        <div class="grid grid-cols-1 w-full row-start-1 ">
-                                            <select id="section" name="section" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
-                                                value={formik.values.section}
-                                                onChange={formik.handleChange}
-                                                onBlur={formik.handleBlur}
-                                            >
-                                            <option value="">Select a Section</option>
-                                            {/* {departments.map((department) => (
-                                                <option key={department.id} value={department.id}>{department.department_name}</option>
-                                            ))} */}
-                                            </select>
-                                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                                            <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                                            </svg>
-                                        </div>
-                                        <label htmlFor="department" className="font-text text-unactive text-sm col-start-3 pb-4">Section</label>
-                                        {/* City */}
-                                        <div class="grid grid-cols-1 w-full row-start-3 ">
-                                            <select id="city" name="city" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
-                                                value={formik.values.city}
-                                                onChange={handleBranchesOptions}
-                                                onBlur={formik.handleBlur}
-                                            >
-                                            <option value="">Select a Branch City</option>
-                                                    {cities.map((city) => (
-                                                        <option key={city.id} value={city.id}>{city.city_name}</option>
-                                                    ))}
-                                            </select>
-                                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                                            <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                                            </svg>
-                                        </div>
-                                        <label htmlFor="department" className="font-text text-unactive text-sm col-start-1">Branch City</label>
-                                         {/* Location */}
-                                        <div class="grid grid-cols-1 w-full row-start-3 ">
-                                            <select id="branch" name="branch" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
-                                                value={formik.values.branch}
-                                                onChange={formik.handleChange}
-                                                onBlur={formik.handleBlur}
-                                            >
-                                            <option value="">Select a Branch Location</option>
-                                                    {selectedBranches.map((branch) => (
-                                                        <option key={branch.id} value={branch.id}>{branch.branch_name}</option>
-                                                    ))}
-                                            </select>
-                                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                                            <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                                            </svg>
-                                        </div>
-                                        <label htmlFor="department" className="font-text text-unactive text-sm col-start-2">Branch Location</label>
-                                        <button type="submit" className="row-start-3  flex flex-row gap-2 justify-center items-center w-full h-fit border-2 border-primary py-2 px-14 rounded-md shadow-md bg-primary hover: cursor-pointer hover:scale-105 transition-all ease-in-out hover:bg-primaryhover hover:text-white">
-                                            <FontAwesomeIcon icon={faFilter} className="text-white"/>
-                                            <p className="font-header text-white">
-                                                Filter
-                                            </p>
-                                        </button>
-                                        </form>
+                                    <Drawer>
+                                        <DrawerTrigger asChild>
+                                            <button className="py-2 font-header text-primary flex flex-row gap-2 justify-center items-center border-2 border-primary p-2 rounded-md shadow-md hover: cursor-pointer hover:scale-105 transition-all ease-in-out hover:bg-primaryhover hover:text-white">
+                                                <FontAwesomeIcon icon={faFilter}/>
+                                                <p>Filter</p>
+                                            </button>
+                                        </DrawerTrigger>
+                                        <DrawerContent>
+                                            <div className="mx-auto w-full p-5">
+                                                <DrawerHeader className="pb-2">
+                                                    <DrawerTitle>
+                                                        <p className="font-header text-primary">
+                                                            Course Admin Filter
+                                                        </p>
+                                                    </DrawerTitle>
+                                                    <DrawerDescription>
+                                                        <p className="text-xs font-text">
+                                                            Select option to categorize and filter the given entries
+                                                        </p>
+                                                    </DrawerDescription>
+                                                </DrawerHeader>
+                                                <div>
+                                                <form onSubmit={formik.handleSubmit} className="row-start-2 grid grid-cols-[1fr_1fr_1fr_1fr_1fr_auto] gap-x-1">
+                                                    {/* Division */}
+                                                    <div class="grid grid-cols-1 w-full row-start-1">
+                                                        <select id="division" name="division" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
+                                                            value={formik.values.division}
+                                                            onChange={formik.handleChange}
+                                                            onBlur={formik.handleBlur}
+                                                        >
+                                                        <option value="">Select a Division</option>
+                                                        {/* {departments.map((department) => (
+                                                            <option key={department.id} value={department.id}>{department.department_name}</option>
+                                                        ))} */}
+                                                        </select>
+                                                        <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                                        <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                                        </svg>
+                                                    </div>
+                                                    <label htmlFor="division" className="font-text text-unactive text-sm col-start-1 pb-4">Division</label>
+                                                    {/* Department */}
+                                                    <div class="grid grid-cols-1 w-full row-start-1 ">
+                                                        <select id="department" name="department" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
+                                                            value={formik.values.department}
+                                                            onChange={formik.handleChange}
+                                                            onBlur={formik.handleBlur}
+                                                        >
+                                                        <option value="">Select a Department</option>
+                                                        {departments.map((department) => (
+                                                            <option key={department.id} value={department.id}>{department.department_name}</option>
+                                                        ))}
+                                                        </select>
+                                                        <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                                        <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                                        </svg>
+                                                    </div>
+                                                    <label htmlFor="department" className="font-text text-unactive text-sm col-start-2 pb-4">Department</label>
+                                                    {/* Section */}
+                                                    <div class="grid grid-cols-1 w-full row-start-1 ">
+                                                        <select id="section" name="section" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
+                                                            value={formik.values.section}
+                                                            onChange={formik.handleChange}
+                                                            onBlur={formik.handleBlur}
+                                                        >
+                                                        <option value="">Select a Section</option>
+                                                        {/* {departments.map((department) => (
+                                                            <option key={department.id} value={department.id}>{department.department_name}</option>
+                                                        ))} */}
+                                                        </select>
+                                                        <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                                        <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                                        </svg>
+                                                    </div>
+                                                    <label htmlFor="department" className="font-text text-unactive text-sm col-start-3 pb-4">Section</label>
+                                                    {/* City */}
+                                                    <div class="grid grid-cols-1 w-full col-start-4 row-start-1 ">
+                                                        <select id="city" name="city" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
+                                                            value={formik.values.city}
+                                                            onChange={handleBranchesOptions}
+                                                            onBlur={formik.handleBlur}
+                                                        >
+                                                        <option value="">Select a Branch City</option>
+                                                                {cities.map((city) => (
+                                                                    <option key={city.id} value={city.id}>{city.city_name}</option>
+                                                                ))}
+                                                        </select>
+                                                        <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                                        <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                                        </svg>
+                                                    </div>
+                                                    <label htmlFor="department" className="font-text text-unactive text-sm col-start-4 row-start-2">Branch City</label>
+                                                    {/* Location */}
+                                                    <div class="grid grid-cols-1 w-full col-start-5 row-start-1">
+                                                        <select id="branch" name="branch" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
+                                                            value={formik.values.branch}
+                                                            onChange={formik.handleChange}
+                                                            onBlur={formik.handleBlur}
+                                                        >
+                                                        <option value="">Select a Branch Location</option>
+                                                                {selectedBranches.map((branch) => (
+                                                                    <option key={branch.id} value={branch.id}>{branch.branch_name}</option>
+                                                                ))}
+                                                        </select>
+                                                        <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                                        <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                                        </svg>
+                                                    </div>
+                                                    <label htmlFor="department" className="font-text text-unactive text-sm col-start-5 row-start-2">Branch Location</label>
+                                                    <button type="submit" className="aspect-square col-start-6 row-start-1  flex flex-row gap-2 justify-center items-center border-2 border-primary p-2 rounded-md shadow-md bg-primary hover: cursor-pointer hover:scale-105 transition-all ease-in-out hover:bg-primaryhover hover:text-white">
+                                                        <FontAwesomeIcon icon={faFilter} className="text-white"/>
+                                                    </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </DrawerContent>
+                                    </Drawer>
                                 </div>
+
                                 <div>
                                     {/* Course Admin Table */}
                                     <div className="py-1">
