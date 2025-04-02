@@ -185,7 +185,8 @@ class userInfo_controller extends Controller
 
     public function getAssignedCourses(UserInfos $userInfos){
 
-        return $userInfos->assignedCourses()->paginate(5);
+        $courses = $userInfos->assignedCourses()->with(['categories', 'types', 'training_modes'])->paginate(5);
+        return $courses;
     }
 
     public function indexArchivedUsers(Request $request){
