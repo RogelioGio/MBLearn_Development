@@ -316,7 +316,7 @@ class userInfo_controller extends Controller
     }
 
     public function getUserCourses(UserInfos $userInfos){
-        $courses = $userInfos->enrolledCourses;
+        $courses = $userInfos->enrolledCourses()->with(['categories', 'types', 'training_modes'])->paginate(5);
         return $courses;
     }
 
