@@ -8,6 +8,7 @@ use App\Http\Requests\AddUsersRequest;
 use App\Http\Requests\BulkStoreUserRequest;
 use App\Http\Requests\updateUserInfo;
 use App\Models\Branch;
+use App\Models\Course;
 use App\Models\Department;
 use App\Models\Permission;
 use App\Models\Role;
@@ -180,6 +181,11 @@ class userInfo_controller extends Controller
             'lastPage' => $users->lastPage(),
             'currentPage' => $users->currentPage()
         ],200);
+    }
+
+    public function getAssignedCourses(UserInfos $userInfos){
+
+        return $userInfos->assignedCourses()->paginate(5);
     }
 
     public function indexArchivedUsers(Request $request){

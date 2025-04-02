@@ -57,7 +57,8 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::delete('/delete-user/{userInfos}',[userInfo_controller::class, 'deleteUser']);
     Route::post('/add-users-department/{userInfos}/{department}', [userInfo_controller::class, 'addDepartment']);
     Route::post('/add-users-branch/{userInfos}/{branch}', [userInfo_controller::class, 'addBranch']);
-    Route::post('/add-branch-city/{branch}/{city}', [BranchController::class, 'addCity']);
+    Route::post('/add-branch-city/{branch}/{city} ', [BranchController::class, 'addCity']);
+    Route::get('/select-user-assigned-courses/{userInfos}', [userInfo_controller::class, 'getAssignedCourses']);
 
     Route::apiResource('/cities', CityController::class);
     Route::apiResource('/departments', DepartmentController::class);
