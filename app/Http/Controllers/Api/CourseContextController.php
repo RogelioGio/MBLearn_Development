@@ -29,6 +29,7 @@ class CourseContextController extends Controller
 
     public function getSelectedCourse($id){
         $course = Course::with('assignedCourseAdmins','categories','types','training_modes')->find($id);
+        $course->assignedCourseAdmins->load(['branch', 'department', 'branch.city', 'title']);
         if ($course) {
             return response()->json($course);
         } else {
