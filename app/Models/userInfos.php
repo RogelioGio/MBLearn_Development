@@ -94,7 +94,7 @@ class UserInfos extends Model
     }
 
     public function subGroup(): BelongsTo{
-        return $this->belongsTo(SubGroup::class, 'group_id', 'id');
+        return $this->belongsTo(Subgroup::class, 'group_id', 'id');
     }
 
     public function section():BelongsTo{

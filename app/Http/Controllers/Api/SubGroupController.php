@@ -3,55 +3,56 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\SubGroup;
-use App\Http\Requests\StoreSubGroupRequest;
-use App\Http\Requests\UpdateSubGroupRequest;
+use App\Models\Subgroup;
+use App\Http\Requests\StoreSubgroupRequest;
+use App\Http\Requests\UpdateSubgroupRequest;
 
-class SubGroupController extends Controller
+class SubgroupController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return SubGroup::all();
+        return Subgroup::all();
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreSubGroupRequest $request)
+    public function store(StoreSubgroupRequest $request)
     {
         $validated = $request->validated();
-        return SubGroup::create($validated);
+        $group = Subgroup::create($validated);
+        return $group;
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(SubGroup $subGroup)
+    public function show(Subgroup $subgroup)
     {
-        return $subGroup;
+        return $subgroup;
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateSubGroupRequest $request, SubGroup $subGroup)
+    public function update(UpdateSubgroupRequest $request, Subgroup $subgroup)
     {
         $validated = $request->validated();
-        $subGroup->update($validated);
-        return $subGroup;
+        $subgroup->update($validated);
+        return $subgroup;
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(SubGroup $subGroup)
+    public function destroy(Subgroup $subgroup)
     {
-        $subGroup->delete();
+        $subgroup->delete();
         return response()->json([
-            "Message" => "Subgroup Deleted"
+            'message' => 'Subgroup Deleted'
         ]);
     }
 }

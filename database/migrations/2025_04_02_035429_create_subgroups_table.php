@@ -11,9 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('userInfo', function (Blueprint $table) {
-            $table->foreignId('division_id')->nullable()->constrained('divisions', 'id')->nullOnDelete();
-            $table->foreignId('section_id')->nullable()->constrained('sections', 'id')->nullOnDelete();
+        Schema::create('subgroups', function (Blueprint $table) {
+            $table->id();
+            $table->string('group_name');
+            $table->timestamps();
         });
     }
 
@@ -22,8 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('userInfo', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('subgroups');
     }
 };

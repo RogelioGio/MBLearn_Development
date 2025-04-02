@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sub_groups', function (Blueprint $table) {
-            $table->id();
-            $table->string('group_name');
-            $table->timestamps();
+        Schema::table('user_info', function (Blueprint $table) {
+            Schema::table('userInfo', function (Blueprint $table) {
+                $table->foreignId('group_id')->nullable()->constrained('subgroups', 'id')->nullOnDelete();
+            });
         });
     }
 
@@ -23,6 +23,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sub_groups');
+        Schema::table('user_info', function (Blueprint $table) {
+            //
+        });
     }
 };

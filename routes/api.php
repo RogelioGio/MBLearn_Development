@@ -11,17 +11,17 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\CityController;
 use App\Http\Controllers\Api\CourseController;
 use App\Http\Controllers\Api\DepartmentController;
+use App\Http\Controllers\Api\DivisionController;
 use App\Http\Controllers\Api\EnrollmentController;
-use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\userInfo_controller;
 use App\Http\Controllers\Api\userCredentials_controller;
 use App\Http\Controllers\Api\FilterCategoryController;
-use App\Http\Controllers\Api\Filters;
 use App\Http\Controllers\Api\RoleController;
+use App\Http\Controllers\Api\SectionController;
+use App\Http\Controllers\Api\SubgroupController;
 use App\Http\Controllers\Api\TitleController;
 use App\Http\Controllers\Api\Training_ModeController;
 use App\Http\Controllers\Api\TypeController;
-use App\Http\Controllers\EnrollmentController as ControllersEnrollmentController;
 
 //New Login routing
 Route::post('/login', [AuthController::class, 'login']);
@@ -63,6 +63,9 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::apiResource('/departments', DepartmentController::class);
     Route::apiResource('/branches', BranchController::class);
     Route::apiResource('/titles', TitleController::class);
+    Route::apiResource('/subgroups', SubgroupController::class);
+    Route::apiResource('/divisions', DivisionController::class);
+    Route::apiResource('/sections', SectionController::class);
 
     //User enrolled course list
     Route::get('/select-user-courses/{userInfos}', [userInfo_controller::class, 'getUserCourses']);
@@ -99,6 +102,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::apiResource('/categories', CategoryController::class);
     Route::apiResource('/modes', Training_ModeController::class);
     Route::apiResource('/types', TypeController::class);
+    Route::apiResource('/subgroups', SubgroupController::class);
 
     //Assigning Course Admin to Course
     Route::post('/assign-course-admin/{course}', [CourseController::class, 'assignCourseAdmin']);

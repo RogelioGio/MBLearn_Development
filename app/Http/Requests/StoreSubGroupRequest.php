@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreSubGroupRequest extends FormRequest
+class StoreSubgroupRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,7 +22,7 @@ class StoreSubGroupRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "group_name" => "required|string|unique:subgroups,group_name"
+            'group_name' => 'required|unique:subgroups,group_name'
         ];
     }
 }
