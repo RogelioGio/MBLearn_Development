@@ -4,6 +4,7 @@ import { faChevronDown, faFileArrowUp, faSuitcase, faUser, faUserGroup, faUserPl
 import { faCircleUser as faUserRegular, faCircleCheck as faCircleCheckRegular, faAddressCard as faAddressCardRegular,  faBuilding as faBuildingRegular, faIdBadge as faIdBadgeRegular}  from "@fortawesome/free-regular-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import User from "./UserEntryProp";
+import axiosClient from "../axios-client";
 
 const AddMultipleUserProps = ({onClose}) => {
     const [csvData, setCsvData] = useState([]);
@@ -62,6 +63,13 @@ const AddMultipleUserProps = ({onClose}) => {
             skipEmptyLines: true
         });
     };
+
+    const submitJson = () =>{
+        console.log(csvData);
+        axiosClient.post('/add-many-users', csvData)
+        .then((res) => console.log(res))
+        .catch((err) => console.log(err));
+    }
 
     // const csvUploadFn = (e) => {
     //     const file = e.target.files[0];
@@ -191,7 +199,7 @@ const AddMultipleUserProps = ({onClose}) => {
 
                 <div className="flex flex-row gap-2 mx-4 py-3">
                     <div className="font-header text-center text-primary border-2 border-primary w-1/2 py-2 rounded-md shadow-md  hover: cursor-pointer hover:scale-105 transition-all ease-in-out hover:bg-primaryhover hover:text-white" onClick={onClose}>Cancel</div>
-                    <div className="font-header text-center text-white border-2 border-primary w-1/2 py-2 rounded-md shadow-md bg-primary hover: cursor-pointer hover:scale-105 transition-all ease-in-out hover:bg-primaryhover hover:text-white">Next</div>
+                    <div className="font-header text-center text-white border-2 border-primary w-1/2 py-2 rounded-md shadow-md bg-primary hover: cursor-pointer hover:scale-105 transition-all ease-in-out hover:bg-primaryhover hover:text-white" onClick={submitJson}>Next</div>
                 </div>
         </div>
     );

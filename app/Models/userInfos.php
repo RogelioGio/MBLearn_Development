@@ -88,4 +88,16 @@ class UserInfos extends Model
     public function enrolledCourses(): HasManyThrough{
         return $this->hasManyThrough(Course::class, Enrollment::class, 'user_id', 'id', 'id', 'course_id');
     }
+
+    public function division(): BelongsTo{
+        return $this->belongsTo(Division::class);
+    }
+
+    public function subGroup(): BelongsTo{
+        return $this->belongsTo(SubGroup::class, 'group_id', 'id');
+    }
+
+    public function section():BelongsTo{
+        return $this->belongsTo(Section::class);
+    }
 }

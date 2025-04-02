@@ -26,8 +26,10 @@ function CsvToJson(){
     };
 
     const submitJson = () =>{
-        console.log(jsonData);
-        axiosClient.post('/add-many-users', jsonData).catch((err) => console.log(err));
+        console.log(csvData);
+        axiosClient.post('/add-many-users', csvData)
+        .then((res) => console.log(res))
+        .catch((err) => console.log(err));
     }
 
     return(
