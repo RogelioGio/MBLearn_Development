@@ -4,6 +4,7 @@ import axiosClient from '../axios-client';
 import { Helmet } from 'react-helmet';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBookOpenReader, faGraduationCap, faHeartPulse, faPeopleGroup, faUserLock } from '@fortawesome/free-solid-svg-icons';
+import AnnouncmentCarousel from '../modalsandprops/dashboardComponents/AnnouncementCarousel';
 
 
 
@@ -13,7 +14,7 @@ const DashboardLayout = ({role,name}) => {
         //System admin Dasboard
         case 'System Admin':
             return (
-            <div className="grid  grid-cols-4 grid-rows-[6.25rem_auto] h-full w-full">
+            <div className="grid  grid-cols-4 grid-rows-[6.25rem_1fr_1fr] h-full w-full">
                 <Helmet>{/* Title of the mark-up */}
                     <title>MBLearn | System Admin Dashboard</title>
                 </Helmet>
@@ -29,10 +30,8 @@ const DashboardLayout = ({role,name}) => {
                 </div>
 
                 {/* Announcement */}
-                <div className='col-span-4 row-span-1 mx-5 pb-2 pt-5'>
-                    <div className='bg-white w-full h-full rounded-md shadow-md p-5'>
-
-                    </div>
+                <div className='col-span-4 row-span-1 px-5 py-2 w-full h-full'>
+                    <AnnouncmentCarousel/>
                 </div>
 
                 {/* Changing Content */}
