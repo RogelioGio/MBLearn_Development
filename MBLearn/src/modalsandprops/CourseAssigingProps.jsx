@@ -1,4 +1,4 @@
-const CourseAssigningProps = ({isfiltered, id, handleInput, loading, name, employeeID, department, title, branch, city, selectedCourseAdmin}) => {
+const CourseAssigningProps = ({isfiltered, id, handleInput, loading, name, employeeID, department, title, branch, city, profile_image,selectedCourseAdmin}) => {
     return (
         <tr className='font-text text-sm hover:bg-gray-200'>
             {
@@ -50,7 +50,7 @@ const CourseAssigningProps = ({isfiltered, id, handleInput, loading, name, emplo
 
                                 {/* User Image */}
                                 <div className='bg-blue-500 h-10 w-10 rounded-full'>
-                                    {/* //<img src={profile_url} alt="" className='rounded-full'/> */}
+                                    <img src={profile_image} alt="" className='rounded-full'/>
                                 </div>
                                 {/* Name and employee-id*/}
                                 <div>

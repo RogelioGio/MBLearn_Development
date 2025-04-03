@@ -20,7 +20,7 @@
 
     /* Profile sub-menu */
     .profile-menu-item {
-        @apply flex items-center place-content-between gap-4 font-text text-unactive min-w-max cursor-pointer hover:text-white transition-all ease-in-out;
+        @apply flex items-center place-content-between gap-4 font-text text-text_unhover min-w-max cursor-pointer hover:text-white transition-all ease-in-out;
     }
 }
 
@@ -42,7 +42,7 @@ input[type="password"]::-webkit-textfield-decoration-container {
   .scrollbar-no-arrows::-webkit-scrollbar-button:horizontal:increment {
     display: none;
   }
-  
+
   @layer base {
   :root {
         --background: 0 0% 100%;
@@ -98,7 +98,7 @@ input[type="password"]::-webkit-textfield-decoration-container {
         --chart-5: 340 75% 55%;
     }
 }
-  
+
   @layer base {
   * {
     @apply border-border;

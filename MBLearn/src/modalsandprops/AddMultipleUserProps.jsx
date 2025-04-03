@@ -5,6 +5,9 @@ import { faCircleUser as faUserRegular, faCircleCheck as faCircleCheckRegular, f
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import User from "./UserEntryProp";
 import axiosClient from "../axios-client";
+import { set } from "date-fns";
+import BulkAddUserModal from "./BulkAddUserModal";
+
 
 const AddMultipleUserProps = ({onClose}) => {
     const [csvData, setCsvData] = useState([]);
@@ -12,6 +15,7 @@ const AddMultipleUserProps = ({onClose}) => {
     const [jsonData, setJsonData] = useState([]);
     const [dragOver, setDragover] = useState(false);
     const [uploadedFile, setUploadedFile] = useState(false);
+    const [open, setOpen] = useState(false);
 
     const handleDragOver = (e) => {
         e.preventDefault();
@@ -67,7 +71,11 @@ const AddMultipleUserProps = ({onClose}) => {
     const submitJson = () =>{
         console.log(csvData);
         axiosClient.post('/add-many-users', csvData)
-        .then((res) => console.log(res))
+        .then((res) => {
+            console.log(res)
+            setOpen(true);
+            onClose()
+        })
         .catch((err) => console.log(err));
     }
 
@@ -97,6 +105,7 @@ const AddMultipleUserProps = ({onClose}) => {
 
 
     return (
+        <>
         <div>
             {/* <input type="file"
                     onChange={csvUploadFn}
@@ -146,28 +155,28 @@ const AddMultipleUserProps = ({onClose}) => {
                                             return (
                                                 <>
                                                 <tr className="font-text text-sm hover:bg-gray-200">
-                                                <td>
+                                                <td className='py-3 px-4'>
                                                     <p className="font-text">{fullName}</p>
                                                     <p className='text-unactive text-xs'>ID: {data.employeeID}</p>
                                                 </td>
                                                 <td className='py-3 px-4'>
                                                 <div className='flex flex-col'>
                                                     {/* Department */}
-                                                    <p className='text-unactive'>{data.department_Id}</p>
+                                                    <p className='text-unactive'>{data.department}</p>
                                                     {/* Title */}
-                                                    <p className='text-unactive text-xs'>{data.title_id}</p>
+                                                    <p className='text-unactive text-xs'>{data.title}</p>
                                                 </div>
                                                 </td>
                                                 <td className='py-3 px-4'>
                                                     <div className='flex flex-col'>
                                                     {/* Branch Location */}
-                                                    <p className='text-unactive'>{data.branch_id}</p>
+                                                    <p className='text-unactive'>{data.branch}</p>
                                                     {/* City Location */}
-                                                    <p className='text-unactive text-xs'>{data.city_id}</p>
+                                                    <p className='text-unactive text-xs'>{data.city}</p>
                                                     </div>
                                                 </td>
                                                 <td className='py-3 px-4'>
-                                                    <p className='text-unactive'>{data.role_id}</p>
+                                                    <p className='text-unactive'>{data.role}</p>
                                                 </td>
                                                 </tr>
                                                 </>
@@ -197,11 +206,33 @@ const AddMultipleUserProps = ({onClose}) => {
             </div> */}
 
 
-                <div className="flex flex-row gap-2 mx-4 py-3">
-                    <div className="font-header text-center text-primary border-2 border-primary w-1/2 py-2 rounded-md shadow-md  hover: cursor-pointer hover:scale-105 transition-all ease-in-out hover:bg-primaryhover hover:text-white" onClick={onClose}>Cancel</div>
-                    <div className="font-header text-center text-white border-2 border-primary w-1/2 py-2 rounded-md shadow-md bg-primary hover: cursor-pointer hover:scale-105 transition-all ease-in-out hover:bg-primaryhover hover:text-white" onClick={submitJson}>Next</div>
+            <div className="flex flex-row gap-2 mx-4 py-3">
+                {/* Cancel Button */}
+                <div
+                    className={`font-header text-center text-primary border-2 border-primary py-2 rounded-md shadow-md
+                                hover:cursor-pointer hover:scale-105 transition-all ease-in-out
+                                hover:bg-primaryhover hover:text-white
+                                ${csvData?.length > 0 ? "w-1/2" : "w-full"}`}
+                    onClick={onClose}
+                >
+                    Cancel
                 </div>
+
+                {/* Add Users Button (only appears when csvData has items) */}
+                {csvData?.length > 0 && (
+                    <div
+                        className="font-header text-center text-white border-2 border-primary w-1/2 py-2 rounded-md shadow-md
+                                bg-primary hover:cursor-pointer hover:scale-105 transition-all ease-in-out
+                                hover:bg-primaryhover hover:text-white"
+                        onClick={submitJson}
+                    >
+                        Add Users
+                    </div>
+                )}
+            </div>
         </div>
+        <BulkAddUserModal open={open} close={()=>setOpen(false)}/>
+        </>
     );
 }
 export default AddMultipleUserProps;

@@ -39,6 +39,7 @@ export default {
   			secondaryprimary: 'var(--Secondary-Primary-Color)',
   			secodary: 'var(--Darker-Primary-Color)',
   			tertiary: 'var(--Darker-Unactive-Color)',
+            text_unhover: 'hsl(210, 11%, 71%)',
   			background: 'var(--Background-Color)',
   			secondarybackground: 'var(--Secondary-Background-Color)',
   			unactive: 'var(--Unactive-Color)',

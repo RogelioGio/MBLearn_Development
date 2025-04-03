@@ -57,38 +57,41 @@ export default function Course() {
 
     return(
         <>
-        <div className='grid  grid-cols-4 grid-rows-[6.25rem_min-content_1fr_min-content] h-full w-full overflow-hidden'>
+        <div className='grid  grid-cols-4 grid-rows-[auto_min-content_1fr] h-full w-full overflow-hidden'>
             <Helmet>
                 {/* Title of the mark-up */}
                 <title>MBLearn | {isLoading ? "Loading..." : course?.name || "No Course Found"}</title>
             </Helmet>
 
             {/* Header */}
-            <div className="flex flex-row col-span-3 row-span-1 item-center ml-5">
-                <div className="text-primary flex flex-row justify-center items-center border-b border-divider">
+            <div className="flex flex-row col-span-3 row-span-1 item-center w-full justify-between border-b border-divider">
+                <div className="text-primary flex flex-row justify-center items-center">
                     <div className="flex flex-row justify-center items-center w-10 aspect-square border-2 border-primary rounded-full hover:scale-105 hover:bg-primary hover:text-white hover:cursor-pointer transition-all ease-in-out">
                         <FontAwesomeIcon icon={faArrowLeft} className="text-2xl" onClick={() => navigate(-1)}/>
                     </div>
                 </div>
-                <div className=' pl-5 flex flex-col justify-center border-b border-divider w-full'>
-                    <div className="w-fit flex flex-col gap-1">
-                        {
-                            !isLoading ? (
-                                <>
-                                    <h1 className='text-primary text-4xl font-header'> {course?.name}</h1>
-                                    <div className="flex flex-row justify-between">
-                                        <p className='font-text text-sm text-unactive'>{course?.categories?.[0]?.category_name} - {course?.types?.[0]?.type_name}</p>
-                                        <p className='font-text text-sm text-unactive'>{course?.training_type} - {course?.training_modes?.[0]?.mode_name}</p>
-                                    </div>
-                                </>
-                            ) : (
-                                <h1 className='text-primary text-4xl font-header'>Loading Course Information....</h1>
-                            )
-                        }
-
-                    </div>
+                <div className='pl-5 grid grid-rows-[1fr_auto] grid-cols-[1fr_1fr] w-full py-3'>
+                    {
+                        !isLoading ? (
+                            <>
+                                <div className="flex flex-row justify-between items-end col-span-2">
+                                    <h1 className='text-primary text-4xl font-header row-start-1 col-span-3 '> {course?.name}</h1>
+                                </div>
+                                <div className="flex flex-col col-start-1 py-2">
+                                    <p className="font-text text-xs text-unactive ">Course Category & Type:</p>
+                                    <p className="text-unactive font-header text-sm">{course?.categories?.[0]?.category_name} - {course?.types?.[0]?.type_name}</p>
+                                </div>
+                                <div className="flex flex-col col-start-2 py-2">
+                                    <p className="font-text text-xs text-unactive ">Course Category & Type:</p>
+                                    <p className="text-unactive font-header text-sm">{course?.categories?.[0]?.category_name} - {course?.types?.[0]?.type_name}</p>
+                                </div>
+                            </>
+                        ) : (
+                            <h1 className='text-primary text-4xl font-header col-span-2 row-span-2'>Loading Course Information....</h1>
+                        )
+                    }
                 </div>
-                <div className="flex flex-row justify-center items-center border-b border-divider pr-5 gap-2">
+                <div className="flex flex-row justify-center items-center gap-2 pr-5">
                     <div className="hover:scale-105 ease-in-out transition-all hover:cursor-pointer" onClick={()=>setOpen(true)}>
                         <FontAwesomeIcon icon={faPenToSquare} className="border-2 border-primary rounded-md aspect-square p-3 text-lg text-primary shadow-md hover:bg-primary hover:text-white"/>
                     </div>
@@ -125,13 +128,17 @@ export default function Course() {
                     Course Status Sample
                 </span>
                 </div>
-
+                <p className="text-primary font-text text-xs">Course ID: </p>
                 <p className="text-primary font-text text-xs">Date-Added: </p>
                 <p className="text-primary font-text text-xs">Course Duration: </p>
             </div>
 
             {/* Course content */}
-            {tabComponents[tab] || null}
+            <div className="w-full h-full col-span-4 row-span-1 p-3 pb-5">
+                {tabComponents[tab] || null}
+            </div>
+
+
 
 
         </div>
