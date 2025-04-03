@@ -21,7 +21,7 @@ import {
     } from "../components/ui/drawer"
 
 const AssignCourseAdmin = ({courseID ,open, close}) => {
-    const {departments, cities, branches} = useCourseContext()
+    const {departments, cities, branches, } = useCourseContext()
     const {selectedCourse, selectCourse, isFetching} = useCourse();
     const [isLoading, setLoading] = useState(true);
     const [course, setCourse] = useState();
@@ -59,22 +59,23 @@ const AssignCourseAdmin = ({courseID ,open, close}) => {
 
     useEffect(()=>{
         setCourse(selectedCourse)
+        setAssignedCourseAdmins(selectedCourse?.assigned_course_admins)
     },[selectedCourse])
 
     //Add Course Admin
     const [isOpen, setIsOpen] = useState(false)
 
-    const fetchAssignedCourseAdmins = () => {
-        setLoading(true)
-        axiosClient.get(`assigned-course-admins/${courseID}`)
-        .then(({data}) => {
-            setAssignedCourseAdmins(data.data)
-            setLoading(false);
-            console.log(data.data)
-        }).catch((err) => {
-            console.log(err)
-        })
-    }
+    // const fetchAssignedCourseAdmins = () => {
+    //     setLoading(true)
+    //     axiosClient.get(`assigned-course-admins/${courseID}`)
+    //     .then(({data}) => {
+    //         setAssignedCourseAdmins(data.data)
+    //         setLoading(false);
+    //         console.log(data.data)
+    //     }).catch((err) => {
+    //         console.log(err)
+    //     })
+    // }
 
     const handleBranchesOptions = (e) =>{
         const city = e.target.value;
@@ -270,19 +271,19 @@ const AssignCourseAdmin = ({courseID ,open, close}) => {
                                                 <tbody className='bg-white divide-y divide-divider'>
                                                     {
                                                         isLoading ? (
-                                                            <tr>
-                                                                <td>
-                                                                    <p>Loading...</p>
-                                                                </td>
+                                                            <tr className="font-text text-sm hover:bg-gray-200">
+                                                            <td colSpan={4} className="text-center py-3 px-4 font-text text-primary">
+                                                                Loading...
+                                                            </td>
                                                             </tr>
                                                         ) : (
-                                                                AssignedCourseAdmins.map((courseadmins) => (
+                                                                AssignedCourseAdmins?.map((courseadmins) => (
                                                                     <tr className='font-text text-sm hover:bg-gray-200'>
                                                             <td className='text-sm  py-3 px-4'>
                                                                 <div className='flex items-center gap-2'>
                                                                     {/* User Image */}
                                                                     <div className='bg-blue-500 h-10 w-10 rounded-full'>
-                                                                        {/* //<img src={profile_url} alt="" className='rounded-full'/> */}
+                                                                        <img src={courseadmins?.profile_image} alt="" className='rounded-full'/>
                                                                     </div>
                                                                     {/* Name and employee-id*/}
                                                                     <div>

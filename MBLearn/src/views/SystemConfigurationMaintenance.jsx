@@ -6,6 +6,7 @@ import { act, useEffect, useRef, useState } from "react"
 import RoleManagementSetting from "../modalsandprops/SystemSettingComponents.jsx/RoleManagementSetting"
 import FormInputSetting from "../modalsandprops/SystemSettingComponents.jsx/FormInputSetting"
 import ReactivationAccountSetting from "../modalsandprops/SystemSettingComponents.jsx/ReactivationAccountSetting"
+import { ScrollArea } from "@mantine/core"
 
 export default function SystemConfiguration() {
     const [tab, setTab] = useState(1)
@@ -38,7 +39,8 @@ export default function SystemConfiguration() {
                 </div>
             </div>
             {/* Setting Content */}
-            <div className="col-span-3 row-span-3 overflow-y-auto max-h-[calc(100vh-6.25rem)]">
+            <ScrollArea className="col-span-3 row-span-3 overflow-y-auto max-h-[calc(100vh-6.25rem)]">
+
                 {
                     tab === 1 ? (
                         <RoleManagementSetting/>
@@ -48,7 +50,8 @@ export default function SystemConfiguration() {
                         <ReactivationAccountSetting/>
                     ) : (null)
                 }
-            </div>
+            </ScrollArea>
+
 
         </div>
     )

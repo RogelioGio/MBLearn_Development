@@ -59,7 +59,7 @@ export default function AssignedCourseCatalog() {
 
     const fetchCourses = () => {
         setLoading(true)
-        axiosClient.get('/courses',{
+        axiosClient.get(`/select-user-assigned-courses/${user.id}`,{
             params: {
                 page: pageState.currentPage,
                 per_page: pageState.perPage,
@@ -197,7 +197,7 @@ export default function AssignedCourseCatalog() {
                             <AssignedCourseCatalogCard key={index}
                                 id={course.id}
                                 name={course.name}
-                                courseType={course.types[0]?.type_name}
+                                courseType={course.types?.type_name}
                                 courseCategory={course.categories[0]?.category_name}
                                 trainingMode={course.training_modes[0]?.modes_name}
                                 trainingType={course.training_type}/>

@@ -65,35 +65,10 @@ const CourseListCard = ({courseList, classname, onclick, action}) => {
                                         <p className='text-sm font-header text-unactive col-start-1 row-start-1'> Course Type: <span className="font-text">{course.types[0]?.type_name || "No Type"}</span></p>
                                         <p className='text-sm font-header text-unactive col-start-1 row-start-2'> Course Category: <span className="font-text">{course.categories[0]?.category_name || "No Category" }</span></p>
                                         <p className='text-sm font-header text-unactive col-start-2 row-start-1'> Training Type: <span className="font-text">{course.training_type || "No Training Type" }</span></p>
-                                        <p className='text-sm font-header text-unactive col-start-2 row-start-2'> Training Mode: <span className="font-text">{course.training_modes[0]?.mode_name || "No Training Mode"}</span></p>
-
-                                            <p className="text-sm font-header text-unactive">Date Added:</p>
-                                            <p className='font-text text-sm text-unactive'>{dayjs(course.create_at).format("MMMM DD, YYYY")}</p>
+                                        <p className="text-sm font-header text-unactive col-start-2 row-start-2">Date Added: <span className="font-text">{dayjs(course.create_at).format("MMMM DD, YYYY")}</span></p>
                                     </div>
                                 </div>
-                                {/* Course Action */}
-
-
-                                {/* <div className='flex flex-row gap-2 h-fit self-start'>
-                                    <div className='relative border-2 border-primary h-10 w-10 rounded-full flex items-center justify-center text-primary text-sm hover:text-white hover:bg-primary hover:cursor-pointer transition-all ease-in-out group' onClick={(e) => action(e, "assignCourseAdmin",course.id)}>
-                                        <FontAwesomeIcon icon={faChalkboardTeacher}/>
-                                        <p className='absolute w-auto bottom-10 z-10 bg-tertiary text-white p-2 rounded-md text-xs scale-0 font-text group-hover:scale-100'>Assign Course Admin</p>
-                                    </div>
-                                    <div className='relative border-2 border-primary h-10 w-10 rounded-full flex items-center justify-center text-primary text-sm hover:text-white hover:bg-primary hover:cursor-pointer transition-all ease-in-out group' onClick={(e) => action(e, "openEditCourse",course.id)}>
-                                        <FontAwesomeIcon icon={faPenToSquare}/>
-                                        <p className='absolute w-auto bottom-10 z-10 bg-tertiary text-white p-2 rounded-md text-xs scale-0 font-text group-hover:scale-100'>Edit</p>
-                                    </div>
-                                    <div className='relative border-2 border-primary h-10 w-10 rounded-full flex items-center justify-center text-primary text-sm hover:text-white hover:bg-primary hover:cursor-pointer transition-all ease-in-out group' onClick={(e) => action(e, "openDeleteCourse")}>
-                                        <FontAwesomeIcon icon={faTrash}/>
-                                        <p className='absolute w-auto bottom-10 z-10 bg-tertiary text-white p-2 rounded-md text-xs scale-0 font-text group-hover:scale-100'>Delete</p>
-                                    </div>
-                                </div> */}
                             </div>
-                            {/* Course Details */}
-                            {/* <div className='text-sm text-tertiary grid grid-cols-2 space-y-0.5'>
-                                <span className='font-header flex flex-row gap-2'>Date-Added: <p className='font-text'>{dayjs(course.create_at).format("MMMM DD, YYYY")}</p></span>
-                                <span className='font-header flex flex-row gap-2'>Training Type: <p className='font-text'>{course.trainingmode}</p></span>
-                            </div> */}
                         </div>
                     </div>
                 ))

@@ -14,6 +14,7 @@ import React from "react"
 import EnrolledSuccessfullyModal from "../modalsandprops/EnrollmentSuccessfulyModal"
 import EnrollmentFailedModal from "../modalsandprops/EnrollmentFailedModal"
 import NoEmployeeSelectedModal from "../modalsandprops/NoEmployeeSelectedModal"
+import { set } from "date-fns"
 
 export default function BulkEnrollment() {
 
@@ -28,7 +29,8 @@ export default function BulkEnrollment() {
     const [enrolled, setEnrolled] = useState(false) //Modal for successfully Enrolled
     const [error, setError] = useState([]) //Error state
     const [enrollmentFailed, setEnrollmentFailed] = useState(false) //Enrollment failed state
-    const [empty, setEmpty] = useState(true) //No selected user state
+    const [empty, setEmpty] = useState(false) //No selected user state
+    const [enrolling, setEnrolling] = useState(false) //Enrolling state
 
     //Pagenation States
     const [pageState, setPagination] = useState({
@@ -142,8 +144,22 @@ export default function BulkEnrollment() {
 
     //handle ernollment
     const enrollLearners = () => {
+        setEnrolling(true)
         console.log(selected)
-        axiosClient.post('enrollments/bulk', selected).catch((err)=>console.log(err));
+        if(selected.length === 0){
+            setEmpty(true)
+            return
+        }
+
+        axiosClient.post('enrollments/bulk', selected)
+        .then(({data}) => {
+            setEnrolling(false)
+            console.log(data);
+            setEnrolled(true);
+            setSelected([]);
+
+        })
+        .catch((err)=>console.log(err));
     }
 
     useEffect(()=>{
@@ -214,7 +230,7 @@ export default function BulkEnrollment() {
             <div className="flex flex-col justify-center pl-5 mr-5 border-divider border-b col-start-4 row-start-1 row-span-1">
                 <button className="w-full p-4 bg-primary font-header text-white rounded-full hover:scale-105 transition-all ease-in-out" onClick={enrollLearners}>
                     <FontAwesomeIcon icon={faUserPlus} className='mr-2'/>
-                    Enroll Employees
+                    {enrolling ? 'Enrolling...' : 'Enroll Trainee'}
                 </button>
             </div>
 

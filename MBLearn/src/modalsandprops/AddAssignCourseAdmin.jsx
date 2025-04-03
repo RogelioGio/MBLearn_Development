@@ -56,13 +56,20 @@ const AddAssignCourseAdmin = ({courseID ,open, close}) => {
             city: Yup.string().required('Required'),
         }),
         onSubmit: (values) => {
+            setLoading(true)
             console.log(values)
             axiosClient.get(`/index-user?department_id[eq]=${values.department}&branch_id[eq]=${values.branch}`)
             .then((response) => {
                 console.log(response.data.data)
                 setFilteredEmployee(response.data.data)
                 setLoading(false)
+                setIsFiltered(true)
             })
+
+
+            // setTimeout(() => {
+            //     formik.handleSubmit();
+            // }, 0);
         }
     })
     //Must be filter first
@@ -280,6 +287,7 @@ const AddAssignCourseAdmin = ({courseID ,open, close}) => {
                                                                     title={employee.title?.title_name || "Not Available"}
                                                                     branch={employee.branch?.branch_name || "Not Available"}
                                                                     city={employee.city?.city_name || "Not Available"}
+                                                                    profile_image={employee?.profile_image || "Not Available"}
                                                                     selectedCourseAdmin={selectedCourseAdmin.includes(employee.id)}
                                                                 />
                                                             ))

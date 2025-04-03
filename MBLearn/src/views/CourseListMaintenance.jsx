@@ -14,6 +14,7 @@ import AssignCourseAdmin from '../modalsandprops/AssignCourseAdminModal';
 import axiosClient from '../axios-client';
 import CourseCardLoading from '../modalsandprops/CourseCardLoading';
 import CourseLoading from "../assets/Course_Loading.svg"
+import axios from 'axios';
 
 export default function CourseListMaintenance() {
 const {user} = useStateContext()
@@ -46,8 +47,8 @@ const [modalState, setModalState] = useState({
     });
 
 const [sort, setSort] = useState({
-    nameOrder : "none",
-    dateOrder : "none",
+    name : "none",
+    created_at : "none",
 });
 
 //Modal State
@@ -66,8 +67,15 @@ const toggleSort = (key,value) => {
     })));
 }
 const setOrder = (key) => {
+    toggleModal('loading', true)
     const order = sort[key] === "none" ? "asc" : sort[key] === "asc" ? "desc" : "none";
     toggleSort(key, order);
+    axiosClient.get(`/courses?${key}[${order}]=true`)
+    .then(({ data }) => {
+        setCourses(data.data);
+        console.log(data);
+        toggleModal('loading', false)
+    })
 }
 
 // Action Button
@@ -188,14 +196,14 @@ const [pageState, setPagination] = useState({
             {/* Small Sorter */}
             <div className='row-start-2 col-start-1  col-span-2 inline-flex items-center px-5 py-3 h-fit gap-3'>
                 {/* Sort by Name */}
-                <div className={`flex flex-row items-center border-2 border-primary py-2 px-4 font-header bg-secondarybackground rounded-md text-primary gap-2 w-fit hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md ${sort.nameOrder === "asc" ? '!bg-primary !text-white' : sort.nameOrder === "desc" ? '!bg-primary !text-white': 'bg-secondarybackground' }`} onClick={() => setOrder("nameOrder")}>
+                <div className={`flex flex-row items-center border-2 border-primary py-2 px-4 font-header bg-secondarybackground rounded-md text-primary gap-2 w-fit hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md ${sort.nameOrder === "asc" ? '!bg-primary !text-white' : sort.nameOrder === "desc" ? '!bg-primary !text-white': 'bg-secondarybackground' }`} onClick={() => setOrder("name")}>
                     <p>Course Name</p>
-                    <FontAwesomeIcon icon={sort.nameOrder === "asc" ? faArrowUpAZ : sort.nameOrder === "desc" ? faArrowDownZA : faSort}/>
+                    <FontAwesomeIcon icon={sort.name === "asc" ? faArrowUpAZ : sort.name === "desc" ? faArrowDownZA : faSort}/>
                 </div>
                 {/* Sort By Date-Added */}
-                <div className={`flex flex-row items-center border-2 border-primary py-2 px-4 font-header bg-secondarybackground rounded-md text-primary gap-2 w-fit hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md ${sort.dateOrder === "asc" ? '!bg-primary !text-white' : sort.dateOrder === "desc" ? '!bg-primary !text-white': 'bg-secondarybackground' }`} onClick={() => setOrder("dateOrder")}>
+                <div className={`flex flex-row items-center border-2 border-primary py-2 px-4 font-header bg-secondarybackground rounded-md text-primary gap-2 w-fit hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md ${sort.dateOrder === "asc" ? '!bg-primary !text-white' : sort.dateOrder === "desc" ? '!bg-primary !text-white': 'bg-secondarybackground' }`} onClick={() => setOrder("created_at")}>
                     <p>Date-Added</p>
-                    <FontAwesomeIcon icon={sort.dateOrder === "asc" ? faArrowUpWideShort : sort.dateOrder === "desc" ? faArrowDownShortWide : faSort}/>
+                    <FontAwesomeIcon icon={sort.created_at === "asc" ? faArrowUpWideShort : sort.created_at === "desc" ? faArrowDownShortWide : faSort}/>
                 </div>
             </div>
 
