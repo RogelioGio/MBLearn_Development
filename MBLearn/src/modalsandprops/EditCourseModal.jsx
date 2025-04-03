@@ -74,9 +74,9 @@ const EditCourseModal = ({open, close, id}) => {
                                     </div>
                                 </div>
                                 {/* Update Form */}
-                                <form onSubmit={formik.handleSubmit} className='grid grid-cols-2 grid-rows-[auto] mx-5 py-5 gap-y-4'>
+                                <form onSubmit={formik.handleSubmit} className='grid grid-cols-3 grid-rows-[auto] mx-5 py-5 gap-y-4'>
                                 {/* Course Name */}
-                                <div className="inline-flex flex-col gap-2 row-start-1 col-span-2 pr-2">
+                                <div className="inline-flex flex-col gap-2 row-start-1 col-span-3 pr-2">
                                     <label htmlFor="courseName" className="font-text text-xs flex flex-row justify-between">
                                         <p className="">Course Name</p>
                                     </label>
@@ -134,7 +134,7 @@ const EditCourseModal = ({open, close, id}) => {
                                     </div>
 
                                 </div>
-                                <div className="inline-flex flex-col gap-2 row-start-3 col-span-1 pr-2">
+                                <div className="inline-flex flex-col gap-2 row-start-2 col-span-1 pr-2">
                                     <label htmlFor="training_type" className="font-text text-xs flex flex-row justify-between">
                                         <p>Training Type:</p>
                                     </label>
@@ -155,32 +155,9 @@ const EditCourseModal = ({open, close, id}) => {
                                     </div>
 
                                 </div>
-                                <div className="inline-flex flex-col gap-2 row-start-3 col-span-1 pr-2">
-                                    <label htmlFor="training_mode" className="font-text text-xs flex flex-row justify-between">
-                                        <p>Training Mode:</p>
-                                    </label>
-                                    <div className="grid grid-cols-1">
-                                        <select id="training_mode" name="training_mode" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                                            value={formik.values.training_mode}
-                                            onChange={formik.handleChange}
-                                            onBlur={formik.handleBlur}
-                                            disabled={loading}>
-                                            <option value="">Select Training Type</option>
-                                            {
-                                                trainingmodes.map((category) => (
-                                                    <option key={category.id} value={category.id}>{category.mode_name}</option>
-                                                ))
-                                            }
 
-                                        </select>
-                                        <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                                        <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                                        </svg>
-                                    </div>
-
-                                </div>
                                 {/* Short Description */}
-                                <div className="inline-flex flex-col gap-2 row-start-4 col-span-2 pr-2">
+                                <div className="inline-flex flex-col gap-2 row-start-3 col-span-3 pr-2">
                                     <label htmlFor="description" className="font-text text-xs flex flex-row justify-between ">Short Description:</label>
                                     <textarea name="shortDescription" id="shortDescription" className='h-32 font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary resize-none'
                                     onChange={formik.handleChange}
@@ -189,7 +166,7 @@ const EditCourseModal = ({open, close, id}) => {
                                     disabled={loading}></textarea>
                                 </div>
                                 {/* Submit & cancel*/}
-                                <div className='row-start-5 col-span-3 flex justify-center gap-4 py-1'>
+                                <div className='row-start-4 col-span-3 flex justify-center gap-4 py-1'>
                                     {/* Cancel */}
                                     <button className='bg-white b p-4 outline outline-2 outline-primary outline-offset-[-2px] rounded-md font-header uppercase text-primary text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 hover:text-white hover:outline-primaryhover transition-all ease-in-out w-full' onClick={close}>
                                         <p>Cancel</p>

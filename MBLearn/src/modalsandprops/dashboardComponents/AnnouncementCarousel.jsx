@@ -32,13 +32,13 @@ const AnnouncmentCarousel = () => {
                                 <h1 className="font-header text-primary text-base">Announcement Panel</h1>
                                 <p className="font-text text-unactive text-xs">Get the latest update about the system and whole Metrobank Group</p>
                             </div>
-                            {
-                                <div className='aspect-square px-3 flex flex-row justify-center items-center text-primary border border-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 hover:bg-primary hover:text-white ease-in-out transition-all '>
-                                    <FontAwesomeIcon icon={faPenToSquare} className='text-sm'/>
-                                </div>
-                            }
                         </div>
                         <div className="flex flex-row gap-2 items-center justify-center">
+                            {
+                                <div className='aspect-square flex flex-row justify-center items-center text-primary border-2 border-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 hover:bg-primary hover:text-white ease-in-out transition-all '>
+                                    <FontAwesomeIcon icon={faPenToSquare} className='text-sm p-2'/>
+                                </div>
+                            }
                             <CarouselPrevious/>
                             <CarouselNext/>
                         </div>
@@ -51,7 +51,7 @@ const AnnouncmentCarousel = () => {
                                         <div className="border-2 border-primary h-full p-2 rounded-md shadow-sm bg-white">
                                             <div className="flex flex-col items-center justify-center h-full">
                                                 <p className="text-primary font-header text-2xl">
-                                                    {index + 1}
+                                                    Panel {index + 1}
                                                 </p>
                                             </div>
                                         </div>

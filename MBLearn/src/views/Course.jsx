@@ -18,6 +18,7 @@ import EditCourseModal from "../modalsandprops/EditCourseModal"
 import { useCourse } from "../contexts/selectedcourseContext"
 import { set } from "date-fns"
 import AssignCourseAdmin from "../modalsandprops/AssignCourseAdminModal"
+import dayjs from "dayjs"
 
 
 
@@ -57,7 +58,7 @@ export default function Course() {
 
     return(
         <>
-        <div className='grid  grid-cols-4 grid-rows-[auto_min-content_1fr] h-full w-full overflow-hidden'>
+        <div className='grid  grid-cols-4 grid-rows-[7rem_4rem_1fr] h-full w-full overflow-hidden h-'>
             <Helmet>
                 {/* Title of the mark-up */}
                 <title>MBLearn | {isLoading ? "Loading..." : course?.name || "No Course Found"}</title>
@@ -65,40 +66,55 @@ export default function Course() {
 
             {/* Header */}
             <div className="flex flex-row col-span-3 row-span-1 item-center w-full justify-between border-b border-divider">
-                <div className="text-primary flex flex-row justify-center items-center">
+                <div className="text-primary flex flex-row justify-center items-center p-3">
                     <div className="flex flex-row justify-center items-center w-10 aspect-square border-2 border-primary rounded-full hover:scale-105 hover:bg-primary hover:text-white hover:cursor-pointer transition-all ease-in-out">
                         <FontAwesomeIcon icon={faArrowLeft} className="text-2xl" onClick={() => navigate(-1)}/>
                     </div>
                 </div>
-                <div className='pl-5 grid grid-rows-[1fr_auto] grid-cols-[1fr_1fr] w-full py-3'>
+                <div className='pl-2 grid grid-rows-[auto_auto] grid-cols-[1fr_1fr_1fr] w-full py-3'>
                     {
                         !isLoading ? (
                             <>
-                                <div className="flex flex-row justify-between items-end col-span-2">
+                                <div className="flex flex-row justify-between items-end col-span-3">
                                     <h1 className='text-primary text-4xl font-header row-start-1 col-span-3 '> {course?.name}</h1>
                                 </div>
-                                <div className="flex flex-col col-start-1 py-2">
-                                    <p className="font-text text-xs text-unactive ">Course Category & Type:</p>
-                                    <p className="text-unactive font-header text-sm">{course?.categories?.[0]?.category_name} - {course?.types?.[0]?.type_name}</p>
+                                <div className="flex flex-col col-start-1 py-1">
+                                    <p className="font-header text-sm text-unactive ">Course ID: <span className="font-text">Sample Course ID</span></p>
                                 </div>
-                                <div className="flex flex-col col-start-2 py-2">
-                                    <p className="font-text text-xs text-unactive ">Course Category & Type:</p>
-                                    <p className="text-unactive font-header text-sm">{course?.categories?.[0]?.category_name} - {course?.types?.[0]?.type_name}</p>
+                                <div className="flex flex-col col-start-2 py-1">
+                                    <p className="font-header text-sm text-unactive ">Date Added: <span className="font-text">{dayjs(course?.create_at).format("MMMM DD, YYYY")}</span></p>
                                 </div>
+                                {/* <div className="flex flex-col col-start-1 py-1">
+                                    <p className="font-text text-xs text-unactive ">Course Category:</p>
+                                    <p className="text-unactive font-header text-sm">{course?.categories?.[0]?.category_name}</p>
+                                </div>
+                                <div className="flex flex-col col-start-2 py-1">
+                                    <p className="font-text text-xs text-unactive ">Course Type:</p>
+                                    <p className="text-unactive font-header text-sm">{course?.types?.[0]?.type_name}</p>
+                                </div>
+                                <div className="flex flex-col col-start-3 py-1">
+                                    <p className="font-text text-xs text-unactive ">Training Type:</p>
+                                    <p className="text-unactive font-header text-sm">{course?.training_type}</p>
+                                </div> */}
                             </>
                         ) : (
-                            <h1 className='text-primary text-4xl font-header col-span-2 row-span-2'>Loading Course Information....</h1>
+                            <div className="col-span-2 row-span-2 flex flex-col justify-center">
+                                <h1 className='text-primary text-4xl font-header '>Loading Course Information....</h1>
+                            </div>
                         )
                     }
                 </div>
-                <div className="flex flex-row justify-center items-center gap-2 pr-5">
-                    <div className="hover:scale-105 ease-in-out transition-all hover:cursor-pointer" onClick={()=>setOpen(true)}>
-                        <FontAwesomeIcon icon={faPenToSquare} className="border-2 border-primary rounded-md aspect-square p-3 text-lg text-primary shadow-md hover:bg-primary hover:text-white"/>
-                    </div>
-                    <div className="hover:scale-105 ease-in-out transition-all hover:cursor-pointer" onClick={()=>setAssign(true)}>
-                        <FontAwesomeIcon icon={faBookOpenReader} className="border-2 border-primary rounded-md aspect-square p-3 text-lg text-primary shadow-md hover:bg-primary hover:text-white"/>
-                    </div>
-                </div>
+                {
+                    !isLoading ? (<div className="flex flex-row justify-center items-center gap-2 pr-5">
+                        <div className="hover:scale-105 ease-in-out transition-all hover:cursor-pointer" onClick={()=>setOpen(true)}>
+                            <FontAwesomeIcon icon={faPenToSquare} className="border-2 border-primary rounded-md aspect-square p-3 text-lg text-primary shadow-md hover:bg-primary hover:text-white"/>
+                        </div>
+                        <div className="hover:scale-105 ease-in-out transition-all hover:cursor-pointer" onClick={()=>setAssign(true)}>
+                            <FontAwesomeIcon icon={faBookOpenReader} className="border-2 border-primary rounded-md aspect-square p-3 text-lg text-primary shadow-md hover:bg-primary hover:text-white"/>
+                        </div>
+                    </div>) : (null)
+                }
+
             </div>
 
             {/* Tab Buttons */}
@@ -121,22 +137,37 @@ export default function Course() {
             </div>
 
             {/* Course status */}
-            <div className="row-start-1 row-span-1 col-start-4 col-span-1 pb-2 pl-5 mr-5 mt-5 border-b border-l border-divider">
-                <div className="flex flex-row gap-2">
-                    <p className="text-primary font-header"> Course Status:</p>
-                <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-blue-700/10 ring-inset">
-                    Course Status Sample
-                </span>
-                </div>
-                <p className="text-primary font-text text-xs">Course ID: </p>
-                <p className="text-primary font-text text-xs">Date-Added: </p>
-                <p className="text-primary font-text text-xs">Course Duration: </p>
+            <div className={`row-start-1 row-span-1 col-start-4 col-span-1 pb-3 pl-5 mr-5 mt-3 border-b ${isLoading ? "": "border-l"} border-divider grid grid-cols-[auto_1fr] grid-rows-[auto] gap-x-2 gap-y-1`}>
+
+                {
+                    !isLoading ? (
+                        <>
+                            <p className="text-primary font-header col-start-1"> Course Status:</p>
+                            <span className=" col-start-2 inline-flex items-center justify-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-blue-700/10 ring-inset">
+                                Course Status Sample
+                            </span>
+                            <p className="text-primary font-text text-xs col-start-1">Category: </p>
+                            <div className="text-primary font-text text-xs">
+                                {course?.categories?.[0]?.category_name}
+                            </div>
+                            <p className="text-primary font-text text-xs col-start-1">Type: </p>
+                            <div className="text-primary font-text text-xs">
+                                {course?.types?.[0]?.type_name}
+                            </div>
+                            <p className="text-primary font-text text-xs col-start-1">Training Type: </p>
+                            <div className="text-primary font-text text-xs">
+                                {course?.training_type}
+                            </div>
+                        </>
+                    ) : (null)
+                }
+
             </div>
 
             {/* Course content */}
-            <div className="w-full h-full col-span-4 row-span-1 p-3 pb-5">
+            {/* <div className="w-full h-full col-span-4 row-span-1 p-3 pb-5">
                 {tabComponents[tab] || null}
-            </div>
+            </div> */}
 
 
 

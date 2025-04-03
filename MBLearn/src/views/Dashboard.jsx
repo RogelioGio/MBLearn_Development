@@ -3,7 +3,7 @@ import { useStateContext } from '../contexts/ContextProvider';
 import axiosClient from '../axios-client';
 import { Helmet } from 'react-helmet';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBookOpenReader, faGraduationCap, faHeartPulse, faPeopleGroup, faUserLock } from '@fortawesome/free-solid-svg-icons';
+import { faBookOpenReader, faGraduationCap, faHeartPulse, faPeopleGroup, faUserLock, faUserShield } from '@fortawesome/free-solid-svg-icons';
 import AnnouncmentCarousel from '../modalsandprops/dashboardComponents/AnnouncementCarousel';
 
 
@@ -25,7 +25,7 @@ const DashboardLayout = ({role,name}) => {
                 </div>
                 <div className='border-b border-divider mr-5 flex flex-row justify-end items-center'>
                     <div className='p-6 aspect-square bg-secondaryprimary rounded-full flex justify-center items-center'>
-                        <FontAwesomeIcon icon={faUserLock} className='text-primary text-2xl'/>
+                        <FontAwesomeIcon icon={faUserShield} className='text-primary text-2xl'/>
                     </div>
                 </div>
 
@@ -40,7 +40,7 @@ const DashboardLayout = ({role,name}) => {
 
                     </div>
                 </div>
-                <div className='col-span-1 row-start-3 mr-5 pt-2 pb-5 flex flex-col justify-between gap-4'>
+                <div className='col-span-1 row-start-3 mr-5 pt-2 pb-5 gap-4 grid grid-rows-3'>
                     <div className='bg-white w-full h-full rounded-md shadow-md p-5 hover:cursor-pointer hover:bg-primary ease-in-out transition-all flex flex-row gap-4 group border-2 border-primary'>
                         <div className='flex justify-center items-center'>
                             <FontAwesomeIcon icon={faPeopleGroup} className='text-primary text-5xl group-hover:text-white'/>
