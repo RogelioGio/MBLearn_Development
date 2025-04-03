@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\EnrollmentController;
 use App\Http\Controllers\Api\userInfo_controller;
 use App\Http\Controllers\Api\userCredentials_controller;
 use App\Http\Controllers\Api\FilterCategoryController;
+use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\SectionController;
 use App\Http\Controllers\Api\SubgroupController;
@@ -67,6 +68,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::apiResource('/subgroups', SubgroupController::class);
     Route::apiResource('/divisions', DivisionController::class);
     Route::apiResource('/sections', SectionController::class);
+    Route::apiResource('/permissions', PermissionController::class);
 
     //User enrolled course list
     Route::get('/select-user-courses/{userInfos}', [userInfo_controller::class, 'getUserCourses']);

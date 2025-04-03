@@ -7,10 +7,9 @@ namespace App\Models;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Laravel\Sanctum\HasApiTokens;
+
 
 class UserCredentials extends Model implements Authenticatable
 {
@@ -83,6 +82,17 @@ class UserCredentials extends Model implements Authenticatable
 
     public function userInfos(): HasOne{
         return $this->hasOne(UserInfos::class, 'user_credentials_id','id');
+    }
+
+    use \Staudenmeir\EloquentHasManyDeep\HasRelationships;
+    public function permissions(): \Staudenmeir\EloquentHasManyDeep\HasManyDeep{
+        return $this->hasManyDeep(Permission::class, [UserInfos::class, 'permission_userinfo'],
+         ['permission_userinfo.userinfo_id', 'permission_userinfo.permission_id']);
+    }
+
+    public function permissionsRole():\Staudenmeir\EloquentHasManyDeep\HasManyDeep{
+        return $this->hasManyDeep(Permission::class, [UserInfos::class, 'role_userinfo', Role::class, 'permission_role'],
+        ['role_userinfo.userinfo_id', 'role_userinfo.role_id', 'permission_role.permission_id', 'permission_role.role_id' ]);
     }
 
 }

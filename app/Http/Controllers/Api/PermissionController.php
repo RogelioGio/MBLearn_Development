@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePermissionRequest;
+use App\Http\Requests\UpdatePermissionRequest;
 use App\Models\Permission;
 use Illuminate\Http\Request;
 
@@ -21,7 +23,7 @@ class PermissionController extends Controller
      */
     public function store(StorePermissionRequest $request)
     {
-        $permission = Permission::create($request->all());
+        $permission = Permission::create($request->validated());
         return $permission;
     }
 
@@ -36,9 +38,9 @@ class PermissionController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(StorePermissionRequest $request, Permission $permission)
+    public function update(UpdatePermissionRequest $request, Permission $permission)
     {
-        $temp = $permission->update($request->all());
+        $temp = $permission->update($request->validated());
         return $temp;
     }
 
