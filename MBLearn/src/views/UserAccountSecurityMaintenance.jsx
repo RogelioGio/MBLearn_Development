@@ -50,14 +50,12 @@ export default function UserAccountSecurityMaintenance(){
 
     const filterformik = useFormik({
         initialValues: {
-            employee_name: '',
             department: '',
             branch: '',
             city:'',
             role:'',
         },
         validationSchema: Yup.object({
-            employee_name: Yup.string(),
             department: Yup.string(),
             city: Yup.string(),
             branch: Yup.string(),
@@ -231,28 +229,6 @@ export default function UserAccountSecurityMaintenance(){
             {/* User Filter */}
             <form onSubmit={filterformik.handleSubmit} className='col-start-1 col-span-4 row-start-2 row-span-1 px-5 py-3 grid grid-cols-[auto_auto_auto_auto_auto_min-content] w-full gap-2'>
                 <div className="inline-flex flex-col gap-1">
-                    <label htmlFor="employee_name" className="font-header text-xs flex flex-row justify-between">
-                        <p className="text-xs font-text text-unactive">Employees Name Section </p>
-                    </label>
-                    <div className="grid grid-cols-1">
-                        <select id="employee_name" name="employee_name" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                            value={filterformik.values.employee_name}
-                            onChange={filterformik.handleChange}
-                            onBlur={filterformik.handleBlur}
-                            >
-                            <option value=''>Select an Section</option>
-                            <option value='1'>A-G</option>
-                            <option value='2'>H-N</option>
-                            <option value='3'>O-T</option>
-                            <option value='4'>U-Z</option>
-                        </select>
-                        <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                        <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
-                </div>
-
-                <div className="inline-flex flex-col gap-1">
                     <label htmlFor="department" className="font-header text-xs flex flex-row justify-between">
                         <p className="text-xs font-text text-unactive">Employees Department </p>
                     </label>
@@ -345,7 +321,7 @@ export default function UserAccountSecurityMaintenance(){
                 </div>
 
                 {/* Filter Button */}
-                <div className='flex-row flex justify-end py-1 gap-2 items-end'>
+                <div className='flex-row flex justify-start py-1 gap-2 items-end'>
                 <button type='submit'>
                     <div className='aspect-square px-3 flex flex-row justify-center items-center bg-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 ease-in-out transition-all '>
                         <FontAwesomeIcon icon={faFilter} className='text-white text-sm'/>
