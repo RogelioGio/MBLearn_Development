@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Filters\UserInfosFilter;
+use App\helpers\LogActivityHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AddUsersRequest;
 use App\Http\Requests\BulkStoreUserRequest;
@@ -397,10 +398,12 @@ class userInfo_controller extends Controller
     //Delete User
     public function deleteUser(UserInfos $userInfos)
     {
-        Gate::authorize('delete', $userInfos);
+        Gate::authorize('delete', UserInfos::class);
         if($userInfos){
             $userInfos->status = "Inactive";
             $userInfos->save();
+
+            LogActivityHelper::logActivity('Delete user', 'Deleted a user', "User Full Name: " . $userInfos->first_name . " " . $userInfos->last_name);
             return response()->json(['message' => 'User is now set to inactive'], 200);
         }else {
             return response()->json(['message' => 'User not found'], 404);

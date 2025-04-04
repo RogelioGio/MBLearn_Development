@@ -37,7 +37,7 @@ class userInfosPolicy
         foreach($arrays as $array){
             $perm_names[] = $array["permission_name"];
         }
-        if(in_array('AddUserInfo', $perm_names)){
+        if(in_array("AddUserInfo", $perm_names)){
             return true;
         }
         return false;
@@ -53,7 +53,7 @@ class userInfosPolicy
         foreach($arrays as $array){
             $perm_names[] = $array["permission_name"];
         }
-        if(in_array('EditUserinfo', $perm_names)){
+        if(in_array('EditUserInfo', $perm_names)){
             return true;
         }
         return false;
@@ -62,14 +62,15 @@ class userInfosPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(UserCredentials $userCredentials, UserInfos $userCredentialsInfos): bool
+    public function delete(UserCredentials $userCredentials): bool
     {
         $arrays = $userCredentials->permissionsRole->toArray();
+
         $perm_names = [];
         foreach($arrays as $array){
             $perm_names[] = $array["permission_name"];
         }
-        if(in_array('DeleteUserinfo', $perm_names)){
+        if(in_array('DeleteUserInfo', $perm_names)){
             return true;
         }
         return false;

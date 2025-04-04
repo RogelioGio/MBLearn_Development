@@ -92,7 +92,7 @@ class UserCredentials extends Model implements Authenticatable
 
     public function permissionsRole():\Staudenmeir\EloquentHasManyDeep\HasManyDeep{
         return $this->hasManyDeep(Permission::class, [UserInfos::class, 'role_userinfo', Role::class, 'permission_role'],
-        ['role_userinfo.userinfo_id', 'role_userinfo.role_id', 'permission_role.permission_id', 'permission_role.role_id' ]);
+        ['userInfo.user_credentials_id','role_userinfo.userinfo_id', 'role_userinfo.role_id', 'permission_role.permission_id', 'permission_role.role_id' ]);
     }
 
 }
