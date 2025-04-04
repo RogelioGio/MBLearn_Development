@@ -24,12 +24,7 @@ class userInfosPolicy
      */
     public function view(UserCredentials $userCredentials, UserInfos $userCredentialsInfos): bool
     {
-        if($userCredentials->role === "System Admin"){
-            return true;
-        } elseif($userCredentialsInfos->id === $userCredentials->id){
-            return true;
-        }
-        return false;
+        return true;
     }
 
     /**
@@ -37,7 +32,12 @@ class userInfosPolicy
      */
     public function create(UserCredentials $userCredentials): bool
     {
-        if($userCredentials->role === "System Admin"){
+        $arrays = $userCredentials->permissionsRole->toArray();
+        $perm_names = [];
+        foreach($arrays as $array){
+            $perm_names[] = $array["permission_name"];
+        }
+        if(in_array('AddUserInfo', $perm_names)){
             return true;
         }
         return false;
@@ -48,9 +48,12 @@ class userInfosPolicy
      */
     public function update(UserCredentials $userCredentials, UserInfos $userCredentialsInfos): bool
     {
-        if($userCredentials->role === "System Admin"){
-            return true;
-        } elseif($userCredentialsInfos->id === $userCredentials->id){
+        $arrays = $userCredentials->permissionsRole->toArray();
+        $perm_names = [];
+        foreach($arrays as $array){
+            $perm_names[] = $array["permission_name"];
+        }
+        if(in_array('EditUserinfo', $perm_names)){
             return true;
         }
         return false;
@@ -61,7 +64,12 @@ class userInfosPolicy
      */
     public function delete(UserCredentials $userCredentials, UserInfos $userCredentialsInfos): bool
     {
-        if($userCredentials->role === "System Admin"){
+        $arrays = $userCredentials->permissionsRole->toArray();
+        $perm_names = [];
+        foreach($arrays as $array){
+            $perm_names[] = $array["permission_name"];
+        }
+        if(in_array('DeleteUserinfo', $perm_names)){
             return true;
         }
         return false;

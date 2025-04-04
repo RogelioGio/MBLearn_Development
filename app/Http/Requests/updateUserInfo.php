@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\UserInfos;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 
 class updateUserInfo extends FormRequest
@@ -12,6 +14,7 @@ class updateUserInfo extends FormRequest
      */
     public function authorize(): bool
     {
+        Gate::authorize('update', UserInfos::class);
         return true;
     }
 

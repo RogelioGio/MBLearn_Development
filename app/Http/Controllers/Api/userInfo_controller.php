@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\UserCredentials;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Gate;
 
 class userInfo_controller extends Controller
 {
@@ -396,6 +397,7 @@ class userInfo_controller extends Controller
     //Delete User
     public function deleteUser(UserInfos $userInfos)
     {
+        Gate::authorize('delete', $userInfos);
         if($userInfos){
             $userInfos->status = "Inactive";
             $userInfos->save();

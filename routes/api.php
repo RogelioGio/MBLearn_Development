@@ -92,7 +92,6 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::put('/update-user-creds/{userCredentials}',[userCredentials_controller::class, 'updateUserCredentials']);
     Route::get('/index-user-creds',[userCredentials_controller::class, 'userCredentialsList']);
     Route::get('/select-user-creds/{employeeID}',[userCredentials_controller::class, 'findUser_EmployeeID']);
-    Route::delete('/delete-user-creds/{userCredentials}',[userCredentials_controller::class, 'deleteUser']);
 
     //Enrollment API
     Route::post('/enrollments/bulk', [EnrollmentController::class, 'bulkStore']);

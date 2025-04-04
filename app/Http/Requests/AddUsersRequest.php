@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\UserInfos;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
 class AddUsersRequest extends FormRequest
 {
@@ -11,6 +13,7 @@ class AddUsersRequest extends FormRequest
      */
     public function authorize(): bool
     {
+        Gate::authorize('create', UserInfos::class);
         return true;
     }
 
