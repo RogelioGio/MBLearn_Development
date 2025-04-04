@@ -3,8 +3,9 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class StorePermissionRequest extends FormRequest
+class UpdatePermissionRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +23,7 @@ class StorePermissionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "permission_name" => "required|unique:permissions,permission_name"
+            "permission_name" => ['required', 'string',  Rule::unique('permissions')->ignore($this->permission_name, 'permission_name')]
         ];
     }
-
 }
