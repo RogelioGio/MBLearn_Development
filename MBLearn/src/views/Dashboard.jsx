@@ -82,10 +82,9 @@ const DashboardLayout = ({role,name}) => {
                             <FontAwesomeIcon icon={faBookOpenReader} className='text-primary text-2xl'/>
                         </div>
                     </div>
-                    <div className='col-span-3 row-span-1 ml-5 pr-2 pb-2 pt-5'>
-                        <div className='bg-white w-full h-full rounded-md shadow-md p-5'>
-
-                        </div>
+                    {/* Announcement */}
+                    <div className='col-span-3 row-span-1 px-5 py-2 w-full h-full'>
+                    <AnnouncmentCarousel/>
                     </div>
                     <div className='col-span-1 row-span-1 pb-2 pt-5 mr-5 '>
                         <div className='bg-white w-full h-full rounded-md shadow-md p-5'>
