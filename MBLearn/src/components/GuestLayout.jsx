@@ -21,11 +21,11 @@ export default function GuestLayout() {
             </Helmet>
 
             {/* Background Aesthetics */}
-            <div className="absolute w-full h-full bg-cover bg-center bg-[url('assets/Login_Background2.png')]">
+            <div className="absolute w-full h-full bg-white md:bg-[url('assets/Login_Background2.png')] bg-cover bg-center">
             </div>
 
             {/*Login Page Component*/}
-            <div className={`relative z-10 w-full h-full flex items-center justify-center`}>
+            <div className={`relative z-10 w-full h-full md:flex items-center justify-center`}>
             {/*Login Layout Children*/}
             <Outlet/>
             </div>

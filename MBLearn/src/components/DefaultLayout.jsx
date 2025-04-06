@@ -119,7 +119,7 @@ export default function DefaultLayout() {
 
 
     return (
-        <div className='flex flex-row items-center h-screen bg-background'>
+        <div className='flex flex-row items-center h-screen bg-background overflow-hidden'>
             <Navigation />
             <SelectedUserProvider>
                 <OptionProvider>

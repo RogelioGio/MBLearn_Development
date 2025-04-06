@@ -60,7 +60,7 @@ export default function Navigation() {
 
     const Logout = () => {
         toast("Logging Out....",{
-            description: "User account is logging out the system"
+            description: "User account is logging out the system",
         }
         )
     }
