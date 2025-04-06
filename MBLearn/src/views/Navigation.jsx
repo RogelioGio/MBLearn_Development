@@ -121,6 +121,9 @@ export default function Navigation() {
             setRole('');
             setUser('');
             setToken(null);
+            toast("Log Out Successfully.",{
+                description: "User account is logged out the system",
+            })
         }catch (e){
             console.error(e);
         }

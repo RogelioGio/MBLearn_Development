@@ -1,11 +1,28 @@
-import { faArrowUpAZ, faArrowDownZA, faSort, faArrowUpWideShort, faArrowDownShortWide, faSearch } from "@fortawesome/free-solid-svg-icons"
+import { faArrowUpAZ, faArrowDownZA, faSort, faArrowUpWideShort, faArrowDownShortWide, faSearch, faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet"
+import axiosClient from "../axios-client";
+import dayjs from "dayjs";
+import React from "react";
 
 
 export default function ActivityLog() {
+    const [loading, setLoading] = useState(true);
+    const [logs, setLogs] = useState([]);
+
+    useEffect(()=> {
+        axiosClient.get('/index-logs')
+        .then(({data}) => {
+            setLogs(data)
+            setLoading(false)
+        })
+        .catch((err) => {console.log(err)})
+    },[])
+
+    // Fetching Activities
     return (
-        <div className='grid  grid-cols-4 grid-rows-[6.25rem_min-content_auto_auto_min-content] h-full w-full'>
+        <div className='grid  grid-cols-4 grid-rows-[6.25rem_min-content_auto_min-content] h-full w-full'>
             <Helmet>
                 {/* Title of the mark-up */}
                 <title>MBLearn | Activity Log</title>
@@ -40,14 +57,73 @@ export default function ActivityLog() {
                 <div className='w-full border-primary border rounded-md overflow-hidden shadow-md'>
                 <table className='text-left w-full overflow-y-scroll'>
                     <thead className='font-header text-xs text-primary bg-secondaryprimary border-l-2 border-secondaryprimary'>
-                        <tr className='flex flex-row justify-between items-center text-left px-4 py-2'>
-                            <th className='w-1/4'>Time Stamp</th>
-                            <th className='w-1/4'>User in-charge</th>
-                            <th className='w-2/4'>Action Description</th>
+                        <tr>
+                            <th className='w-1/4 py-4 px-4 uppercase'>Time Stamp</th>
+                            <th className='w-1/4 py-4 px-4 uppercase'>User in-charge</th>
+                            <th className='w-2/4 py-4 px-4 uppercase'>Action Description</th>
                         </tr>
                     </thead>
+                    <tbody className='bg-white divide-y divide-divider'>
+                        {
+                            loading ? (
+                                // Skeleton
+                                Array.from({length: 8}).map((_, i)=> (
+                                    <tr key={i} className="animate-pulse">
+                                        <td className="py-3 px-4">
+                                        <div className="h-5 bg-gray-300 rounded-full w-3/4"></div>
+                                        </td>
+                                        <td className="py-3 px-4">
+                                        <div className="h-5 bg-gray-300 rounded-full w-3/4"></div>
+                                        </td>
+                                        <td className="py-3 px-4">
+                                        <div className="h-5 bg-gray-300 rounded-full w-3/4"></div>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) :
+                            (
+                                logs.map(logEntry => {
+                                    return (
+                                        <tr key={logEntry.id} className="font-text text-sm hover:bg-gray-200">
+                                            <td className="text-sm text-unactive py-3 px-4">{dayjs(logEntry.created_at).format('MMMM D, YYYY - HH:mm:ss')}</td>
+                                            <td className="text-sm text-unactive py-3 px-4">Name - Employee ID</td>
+                                            <td className="text-sm text-unactive py-3 px-4">{logEntry?.description} - {logEntry?.target}</td>
+                                        </tr>
+                                    );
+                                })
+                            )
+                        }
+                    </tbody>
                 </table>
 
+                </div>
+            </div>
+
+            {/* Pagenation */}
+            <div className='row-start-4 row-span-1 col-start-1 col-span-4 border-t border-divider mx-5 py-3 flex flex-row items-center justify-between'>
+                {/* Total number of entries and only be shown */}
+                <div>
+                    <p className='text-sm font-text text-unactive'>
+                        Showing <span className='font-header text-primary'>1</span> to <span className='font-header text-primary'>2</span> of <span className='font-header text-primary'>3</span> <span className='text-primary'>results</span>
+                    </p>
+                </div>
+                {/* Paganation */}
+                <div>
+                    <nav className='isolate inline-flex -space-x-px round-md shadow-xs'>
+                        {/* Previous */}
+                        <a
+                            //onClick={back}
+                            className='relative inline-flex items-center rounded-l-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
+                            <FontAwesomeIcon icon={faChevronLeft}/>
+                        </a>
+
+                        {/* Current Page & Dynamic Paging */}
+                        <a
+                            //onClick={next}
+                            className='relative inline-flex items-center rounded-r-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
+                            <FontAwesomeIcon icon={faChevronRight}/>
+                        </a>
+                    </nav>
                 </div>
             </div>
         </div>

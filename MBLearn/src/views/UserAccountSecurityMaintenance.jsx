@@ -230,7 +230,7 @@ export default function UserAccountSecurityMaintenance(){
             <form onSubmit={filterformik.handleSubmit} className='col-start-1 col-span-4 row-start-2 row-span-1 px-5 py-3 grid grid-cols-[auto_auto_auto_auto_auto_min-content] w-full gap-2'>
                 <div className="inline-flex flex-col gap-1">
                     <label htmlFor="department" className="font-header text-xs flex flex-row justify-between">
-                        <p className="text-xs font-text text-unactive">Employees Department </p>
+                        <p className="text-xs font-text text-unactive">Department </p>
                     </label>
                     <div className="grid grid-cols-1">
                         <select id="department" name="department" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
@@ -253,7 +253,7 @@ export default function UserAccountSecurityMaintenance(){
 
                 <div className="inline-flex flex-col gap-1">
                     <label htmlFor="city" className="font-header text-xs flex flex-row justify-between">
-                        <p className="text-xs font-text text-unactive">Branch City</p>
+                        <p className="text-xs font-text text-unactive">City</p>
                     </label>
                     <div className="grid grid-cols-1">
                         <select id="city" name="city" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
@@ -276,7 +276,7 @@ export default function UserAccountSecurityMaintenance(){
 
                 <div className="inline-flex flex-col gap-1">
                     <label htmlFor="branch" className="font-header text-xs flex flex-row justify-between">
-                        <p className="text-xs font-text text-unactive">Branch Location</p>
+                        <p className="text-xs font-text text-unactive"> Location</p>
                     </label>
                     <div className="grid grid-cols-1">
                         <select id="branch" name="branch" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
@@ -299,7 +299,7 @@ export default function UserAccountSecurityMaintenance(){
 
                 <div className="inline-flex flex-col gap-1">
                     <label htmlFor="role" className="font-header text-xs flex flex-row justify-between">
-                        <p className="text-xs font-text text-unactive">Employee Account Role</p>
+                        <p className="text-xs font-text text-unactive">Account Role</p>
                     </label>
                     <div className="grid grid-cols-1">
                         <select id="role" name="role" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
@@ -307,7 +307,7 @@ export default function UserAccountSecurityMaintenance(){
                             onChange={filterformik.handleChange}
                             onBlur={filterformik.handleBlur}
                             >
-                            <option value=''>Employee Account Role</option>
+                            <option value=''>Select Account Role</option>
                             {
                                 roles.map((role) => (
                                     <option key={role.id} value={role.id}>{role.role_name}</option>
