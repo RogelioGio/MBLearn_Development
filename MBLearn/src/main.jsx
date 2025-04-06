@@ -6,6 +6,7 @@ import router from './router.jsx'
 import { ContextProvider } from './contexts/ContextProvider'
 import '@mantine/core/styles.css';
 import { MantineProvider } from '@mantine/core';
+import { Toaster } from './components/ui/sonner'
 
 
 createRoot(document.getElementById("root")).render(
@@ -32,6 +33,7 @@ createRoot(document.getElementById("root")).render(
     >
     <ContextProvider>
         <RouterProvider router={router} />
+        <Toaster/>
     </ContextProvider>
     </MantineProvider>
 );

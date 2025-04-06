@@ -6,6 +6,8 @@ import { useEffect, useState } from 'react';
 import { useStateContext } from '../contexts/ContextProvider';
 import { Link, Links, Navigate, NavLink, useNavigate } from 'react-router-dom';
 import { use } from 'react';
+import { toast } from 'sonner';
+
 //Icon props
 const Icons = ({icon, text, to}) => (
     <NavLink to={to} className={({isActive}) => isActive ? 'icon_active':'_icon'}>
@@ -55,6 +57,13 @@ const navItems = {
 export default function Navigation() {
     const {user, profile_image, role, availableRoles, setAvailableRoles,setUser, setToken, setRole} = useStateContext();
     const navigate = useNavigate();
+
+    const Logout = () => {
+        toast("Logging Out....",{
+            description: "User account is logging out the system"
+        }
+        )
+    }
 
     const OpenProfile = (e) => {
         e.stopPropagation()
@@ -107,6 +116,7 @@ export default function Navigation() {
 
     const onLogout = async () => {
         try{
+            Logout()
             await axiosClient.post('/logout');
             setRole('');
             setUser('');

@@ -207,12 +207,7 @@ export default function Login() {
                 style={{ height: "3rem" }}
             >
                 {isLoading ? (
-                    <InfinitySpin
-                    visible={true}
-                    width="100"
-                    color="#fff"
-                    ariaLabel="infinity-spin-loading"
-                    />
+                    "Loading..."
                 ) : (
                     "LOGIN"
                 )}
