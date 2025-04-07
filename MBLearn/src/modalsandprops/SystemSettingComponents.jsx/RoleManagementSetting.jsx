@@ -1,24 +1,64 @@
 import { faFileSignature, faSave, faUserClock, faUserLock, faUsers, faUsersLine } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { useForm } from "@inertiajs/vue3"
+import { useFormik } from "formik"
 import axiosClient from "MBLearn/src/axios-client"
 import { Switch } from "MBLearn/src/components/ui/switch"
-import { act, useEffect, useRef, useState } from "react"
+import { act, useEffect, useMemo, useRef, useState } from "react"
 
 const RoleManagementSetting = () => {
     const [roles, setRoles] = useState([])
     const [loading, setLoading] = useState(true)
-    const [selectedRole, setSelectedRole] = useState(1)
-
+    const [selectedRoleName, setSelectedRoleName] = useState()
+    const [permission, setPermissions] = useState([])
 
     // Fetch Roles
-    useEffect(() => {
+    const fetchRoles = () => {
         axiosClient.get('/roles')
         .then((Response) => {
             setRoles(Response.data.data)
             setLoading(false)
         })
         .catch(error => console.error(error));
-    },[roles])
+    }
+    useEffect(() => {
+        fetchRoles()
+    },[])
+
+    //Formik
+    const formik = useFormik({
+        initialValues: {},
+        onSubmit: (values) => {}
+    })
+
+    //permision handling
+    useEffect(()=>{
+        const selected = roles.find((role)=> role.role_name === selectedRoleName)
+        if (selected) {
+            setPermissions(selected?.permissions); // Set permissions for the selected role
+        } else {
+            setPermissions([]); // Reset permissions if no role found
+        }
+    },[selectedRoleName])
+    const isChecked = (permName) => {
+        return permission.some(p => p.permission_name === permName);
+    };
+    const permissionswitch = (permission_name, checked) => {
+        setPermissions(prev => {
+            const exists = prev.some(p => p.permission_name === permission_name);
+            if(checked && !exists) {
+                return [...prev, {permission_name: permission_name}];
+            } else if (!checked && exists) {
+                return prev.filter(p=>p.permission_name !== permission_name)
+            }
+            return prev;
+        })
+    }
+
+    useEffect(()=>{
+        console.log(permission)
+    },[permission])
+
 
 
     return (
@@ -27,7 +67,7 @@ const RoleManagementSetting = () => {
                 <div className="row-span-1 col-span-2 flex flex-row justify-between items-center pb-2">
                     <div>
                         <h1 className="font-header text-primary text-xl">Role Management</h1>
-                        <p className="font-text text-unactive">Create and manage roles function and permission in the system</p>
+                        <p className="font-text text-unactive text-xs">Create and manage roles function and permission in the system</p>
                     </div>
                     <div>
                         <div className={`flex flex-row justify-center items-center border-2 border-primary py-2 px-8 font-header bg-secondarybackground rounded-md text-primary gap-5 w-full hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md`}>
@@ -60,8 +100,8 @@ const RoleManagementSetting = () => {
                                     </tr>
                                 ):(
                                     roles.map((role) =>(
-                                        <tr key={role.id} className={`font-text text-md text-primary hover:bg-gray-200 cursor-pointer`}>
-                                            <td className={`font-text p-4 flex flex-row items-center gap-4 border-l-2 border-transparent transition-all ease-in-out`}>{role.role_name}</td>
+                                        <tr key={role.id} className={`font-text text-md text-primary hover:bg-gray-200 cursor-pointer ${selectedRoleName === role.role_name ? "bg-gray-200" : ""}`} onClick={() => setSelectedRoleName(role.role_name)}>
+                                            <td className={`font-text p-4 flex flex-row items-center gap-4 border-l-2 border-transparent transition-all ease-in-out  ${selectedRoleName === role.role_name ? "border-l-primary" : ""}`}>{role.role_name}</td>
                                             <td className={`font-text p-4 gap-4 border-l-2 border-transparent transition-all ease-in-out`}>
                                                 <div className='flex flex-row items-center gap-2'>
                                                     <FontAwesomeIcon icon={faUsers}/>
@@ -82,7 +122,7 @@ const RoleManagementSetting = () => {
                 <div className="row-span-1 col-span-2 flex flex-col gap-2">
                     <div className="row-span-1 col-span-2 flex flex-row justify-between items-center py-2">
                         <div>
-                            <h1 className="font-header text-primary text-base">Role Permission</h1>
+                            <h1 className="font-header text-primary text-base">Default Role Permission</h1>
                             <p className="font-text text-unactive text-xs">Cutomize the selected role's permission to the system funtionalities</p>
                         </div>
                         <div>
@@ -103,7 +143,7 @@ const RoleManagementSetting = () => {
                                     <h1 className="font-header text-primary text-base">Add User</h1>
                                     <p className="font-text text-unactive text-sm">The user have the permission to add another user in the system</p>
                                 </label>
-                                <Switch id="addUser"/>
+                                <Switch id="addUser" checked={isChecked("AddUserInfo")} onCheckedChange={(checked) => permissionswitch("AddUserInfo",checked)}/>
                             </div>
                             <div className="w-full flex flex-row justify-between items-center">
                                 <label htmlFor="editUser">

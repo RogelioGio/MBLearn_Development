@@ -88,14 +88,14 @@ const User = ({re_move,click,userID,name,department,title,branch,city,profile_ur
                     </button>
 
                     {
-                        user.user_infos.roles[0]?.permissions[0]?.permission_name === "EditUserInfo" ? (<button onClick={(e) => edit(e,userID)}
+                        user.user_infos.roles[0]?.permissions?.some((permission)=> permission.permission_name === "EditUserInfo")? (<button onClick={(e) => edit(e,userID)}
                         className='flex flex-row items-center justify-center gap-2 px-5 py-2 border border-primary rounded-md text-primary hover:bg-primary hover:text-white hover:scale-105 transition-all ease-in-out'>
                             <FontAwesomeIcon icon={faUserPen}/>
                             <p>Edit</p>
                         </button>):(null)
                     }
                     {
-                        user.user_infos.roles[0]?.permissions[0]?.permission_name === "DeleteUserInfo"  ? (
+                        user.user_infos.roles[0]?.permissions?.some((permission)=> permission.permission_name === "DeleteUserInfo")  ? (
                             <button onClick={(e) => _delete(e,userID)}
                             className='flex flex-row items-center justify-center gap-2 px-5 py-2 border border-primary rounded-md text-primary hover:bg-primary hover:text-white hover:scale-105 transition-all ease-in-out'>
                                 <FontAwesomeIcon icon={faTrashCan}/>

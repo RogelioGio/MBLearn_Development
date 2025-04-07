@@ -15,7 +15,7 @@ class RoleController extends Controller
      */
     public function index()
     {
-        return Role::withCount('users')->paginate();
+        return Role::withCount('users')->with('permissions')->paginate();
     }
 
     /**
