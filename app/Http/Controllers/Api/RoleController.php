@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreRoleRequest;
+use App\Http\Requests\UpdateRolePermissionRequest;
+use App\Models\Permission;
 use App\Models\Role;
 use App\Models\UserInfos;
 use Illuminate\Http\Request;
@@ -33,6 +35,23 @@ class RoleController extends Controller
     public function show(Role $role)
     {
         return $role;
+    }
+
+    public function updateRolePermissions(UpdateRolePermissionRequest $request, Role $role){
+        
+        $bulk = collect($request->all())->map(function($arr, $key){
+            $test = [];
+            foreach($arr as $key => $value){
+                $test = $value;
+            }
+            return $test;
+        });
+
+        $role->permissions()->sync($bulk);
+        
+        return response()->json([
+            "message" => $role->load(['permissions'])
+        ]);
     }
 
     /**
