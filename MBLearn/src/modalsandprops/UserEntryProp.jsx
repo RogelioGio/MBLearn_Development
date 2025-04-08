@@ -1,12 +1,15 @@
 import { faChevronLeft, faChevronRight, faEllipsis, faTrashCan, faUserPen } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react'
-import React from 'react'
+import React, { useState } from 'react'
+import { useStateContext } from '../contexts/ContextProvider'
 
 const User = ({re_move,click,userID,name,department,title,branch,city,profile_url,employeeID,role,edit,_delete,handleCheckbox,selected,isChecked,userDetail}) => {
     const selectedUsers = selected.some(
         (user) => user.Selected_ID === userID
     )
+
+    const {user} = useStateContext();
 
 
     return(
@@ -78,20 +81,31 @@ const User = ({re_move,click,userID,name,department,title,branch,city,profile_ur
                 {/* Action */}
                 <td className='py-3 px-4'>
                     <div className='flex gap-1 justify-end'>
-                    <button className='text-primary border border-primary rounded-md px-3 hover:bg-primary hover:text-white hover:scale-105 transition-all ease-in-out'
+
+                    <button className='text-primary border border-primary rounded-md px-3 py-2 hover:bg-primary hover:text-white hover:scale-105 transition-all ease-in-out'
                         onClick={(e) => userDetail(e, userID)}>
                         <FontAwesomeIcon icon={faEllipsis}/>
                     </button>
-                    <button onClick={(e) => edit(e,userID)}
+
+                    {
+                        user.user_infos.roles[0]?.permissions?.some((permission)=> permission.permission_name === "EditUserInfo")? (<button onClick={(e) => edit(e,userID)}
+                        className='flex flex-row items-center justify-center gap-2 px-5 py-2 border border-primary rounded-md text-primary hover:bg-primary hover:text-white hover:scale-105 transition-all ease-in-out'>
+                            <FontAwesomeIcon icon={faUserPen}/>
+                            <p>Edit</p>
+                        </button>):(null)
+                    }
+                    {
+                        user.user_infos.roles[0]?.permissions?.some((permission)=> permission.permission_name === "DeleteUserInfo")  ? (
+                            <button onClick={(e) => _delete(e,userID)}
                             className='flex flex-row items-center justify-center gap-2 px-5 py-2 border border-primary rounded-md text-primary hover:bg-primary hover:text-white hover:scale-105 transition-all ease-in-out'>
-                        <FontAwesomeIcon icon={faUserPen}/>
-                        <p>Edit</p>
-                    </button>
-                    <button onClick={(e) => _delete(e,userID)}
-                            className='flex flex-row items-center justify-center gap-2 px-5 py-2 border border-primary rounded-md text-primary hover:bg-primary hover:text-white hover:scale-105 transition-all ease-in-out'>
-                        <FontAwesomeIcon icon={faTrashCan}/>
-                        <p>Remove</p>
-                    </button>
+                                <FontAwesomeIcon icon={faTrashCan}/>
+                                <p>Remove</p>
+                            </button>
+                        ) : (null)
+                    }
+
+
+
                     </div>
                 </td>
 

@@ -107,3 +107,6 @@ input[type="password"]::-webkit-textfield-decoration-container {
     @apply bg-background text-foreground;
     }
 }
+
+/* md screen styles */
+/* sm screen style */

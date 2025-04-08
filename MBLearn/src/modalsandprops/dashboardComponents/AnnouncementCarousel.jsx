@@ -10,7 +10,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faXmark } from "@fortawesome/free-solid-svg-icons";
 import React from "react";
 
-
 const AnnouncmentCarousel = () => {
     return(
         <div className="h-full w-full flex flex-col">

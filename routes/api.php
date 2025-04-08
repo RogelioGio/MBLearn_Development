@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\ActivityLogsController;
 use App\Http\Controllers\Api\CourseContextController;
 use App\Http\Controllers\Api\FilterOptionController;
 use App\Http\Controllers\Api\OptionController;
@@ -133,6 +134,8 @@ Route::get('category',[FilterCategoryController::class, 'index']);
 Route::post('create-category',[FilterCategoryController::class, 'store']);
 
 route::post('create-option', [FilterOptionController::class, 'store']);
+
+route::get('/index-logs', [ActivityLogsController::class, 'index']);
 
 // Route::get('/reset-user',[userInfo_controller::class, 'resetUser']); //reset user table
 // Route::get('/reset-user-creds',[userCredentials_controller::class, 'resetUsers']); //reset user table

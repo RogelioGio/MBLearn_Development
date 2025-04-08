@@ -58,13 +58,16 @@ export default function Course() {
 
     return(
         <>
-        <div className='grid  grid-cols-4 grid-rows-[7rem_4rem_1fr] h-full w-full overflow-hidden h-'>
+        <div className='grid grid-cols-4 grid-rows-[7rem_4rem_1fr] h-full w-full overflow-hidden h-'>
             <Helmet>
                 {/* Title of the mark-up */}
                 <title>MBLearn | {isLoading ? "Loading..." : course?.name || "No Course Found"}</title>
             </Helmet>
 
             {/* Header */}
+            {
+                // IsLoading the whole page tomorrow
+            }
             <div className="flex flex-row col-span-3 row-span-1 item-center w-full justify-between border-b border-divider">
                 <div className="text-primary flex flex-row justify-center items-center p-3">
                     <div className="flex flex-row justify-center items-center w-10 aspect-square border-2 border-primary rounded-full hover:scale-105 hover:bg-primary hover:text-white hover:cursor-pointer transition-all ease-in-out">
@@ -118,8 +121,8 @@ export default function Course() {
             </div>
 
             {/* Tab Buttons */}
-            <div className='row-start-2 col-span-4 w-auto mx-5 py-3 gap-3'>
-                <div className="w-full flex flex-row rounded-md shadow-md hover:cursor-pointer">
+            <div className='row-start-2 col-span-4 w-full py-3 gap-3 pr-5 pl-1 '>
+                <div className="flex flex-row rounded-md shadow-md hover:cursor-pointer">
                     <span className={`w-1/2 flex flex-row gap-5 items-center text-md font-header ring-2 ring-primary rounded-l-md px-5 py-2 text-primary hover:bg-primary hover:text-white transition-all ease-in-out ${tab === "module" ? "bg-primary text-white" : "bg-white text-primary"}`} onClick={()=> setTab("module")}>
                         <FontAwesomeIcon icon={faBook}/>
                         Module
@@ -165,9 +168,9 @@ export default function Course() {
             </div>
 
             {/* Course content */}
-            {/* <div className="w-full h-full col-span-4 row-span-1 p-3 pb-5">
+            <div className="w-full h-full col-span-4 row-span-1">
                 {tabComponents[tab] || null}
-            </div> */}
+            </div>
 
 
 

@@ -18,9 +18,7 @@ export default function DefaultLayout() {
     //User Activity handling
     const logout = () => {
         console.log('Session ended, user is inactive');
-        localStorage.removeItem('ACCESS_TOKEN');
-        localStorage.removeItem('LAST_ACTIVITY');
-        localStorage.removeItem("SESSION_CLOSED_AT");
+
 
         setTimeout(() => {
             navigate('/login');
@@ -33,53 +31,53 @@ export default function DefaultLayout() {
         }
     };
 
-    useEffect(() => {
-        if(!token) return;
-        if(loading) return;
+    // useEffect(() => {
+    //     if(!token) return;
+    //     if(loading) return;
 
-        const inactivityTime = 5*60*60*1000;
-        let timeout;
+    //     const inactivityTime = 5*60*60*1000;
+    //     let timeout;
 
-        //Check userEvents
-        const checkInactivity = () => {
-            const lastActivity = localStorage.getItem('LAST_ACTIVITY');
-            if(lastActivity && Date.now() - lastActivity > inactivityTime){
-                setWarning(true)
-            } else {
-                timeout = setTimeout(()=> {checkInactivity()}, 30*60*1000);
-            }
-        }
+    //     //Check userEvents
+    //     const checkInactivity = () => {
+    //         const lastActivity = localStorage.getItem('LAST_ACTIVITY');
+    //         if(lastActivity && Date.now() - lastActivity > inactivityTime){
+    //             setWarning(true)
+    //         } else {
+    //             timeout = setTimeout(()=> {checkInactivity()}, 30*60*1000);
+    //         }
+    //     }
 
-        //Event Listeners
-        const events = ['mousemove', 'click', 'scroll', 'keypress'];
-        events.forEach(event => window.addEventListener(event, update));
+    //     //Event Listeners
+    //     const events = ['mousemove', 'click', 'scroll', 'keypress'];
+    //     events.forEach(event => window.addEventListener(event, update));
 
-        const handleBeforeUnload = () => {
-            localStorage.setItem('SESSION_CLOSED_AT', Date.now());
-        };
-        window.addEventListener('beforeunload', handleBeforeUnload);
+    //     const handleBeforeUnload = () => {
+    //         localStorage.setItem('SESSION_CLOSED_AT', Date.now());
+    //     };
+    //     window.addEventListener('beforeunload', handleBeforeUnload);
 
-        //Actvity checks
-        timeout = setTimeout(checkInactivity, 30*60*1000);
+    //     //Actvity checks
+    //     timeout = setTimeout(checkInactivity, 30*60*1000);
 
-        return () => {
-            clearTimeout(timeout);
-            events.forEach(event => window.removeEventListener(event, update));
-            window.removeEventListener('beforeunload', handleBeforeUnload);
-        }
-    },[token,loading])
+    //     return () => {
+    //         clearTimeout(timeout);
+    //         events.forEach(event => window.removeEventListener(event, update));
+    //         window.removeEventListener('beforeunload', handleBeforeUnload);
+    //     }
+    // },[token,loading])
 
     //checking the tab inactivity while closed
-    useEffect(() => {
-        if(!token) return;
+    // useEffect(() => {
+    //     if(!token) return;
 
-        const closedSession = localStorage.getItem('SESSION_CLOSED_AT');
-        const maxClosedTime = 30*60*1000; //30 minutes
+    //     const closedSession = localStorage.getItem('SESSION_CLOSED_AT');
+    //     const maxClosedTime = 30*60*1000; //30 minutes
 
-        if(closedSession && Date.now() - closedSession > maxClosedTime){
-            logout();
-        }
-    },[token])
+    //     if(closedSession && Date.now() - closedSession > maxClosedTime){
+    //         logout();
+    //     }
+    // },[token])
 
     //countdown to logout after closing the modal
 
@@ -93,7 +91,7 @@ export default function DefaultLayout() {
         }).catch((e)=>{
             console.error(e)
         })
-    },[setUser])
+    },[])
 
     //WarningModal
     const close = () => {
@@ -121,7 +119,7 @@ export default function DefaultLayout() {
 
 
     return (
-        <div className='flex flex-row items-center h-screen bg-background'>
+        <div className='flex flex-row items-center h-screen bg-background overflow-hidden'>
             <Navigation />
             <SelectedUserProvider>
                 <OptionProvider>
