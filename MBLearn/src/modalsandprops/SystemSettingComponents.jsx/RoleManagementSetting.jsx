@@ -53,9 +53,7 @@ const RoleManagementSetting = () => {
             if(checked && !exists) {
                 return [...prev, {
                     id: perm.id,
-                    permission_name: perm.permission_name,
-                    created_at: perm.created_at,
-                    updated_at: perm.updated_at,}];
+                    permission_name:perm.permission_name}];
             } else if (!checked && exists) {
                 return prev.filter(p=>p.permission_name !== permission_name)
             }
@@ -70,7 +68,13 @@ const RoleManagementSetting = () => {
 
     // Save Changes
     const saveChanges = () => {
-        console.log(permission)
+        const payload = permission.map(({id:permission_Id}) => ({
+            permission_Id
+        }))
+        console.log(payload)
+        axiosClient.post(`/updateRolePermission/${selectedRole}`,payload)
+        .then((res) => console.log(res))
+        .catch((err)=> console.log(err))
     }
 
 
