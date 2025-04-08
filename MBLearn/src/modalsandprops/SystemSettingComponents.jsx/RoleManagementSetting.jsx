@@ -5,13 +5,22 @@ import { useFormik } from "formik"
 import axiosClient from "MBLearn/src/axios-client"
 import { Switch } from "MBLearn/src/components/ui/switch"
 import { act, useEffect, useMemo, useRef, useState } from "react"
-
+import UnsavedWarningModal from "./UnsavedWarningModal"
+import { set } from "date-fns"
+import { toast } from "sonner"
+import SystemAdminPermissionProps from "./SystemAdminPermssionProps"
+import CourseAdminPermissionProps from "./CourseAdminPermissionProps"
+import CourseLoading from "../../assets/Course_Loading.svg";
 const RoleManagementSetting = () => {
     const [roles, setRoles] = useState([])
     const [loading, setLoading] = useState(true)
     const [selectedRole, setSelectedRole] = useState(1)
+    const [_selectedRole, _setSelectedRole] = useState()
     const [permission, setPermissions] = useState([])
     const [refPermission, setRefPermission] = useState([])
+    const [saved, setSaved] = useState(true);
+    const [warning, setWarning] = useState(false);
+    const [saving, setSaving] = useState(false);
 
     // Fetch Roles
     const fetchRoles = () => {
@@ -27,21 +36,24 @@ const RoleManagementSetting = () => {
         fetchRoles()
     },[])
 
-    //Formik
-    const formik = useFormik({
-        initialValues: {},
-        onSubmit: (values) => {}
-    })
 
     //permision handling
-    useEffect(()=>{
-        const selected = roles.find((role)=> role.id === selectedRole)
+    const availablePermission = () => {
+        const selected = roles.find((role) => role.id === selectedRole);
         if (selected) {
-            setPermissions(selected?.permissions); // Set permissions for the selected role
+            setPermissions(selected.permissions);  // Set permissions if the role is found
         } else {
             setPermissions([]); // Reset permissions if no role found
         }
-    },[selectedRole])
+    }
+
+    const changeRoles = (id) => {
+        _setSelectedRole(id)
+        if(!saved && selectedRole !== id){
+            return setWarning(true)
+        }
+        setSelectedRole(id)
+    }
     const isChecked = (permName) => {
         return permission.some(p => p.permission_name === permName);
     };
@@ -51,34 +63,62 @@ const RoleManagementSetting = () => {
             const exists = prev.some(p => p.permission_name === permission_name);
 
             if(checked && !exists) {
+                setSaved(false)
                 return [...prev, {
-                    id: perm.id,
-                    permission_name:perm.permission_name}];
+                    id: perm?.id,
+                    permission_name:perm?.permission_name}];
             } else if (!checked && exists) {
+                setSaved(false)
                 return prev.filter(p=>p.permission_name !== permission_name)
             }
             return prev;
         })
     }
 
-    // useEffect(()=>{
-    //     console.log(permission)
-    //     console.log(refPermission)
-    // },[permission])
+    // Continue Unsaved
+    const continueUnsaved = () => {
+        setSaved(true);        // Mark changes as saved
+        setSelectedRole(_selectedRole); // Proceed with the role change
+    };
+
+    useEffect(()=>{
+        // console.log(permission)
+        // console.log(refPermission)
+        // console.log(saved)
+        console.log(saving)
+    },[saving])
 
     // Save Changes
     const saveChanges = () => {
         const payload = permission.map(({id:permission_Id}) => ({
             permission_Id
-        }))
-        console.log(payload)
-        axiosClient.post(`/updateRolePermission/${selectedRole}`,payload)
-        .then((res) => console.log(res))
-        .catch((err)=> console.log(err))
-    }
+        }));
+        setSaving(true);
+        // API
+        axiosClient.post(`/updateRolePermission/${selectedRole}`, payload)
+        .then(({data}) => {
+            setPermissions(data.message.permissions);
+            toast.success("Role Permission Updated", {
+                description: "Changes are applied for the selected role"
+            });
+            setSaved(true);
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+        .finally(() => {
+            setSaving(false);
+        });
+    };
+
+    useEffect(() => {
+        availablePermission(); // Ensure permissions are updated when selectedRole changes
+    }, [selectedRole]);
 
 
     return (
+        <>
+
         <div className="mx-5 py-5 row-span-2 col-span-3 grid grid-cols-2 grid-rows-[min-content_auto] gap-2">
                 {/* Header */}
                 <div className="row-span-1 col-span-2 flex flex-row justify-between items-center pb-2">
@@ -117,7 +157,7 @@ const RoleManagementSetting = () => {
                                     </tr>
                                 ):(
                                     roles.map((role) =>(
-                                        <tr key={role.id} className={`font-text text-md text-primary hover:bg-gray-200 cursor-pointer ${selectedRole === role.id ? "bg-gray-200" : ""}`} onClick={() => setSelectedRole(role.id)}>
+                                        <tr key={role.id} className={`font-text text-md text-primary hover:bg-gray-200 cursor-pointer ${selectedRole === role.id ? "bg-gray-200" : ""}`} onClick={() => changeRoles(role.id)}>
                                             <td className={`font-text p-4 flex flex-row items-center gap-4 border-l-2 border-transparent transition-all ease-in-out  ${selectedRole === role.id ? "border-l-primary" : ""}`}>{role.role_name}</td>
                                             <td className={`font-text p-4 gap-4 border-l-2 border-transparent transition-all ease-in-out`}>
                                                 <div className='flex flex-row items-center gap-2'>
@@ -143,123 +183,66 @@ const RoleManagementSetting = () => {
                             <p className="font-text text-unactive text-xs">Cutomize the selected role's permission to the system funtionalities</p>
                         </div>
                         <div>
-                            <div className="flex flex-row justify-center items-center border-2 border-primary py-2 px-8 font-header bg-secondarybackground rounded-md text-primary gap-5 w-full hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md" onClick={saveChanges}>
-                                <FontAwesomeIcon icon={faSave}/>
-                                <p>Save Changes</p>
-                            </div>
+                            {
+                                !saved ? (
+                                    <div className={`flex flex-row justify-center items-center border-2 border-primary py-2 px-8 font-header bg-secondarybackground rounded-md text-primary gap-5 w-full ${saving ? null : "hover:bg-primary hover:text-white hover:scale-105"} hover:cursor-pointer transition-all ease-in-out shadow-md`} onClick={!saving ? saveChanges : null}>
+                                        {
+                                            saving ? (
+                                                <p>Saving Changes...</p>
+                                            ) : (<>
+                                                <FontAwesomeIcon icon={faSave}/>
+                                                <p>Save Changes</p>
+                                            </>)
+                                        }
+
+                                    </div>
+                                ) : (null)
+                            }
                         </div>
                     </div>
 
                     {
                         loading ? (
                             // Loading
-                            "Loading..."
+                            <div className="flex flex-col justify-center items-center h-full p-10">
+                                <img src={CourseLoading} alt="" className="w-80"/>
+                                <p className="text-sm font-text text-primary">Hang tight! 🚀 Loading courses for — great things take a second!</p>
+                            </div>
                         ) : (
                             <>
-                                {/* User Management Permission  */}
-                                <form>
-                                <div>
-                                    <p className="font-text text-unactive text-sm py-2">User Managment Permissions</p>
-                                    <div className="flex flex-col gap-2 border border-primary rounded-md p-5 bg-white shadow-md">
-                                        <div className="w-full flex flex-row justify-between items-center">
-                                            <label htmlFor="addUser">
-                                                <h1 className="font-header text-primary text-base">Add User</h1>
-                                                <p className="font-text text-unactive text-sm">The user have the permission to add another user in the system</p>
-                                            </label>
-                                            <Switch id="addUser" checked={isChecked("AddUserInfo")} onCheckedChange={(checked) => permissionswitch("AddUserInfo",checked)}/>
-                                        </div>
-                                        <div className="w-full flex flex-row justify-between items-center">
-                                            <label htmlFor="editUser">
-                                                <h1 className="font-header text-primary text-base">Edit User</h1>
-                                                <p className="font-text text-unactive text-sm">The user have the permission to edit another user's information in the system</p>
-                                            </label>
-                                            <Switch id="editUser" checked={isChecked("EditUserInfo")} onCheckedChange={(checked) => permissionswitch("EditUserInfo",checked)}/>
-                                        </div>
-                                        <div className="w-full flex flex-row justify-between items-center">
-                                            <label htmlFor="deleteUser">
-                                                <h1 className="font-header text-primary text-base">Delete User</h1>
-                                                <p className="font-text text-unactive text-sm">The user have the permission to remove or archived another user in the system</p>
-                                            </label>
-                                            <Switch id="deleteUser" checked={isChecked("DeleteUserInfo")} onCheckedChange={(checked) => permissionswitch("DeleteUserInfo",checked)}/>
-                                        </div>
-                                    </div>
-                                </div>
-                                </form>
-
-                            <div>
-                                <p className="font-text text-unactive text-sm py-2">System Access Permissions</p>
-
-                                <div className="flex flex-col gap-2 border border-primary rounded-md p-5 bg-white shadow-md">
-                                    <div className="w-full flex flex-row justify-between items-center">
-                                        <label htmlFor="editUserCreds">
-                                            <h1 className="font-header text-primary text-base">Edit User Login Credentials</h1>
-                                            <p className="font-text text-unactive text-sm">The user have the permission to edit another user's login credentials in the system</p>
-                                        </label>
-                                        <Switch id="editUserCreds" checked={isChecked("EditUserCredentials")} onCheckedChange={(checked) => permissionswitch("EditUserCredentials",checked)}/>
-                                    </div>
-                                    <div className="w-full flex flex-row justify-between items-center">
-                                        <label htmlFor="editUserRole">
-                                            <h1 className="font-header text-primary text-base">Edit User Role</h1>
-                                            <p className="font-text text-unactive text-sm">The user have the permission to edit another user's role in the system</p>
-                                        </label>
-                                        <Switch id="editUserRole" checked={isChecked("EditUserRole")} onCheckedChange={(checked) => permissionswitch("EditUserRole",checked)}/>
-                                    </div>
-                                    <div className="w-full flex flex-row justify-between items-center">
-                                        <label htmlFor="accountReactivation">
-                                            <h1 className="font-header text-primary text-base">Account Reactivation</h1>
-                                            <p className="font-text text-unactive text-sm">The user have the permission to have the ability to reactivate user in the system</p>
-                                        </label>
-                                        <Switch id="accountReactivation" checked={isChecked("AccountReactivation")} onCheckedChange={(checked) => permissionswitch("AccountReactivation",checked)}/>
-                                    </div>
-                                </div>
-                            </div>
-                            <div>
-                                <p className="font-text text-unactive text-sm py-2">System Configuration Permissions</p>
-
-                                <div className="flex flex-col gap-2 border border-primary rounded-md p-5 bg-white shadow-md">
-                                    <div className="w-full flex flex-row justify-between items-center">
-                                        <label htmlFor="addFormInputs">
-                                            <h1 className="font-header text-primary text-base">Add Form Inputs</h1>
-                                            <p className="font-text text-unactive text-sm">The user have the permission to add form input in the system</p>
-                                        </label>
-                                        <Switch id="addFormInputs" checked={isChecked("AddFormInput")} onCheckedChange={(checked) => permissionswitch("AddFormInput",checked)}/>
-                                    </div>
-                                    <div className="w-full flex flex-row justify-between items-center">
-                                        <label htmlFor="editFormInputs">
-                                            <h1 className="font-header text-primary text-base">Edit Form Inputs</h1>
-                                            <p className="font-text text-unactive text-sm">The user have the permission to edit form input in the system</p>
-                                        </label>
-                                        <Switch id="editFormInputs" checked={isChecked("EditFormInput")} onCheckedChange={(checked) => permissionswitch("EditFormInput",checked)}/>
-                                    </div>
-                                    <div className="w-full flex flex-row justify-between items-center">
-                                        <label htmlFor="deleteFormInputs">
-                                            <h1 className="font-header text-primary text-base">Delete Form Inputs</h1>
-                                            <p className="font-text text-unactive text-sm">The user have the permission to remove or archived form input in the system</p>
-                                        </label>
-                                        <Switch id="deleteFormInputs" checked={isChecked("DeleteFormInput")} onCheckedChange={(checked) => permissionswitch("DeleteFormInput",checked)}/>
-                                    </div>
-                                </div>
-                            </div>
-                            <div>
-                                <p className="font-text text-unactive text-sm py-2">Report Management Permissions</p>
-
-                                <div className="flex flex-col gap-2 border border-primary rounded-md p-5 bg-white shadow-md">
-                                    <div className="w-full flex flex-row justify-between items-center">
-                                        <label htmlFor="readReports">
-                                            <h1 className="font-header text-primary text-base">Read Reports</h1>
-                                            <p className="font-text text-unactive text-sm">The user have the permission to read reports in the system</p>
-                                        </label>
-                                        <Switch id="readReports" checked={isChecked("ReadReports")} onCheckedChange={(checked) => permissionswitch("ReadReports",checked)}/>
-                                    </div>
-                                    <div className="w-full flex flex-row justify-between items-center">
-                                        <label htmlFor="exportReport">
-                                            <h1 className="font-header text-primary text-base">Export Report</h1>
-                                            <p className="font-text text-unactive text-sm">The user have the permission to export reports from the system</p>
-                                        </label>
-                                        <Switch id="exportReport" checked={isChecked("ExportReports")} onCheckedChange={(checked) => permissionswitch("ExportReports",checked)}/>
-                                    </div>
-                                </div>
-                            </div>
+                            {
+                                (() => {
+                                    switch (selectedRole) {
+                                        case 1:
+                                            return (
+                                                <SystemAdminPermissionProps
+                                                    isChecked={isChecked}
+                                                    permissionswitch={permissionswitch}
+                                                />
+                                            );
+                                        case 2:
+                                            return (
+                                                <CourseAdminPermissionProps
+                                                    isChecked={isChecked}
+                                                    permissionswitch={permissionswitch}
+                                                />
+                                            );
+                                        default:
+                                            return (
+                                                <>
+                                                <SystemAdminPermissionProps
+                                                    isChecked={isChecked}
+                                                    permissionswitch={permissionswitch}
+                                                    />
+                                                <CourseAdminPermissionProps
+                                                    isChecked={isChecked}
+                                                    permissionswitch={permissionswitch}
+                                                    />
+                                                </>
+                                            );
+                                    }
+                                })()
+                            }
                             </>
                         )
                     }
@@ -267,6 +250,9 @@ const RoleManagementSetting = () => {
                 </div>
             </div>
 
+            {/* UnsavedWarningModal */}
+            <UnsavedWarningModal isOpen={warning} close={() => setWarning(false)} onContinue={continueUnsaved}/>
+            </>
     );
 }
 export default RoleManagementSetting;
