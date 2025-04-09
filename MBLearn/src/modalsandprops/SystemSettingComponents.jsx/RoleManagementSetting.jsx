@@ -113,7 +113,7 @@ const RoleManagementSetting = () => {
 
     useEffect(() => {
         availablePermission(); // Ensure permissions are updated when selectedRole changes
-    }, [selectedRole]);
+    }, [selectedRole, roles]);
 
 
     return (

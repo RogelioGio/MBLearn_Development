@@ -2,7 +2,7 @@ import { faChevronDown, faFileArrowUp, faSuitcase, faUser, faUserGroup, faUserPl
 import { faCircleUser as faUserRegular, faCircleCheck as faCircleCheckRegular, faAddressCard as faAddressCardRegular,  faBuilding as faBuildingRegular, faIdBadge as faIdBadgeRegular}  from "@fortawesome/free-regular-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import axiosClient from "../axios-client"
 import * as Yup from "yup"
 import { useFormik } from "formik"
@@ -12,15 +12,17 @@ import AddUserErrorModal from "./AdduserErrorModal"
 import { Stepper } from '@mantine/core';
 import { useOption } from "../contexts/AddUserOptionProvider"
 import AddMultipleUserProps from "./AddMultipleUserProps"
+import AccountPermissionProps from "./AccountPermissionsProps"
+import { ScrollArea } from "../components/ui/scroll-area"
 
 
 const AddUserModal = ({open, close, updateTable}) => {
     //Option Context
-    const {cities,departments,location,titles,roles} = useOption();
+    const {cities,departments,location,titles,roles,permission} = useOption();
     const [selectedBranches, setSelectedBranches] = useState([])
     const [generatedEmail, setGeneratedEmail] = useState('')
     const [generatedPassword, setGeneratedPassword] = useState('')
-
+    const [role, setRoles] = useState([])
 
     const handleBranchesOptions = (e) =>{
         const city = e.target.value;
@@ -158,6 +160,18 @@ const AddUserModal = ({open, close, updateTable}) => {
         toggleState("steps",0);
         close();
     }
+
+    //Permission Helper
+    const fetchRoles = () => {
+        axiosClient.get('/roles')
+        .then(({data}) => {
+            setRoles(data.roles)
+        })
+        .catch(error => console.error(error));
+    }
+    useEffect(() => {
+        fetchRoles()
+    },[])
 
 
 
@@ -417,11 +431,12 @@ const AddUserModal = ({open, close, updateTable}) => {
                                                         </div>
                                                         {formik.touched.role && formik.errors.role ? (<div className="text-red-500 text-xs font-text">{formik.errors.role}</div>):null}
                                                     </div>
-                                                    <div>
-                                                        <label htmlFor="role" className="font-header text-xs flex flex-row justify-between">
-                                                            <p className="text-xs font-text">Account Role Permissions<span className="text-red-500">*</span></p>
-                                                        </label>
-                                                    </div>
+                                                    {
+                                                        formik.values.role ? (<div className="col-span-3">
+                                                            <AccountPermissionProps refPermissions={permission} selectedRole={formik.values.role} role={role}/>
+                                                        </div>):(null)
+                                                    }
+
 
                                                 </div>
                                             </Stepper.Step>

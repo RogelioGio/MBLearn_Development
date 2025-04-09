@@ -11,6 +11,7 @@ export const OptionProvider = ({children}) => {
         titles:[],
         location:[],
         roles:[],
+        permission:[],
     })
 
     useEffect(() => {
