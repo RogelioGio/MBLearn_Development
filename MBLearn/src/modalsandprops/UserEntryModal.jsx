@@ -1,4 +1,4 @@
-import { faUserPen, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { faUserPen, faTrash, faDotCircle, faEllipsis } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react'
 import React, { useEffect, useMemo, useState } from 'react'
@@ -7,6 +7,8 @@ import { InfinitySpin } from 'react-loader-spinner'
 import EditUserModal from './EditUserModal'
 import { useUser } from '../contexts/selecteduserContext'
 import { use } from 'react'
+import DeleteUserModal from './DeleteUserModal'
+import { useNavigate } from 'react-router-dom'
 
 
 const UserEntryModal = ({open, close, classname,ID}) =>{
@@ -14,6 +16,7 @@ const UserEntryModal = ({open, close, classname,ID}) =>{
     //API Call for fetching specific user
     const [date, setDate] = useState();
     const [loading, setLoading] = useState(true)
+    const navigate = useNavigate();
 
 
     //branch choice handelling
@@ -75,7 +78,21 @@ const UserEntryModal = ({open, close, classname,ID}) =>{
     }
     const CloseEdit = () => {
         toggleModal("isEdit", false);
-        fetchUsers()
+    }
+
+      //Function for handling Delete
+    const handleDelete = () => {
+        toggleModal('isDelete',true)
+        console.log("Must be deleted")
+    }
+    const CloseDelete = () => {
+        toggleModal("isDelete", false);
+    }
+
+    //User Profile
+    const OpenDetailView = (e, id) => {
+        e.stopPropagation()
+        navigate(`/systemadmin/userdetail/${id}`)
     }
 
 
@@ -101,11 +118,15 @@ const UserEntryModal = ({open, close, classname,ID}) =>{
             <div className='col-start-3 border-b border-divider'>
                 {/* Action button */}
                 <div className='flex flex-row gap-2 justify-end'>
+                    <div className='relative border-2 border-primary h-10 w-10 rounded-full flex items-center justify-center text-primary text-sm hover:text-white hover:bg-primary hover:cursor-pointer transition-all ease-in-out group shadow-md' onClick={(e) => OpenDetailView(e, ID)}>
+                        <FontAwesomeIcon icon={faEllipsis}/>
+                        <p className='absolute w-auto top-10 z-10 bg-tertiary text-white p-2 rounded-md text-xs scale-0 font-text group-hover:scale-100'>Details</p>
+                    </div>
                     <div className='relative border-2 border-primary h-10 w-10 rounded-full flex items-center justify-center text-primary text-sm hover:text-white hover:bg-primary hover:cursor-pointer transition-all ease-in-out group shadow-md' onClick={handleEdit}>
                         <FontAwesomeIcon icon={faUserPen}/>
                         <p className='absolute w-auto top-10 z-10 bg-tertiary text-white p-2 rounded-md text-xs scale-0 font-text group-hover:scale-100'>Edit</p>
                     </div>
-                    <div className='relative border-2 border-primary h-10 w-10 rounded-full flex items-center justify-center text-primary text-sm hover:text-white hover:bg-primary hover:cursor-pointer transition-all ease-in-out group shadow-md'>
+                    <div className='relative border-2 border-primary h-10 w-10 rounded-full flex items-center justify-center text-primary text-sm hover:text-white hover:bg-primary hover:cursor-pointer transition-all ease-in-out group shadow-md' onClick={handleDelete}>
                         <FontAwesomeIcon icon={faTrash}/>
                         <p className='absolute w-auto top-10 z-10 bg-tertiary text-white p-2 rounded-md text-xs scale-0 font-text group-hover:scale-100'>Delete</p>
                     </div>
@@ -170,19 +191,51 @@ const UserEntryModal = ({open, close, classname,ID}) =>{
                     <DialogPanel transition className='relative overflow-hidden transform rounded-md bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in'>
                         {
                             loading ? (
-                                <div className='h-full w-fit flex items-center justify-center p-10'>
-                                    <div className='flex flex-col justify-center items-center'>
-                                        <div className='w-fit h-fit'>
-                                        <InfinitySpin
-                                            visible={true}
-                                            width="200"
-                                            color="hsl(239,94%,19%)"
-                                            ariaLabel="infinity-spin-loading"
-                                        />
+                                <div className='h-full w-fit bg-gradient-to-b from-[hsl(239,94%,19%)] via-[hsl(214,97%,27%)] to-[hsl(201,100%,36%)] flex items-center'>
+                                    <div className='w-[25vw] h-40 flex items-center justify-center flex-col gap-2'>
+                                        <div className='w-[8vw] h-[8vw] bg-white rounded-full shadow-md flex items-center justify-center'>
+                                            <div className='w-[7vw] h-[7vw] bg-primary rounded-full animate-pulse'> </div>
                                         </div>
-                                        <p className='font-text'>Retrieving user information, Please wait...</p>
+                                        <p className='text-white font-header bg-white h-4 w-32 rounded-full animate-pulse'></p>
+                                    </div>
+                                    <div className='grid grid-col-3 grid-row-3 bg-white w-full p-5'>
+                                        <div className='col-start-1 col-span-3 row-start-1 py-4 px-4 border-b border-divider'>
+                                            {/* Name */}
+                                            <p className='font-header text-sm text-unactive uppercase pb-2'>Name:</p>
+                                            <h1 className='font-header text-4xl text-primary mb-2 animate-pulse w-full h-9 bg-gray-500 rounded-full'></h1>
+                                            <p className='font-text text-sm uppercase animate-pulse w-1/2 h-4 bg-gray-500 rounded-full'></p>
+                                        </div>
+                                    <div className='row-start-2 col-start-1 py-4 px-4 border-b border-r border-divider'>
+                                        {/* Department */}
+                                        <p className='font-header text-sm text-unactive uppercase pb-2'>Department:</p>
+                                        <p className='font-text text-lg animate-pulse w-full h-5 bg-gray-500 rounded-full'></p>
+                                        {/* <p className='font-text text-xs uppercase'>{selectedUser?.title.title_name}</p> */}
+                                    </div>
+                                    <div className='row-start-2 col-start-2 py-4 px-4 border-b border-r border-divider'>
+                                        {/* Branch & City */}
+                                        <p className='font-header text-sm text-unactive uppercase pb-2'>Branch:</p>
+                                        <p className='font-text text-lg w-full h-5 bg-gray-500 rounded-full animate-pulse mb-2'></p>
+                                        <p className='font-text text-xs uppercase h-3 w-1/2 bg-gray-500 rounded-full animate-pulse'></p>
+                                    </div>
+                                    <div className='row-start-2 col-start-3 py-4 px-4 border-b border-divider'>
+                                        {/* System Admin */}
+                                        <p className='font-header text-sm text-unactive uppercase pb-2'>Role:</p>
+                                        <p className='font-text text-lg w-full h-5 bg-gray-500 rounded-full animate-pulse'></p>
+                                    </div>
+                                        {/* User Status */}
+                                    <div className='row-start-3 col-span-2 py-4 px-4 border-r border-divider'>
+                                        <p className='font-header text-sm text-unactive uppercase pb-2'>User Status:</p>
+                                        <p className='font-text text-lg w-full h-5 bg-gray-500 rounded-full animate-pulse'></p>
+                                    </div>
+                                        {/* User Added */}
+                                    <div className='row-start-3 col-span-1 py-4 px-4'>
+                                            <p className='font-header text-sm text-unactive uppercase pb-2'>User Added:</p>
+                                            <p className='font-text text-lg w-full h-5 bg-gray-500 rounded-full animate-pulse'></p>
+                                    </div>
                                     </div>
                                 </div>
+
+
                             ) : selectedUser ? (
                                 <div className='h-full w-fit bg-gradient-to-b from-[hsl(239,94%,19%)] via-[hsl(214,97%,27%)] to-[hsl(201,100%,36%)] flex items-center'>
                                     {userProfile}
@@ -198,6 +251,7 @@ const UserEntryModal = ({open, close, classname,ID}) =>{
             </div>
         </Dialog>
         <EditUserModal open={modalState.isEdit} close={CloseEdit} ID={ID} />
+        <DeleteUserModal open={modalState.isDelete} close={CloseDelete} EmployeeID={ID}/>
     </>
     )
 }

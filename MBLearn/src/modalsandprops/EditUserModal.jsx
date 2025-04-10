@@ -123,8 +123,8 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation}) =>{
     return (
         <>
         <Dialog open={open} onClose={()=>{}} className={classname}>
-            <DialogBackdrop transition className="fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in" />
-                <div className='fixed inset-0 z-10 w-screen overflow-y-auto'>
+            <DialogBackdrop transition className="fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in z-30" />
+                <div className='fixed inset-0 z-30 w-screen overflow-y-auto'>
                     <div className='flex min-h-full items-center justify-center p-4 text center'>
                         <DialogPanel transition className='relative overflow-hidden transform rounded-md bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in'>
                             <div className='bg-white rounded-md h-full w-fit p-5 flex flex-col'>
@@ -140,8 +140,13 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation}) =>{
                                         </div>
                                     </div>
                                 </div>
-                                    <div className="mx-4 flex flex-row gap-5">
-                                        <form onSubmit={formik.handleSubmit} className="grid grid-cols-3 gap-y-2 pb-4 w-full">
+                                    <div className="mx-4 flex flex-row gap-5 items-center justify-center">
+                                        {
+                                            loading ? (
+                                                <p className="px-40 py-32 self-center font-text text-unactive">Loading User Information....</p>
+                                            ) :
+                                            (
+                                                <form onSubmit={formik.handleSubmit} className="grid grid-cols-3 gap-y-2 py-4 w-full">
                                             {/* Name */}
                                             <div className="gap-2 row-start-2 col-span-3 pr-2 grid grid-cols-[auto_auto_auto_min-content] grid-row-1">
                                                 <div className="inline-flex flex-col justify-between">
@@ -331,6 +336,8 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation}) =>{
                                                 </button>
                                             </div>
                                         </form>
+                                            )
+                                        }
                                     </div>
                             </div>
 
