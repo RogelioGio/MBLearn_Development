@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Division;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
 class StoreDivisionRequest extends FormRequest
 {
@@ -11,6 +13,7 @@ class StoreDivisionRequest extends FormRequest
      */
     public function authorize(): bool
     {
+        Gate::authorize('create', Division::class);
         return true;
     }
 

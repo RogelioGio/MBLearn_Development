@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Section;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 
 class UpdateSectionRequest extends FormRequest
@@ -12,6 +14,7 @@ class UpdateSectionRequest extends FormRequest
      */
     public function authorize(): bool
     {
+        Gate::authorize('update', Section::class);
         return true;
     }
 

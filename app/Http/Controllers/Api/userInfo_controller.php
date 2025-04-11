@@ -18,6 +18,7 @@ use App\Models\UserInfos;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\UserCredentials;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Gate;
 
@@ -169,13 +170,20 @@ class userInfo_controller extends Controller
      */
     public function indexUsers(Request $request){
 
+        Gate::authorize('viewAny', UserInfos::class);
         $page = $request->input('page', 1);//Default page
         $perPage = $request->input('perPage',5); //Number of entry per page
-
+        $user_id = $request->user()->id;
+        
         $filter = new UserInfosFilter();
         $queryItems = $filter->transform($request);
 
-        $users =  UserInfos::query()->where($queryItems)->where('status', '=', 'Active')->with('roles','department','title','branch','city')->paginate($perPage);
+        $users =  UserInfos::query()->where($queryItems)
+        ->where('status', '=', 'Active')
+        ->whereNot(function (Builder $query) use ($user_id){
+            $query->where('id', $user_id);
+        })
+        ->with('roles','department','title','branch','city')->paginate($perPage);
 
         return response()->json([
             'data' => $users->items(),
@@ -210,9 +218,13 @@ class userInfo_controller extends Controller
 
     public function indexNotLearnerUsers(Request $request){
         $perPage = $request->input('perPage',5); //Number of entry per page
+        $user_id = $request->user()->id;
         $admins = UserInfos::query()->whereHas('roles',function($query){
             $query->where('role_name', '!=', 'Learner');
-        })->with('roles','department','title','branch','city')->paginate($perPage);
+        })->whereNot(function (Builder $query) use ($user_id){
+            $query->where('id', $user_id);
+        })->
+        with('roles','department','title','branch','city')->paginate($perPage);
 
         return response()->json([
             'data' => $admins->items(),

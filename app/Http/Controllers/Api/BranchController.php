@@ -10,6 +10,7 @@ use App\Http\Requests\StoreBranchRequest;
 use App\Http\Requests\UpdateBranchRequest;
 use App\Models\City;
 use App\Models\Department;
+use Illuminate\Support\Facades\Gate;
 
 class BranchController extends Controller
 {
@@ -79,6 +80,7 @@ class BranchController extends Controller
      */
     public function destroy(Branch $branch)
     {
+        Gate::authorize('delete', Branch::class);
         $branch->delete();
         return response()->json([
             "message" => "Branch Deleted"

@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Department;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
 class StoreDepartmentRequest extends FormRequest
 {
@@ -11,6 +13,7 @@ class StoreDepartmentRequest extends FormRequest
      */
     public function authorize(): bool
     {
+        Gate::authorize('create', Department::class);
         return true;
     }
 

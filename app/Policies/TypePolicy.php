@@ -2,16 +2,24 @@
 
 namespace App\Policies;
 
-use App\Models\Title;
+use App\Models\Type;
 use App\Models\UserCredentials;
 use Illuminate\Auth\Access\Response;
 
-class TitlePolicy
+class TypePolicy
 {
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(UserCredentials $userCredentials): bool
+    {
+        return false;
+    }
+
+    /**
+     * Determine whether the user can view the model.
+     */
+    public function view(UserCredentials $userCredentials, Type $type): bool
     {
         return false;
     }
@@ -58,7 +66,7 @@ class TitlePolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(UserCredentials $userCredentials, Title $title): bool
+    public function restore(UserCredentials $userCredentials, Type $type): bool
     {
         return false;
     }
@@ -66,7 +74,7 @@ class TitlePolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(UserCredentials $userCredentials, Title $title): bool
+    public function forceDelete(UserCredentials $userCredentials, Type $type): bool
     {
         return false;
     }

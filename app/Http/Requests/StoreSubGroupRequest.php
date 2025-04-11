@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Subgroup;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
 class StoreSubgroupRequest extends FormRequest
 {
@@ -11,6 +13,7 @@ class StoreSubgroupRequest extends FormRequest
      */
     public function authorize(): bool
     {
+        Gate::authorize('create', Subgroup::class);
         return true;
     }
 

@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Branch;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
 class StoreBranchRequest extends FormRequest
 {
@@ -11,6 +13,7 @@ class StoreBranchRequest extends FormRequest
      */
     public function authorize(): bool
     {
+        Gate::authorize('create', Branch::class);
         return true;
     }
 

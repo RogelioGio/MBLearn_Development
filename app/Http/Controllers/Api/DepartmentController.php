@@ -7,6 +7,7 @@ use App\Models\Department;
 use App\Http\Requests\StoreDepartmentRequest;
 use App\Http\Requests\UpdateDepartmentRequest;
 use App\Models\Branch;
+use Illuminate\Support\Facades\Gate;
 
 class DepartmentController extends Controller
 {
@@ -51,6 +52,7 @@ class DepartmentController extends Controller
      */
     public function destroy(Department $department)
     {
+        Gate::authorize('delete', Department::class);
         $department->delete();
         return response()->json([
             'meesage' => 'Department Deleted'

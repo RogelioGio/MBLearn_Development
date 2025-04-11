@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Branch;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 
 class UpdateBranchRequest extends FormRequest
@@ -12,6 +14,7 @@ class UpdateBranchRequest extends FormRequest
      */
     public function authorize(): bool
     {
+        Gate::authorize('update', Branch::class);
         return true;
     }
 

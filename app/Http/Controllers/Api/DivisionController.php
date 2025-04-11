@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Division;
 use App\Http\Requests\StoreDivisionRequest;
 use App\Http\Requests\UpdateDivisionRequest;
+use Illuminate\Support\Facades\Gate;
 
 class DivisionController extends Controller
 {
@@ -49,6 +50,7 @@ class DivisionController extends Controller
      */
     public function destroy(Division $division)
     {
+        Gate::authorize('delete', Division::class);
         $division->delete();
         return response()->json([
             'meesage' => 'Division Deleted'
