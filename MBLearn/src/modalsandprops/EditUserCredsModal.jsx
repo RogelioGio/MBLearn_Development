@@ -7,13 +7,15 @@ import { useOption } from "../contexts/AddUserOptionProvider";
 import { useFormik } from "formik";
 import axiosClient from "../axios-client";
 import EdituserErrorModal from "./EdituserErrorModal";
+import AccountPermissionProps from "./AccountPermissionsProps"
 
 const EditUserCredsModal = ({open, close,ID, editSuccess}) => {
     const {selectedUser, selectUser, isFetching} = useUser();
     const [isLoading, setLoading] = useState(true);
-    const {cities=[], titles=[], location=[], roles=[], departments=[]} = useOption();
+    const {cities=[], titles=[], location=[], roles=[], departments=[], permission=[]} = useOption();
     const [tab, setTab] = useState(1)
     const [updating, setUpdating] = useState(false)
+    const [role, setRoles] = useState([])
 
     //Handle Password
         const [showPassword, setShowPassword] = useState(false);
@@ -95,6 +97,18 @@ const EditUserCredsModal = ({open, close,ID, editSuccess}) => {
             message: '',
             errors: {}
         })
+
+    //Permission Helper
+        const fetchRoles = () => {
+            axiosClient.get('/roles')
+            .then(({data}) => {
+                setRoles(data.roles)
+            })
+            .catch(error => console.error(error));
+        }
+        useEffect(() => {
+            fetchRoles()
+        },[])
 
     return(
         <>
@@ -204,11 +218,11 @@ const EditUserCredsModal = ({open, close,ID, editSuccess}) => {
                                                         </div>
                                                         {formik.touched.role && formik.errors.role ? (<div className="text-red-500 text-xs font-text">{formik.errors.role}</div>):null}
                                                     </div>
-                                                    <div>
-                                                        <label htmlFor="role" className="font-header text-xs flex flex-row justify-between">
-                                                            <p className="text-xs font-text">Account Role Permissions<span className="text-red-500">*</span></p>
-                                                        </label>
-                                                    </div>
+                                                    {
+                                                        formik.values.role ? (<div className="col-span-3">
+                                                            <AccountPermissionProps refPermissions={permission} selectedRole={formik.values.role} role={role}/>
+                                                        </div>):(null)
+                                                    }
                                                     </>
                                                 ) : (null)
                                             }

@@ -204,7 +204,6 @@ export default function UserManagementMaintenance() {
 
     const CloseDelete = () => {
         toggleModal("isDelete", false);
-
     }
 
     //Close DeleteSuccess Modal
