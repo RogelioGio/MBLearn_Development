@@ -24,6 +24,7 @@ use App\Http\Controllers\Api\SubgroupController;
 use App\Http\Controllers\Api\TitleController;
 use App\Http\Controllers\Api\Training_ModeController;
 use App\Http\Controllers\Api\TypeController;
+use App\Models\UserInfos;
 
 //New Login routing
 Route::post('/login', [AuthController::class, 'login']);
@@ -137,6 +138,12 @@ route::post('create-option', [FilterOptionController::class, 'store']);
 
 route::get('/index-logs', [ActivityLogsController::class, 'index']);
 
+Route::get('/aaaa', function(){
+    $user = UserInfos::find(1);
+    $user2 = UserInfos::find(50);
+    return $user2->permissionsRole;
+
+});
 // Route::get('/reset-user',[userInfo_controller::class, 'resetUser']); //reset user table
 // Route::get('/reset-user-creds',[userCredentials_controller::class, 'resetUsers']); //reset user table
 
