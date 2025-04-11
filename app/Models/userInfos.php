@@ -69,8 +69,7 @@ class UserInfos extends Model
 
     use \Staudenmeir\EloquentHasManyDeep\HasRelationships;
     public function permissionsRole():\Staudenmeir\EloquentHasManyDeep\HasManyDeep{
-        return $this->hasManyDeep(Permission::class, ['role_userinfo', Role::class, 'permission_role'],
-        ['role_userinfo.userinfo_id', 'role_userinfo.role_id', 'permission_role.permission_id', 'permission_role.role_id' ]);
+        return $this->hasManyDeepFromRelations($this->roles(), (new Role())->permissions());
     }
 
     public function branch(): BelongsTo{

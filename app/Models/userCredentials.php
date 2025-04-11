@@ -86,13 +86,15 @@ class UserCredentials extends Model implements Authenticatable
 
     use \Staudenmeir\EloquentHasManyDeep\HasRelationships;
     public function permissions(): \Staudenmeir\EloquentHasManyDeep\HasManyDeep{
-        return $this->hasManyDeep(Permission::class, [UserInfos::class, 'permission_userinfo'],
-         ['permission_userinfo.userinfo_id', 'permission_userinfo.permission_id']);
+        return $this->hasManyDeepFromRelations($this->userInfos(), (new UserInfos())->permissions());
+    }
+
+    public function roles(): \Staudenmeir\EloquentHasManyDeep\HasManyDeep{
+        return $this->hasManyDeepFromRelations($this->userInfos(), (new UserInfos())->roles());
     }
 
     public function permissionsRole():\Staudenmeir\EloquentHasManyDeep\HasManyDeep{
-        return $this->hasManyDeep(Permission::class, [UserInfos::class, 'role_userinfo', Role::class, 'permission_role'],
-        ['userInfo.user_credentials_id','role_userinfo.userinfo_id', 'role_userinfo.role_id', 'permission_role.permission_id', 'permission_role.role_id' ]);
+        return $this->hasManyDeepFromRelations($this->roles(), (new Role())->permissions());
     }
 
 }
