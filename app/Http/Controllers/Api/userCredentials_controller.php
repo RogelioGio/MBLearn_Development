@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\addUserCredential_request;
+use App\Http\Requests\ChangeUserPermissionsRequest;
 use App\Http\Requests\updateUserCreds_info;
 use App\Http\Resources\CourseResource;
 use App\Models\UserCredentials;
@@ -49,6 +50,23 @@ class userCredentials_controller extends Controller
         return response()->json([
             'message' => 'User Credentials Updated Successfully',
             'data' => $userCredentials
+        ]);
+    }
+
+    public function changeUserPermissions(UserCredentials $userCredentials, ChangeUserPermissionsRequest $request){
+        $bulk = collect($request->all())->map(function($arr, $key){
+            $test = [];
+            foreach($arr as $key => $value){
+                $test = $value;
+            }
+            return $test;
+        });
+
+        $userCredentials->userInfos->permissions()->sync($bulk);
+
+        return response()->json([
+            'message' => 'Permissions changed',
+            'user' => $userCredentials->load(['userInfos.permissions']),
         ]);
     }
 
