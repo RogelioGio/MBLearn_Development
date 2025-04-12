@@ -7,6 +7,7 @@ use App\helpers\LogActivityHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AddUsersRequest;
 use App\Http\Requests\BulkStoreUserRequest;
+use App\Http\Requests\TestArrayRequest;
 use App\Http\Requests\updateUserInfo;
 use App\Models\Branch;
 use App\Models\Course;
@@ -34,6 +35,7 @@ class userInfo_controller extends Controller
         $department = Department::query()->find($validatedData['department_id']);
         $branch = Branch::query()->find($validatedData['branch_id']);
         $role = Role::query()->find($validatedData['role_id']);
+        $permissions = [];
 
         $profile_image = $this -> generateProfileImageurl($validatedData['first_name'].$validatedData['last_name']);
         $status = $validatedData['status'] ?? 'Active';
@@ -70,16 +72,23 @@ class userInfo_controller extends Controller
             'profile_image' =>$profile_image
         ]);
 
+        foreach($validatedData['permissions'] as $tests){
+            foreach($tests as $key => $value){
+                $permissions[] = $value;
+            }
+        }
+
         $userInfo->branch()->associate($branch);
         $userInfo->title()->associate($title);
         $userInfo->department()->associate($department);
         $userInfo->roles()->sync($role->id);
         $userInfo->save();
         $userCredentials->userInfos()->save($userInfo);
+        $userInfo->permissions()->sync($permissions);
         // Return a success response
         return response()->json([
             'message' => 'User registered successfully',
-            'user_info' => $userInfo,
+            'user_info' => $userInfo->load(['permissions']),
             'user_role' => $userInfo->roles,
             'branch' => $userInfo->branch,
             'user_credentials' => $userCredentials
@@ -456,8 +465,19 @@ class userInfo_controller extends Controller
         ],200);
     }
 
-    public function test(){
-        return response()->json(['message' => 'Test'], 200);
+    public function test(TestArrayRequest $test){
+        $validated = $test->validated();
+
+        $hi = [];
+        foreach($validated['data'] as $tests){
+            foreach($tests as $key => $value){
+                $hi[] = $value;
+            }
+        }
+
+        return response()->json([
+            "message" => $hi
+        ]);
     }
 
 }

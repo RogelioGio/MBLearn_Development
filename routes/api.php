@@ -127,9 +127,7 @@ Route::middleware('auth:sanctum')->group(function(){
 
 });
 
-Route::post('/add-user', [userInfo_controller::class, 'addUser']);
-Route::post('/addusercredentials', [userCredentials_controller::class, 'addUserCredentials']);
-Route::get('/test', [userInfo_controller::class, 'test']);
+Route::post('/test', [userInfo_controller::class, 'test']);
 
 //Category API
 Route::get('category',[FilterCategoryController::class, 'index']);
