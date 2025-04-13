@@ -30,12 +30,17 @@ const DashboardLayout = ({role,name}) => {
                 </div>
 
                 {/* Announcement */}
-                <div className='col-span-4 row-span-1 px-5 py-2 w-full h-full'>
+                <div className='col-span-3 row-span-1 px-5 py-2 w-full h-full'>
                     <AnnouncmentCarousel/>
                 </div>
+                <div className='col-span-1 row-span-1 pb-2 pt-5 mr-5 '>
+                        <div className='bg-white w-full h-full rounded-md shadow-md p-5'>
+
+                        </div>
+                    </div>
 
                 {/* Changing Content */}
-                <div className='col-span-3 row-start-3 ml-5 pr-2 pt-2 pb-5'>
+                {/* <div className='col-span-3 row-start-3 ml-5 pr-2 pt-2 pb-5'>
                     <div className='bg-white w-full h-full rounded-md shadow-md'>
 
                     </div>
@@ -62,7 +67,7 @@ const DashboardLayout = ({role,name}) => {
                     <div className='bg-white w-full h-full rounded-md shadow-md p-5 hover:cursor-pointer hover:bg-primary ease-in-out transition-all border-2 border-primary'>
 
                     </div>
-                </div>
+                </div> */}
 
             </div>
             )

@@ -78,7 +78,7 @@ const AddUserModal = ({open, close, updateTable}) => {
             department: Yup.string().required('required *'),
             title: Yup.string().required('required *'),
             city: Yup.string().required('required *'),
-            branch: Yup.string().required('required *'),
+            //branch: Yup.string().required('required *'),
             role: Yup.string().required('required *'),
         }),
         //submission
@@ -490,7 +490,7 @@ const AddUserModal = ({open, close, updateTable}) => {
                                                         <p className="font-text text-xs text-unactive">Account Role:</p>
                                                         <p className="font-text">{roles.find(role => role.id === Number(formik.values.role))?.role_name || "Not selected"}</p>
                                                     </div>
-                                                    {/* <div className="flex flex-col gap-1 col-span-2">
+                                                    <div className="flex flex-col gap-1 col-span-2">
                                                         <p className="font-text text-xs text-unactive">Email:</p>
                                                         <p className="font-text"> {`${formik.values.firstname.replace(/\s+/g, '').trim()}.${formik.values.lastname.replace(/\s+/g, '').trim()}@mbtc.com`.toLowerCase()}</p>
 
@@ -498,7 +498,7 @@ const AddUserModal = ({open, close, updateTable}) => {
                                                     <div className="flex flex-col gap-1">
                                                         <p className="font-text text-xs text-unactive">Initial Password:</p>
                                                         <p className="font-text">{`${formik.values.firstname.replace(/\s+/g, '').trim()}_${formik.values.employeeID}`}</p>
-                                                    </div> */}
+                                                    </div>
                                                 </div>
                                             </Stepper.Step>
                                             <Stepper.Completed>

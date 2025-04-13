@@ -39,7 +39,6 @@ export default function SystemConfiguration() {
                 </div>
             </div>
             {/* Setting Content */}
-            <ScrollArea className="col-span-3 row-span-3 overflow-y-auto max-h-[calc(100vh-6.25rem)]">
 
                 {
                     tab === 1 ? (
@@ -50,7 +49,6 @@ export default function SystemConfiguration() {
                         <ReactivationAccountSetting/>
                     ) : (null)
                 }
-            </ScrollArea>
 
 
         </div>
