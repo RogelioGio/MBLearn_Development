@@ -41,4 +41,14 @@ class AddUsersRequest extends FormRequest
             "permissions.*.permission_Id" => "required|integer|exists:permissions,id",
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'role.in' => 'The selected role is invalid. Please choose from "System Admin", "Course Admin", or "Learner".',
+            'MBemail.unique' => 'The working metrobank email address is already in use.',
+            'employeeID.unique' => 'This employee ID is already registered.',
+            'name.unique' => 'This name is already registered.',
+        ];
+    }
 }
