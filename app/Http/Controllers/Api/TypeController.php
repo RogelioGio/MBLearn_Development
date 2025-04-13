@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTypeRequest;
 use App\Models\Type;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class TypeController extends Controller
 {
@@ -48,6 +49,7 @@ class TypeController extends Controller
      */
     public function destroy(Type $type)
     {
+        Gate::authorize('delete', Type::class);
         $type->delete();
         return response()->json([
             "Message" => "Type Deleted"

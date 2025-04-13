@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Subgroup;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 
 class UpdateSubgroupRequest extends FormRequest
@@ -12,6 +14,7 @@ class UpdateSubgroupRequest extends FormRequest
      */
     public function authorize(): bool
     {
+        Gate::authorize('update', Subgroup::class);
         return true;
     }
 

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\City;
 use App\Http\Requests\StoreCityRequest;
 use App\Http\Requests\UpdateCityRequest;
+use Illuminate\Support\Facades\Gate;
 
 class CityController extends Controller
 {
@@ -52,6 +53,7 @@ class CityController extends Controller
      */
     public function destroy(City $city)
     {
+        Gate::authorize('delete', City::class);
         $city->delete();
         return response()->json([
             "message" => "City Deleted"

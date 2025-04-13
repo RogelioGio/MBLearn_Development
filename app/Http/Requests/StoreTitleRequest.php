@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Title;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
 class StoreTitleRequest extends FormRequest
 {
@@ -11,6 +13,7 @@ class StoreTitleRequest extends FormRequest
      */
     public function authorize(): bool
     {
+        Gate::authorize('create', Title::class);
         return true;
     }
 

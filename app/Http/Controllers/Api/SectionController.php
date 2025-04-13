@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Section;
 use App\Http\Requests\StoreSectionRequest;
 use App\Http\Requests\UpdateSectionRequest;
+use Illuminate\Support\Facades\Gate;
 
 class SectionController extends Controller
 {
@@ -49,6 +50,7 @@ class SectionController extends Controller
      */
     public function destroy(Section $section)
     {
+        Gate::authorize('delete', Section::class);
         $section->delete();
         return response()->json([
             "Message" => "Section Deleted"

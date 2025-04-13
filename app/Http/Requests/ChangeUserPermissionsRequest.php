@@ -2,19 +2,15 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Section;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Validation\Rule;
 
-class UpdateSectionRequest extends FormRequest
+class ChangeUserPermissionsRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        Gate::authorize('update', Section::class);
         return true;
     }
 
@@ -26,7 +22,7 @@ class UpdateSectionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "section_name" => ['required', 'string',  Rule::unique('sections')->ignore($this->section_name, 'section_name')]
+            '*.permission_Id' => 'required|integer|exists:permissions,id',
         ];
     }
 }

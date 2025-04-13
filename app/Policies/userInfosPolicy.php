@@ -13,10 +13,7 @@ class userInfosPolicy
      */
     public function viewAny(UserCredentials $userCredentials): bool
     {
-        if($userCredentials->role === "System Admin"){
-            return true;
-        }
-        return false;
+        return true;
     }
 
     /**
@@ -46,7 +43,7 @@ class userInfosPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(UserCredentials $userCredentials, UserInfos $userCredentialsInfos): bool
+    public function update(UserCredentials $userCredentials): bool
     {
         $arrays = $userCredentials->permissionsRole->toArray();
         $perm_names = [];

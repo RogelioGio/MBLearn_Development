@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Title;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
 class UpdateTitleRequest extends FormRequest
 {
@@ -11,7 +13,8 @@ class UpdateTitleRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        Gate::authorize('update', Title::class);
+        return true;
     }
 
     /**

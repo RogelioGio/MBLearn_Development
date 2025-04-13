@@ -7,6 +7,7 @@ use App\helpers\LogActivityHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AddUsersRequest;
 use App\Http\Requests\BulkStoreUserRequest;
+use App\Http\Requests\TestArrayRequest;
 use App\Http\Requests\updateUserInfo;
 use App\Models\Branch;
 use App\Models\Course;
@@ -18,6 +19,7 @@ use App\Models\UserInfos;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\UserCredentials;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Gate;
 
@@ -33,6 +35,7 @@ class userInfo_controller extends Controller
         $department = Department::query()->find($validatedData['department_id']);
         $branch = Branch::query()->find($validatedData['branch_id']);
         $role = Role::query()->find($validatedData['role_id']);
+        $permissions = [];
 
         $profile_image = $this -> generateProfileImageurl($validatedData['first_name'].$validatedData['last_name']);
         $status = $validatedData['status'] ?? 'Active';
@@ -69,16 +72,23 @@ class userInfo_controller extends Controller
             'profile_image' =>$profile_image
         ]);
 
+        foreach($validatedData['permissions'] as $tests){
+            foreach($tests as $key => $value){
+                $permissions[] = $value;
+            }
+        }
+
         $userInfo->branch()->associate($branch);
         $userInfo->title()->associate($title);
         $userInfo->department()->associate($department);
         $userInfo->roles()->sync($role->id);
         $userInfo->save();
         $userCredentials->userInfos()->save($userInfo);
+        $userInfo->permissions()->sync($permissions);
         // Return a success response
         return response()->json([
             'message' => 'User registered successfully',
-            'user_info' => $userInfo,
+            'user_info' => $userInfo->load(['permissions']),
             'user_role' => $userInfo->roles,
             'branch' => $userInfo->branch,
             'user_credentials' => $userCredentials
@@ -169,13 +179,20 @@ class userInfo_controller extends Controller
      */
     public function indexUsers(Request $request){
 
+        Gate::authorize('viewAny', UserInfos::class);
         $page = $request->input('page', 1);//Default page
         $perPage = $request->input('perPage',5); //Number of entry per page
-
+        $user_id = $request->user()->id;
+        
         $filter = new UserInfosFilter();
         $queryItems = $filter->transform($request);
 
-        $users =  UserInfos::query()->where($queryItems)->where('status', '=', 'Active')->with('roles','department','title','branch','city')->paginate($perPage);
+        $users =  UserInfos::query()->where($queryItems)
+        ->where('status', '=', 'Active')
+        ->whereNot(function (Builder $query) use ($user_id){
+            $query->where('id', $user_id);
+        })
+        ->with('roles','department','title','branch','city')->paginate($perPage);
 
         return response()->json([
             'data' => $users->items(),
@@ -210,9 +227,13 @@ class userInfo_controller extends Controller
 
     public function indexNotLearnerUsers(Request $request){
         $perPage = $request->input('perPage',5); //Number of entry per page
+        $user_id = $request->user()->id;
         $admins = UserInfos::query()->whereHas('roles',function($query){
             $query->where('role_name', '!=', 'Learner');
-        })->with('roles','department','title','branch','city')->paginate($perPage);
+        })->whereNot(function (Builder $query) use ($user_id){
+            $query->where('id', $user_id);
+        })->
+        with('roles','department','title','branch','city')->paginate($perPage);
 
         return response()->json([
             'data' => $admins->items(),
@@ -444,8 +465,19 @@ class userInfo_controller extends Controller
         ],200);
     }
 
-    public function test(){
-        return response()->json(['message' => 'Test'], 200);
+    public function test(TestArrayRequest $test){
+        $validated = $test->validated();
+
+        $hi = [];
+        foreach($validated['data'] as $tests){
+            foreach($tests as $key => $value){
+                $hi[] = $value;
+            }
+        }
+
+        return response()->json([
+            "message" => $hi
+        ]);
     }
 
 }

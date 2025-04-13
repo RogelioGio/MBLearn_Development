@@ -38,6 +38,7 @@ class AddUsersRequest extends FormRequest
             "profile_image" => "nullable|string|max:255",
             "MBemail" => "required|email|unique:userCredentials,MBemail",
             "password" => "required|string|min:8",
+            "permissions.*.permission_Id" => "required|integer|exists:permissions,id",
         ];
     }
 }

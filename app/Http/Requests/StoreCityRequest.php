@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\City;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
 class StoreCityRequest extends FormRequest
 {
@@ -11,6 +13,7 @@ class StoreCityRequest extends FormRequest
      */
     public function authorize(): bool
     {
+        Gate::authorize('create', City::class);
         return true;
     }
 

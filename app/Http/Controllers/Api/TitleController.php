@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Title;
 use App\Http\Requests\StoreTitleRequest;
 use App\Http\Requests\UpdateTitleRequest;
+use Illuminate\Support\Facades\Gate;
 
 class TitleController extends Controller
 {
@@ -49,6 +50,7 @@ class TitleController extends Controller
      */
     public function destroy(Title $title)
     {
+        Gate::authorize('delete', Title::class);
         $title->delete();
         return response()->json([
             'message' => 'title removed'

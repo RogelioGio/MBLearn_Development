@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Department;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 
 class UpdateDepartmentRequest extends FormRequest
@@ -12,6 +14,7 @@ class UpdateDepartmentRequest extends FormRequest
      */
     public function authorize(): bool
     {
+        Gate::authorize('update', Department::class);
         return true;
     }
 

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Subgroup;
 use App\Http\Requests\StoreSubgroupRequest;
 use App\Http\Requests\UpdateSubgroupRequest;
+use Illuminate\Support\Facades\Gate;
 
 class SubgroupController extends Controller
 {
@@ -50,6 +51,7 @@ class SubgroupController extends Controller
      */
     public function destroy(Subgroup $subgroup)
     {
+        Gate::authorize('delete', Subgroup::class);
         $subgroup->delete();
         return response()->json([
             'message' => 'Subgroup Deleted'

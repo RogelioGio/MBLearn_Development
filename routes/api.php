@@ -24,6 +24,7 @@ use App\Http\Controllers\Api\SubgroupController;
 use App\Http\Controllers\Api\TitleController;
 use App\Http\Controllers\Api\Training_ModeController;
 use App\Http\Controllers\Api\TypeController;
+use App\Models\UserInfos;
 
 //New Login routing
 Route::post('/login', [AuthController::class, 'login']);
@@ -31,7 +32,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function(){
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', function (Request $request) {
-        return $request->user()->load(['userInfos.roles.permissions']);
+        return $request->user()->load(['userInfos.permissions']);
     });
     //test purposes amd account implementation (postman testing)
     // Route::post('/add-test-user', [UserController::class, 'addTestUser']);
@@ -122,12 +123,11 @@ Route::middleware('auth:sanctum')->group(function(){
 
     //extra (permission)
     Route::post('/updateRolePermission/{role}', [RoleController::class, 'updateRolePermissions']);
+    Route::post('/updateUserPermission/{userCredentials}', [userCredentials_controller::class, 'changeUserPermissions']);
 
 });
 
-Route::post('/add-user', [userInfo_controller::class, 'addUser']);
-Route::post('/addusercredentials', [userCredentials_controller::class, 'addUserCredentials']);
-Route::get('/test', [userInfo_controller::class, 'test']);
+Route::post('/test', [userInfo_controller::class, 'test']);
 
 //Category API
 Route::get('category',[FilterCategoryController::class, 'index']);
@@ -137,6 +137,12 @@ route::post('create-option', [FilterOptionController::class, 'store']);
 
 route::get('/index-logs', [ActivityLogsController::class, 'index']);
 
+Route::get('/aaaa', function(){
+    $user = UserInfos::find(1);
+    $user2 = UserInfos::find(50);
+    return $user2->permissionsRole;
+
+});
 // Route::get('/reset-user',[userInfo_controller::class, 'resetUser']); //reset user table
 // Route::get('/reset-user-creds',[userCredentials_controller::class, 'resetUsers']); //reset user table
 

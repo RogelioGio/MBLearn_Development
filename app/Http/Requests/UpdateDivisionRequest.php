@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Division;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 
 class UpdateDivisionRequest extends FormRequest
@@ -12,6 +14,7 @@ class UpdateDivisionRequest extends FormRequest
      */
     public function authorize(): bool
     {
+        Gate::authorize('update', Division::class);
         return true;
     }
 

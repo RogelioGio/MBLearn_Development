@@ -29,23 +29,38 @@ class SectionPolicy
      */
     public function create(UserCredentials $userCredentials): bool
     {
-        return false;
+        $arrays = $userCredentials->permissionsRole->toArray();
+        $perm_names = [];
+        foreach($arrays as $array){
+            $perm_names[] = $array["permission_name"];
+        }
+        return in_array("AddFormInput", $perm_names);
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(UserCredentials $userCredentials, Section $section): bool
+    public function update(UserCredentials $userCredentials): bool
     {
-        return false;
+        $arrays = $userCredentials->permissionsRole->toArray();
+        $perm_names = [];
+        foreach($arrays as $array){
+            $perm_names[] = $array["permission_name"];
+        }
+        return in_array("EditFormInput", $perm_names);
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(UserCredentials $userCredentials, Section $section): bool
+    public function delete(UserCredentials $userCredentials): bool
     {
-        return false;
+        $arrays = $userCredentials->permissionsRole->toArray();
+        $perm_names = [];
+        foreach($arrays as $array){
+            $perm_names[] = $array["permission_name"];
+        }
+        return in_array("DeleteFormInput", $perm_names);
     }
 
     /**
