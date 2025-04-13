@@ -12,7 +12,8 @@ const ReactivationAccountSetting = () => {
     const {departments, titles, cities, location} = useOption();
     const [loading, setLoading] = useState()
     const [users, setUnactiveUsers] = useState([])
-    const [reactivate, setReactivate] = useState(true)
+    const [reactivate, setReactivate] = useState(false)
+    const [user, setUsers] = useState()
 
     const fetchUsers = () => {
         setLoading(true)
@@ -35,6 +36,14 @@ const ReactivationAccountSetting = () => {
     useEffect(() => {
         fetchUsers()
     },[])
+
+    const openReActivation = (id) => {
+        if (id) {
+            console.log("clicked") // Ensure id is valid before setting state
+            setUsers(id)
+            setReactivate(true)
+        }
+    };
 
     return(
         <>
@@ -82,11 +91,15 @@ const ReactivationAccountSetting = () => {
                                 </tr>
                             ) : (
                                 users.map(user => (
-                                    <UserReactivationProps image={user.user_infos?.profile_image}
+                                    <UserReactivationProps
+                                    key={user.id}
+                                    id={user.id}
+                                    image={user.user_infos?.profile_image}
                                     name={[user.user_infos?.first_name, user.user_infos?.middle_name, user.user_infos?.last_name].join(" ")}
                                     MBEmail={user.MBemail}
                                     branch={user.user_infos?.branch_id}
-                                    city={user.user_infos?.city_id}/>
+                                    city={user.user_infos?.city_id}
+                                    selected={openReActivation}/>
                                 ))
                             )
 
@@ -100,7 +113,7 @@ const ReactivationAccountSetting = () => {
                 Paganiation here
             </div>
         </div>
-        <ReactivationAccountModal open={reactivate} close={() => setReactivate(false)}/>
+        <ReactivationAccountModal open={reactivate} close={() => setReactivate(false)} id={user}/>
         </>
     )
 }

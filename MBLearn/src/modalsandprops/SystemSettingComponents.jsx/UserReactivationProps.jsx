@@ -1,10 +1,10 @@
 import { useOption } from "MBLearn/src/contexts/AddUserOptionProvider"
 
-const UserReactivationProps = ({image, name, MBEmail, branch, city}) => {
+const UserReactivationProps = ({id,image, name, MBEmail, branch, city, selected}) => {
     const {cities,departments,location,titles,roles,permission} = useOption()
 
     return(
-        <tr className='font-text text-sm hover:bg-gray-200 hover:cursor-pointer'>
+        <tr className='font-text text-sm hover:bg-gray-200 hover:cursor-pointer' onClick={()=>selected(id)}>
             <td className='text-sm py-3 px-4'>
                 <div className='flex items-center gap-2'>
                     {/* User Image */}
