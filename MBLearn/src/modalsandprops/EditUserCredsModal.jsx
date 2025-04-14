@@ -108,7 +108,15 @@ const EditUserCredsModal = ({open, close,ID, editSuccess}) => {
         }
         useEffect(() => {
             fetchRoles()
+            setRoles(formik.values.role)
         },[])
+
+    useEffect(() => {
+        if (formik.values.role) {
+            console.log("Selected Role ID:", formik.values.role);
+            console.log("Permissions:", permission);
+        }
+    }, [formik.values.role, permission]);
 
     return(
         <>
