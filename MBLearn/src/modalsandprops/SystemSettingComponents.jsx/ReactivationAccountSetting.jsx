@@ -6,12 +6,13 @@ import UserCredentialsLoadingProps from "../UserCredentialsLoadingProps";
 import UserReactivationProps from "./UserReactivationProps";
 import { faFilter, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
+import ReactivationAccountModal from "./ReactivationAccountModal";
 
 const ReactivationAccountSetting = () => {
     const {departments, titles, cities, location} = useOption();
     const [loading, setLoading] = useState()
     const [users, setUnactiveUsers] = useState([])
+    const [reactivate, setReactivate] = useState(true)
 
     const fetchUsers = () => {
         setLoading(true)
@@ -36,7 +37,8 @@ const ReactivationAccountSetting = () => {
     },[])
 
     return(
-        <div className="mx-5 py-5 row-span-2 col-span-3 grid grid-cols-3 grid-rows-[min-content_auto_auto] gap-2">
+        <>
+        <div className="mx-5 py-5 row-span-3 col-span-3 grid grid-cols-3 grid-rows-[min-content_min-content_1fr_min-content] gap-2 h-full">
             {/* Header */}
             <div className="row-span-1 col-span-3 flex flex-row justify-between items-center">
                 <div>
@@ -60,7 +62,7 @@ const ReactivationAccountSetting = () => {
             </div>
             {/* Table */}
             <div className='row-start-3 row-span-2 col-start-1 col-span-3'>
-                <div className='w-full border-primary border rounded-md overflow-hidden shadow-md'>
+            <div className='w-full border-primary border rounded-md overflow-hidden shadow-md'>
                 <table className='text-left min-w-full table-layout-fixed'>
                     <thead className='font-header text-xs text-primary bg-secondaryprimary uppercase'>
                         <tr>
@@ -93,11 +95,13 @@ const ReactivationAccountSetting = () => {
                     </tbody>
                 </table>
                 </div>
-                <div>
-                    Paganiation here
-                </div>
+            </div>
+            <div className="row-start-4 col-start-1">
+                Paganiation here
             </div>
         </div>
+        <ReactivationAccountModal open={reactivate} close={() => setReactivate(false)}/>
+        </>
     )
 }
 export default ReactivationAccountSetting

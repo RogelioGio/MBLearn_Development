@@ -11,6 +11,7 @@ import { toast } from "sonner"
 import SystemAdminPermissionProps from "./SystemAdminPermssionProps"
 import CourseAdminPermissionProps from "./CourseAdminPermissionProps"
 import CourseLoading from "../../assets/Course_Loading.svg";
+import { ScrollArea } from "MBLearn/src/components/ui/scroll-area"
 const RoleManagementSetting = () => {
     const [roles, setRoles] = useState([])
     const [loading, setLoading] = useState(true)
@@ -118,6 +119,7 @@ const RoleManagementSetting = () => {
 
     return (
         <>
+        <ScrollArea className="col-span-3 row-span-3 overflow-y-auto max-h-[calc(100vh-6.25rem)]">
 
         <div className="mx-5 py-5 row-span-2 col-span-3 grid grid-cols-2 grid-rows-[min-content_auto] gap-2">
                 {/* Header */}
@@ -249,7 +251,7 @@ const RoleManagementSetting = () => {
 
                 </div>
             </div>
-
+            </ScrollArea>
             {/* UnsavedWarningModal */}
             <UnsavedWarningModal isOpen={warning} close={() => setWarning(false)} onContinue={continueUnsaved}/>
             </>
