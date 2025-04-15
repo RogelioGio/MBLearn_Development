@@ -3,12 +3,11 @@
 namespace App\helpers;
 
 use App\Models\Activitylogs;
-use Illuminate\Support\Facades\Auth;
 
 class LogActivityHelper{
-    public static function logActivity($action, $user_name, $description = null, $target = null){
+    public static function logActivity($user_id, $action, $user_name, $description = null, $target = null){
         Activitylogs::create([
-            'user_id' => Auth::id(),
+            'user_id' => $user_id,
             'action' => $action,
             'user_name' => $user_name,
             'description' => $description,

@@ -8,6 +8,13 @@ use Illuminate\Auth\Access\Response;
 
 class EnrollmentPolicy
 {
+
+    public function before(UserCredentials $userCredentials): bool|null{
+        if($userCredentials->userInfos->status === "Active"){
+            return true;
+        }
+        return false;
+    }
     /**
      * Determine whether the user can view any models.
      */

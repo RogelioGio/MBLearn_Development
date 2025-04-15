@@ -8,12 +8,18 @@ use Illuminate\Auth\Access\Response;
 
 class BranchPolicy
 {
+    public function before(UserCredentials $userCredentials): bool|null{
+        if($userCredentials->userInfos->status === "Active"){
+            return true;
+        }
+        return false;
+    }
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(UserCredentials $userCredentials): bool
     {
-        $arrays = $userCredentials->permissionsRole->toArray();
+        $arrays = $userCredentials->permissions->toArray();
         $perm_names = [];
         foreach($arrays as $array){
             $perm_names[] = $array["permission_name"];
@@ -34,7 +40,7 @@ class BranchPolicy
      */
     public function create(UserCredentials $userCredentials): bool
     {
-        $arrays = $userCredentials->permissionsRole->toArray();
+        $arrays = $userCredentials->permissions->toArray();
         $perm_names = [];
         foreach($arrays as $array){
             $perm_names[] = $array["permission_name"];
@@ -47,7 +53,7 @@ class BranchPolicy
      */
     public function update(UserCredentials $userCredentials): bool
     {
-        $arrays = $userCredentials->permissionsRole->toArray();
+        $arrays = $userCredentials->permissions->toArray();
         $perm_names = [];
         foreach($arrays as $array){
             $perm_names[] = $array["permission_name"];
@@ -60,7 +66,7 @@ class BranchPolicy
      */
     public function delete(UserCredentials $userCredentials): bool
     {
-        $arrays = $userCredentials->permissionsRole->toArray();
+        $arrays = $userCredentials->permissions->toArray();
         $perm_names = [];
         foreach($arrays as $array){
             $perm_names[] = $array["permission_name"];

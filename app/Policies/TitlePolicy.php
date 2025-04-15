@@ -8,6 +8,13 @@ use Illuminate\Auth\Access\Response;
 
 class TitlePolicy
 {
+
+    public function before(UserCredentials $userCredentials): bool|null{
+        if($userCredentials->userInfos->status === "Active"){
+            return true;
+        }
+        return false;
+    }
     /**
      * Determine whether the user can view any models.
      */
@@ -21,7 +28,7 @@ class TitlePolicy
      */
     public function create(UserCredentials $userCredentials): bool
     {
-        $arrays = $userCredentials->permissionsRole->toArray();
+        $arrays = $userCredentials->permissions->toArray();
         $perm_names = [];
         foreach($arrays as $array){
             $perm_names[] = $array["permission_name"];
@@ -34,7 +41,7 @@ class TitlePolicy
      */
     public function update(UserCredentials $userCredentials): bool
     {
-        $arrays = $userCredentials->permissionsRole->toArray();
+        $arrays = $userCredentials->permissions->toArray();
         $perm_names = [];
         foreach($arrays as $array){
             $perm_names[] = $array["permission_name"];
@@ -47,7 +54,7 @@ class TitlePolicy
      */
     public function delete(UserCredentials $userCredentials): bool
     {
-        $arrays = $userCredentials->permissionsRole->toArray();
+        $arrays = $userCredentials->permissions->toArray();
         $perm_names = [];
         foreach($arrays as $array){
             $perm_names[] = $array["permission_name"];

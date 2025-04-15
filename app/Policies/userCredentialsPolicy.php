@@ -7,6 +7,13 @@ use Illuminate\Auth\Access\Response;
 
 class userCredentialsPolicy
 {
+
+    public function before(UserCredentials $userCredentials): bool|null{
+        if($userCredentials->userInfos->status === "Active"){
+            return true;
+        }
+        return false;
+    }
     /**
      * Determine whether the user can view any models.
      */

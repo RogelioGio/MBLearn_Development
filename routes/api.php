@@ -113,6 +113,7 @@ Route::middleware('auth:sanctum')->group(function(){
 
     //Role API (get and post with /roles, get, put, and delete with /roles/{roleid} every api resource is same as this)
     Route::apiResource('/roles', RoleController::class);
+    Route::get('/rolepermissions/{role}', [RoleController::class, 'showRolePermissions']);
 
     //Fetching All Option for dropdown
     Route::get('/options', [OptionController::class,'index']);
