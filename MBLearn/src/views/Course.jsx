@@ -108,7 +108,7 @@ export default function Course() {
                     }
                 </div>
                 {
-                    !isLoading ? (<div className="flex flex-row justify-center items-center gap-2 pr-5">
+                    !isLoading && user.roles?.some(r => r.role_name === "Course Admin")? (<div className="flex flex-row justify-center items-center gap-2 pr-5">
                         <div className="hover:scale-105 ease-in-out transition-all hover:cursor-pointer" onClick={()=>setOpen(true)}>
                             <FontAwesomeIcon icon={faPenToSquare} className="border-2 border-primary rounded-md aspect-square p-3 text-lg text-primary shadow-md hover:bg-primary hover:text-white"/>
                         </div>
@@ -145,10 +145,16 @@ export default function Course() {
                 {
                     !isLoading ? (
                         <>
-                            <p className="text-primary font-header col-start-1"> Course Status:</p>
-                            <span className=" col-start-2 inline-flex items-center justify-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-blue-700/10 ring-inset">
-                                Course Status Sample
-                            </span>
+                            {
+                                !isLoading ? (
+                                <>
+                                    <p className="text-primary font-header col-start-1"> Course Status:</p>
+                                    <span className=" col-start-2 inline-flex items-center justify-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-blue-700/10 ring-inset">
+                                        Course Status Sample
+                                    </span>
+                                </>
+                                ) : (null)
+                            }
                             <p className="text-primary font-text text-xs col-start-1">Category: </p>
                             <div className="text-primary font-text text-xs">
                                 {course?.categories?.[0]?.category_name}
