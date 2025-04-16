@@ -147,8 +147,8 @@ export default function Navigation() {
                 </ul>
 
                 <ul className='flex flex-col gap-4 justify-center items-center'>
-                    <li><Icons icon={<FontAwesomeIcon icon={faGear}/>} text={"Account Setting"}/></li>
-                    <li><Icons icon={<FontAwesomeIcon icon={faBell}/>} text={"Notifications"}/></li>
+                    <li><Icons icon={<FontAwesomeIcon icon={faGear}/>} text={"Account Setting"} to={"/systemadmin/accountsettings"}/></li>
+                    {/* <li><Icons icon={<FontAwesomeIcon icon={faBell}/>} text={"Notifications"}/></li> */}
                     <li className='inline-block relative w-auto group p-1'>
                         <img src={user.user_infos.profile_image} alt="" className='w-10 h-10 rounded-full shadow-lg hover:scale-105 transition-all ease-in-out'/>
                         {/* Profile */}

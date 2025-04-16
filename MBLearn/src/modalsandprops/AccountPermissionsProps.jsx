@@ -3,12 +3,13 @@ import CourseAdminPermissionProps from "./SystemSettingComponents.jsx/CourseAdmi
 import SystemAdminPermissionProps from "./SystemSettingComponents.jsx/SystemAdminPermssionProps";
 import axiosClient from "../axios-client";
 
-const AccountPermissionProps = ({refPermissions, selectedRole, role}) => {
+const AccountPermissionProps = ({refPermissions, selectedRole, role, setAccountPerm}) => {
     useEffect(() => {
-        // console.log("Selected Role:", selectedRole);
-        // console.log("Role Permissions:", role);
+        //console.log("Selected Role:", selectedRole);
         availablePermission();
     }, [selectedRole]);
+
+    const [accountPerm, _setAccountPerm] = useState()
 
 
     const [permission, setPermissions] = useState([]);
@@ -17,18 +18,23 @@ const AccountPermissionProps = ({refPermissions, selectedRole, role}) => {
         console.log("Selected Role Object:", selected);
         if (selected) {
             setPermissions(selected?.permissions)
-            console.log("Permissions:", selected?.permissions);
+            _setAccountPerm((selected?.permissions || []).map(p => ({
+                permission_Id: p.id
+            })))
         } else {
             setPermissions([]);
             console.log("No permissions found for the selected role.");
         }
     };
 
-    // useEffect(()=>{
-    //     console.log(refPermissions)
-    //     console.log(rolePermission)
-    //     console.log(permission)
-    // },[permission])
+    useEffect(()=>{
+        // console.log(refPermissions)
+        // console.log(rolePermission)
+        if(setAccountPerm){
+            setAccountPerm(accountPerm)
+        }
+        console.log(permission)
+    },[permission])
 
     const isChecked = (permName) => {
         return permission.some(p => p.permission_name === permName);
@@ -41,8 +47,7 @@ const AccountPermissionProps = ({refPermissions, selectedRole, role}) => {
             if(checked && !exists) {
                 //setSaved(false)
                 return [...prev, {
-                    id: perm?.id,
-                    permission_name:perm?.permission_name}];
+                    permission_id: perm?.id,}];
             } else if (!checked && exists) {
                 //setSaved(false)
                 return prev.filter(p=>p.permission_name !== permission_name)
@@ -53,8 +58,13 @@ const AccountPermissionProps = ({refPermissions, selectedRole, role}) => {
 
     return (
         <>
-        <SystemAdminPermissionProps isChecked={isChecked} permissionswitch={permissionswitch}/>
-        <CourseAdminPermissionProps isChecked={isChecked} permissionswitch={permissionswitch}/>
+        {
+            selectedRole === 1 ? (
+                <SystemAdminPermissionProps isChecked={isChecked} permissionswitch={permissionswitch}/>
+            ) : selectedRole === 2 ? (
+                <CourseAdminPermissionProps isChecked={isChecked} permissionswitch={permissionswitch}/>
+            ) : (null)
+        }
         </>
     );
 }

@@ -183,7 +183,7 @@ class userInfo_controller extends Controller
         $page = $request->input('page', 1);//Default page
         $perPage = $request->input('perPage',5); //Number of entry per page
         $user_id = $request->user()->id;
-        
+
         $filter = new UserInfosFilter();
         $queryItems = $filter->transform($request);
 
@@ -359,7 +359,7 @@ class userInfo_controller extends Controller
     }
 
     public function getUserCourses(UserInfos $userInfos){
-        $courses = $userInfos->enrolledCourses()->with(['categories', 'types', 'training_modes'])->paginate(5);
+        $courses = $userInfos->enrolledCourses()->with(['categories', 'types', 'training_modes'])->paginate(4);
         return $courses;
     }
 
