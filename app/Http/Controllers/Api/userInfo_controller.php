@@ -424,7 +424,7 @@ class userInfo_controller extends Controller
             $userInfos->status = "Inactive";
             $userInfos->save();
 
-            //LogActivityHelper::logActivity('Delete user', 'Deleted a user', "User Full Name: " . $userInfos->first_name . " " . $userInfos->last_name);
+            // LogActivityHelper::logActivity('Delete user', 'Deleted a user', "User Full Name: " . $userInfos->first_name . " " . $userInfos->last_name);
             return response()->json(['message' => 'User is now set to inactive'], 200);
         }else {
             return response()->json(['message' => 'User not found'], 404);

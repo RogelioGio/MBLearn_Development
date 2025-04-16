@@ -75,6 +75,7 @@ class userCredentials_controller extends Controller
 
         $page = $request->input('page', 1);//Default page
         $perPage = $request->input('perPage',5); //Number of entry per page
+        $currentUserId = $request->user()->id;
 
         // $userCredentials = UserCredentials::with(['userInfos', 'userInfos.roles'])->paginate($perPage);
 
@@ -85,8 +86,10 @@ class userCredentials_controller extends Controller
         //     'data' => $userCredentials->items()
         // ]);
 
-        $query = UserCredentials::with(['userInfos', 'userInfos.roles']) ->whereHas('userInfos', function ($subQuery) {
-            $subQuery->where('status', 'Active'); // Ensure only Active users are fetched
+        $query = UserCredentials::with(['userInfos', 'userInfos.roles'])
+        ->whereHas('userInfos', function ($subQuery) use ($currentUserId) {
+            $subQuery->where('status', 'Active')
+            ->where('id', '!=', $currentUserId); // Ensure only Active users are fetched
         });
 
         // Apply filters based on userInfos attributes

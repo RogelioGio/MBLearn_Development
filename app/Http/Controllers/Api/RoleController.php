@@ -40,6 +40,10 @@ class RoleController extends Controller
         return $role;
     }
 
+    public function showRolePermissions(Role $role){
+        return $role->permissions;
+    }
+
     public function updateRolePermissions(UpdateRolePermissionRequest $request, Role $role){
         
         $bulk = collect($request->all())->map(function($arr, $key){
