@@ -3,9 +3,10 @@ import { useStateContext } from '../contexts/ContextProvider';
 import axiosClient from '../axios-client';
 import { Helmet } from 'react-helmet';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBookOpenReader, faGraduationCap, faHeartPulse, faPeopleGroup, faUserLock, faUserShield } from '@fortawesome/free-solid-svg-icons';
+import { faBookOpenReader, faGraduationCap, faHeartPulse, faPenToSquare, faPeopleGroup, faUserLock, faUserShield } from '@fortawesome/free-solid-svg-icons';
 import AnnouncmentCarousel from '../modalsandprops/dashboardComponents/AnnouncementCarousel';
 import LearnerDashboard from './Dashboards/LearnerDashboard';
+import { CarouselPrevious, CarouselNext } from '../components/ui/carousel';
 
 
 
@@ -75,7 +76,7 @@ const DashboardLayout = ({role,name,user}) => {
         //Course Admin Dashboard
         case 'Course Admin':
             return (
-                <div className="grid  grid-cols-4 grid-rows-[6.25rem_auto] h-full w-full">
+                <div className="grid  grid-cols-4 grid-rows-[6.25rem_1fr_1fr] h-full w-full">
                     <Helmet>{/* Title of the mark-up */}
                     <title>MBLearn | Course Admin Dashboard</title>
                     </Helmet>
@@ -88,25 +89,13 @@ const DashboardLayout = ({role,name,user}) => {
                             <FontAwesomeIcon icon={faBookOpenReader} className='text-primary text-2xl'/>
                         </div>
                     </div>
-                    {/* Announcement */}
-                    <div className='col-span-3 row-span-1 px-5 py-2 w-full h-full'>
-                    <AnnouncmentCarousel/>
+                    <div className='col-span-3 row-span-1 px-5 py-2'>
+                        <AnnouncmentCarousel/>
                     </div>
-                    <div className='col-span-1 row-span-1 pb-2 pt-5 mr-5 '>
-                        <div className='bg-white w-full h-full rounded-md shadow-md p-5'>
-
-                        </div>
+                    <div className='row-start-3 col-span-3 px-5 py-2'>
+                        <h1 className="font-header text-primary text-base">My Courses</h1>
+                        <p className="font-text text-unactive text-xs">View all your inputted courses in one place and stay on top of metrobank learning journey.</p>
                     </div>
-                    {/* Changing Content */}
-                    <div className='col-span-3 row-start-3 ml-5 pr-2 pt-2 pb-5'>
-                        <div className='bg-white w-full h-full rounded-md shadow-md'>
-
-                        </div>
-                    </div>
-                    <div className='col-span-1 row-start-3 mr-5 pt-2 pb-5 flex flex-col justify-between gap-4'>
-                        <div className='bg-white w-full h-full rounded-md shadow-md p-5'></div>
-                    </div>
-
                 </div>
             )
         //Learner Dashboard
