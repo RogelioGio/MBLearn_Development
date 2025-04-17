@@ -19,7 +19,7 @@ use App\Models\UserInfos;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\UserCredentials;
-use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Gate;
 
@@ -198,7 +198,27 @@ class userInfo_controller extends Controller
             'data' => $users->items(),
             'total' => $users->total(),
             'lastPage' => $users->lastPage(),
-            'currentPage' => $users->currentPage()
+            'currentPage' => $users->currentPage(),
+        ],200);
+    }
+
+    public function indexAvailableCourseAdmins(Request $request, Course $course){
+        $filter = new UserInfosFilter();
+        $queryItems = $filter->transform($request);
+        $users = UserInfos::query()
+            ->where($queryItems)
+            ->whereHas('roles', function(Builder $query){
+                $query->where('role_name', 'Course Admin');
+            })
+            ->whereDoesntHave('assignedCourses', function ($query) use($course) {
+                $query->where('courses.id', $course->id);
+            })->where('status', 'Active')->paginate(5);
+
+        return response()->json([
+            'data' => $users->items(),
+            'total' => $users->total(),
+            'lastPage' => $users->lastPage(),
+            'currentPage' => $users->currentPage(),
         ],200);
     }
 
@@ -465,19 +485,17 @@ class userInfo_controller extends Controller
         ],200);
     }
 
-    public function test(TestArrayRequest $test){
-        $validated = $test->validated();
-
-        $hi = [];
-        foreach($validated['data'] as $tests){
-            foreach($tests as $key => $value){
-                $hi[] = $value;
-            }
-        }
-
+    public function test(Request $request){
+        $user_id = $request->user()->id;
+        $users = UserInfos::query()
+            ->whereHas('roles', function(Builder $query){
+                $query->where('role_name', 'Course Admin');
+            })
+            ->whereDoesntHave('assignedCourses', function ($query) {
+            $query->where('courses.id', 2);
+        })->where('status', 'Active')->paginate(5);
         return response()->json([
-            "message" => $hi
+            "message" => $users
         ]);
     }
-
 }

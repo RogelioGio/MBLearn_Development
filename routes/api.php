@@ -109,6 +109,7 @@ Route::middleware('auth:sanctum')->group(function(){
 
     //Assigning Course Admin to Course
     Route::post('/assign-course-admin/{course}', [CourseController::class, 'assignCourseAdmin']);
+    Route::get('/get-available-course-admins/{course}', [userInfo_controller::class, 'indexAvailableCourseAdmins']);
 
 
     //Role API (get and post with /roles, get, put, and delete with /roles/{roleid} every api resource is same as this)
@@ -126,9 +127,11 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('/updateRolePermission/{role}', [RoleController::class, 'updateRolePermissions']);
     Route::post('/updateUserPermission/{userCredentials}', [userCredentials_controller::class, 'changeUserPermissions']);
 
+    Route::get('/test', [userInfo_controller::class, 'test']);
+
 });
 
-Route::post('/test', [userInfo_controller::class, 'test']);
+
 
 //Category API
 Route::get('category',[FilterCategoryController::class, 'index']);
