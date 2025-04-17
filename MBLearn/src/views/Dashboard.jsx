@@ -7,6 +7,7 @@ import { faBookOpenReader, faGraduationCap, faHeartPulse, faPenToSquare, faPeopl
 import AnnouncmentCarousel from '../modalsandprops/dashboardComponents/AnnouncementCarousel';
 import LearnerDashboard from './Dashboards/LearnerDashboard';
 import { CarouselPrevious, CarouselNext } from '../components/ui/carousel';
+import CourseAdminDashboard from './Dashboards/CourseAdminDashboard';
 
 
 
@@ -76,27 +77,13 @@ const DashboardLayout = ({role,name,user}) => {
         //Course Admin Dashboard
         case 'Course Admin':
             return (
-                <div className="grid  grid-cols-4 grid-rows-[6.25rem_1fr_1fr] h-full w-full">
+                <>
                     <Helmet>{/* Title of the mark-up */}
                     <title>MBLearn | Course Admin Dashboard</title>
                     </Helmet>
-                    <div className="flex flex-col justify-center col-span-3 row-span-1 pr-5 border-b ml-5 border-divider">
-                            <h1 className="text-primary text-4xl font-header">Good Day! {name}</h1>
-                            <p className='font-text text-sm text-unactive'>Course Admin Dashboard, A centralized hub for Course administrators to manage Learners, monitor learners progress.</p>
-                    </div>
-                    <div className='border-b border-divider mr-5 flex flex-row justify-end items-center'>
-                        <div className='p-6 aspect-square bg-secondaryprimary rounded-full flex justify-center items-center'>
-                            <FontAwesomeIcon icon={faBookOpenReader} className='text-primary text-2xl'/>
-                        </div>
-                    </div>
-                    <div className='col-span-3 row-span-1 px-5 py-2'>
-                        <AnnouncmentCarousel/>
-                    </div>
-                    <div className='row-start-3 col-span-3 px-5 py-2'>
-                        <h1 className="font-header text-primary text-base">My Courses</h1>
-                        <p className="font-text text-unactive text-xs">View all your inputted courses in one place and stay on top of metrobank learning journey.</p>
-                    </div>
-                </div>
+                    <CourseAdminDashboard name={name} user={user}/>
+                </>
+
             )
         //Learner Dashboard
         case 'Learner':
