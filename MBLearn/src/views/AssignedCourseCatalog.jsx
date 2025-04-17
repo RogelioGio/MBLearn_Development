@@ -146,7 +146,7 @@ export default function AssignedCourseCatalog() {
 
             {/* Header */}
             <div className='flex flex-col justify-center col-span-3 row-span-1 pr-5 border-b ml-5 border-divider'>
-                <h1 className='text-primary text-4xl font-header'>Course Catalog</h1>
+                <h1 className='text-primary text-4xl font-header'>Co-course Catalog</h1>
                 <p className='font-text text-sm text-unactive' >View and manage the assigned course catalog for easy course access and tracking.</p>
             </div>
 

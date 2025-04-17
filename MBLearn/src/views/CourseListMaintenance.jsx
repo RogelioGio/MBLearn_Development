@@ -181,7 +181,7 @@ const [pageState, setPagination] = useState({
 
             {/* Header */}
             <div className='flex flex-col justify-center col-span-3 row-span-1 pr-5 border-b ml-5 border-divider'>
-            <h1 className='text-primary text-4xl font-header'>Course List Maintenance </h1>
+            <h1 className='text-primary text-4xl font-header'>My Courses</h1>
             <p className='font-text text-sm text-unactive'>Easily manage and add courses to streamline learning opportunities.</p>
             </div>
 
