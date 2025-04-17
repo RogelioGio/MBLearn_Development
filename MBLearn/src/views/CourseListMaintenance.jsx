@@ -176,12 +176,12 @@ const [pageState, setPagination] = useState({
         <div className='grid  grid-cols-4 grid-rows-[6.25rem_min-content_1fr_min-content] h-full w-full overflow-hidden'>
             <Helmet>
                 {/* Title of the mark-up */}
-                <title>MBLearn | Course List Maintenance</title>
+                <title>MBLearn | My Courses Maintenance</title>
             </Helmet>
 
             {/* Header */}
             <div className='flex flex-col justify-center col-span-3 row-span-1 pr-5 border-b ml-5 border-divider'>
-            <h1 className='text-primary text-4xl font-header'>My Courses</h1>
+            <h1 className='text-primary text-4xl font-header'>My Courses Maintenance</h1>
             <p className='font-text text-sm text-unactive'>Easily manage and add courses to streamline learning opportunities.</p>
             </div>
 

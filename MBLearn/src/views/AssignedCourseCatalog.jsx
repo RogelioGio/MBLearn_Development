@@ -141,12 +141,12 @@ export default function AssignedCourseCatalog() {
         <div className='grid grid-cols-4 grid-rows-[6.25rem_min-content_1fr_min-content] h-full w-full'>
             <Helmet>
                 {/* Title of the mark-up */}
-                <title>MBLearn | Course Catalog</title>
+                <title>MBLearn | Assigned Courses Manager</title>
             </Helmet>
 
             {/* Header */}
             <div className='flex flex-col justify-center col-span-3 row-span-1 pr-5 border-b ml-5 border-divider'>
-                <h1 className='text-primary text-4xl font-header'>Co-course Catalog</h1>
+                <h1 className='text-primary text-4xl font-header'>Assigned Courses Manager</h1>
                 <p className='font-text text-sm text-unactive' >View and manage the assigned course catalog for easy course access and tracking.</p>
             </div>
 
@@ -197,7 +197,7 @@ export default function AssignedCourseCatalog() {
                             <AssignedCourseCatalogCard key={index}
                                 id={course.id}
                                 name={course.name}
-                                courseType={course.types?.type_name}
+                                courseType={course.types[0]?.type_name}
                                 courseCategory={course.categories[0]?.category_name}
                                 trainingMode={course.training_modes[0]?.modes_name}
                                 trainingType={course.training_type}/>

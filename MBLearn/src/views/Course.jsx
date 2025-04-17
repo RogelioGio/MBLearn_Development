@@ -39,6 +39,7 @@ export default function Course() {
     const tabComponents = {
         module: <CourseModuleProps />,
         learner: <CourseLearenerProps />,
+        courseAdmin: null,
         enrollment: <CourseEnrollmentProps />,
     };
 
@@ -82,7 +83,7 @@ export default function Course() {
                                     <p className="font-text text-xs text-unactive">Course ID: 12345678910 </p>
                                 </div>
                                 {/* Course Status */}
-                                <span className="inline-flex items-center rounded-md bg-secondaryprimary px-2 py-2 text-xs font-medium text-primary font-text">
+                                <span className="inline-flex items-center rounded-md bg-secondaryprimary px-4 py-2 text-xs font-medium text-primary font-text ring-1 ring-primary gap-1">
                                     <FontAwesomeIcon icon={faPencil} className="text-primary text-xs mr-1"/>
                                     Unpublished
                                 </span>
@@ -115,7 +116,7 @@ export default function Course() {
                             <div className= {`group flex justify-center items-center px-5 hover:border-b-2 hover:border-b-primary transition-all ease-in-out hover:cursor-pointer ${tab === "learner" ? "border-b-2 border-primary text-primary" : 'text-unactive'}`} onClick={()=> setTab("learner")}>
                                 <p className="font-header group-hover:text-primary">Learners</p>
                             </div>
-                            <div className= {`group flex justify-center items-center px-5 hover:border-b-2 hover:border-b-primary transition-all ease-in-out hover:cursor-pointer ${tab === "learner" ? "border-b-2 border-primary text-primary" : 'text-unactive'}`} onClick={()=> setTab("module")}>
+                            <div className= {`group flex justify-center items-center px-5 hover:border-b-2 hover:border-b-primary transition-all ease-in-out hover:cursor-pointer ${tab === "courseAdmin" ? "border-b-2 border-primary text-primary" : 'text-unactive'}`} onClick={()=> setTab("courseAdmin")}>
                                 <p className="font-header group-hover:text-primary">Co-course Admins</p>
                             </div>
                             <div className= {`group flex justify-center items-center px-5 hover:border-b-2 hover:border-b-primary transition-all ease-in-out hover:cursor-pointer ${tab === "enrollment" ? "border-b-2 border-primary text-primary" : 'text-unactive'}`} onClick={()=> setTab("enrollment")}>
@@ -131,6 +132,7 @@ export default function Course() {
                 ) : (
                     <div className="col-span-4 row-span-3 flex flex-col justify-center items-center">
                         <img src={CourseLoading} alt="" className="w-80"/>
+                        <p className="text-4xl font-header text-primary">Loading...</p>
                         <p className="text-sm font-text text-primary">Hang tight! 🚀 Loading courses for — great things take a second!</p>
                     </div>
                 )
