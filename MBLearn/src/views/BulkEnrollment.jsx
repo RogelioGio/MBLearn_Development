@@ -22,7 +22,8 @@ export default function BulkEnrollment() {
     const [assigned_courses, setAssigned_courses] = useState([]);
     const [learners, setLearners] = useState([]); //List all learners
     const [selected, setSelected] = useState([]); //Select learner to ernoll
-    const [course, selectCourse] = useState([]); //Select course to enroll
+    const [results, setResults] = useState([]); //Enrolled results
+    const [course, selectCourse] = useState([]); //Select course to enroll name
     const [isLoading, setLoading] = useState(true); //Loading state
     const selectAll = useRef(false) //select all learners
     const [tab, setTab] = useState(1)//Tabs
@@ -82,23 +83,50 @@ export default function BulkEnrollment() {
     }
 
     //Learner to enroll
-    const handleCheckbox = (id, course) => {
+    const handleCheckbox = (user, course) => {
         setSelected((prevUsers) => {
-            if(!id&&!course) return
+            if(!user&&!course) return
 
             const exists = prevUsers.some(
-                (entry) => entry.userId === id && entry.courseId === course
+                (entry) => entry.userId === user.id && entry.courseId === course.id
             );
 
             if(exists){
                 return prevUsers.filter(
-                    (entry) => !(entry.userId === id && entry.courseId === course )
+                    (entry) => !(entry.userId === user.id && entry.courseId === course.id )
                 )
             }else{
-                return [...prevUsers, {userId: id, courseId: course, enrollerId: user.user_info_id}]
+                return [...prevUsers, {userId: user.id, courseId: course.id}]
             }
         })
+        setResults((prevCourses) => {
+            if(!user&&!course) return prevCourses;
 
+            const updated = [...prevCourses];
+            const existingCourse = updated.findIndex(
+                (c) => c.course.id === course.id
+            );
+
+            if(existingCourse !== -1){
+                const courseToUpdate = { ...updated[existingCourse] }
+                courseToUpdate.enrollees = courseToUpdate.enrollees || [];
+                const enrolled = existingCourse.enrollees?.some(
+                    (u) => u.id === user.id
+                );
+
+                if(!enrolled){
+                    courseToUpdate.enrollees.push(user);
+                }
+
+                updated[existingCourse] = courseToUpdate;
+            } else {
+                updated.push({
+                    course: course,
+                    enrollees: [user]
+                });
+            }
+            return updated;
+        });
     }
 
     //Select All Learners
@@ -146,24 +174,29 @@ export default function BulkEnrollment() {
     const enrollLearners = () => {
         setEnrolling(true)
         console.log(selected)
+        console.log(results)
         if(selected.length === 0){
             setEmpty(true)
+            setEnrolling(false)
             return
         }
+        setEnrolling(false)
+        setEnrolled(true)
 
-        axiosClient.post('enrollments/bulk', selected)
-        .then(({data}) => {
-            setEnrolling(false)
-            console.log(data);
-            setEnrolled(true);
-            setSelected([]);
+        // axiosClient.post('enrollments/bulk', selected)
+        // .then(({data}) => {
+        //     setEnrolling(false)
+        //     console.log(data);
+        //     setEnrolled(true);
+        //     setSelected([]);
 
-        })
-        .catch((err)=>console.log(err));
+        // })
+        // .catch((err)=>console.log(err));
     }
 
     useEffect(()=>{
         console.log(selected)
+        console.log(results)
     },[selected])
 
     //Fetch Learners
@@ -172,7 +205,6 @@ export default function BulkEnrollment() {
 
         //fetch courses
         axiosClient.get('/courses').then(({data})=>{
-            console.log(data.data[0].types?.[0]?.type_name);
             setAssigned_courses(data.data);
             selectCourse(data.data[0].name);
 
@@ -374,7 +406,7 @@ export default function BulkEnrollment() {
                             learners.map((learner)=>(
                                 <Learner
                                     key={learner?.id}
-                                    id={learner?.id}
+                                    id={learner}
                                     profile_image={learner?.profile_image}
                                     name={[learner?.first_name, learner?.middle_name, learner?.last_name].filter(Boolean).join(" ")}
                                     employeeID={learner?.employeeID}
@@ -383,7 +415,7 @@ export default function BulkEnrollment() {
                                     branch={learner?.branch.branch_name}
                                     city={learner?.city.city_name}
                                     enrolled={selected}
-                                    selectedCourse={Course.id}
+                                    selectedCourse={Course}
                                     handleCheckbox={handleCheckbox}
                                     selected={selected}/>
                             ))
@@ -439,7 +471,7 @@ export default function BulkEnrollment() {
         </div>
 
         {/* Successfully Enrolled */}
-        <EnrolledSuccessfullyModal isOpen={enrolled} onClose={() => setEnrolled(false)}/>
+        <EnrolledSuccessfullyModal isOpen={enrolled} onClose={() => setEnrolled(false)} result={results}/>
         {/* Error */}
         <EnrollmentFailedModal isOpen={enrollmentFailed} onClose={()=>setEnrollmentFailed(false)}/>
         {/* When no Selected Users */}

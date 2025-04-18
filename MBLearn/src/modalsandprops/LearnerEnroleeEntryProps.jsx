@@ -2,7 +2,7 @@
 const Learner = ({profile_image, id, name, employeeID, department, title, branch, city, enrolled, selectedCourse ,handleCheckbox}) => {
 
     const selectedEnrollee = enrolled.some(
-        (entry) => entry.userId == id && entry.courseId === selectedCourse
+        (entry) => entry.userId == id.id && entry.courseId === selectedCourse.id
     )
     return(
         <tr className={`font-text text-md text-primary hover:bg-gray-200 cursor-pointer ${selectedEnrollee ? 'bg-gray-200':''}`} onClick={()=>handleCheckbox(id, selectedCourse)}>

@@ -32,18 +32,18 @@ class CourseController extends Controller
         $queryItems = $filter->transform($request);
         $querySort = $sort->transform($builder, $request);
 
-        $page = $request->input('page',1); // default page
-        $perPage = $request->input('per_page', 3); // default per page
+        // $page = $request->input('page',1); // default page
+        // $perPage = $request->input('per_page', 3); // default per page
 
-        $courses = $querySort->with(['categories', 'types', 'training_modes'])->where('archived', '=', 'active')->paginate($perPage);
+        $courses = $querySort->with(['categories', 'types', 'training_modes'])->where('archived', '=', 'active')->get();
 
         return response() -> json([
-            'data' => $courses-> items(),
-            'total' => $courses->total(),
-            'lastPage' => $courses->lastPage(),
-            'currentPage' => $courses->currentPage(),
+            'data' => $courses,
+            'total' => $courses->count(),
+            // 'lastPage' => $courses->lastPage(),
+            // 'currentPage' => $courses->currentPage(),
         ],200);
- 
+
     }
 
     /**
