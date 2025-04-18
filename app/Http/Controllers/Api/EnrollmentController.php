@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\BulkStoreEnrollmentRequest;
 use App\Http\Requests\StoreEnrollmentRequest;
 use App\Http\Requests\UpdateEnrollmentRequest;
+use App\Http\Resources\CourseResource;
 use App\Http\Resources\EnrollmentResource;
 use App\Models\Enrollment;
 use App\Models\UserInfos;
@@ -31,19 +32,32 @@ class EnrollmentController extends Controller
      */
     public function store(StoreEnrollmentRequest $request)
     {
-        $enrollment = Enrollment::create($request->all());
+        $data = $request->validated();
+        $enrollment = Enrollment::firstOrCreate($data);
         return new EnrollmentResource($enrollment);
     }
 
     public function bulkStore(BulkStoreEnrollmentRequest $request){
-        $bulk = collect($request->all())->map(function($arr, $key){
-            return Arr::except($arr,['userId', 'courseId', 'enrollerId']);
-        });
+        $bulk = $request->validated();
+        $test = [];
 
-        Enrollment::insert($bulk->toArray());
+        foreach($bulk as $index => $dat){
+            $exists = Enrollment::query()->where([
+                ['user_id', '=', $dat['user_id']],
+                ['course_id', '=', $dat['course_id']],
+            ])->exists();
+
+            if(!$exists){
+                $test[] = Enrollment::firstOrCreate($dat);
+            } else{
+                $test[] = ["Message" => $dat['user_id']." is already enrolled in ".$dat['course_id']];
+            }
+        }
+ 
+        // Enrollment::insert($bulk->toArray());
         return response()->json([
             "Message" => "Bulk Store complete",
-            "Data" => $bulk
+            "Data" => $test
         ]);
     }
 

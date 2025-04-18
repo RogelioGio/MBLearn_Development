@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Str;
 
 class StoreEnrollmentRequest extends FormRequest
 {
@@ -14,6 +16,15 @@ class StoreEnrollmentRequest extends FormRequest
         return true;
     }
 
+    
+    public function validated($key = null, $default = null)
+    {
+        $data = parent::validated();
+
+        return collect($data)->mapWithKeys(fn($value, $key) => [Str::snake($key) => $value])->toArray();
+    }
+
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -23,16 +34,19 @@ class StoreEnrollmentRequest extends FormRequest
     {
         return [
             'userId'=> 'required|integer|exists:userInfo,id',
-            'courseId'=> 'required|integer|exists:courses,id',
+            'courseId'=> ['required', 'integer', 'exists:courses,id', 
+                        Rule::unique('enrollments', 'course_id')
+                        ->where(function ($query) {
+                            return $query->where('user_id', $this->userId);
+                        })],
             'enrollerId'=> 'required|integer|exists:userInfo,id'
         ];
     }
 
-    public function prepareforValidation(){
-        $this->merge([
-            'user_id'=>$this->userId,
-            'course_id'=>$this->courseId,
-            'enroller_id'=>$this->enrollerId
-        ]);
+    public function messages()
+    {
+        return [
+            'courseId.unique' => 'This learner is already enrolled in the course.'
+        ];
     }
 }
