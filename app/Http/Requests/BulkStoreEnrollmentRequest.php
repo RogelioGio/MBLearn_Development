@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Str;
 
 class BulkStoreEnrollmentRequest extends FormRequest
 {
@@ -22,21 +24,20 @@ class BulkStoreEnrollmentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'data.*.userId'=> 'required|integer',
-            'data.*.courseId'=> 'required|integer',
-            'data.*.enrollerId'=> 'required|integer'
+            '*.userId'=> 'required|integer|exists:userInfo,id',
+            '*.courseId'=> ['required', 'integer', 'exists:courses,id'],
+            '*.enrollerId'=> 'required|integer'
         ];
     }
 
-    public function prepareforValidation(){
-        $data = [];
-        foreach($this->toArray() as $obj){
-            $obj['user_id'] = $obj['userId'] ?? null;
-            $obj['course_id'] = $obj['courseId'] ?? null;
-            $obj['enroller_id'] = $obj['enrollerId'] ?? null;
-            $data[] = $obj;
-        }
-        $this->merge($data);
-    }
+    public function validated($key = null, $default = null)
+    {
+        $data = parent::validated();
 
+        return array_map(function ($item) {
+            return collect($item)
+                ->mapWithKeys(fn($value, $key) => [Str::snake($key) => $value])
+                ->toArray();
+        }, $data);
+    }
 }

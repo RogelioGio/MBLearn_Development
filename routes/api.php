@@ -91,6 +91,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('/enrollments/bulk', [EnrollmentController::class, 'bulkStore']);
     Route::apiResource('/enrollments', EnrollmentController::class);
     Route::get('/index-user/enrolees', [EnrollmentController:: class, 'enrolees']);
+    Route::get('/index-user-enrollments/{course}', [userInfo_controller::class, 'indexEnrollingUsers']);
 
     //Form Input API
     Route::apiResource('/courses', CourseController::class);

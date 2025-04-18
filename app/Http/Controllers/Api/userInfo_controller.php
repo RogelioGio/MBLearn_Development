@@ -192,7 +192,8 @@ class userInfo_controller extends Controller
         ->whereNot(function (Builder $query) use ($user_id){
             $query->where('id', $user_id);
         })
-        ->with('roles','department','title','branch','city')->paginate($perPage);
+        ->with('roles','department','title','branch','city')
+        ->paginate($perPage);
 
         return response()->json([
             'data' => $users->items(),
@@ -212,7 +213,28 @@ class userInfo_controller extends Controller
             })
             ->whereDoesntHave('assignedCourses', function ($query) use($course) {
                 $query->where('courses.id', $course->id);
-            })->where('status', 'Active')->paginate(5);
+            })->where('status', 'Active')
+            ->with('roles','department','title','branch','city')
+            ->paginate(5);
+
+        return response()->json([
+            'data' => $users->items(),
+            'total' => $users->total(),
+            'lastPage' => $users->lastPage(),
+            'currentPage' => $users->currentPage(),
+        ],200);
+    }
+
+    public function indexEnrollingUsers(Request $request, Course $course){
+        $filter = new UserInfosFilter();
+        $queryItems = $filter->transform($request);
+        $users = UserInfos::query()
+            ->where($queryItems)
+            ->whereDoesntHave('enrolledCourses', function ($query) use($course) {
+                $query->where('courses.id', $course->id);
+            })->where('status', 'Active')
+            ->with('roles','department','title','branch','city')
+            ->paginate(5);
 
         return response()->json([
             'data' => $users->items(),
