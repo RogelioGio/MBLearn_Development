@@ -285,6 +285,11 @@ class userInfo_controller extends Controller
         ]);
     }
 
+    public function getAddedCourses(UserInfos $userInfos){
+        $courses = $userInfos->addedCourses()->with(['categories', 'types', 'training_modes'])->paginate(5);
+        return $courses;
+    }
+
     //You add user id then role id in url /addRole/{userInfos}/{role}
     public function addRole(UserInfos $userInfos, Role $role){
         $userInfos->roles()->syncWithoutDetaching($role->id);

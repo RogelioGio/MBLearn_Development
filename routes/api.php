@@ -83,6 +83,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('/select-user-courses/{userInfos}', [userInfo_controller::class, 'getUserCourses']);
     Route::get('/select-course-users/{course}', [CourseController::class, 'getCourseUsers']);
     Route::get('/select-user-assigned-courses/{userInfos}', [userInfo_controller::class, 'getAssignedCourses']);
+    Route::get('/select-user-added-courses/{userInfos}', [userInfo_controller::class, 'getAddedCourses']);
     Route::post('/courses/bulk', [CourseController::class, 'bulkStore']);
     Route::get('/assigned-course-admins/{course}', [CourseController::class, 'getAssignedCourseAdmin']);
 
