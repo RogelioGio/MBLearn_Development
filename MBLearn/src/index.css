@@ -15,7 +15,7 @@
         @apply text-primary text-lg z-30;
     }
     .icon-name{
-        @apply absolute w-fit left-16 z-50 bg-tertiary text-white p-2 rounded-md text-xs scale-0 font-text  transition-all ease-in-out;
+        @apply absolute w-fit left-16 z-50 bg-tertiary text-white p-2 rounded-md text-xs scale-0 font-text transition-all ease-in-out;
     }
 
     /* Profile sub-menu */

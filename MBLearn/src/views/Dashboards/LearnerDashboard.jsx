@@ -24,7 +24,7 @@ const LearnerDashboard = ({name,user}) => {
     const navigate = useNavigate();
 
     return(
-        <div className="grid  grid-cols-4 grid-rows-[6.25rem_auto] h-full w-full">
+        <div className="grid  grid-cols-4 grid-rows-[6.25rem_1fr_1fr] h-full w-full">
         <div className="flex flex-col justify-center col-span-3 row-span-1 pr-5 border-b ml-5 border-divider">
             <h1 className="text-primary text-4xl font-header">Good Day! {name}</h1>
             <p className='font-text text-sm text-unactive'>Your learning hub! Track progress, access courses, and level up your skills!</p>

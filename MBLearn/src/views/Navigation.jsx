@@ -40,8 +40,8 @@ const navItems = {
     ],
     "Course Admin": [
         {icon:faHouse, text:"Home", to:"/courseadmin/dashboard"},
-        {icon:faBookBookmark, text:"Course Catalog", to:"/courseadmin/assignedcourses"},
-        {icon:faBook, text:"Course List Maintenance", to:"/courseadmin/courselistmaintenance"},
+        {icon:faBookBookmark, text:"Assigned Course Manager", to:"/courseadmin/assignedcourses"},
+        {icon:faBook, text:"My Course Maintenance", to:"/courseadmin/courselistmaintenance"},
         {icon:faPersonCirclePlus, text:"Enroll Trainee", to:"/courseadmin/bulkenrollment"},
         {icon:faChartPie, text:"Assigned Course Reports", to:"/courseadmin/coursereports"},
         {icon:faUsersRays, text:"My Employees", to:"/courseadmin/myemployee"}
