@@ -15,6 +15,15 @@ import EnrolledSuccessfullyModal from "../modalsandprops/EnrollmentSuccessfulyMo
 import EnrollmentFailedModal from "../modalsandprops/EnrollmentFailedModal"
 import NoEmployeeSelectedModal from "../modalsandprops/NoEmployeeSelectedModal"
 import { set } from "date-fns"
+import { ScrollArea } from "../components/ui/scroll-area"
+// import {
+//     Carousel,
+//     CarouselContent,
+//     CarouselItem,
+//     CarouselNext,
+//     CarouselPrevious,
+//     } from "../components/ui/carousel";
+// import Autoplay from "embla-carousel-autoplay";
 
 export default function BulkEnrollment() {
 
@@ -227,7 +236,6 @@ export default function BulkEnrollment() {
         })
         .catch((err) => console.log(err))
 
-        console.log(learners)
     },[pageState.currentPage, pageState.perPage]);
     useEffect(() => {
         pageChangeState('startNumber', (pageState.currentPage - 1) * pageState.perPage + 1)
@@ -280,44 +288,47 @@ export default function BulkEnrollment() {
                 </div>
             </div> */}
 
-            <div className="px-4 pb-3 mt-5 col-start-1 row-start-2 flex flex-row items-center border-r border-divider">
+            <div className="px-4 pb-3 pt-5 col-start-1 row-start-2 flex flex-row items-center border-r border-divider">
                 <div>
-                    <h1 className='text-primary text-2xl font-header'>Assigned Courses</h1>
-                    <p className='font-text text-xs text-unactive' >Assigned courses to enroll users into effortlessly.</p>
+                    <h1 className='text-primary text-2xl font-header'>Courses</h1>
+                    <p className='font-text text-xs text-unactive' >All listed courses to enroll users into effortlessly.</p>
                 </div>
-                {/* <div>
-                    <div className="aspect-square px-3 flex flex-row justify-center items-center bg-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 ease-in-out transition-all ">
-                        <FontAwesomeIcon icon={faGraduationCap} className='text-white text-sm'/>
-                    </div>
-                </div> */}
             </div>
 
             {/* Assigned Courses */}
-            <div className="col-start-1 row-start-3 row-span-1 mb-5 border-r border-divider h-full px-2 flex flex-col gap-2">
-                {
-                            isLoading ? (
-                                <div className="flex flex-col gap-2 items-center justify-center text-center h-full">
-                                    <img src={CourseLoading} alt="" className="w-44"/>
-                                    <p className="text-xs font-text text-primary">Hang tight! 🚀 Loading assigned courses for bulk enrollment—great things take a second!</p>
-                                </div>
-                            )
-                            : (assigned_courses.map((Course) => (
-                                <AssignedCourseEnrollmentCard
-                                    key={Course.id}
-                                    id={Course.id}
-                                    name={Course.name}
-                                    coursetype={Course.types?.[0]?.type_name}
-                                    coursecategory={Course.categories?.[0]?.category_name}
-                                    duration={Course.duration}
-                                    trainingmode={Course.training_modes?.[0]?.mode_name}
-                                    trainingtype={Course.training_type}
-                                    course={course}
-                                    selected={selected}
-                                    onclick={() => handleCourseChange(Course.name)}
-                                    numberOfEnrollees={numberOfEnrollees}
-                                    />
-                            )))
+            <div className="col-start-1 row-start-3 row-span-2 mb-5 border-r border-divider h-full px-2 flex flex-col items-center gap-2 pb-4">
 
+
+                        {
+                        isLoading ? (
+                            <div className="flex flex-col gap-2 items-center justify-center text-center h-full">
+                                <img src={CourseLoading} alt="" className="w-44"/>
+                                <p className="text-xs font-text text-primary">Hang tight! 🚀 Loading assigned courses for bulk enrollment—great things take a second!</p>
+                            </div>
+                        )
+                        : (
+                            <ScrollArea className="h-[calc(100vh-12.25rem)]">
+                                <div className="mr-5 gap-2 h-full flex flex-col">
+                                    {
+                                        assigned_courses.map((Course) => (
+
+                                            <AssignedCourseEnrollmentCard
+                                                id={Course.id}
+                                                name={Course.name}
+                                                coursetype={Course.types?.[0]?.type_name}
+                                                coursecategory={Course.categories?.[0]?.category_name}
+                                                duration={Course.duration}
+                                                trainingmode={Course.training_modes?.[0]?.mode_name}
+                                                trainingtype={Course.training_type}
+                                                course={course}
+                                                selected={selected}
+                                                onclick={() => handleCourseChange(Course.name)}
+                                                numberOfEnrollees={numberOfEnrollees}
+                                                />))
+                                    }
+                                </div>
+                            </ScrollArea>
+                        )
                     }
             </div>
 
