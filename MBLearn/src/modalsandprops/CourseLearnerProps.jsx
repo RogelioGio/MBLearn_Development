@@ -46,7 +46,7 @@ const CourseLearnerProps = () => {
                 </div>
 
                 {/* Learners */}
-                <div className='col-span-4 flex flex-col justify-center items-center'>
+                <div className='col-span-4 flex flex-col py-3'>
                     <div className="w-full border-primary border rounded-md overflow-hidden shadow-md">
                         <table className='text-left w-full overflow-y-scroll'>
                         <thead className='font-header text-xs text-primary bg-secondaryprimary'>
@@ -60,7 +60,7 @@ const CourseLearnerProps = () => {
                         </thead>
                         <tbody className='bg-white divide-y divide-divider'>
                             {
-                                Array.from({ length: 5 }, (_, index) => (
+                                Array.from({ length: 4 }, (_, index) => (
                                     <tr className='font-text text-sm hover:bg-gray-200' onClick={() => click(employeeID)}>
                                         <td className='text-sm  py-3 px-4'>
                                             <div className='flex items-center gap-2'>
@@ -116,7 +116,7 @@ const CourseLearnerProps = () => {
                     </div>
                 </div>
                 {/* Pagination */}
-                <div className="col-span-4 h-full mx-5 flex flex-row items-center justify-between py-2">
+                <div className="col-span-4 h-full flex flex-row items-center justify-between py-3 border-t border-divider">
                 <div>
                     <p className='text-sm font-text text-unactive'>
                         Showing <span className='font-header text-primary'>1</span> to <span className='font-header text-primary'>2</span> of <span className='font-header text-primary'>5</span> <span className='text-primary'>results</span>

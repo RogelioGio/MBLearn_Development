@@ -22,6 +22,7 @@ import dayjs from "dayjs"
 import CourseLoading from "../assets/Course_Loading.svg"
 import CourseDetailsModal from "../modalsandprops/CourseDetailsModal"
 import CourseCourseAdminAssignmentProps from "../modalsandprops/CourseCourseAdminAssigmentProps"
+import AddAssignCourseAdmin from "../modalsandprops/AddAssignCourseAdmin"
 
 
 
@@ -148,7 +149,8 @@ export default function Course() {
         {/* Edit */}
         <EditCourseModal open={open} close={()=>setOpen(false)} id={course?.id}/>
         {/* Assign Course Admin */}
-        <AssignCourseAdmin open={assign} close={()=>setAssign(false)} id={course?.id}/>
+        {/* <AssignCourseAdmin open={assign} close={()=>setAssign(false)} id={course?.id}/> */}
+        <AddAssignCourseAdmin courseID={course?.id} open={assign}  close={()=>setAssign(false)}/>
         {/* CourseDetail */}
         <CourseDetailsModal open={openDetails} close={()=>setOpenDetails(false)} selectedCourse={course}/>
         </>

@@ -8,9 +8,9 @@ const CourseCourseAdminAssignmentProps = ({}) => {
     // Function to get the assigned
 
     return (
-        <div className="py-2 w-full h-full grid grid-cols-4 grid-rows-[min-content_min-content_1fr_min-content]">
+        <div className="w-full h-full grid grid-cols-4 grid-rows-[min-content_min-content_1fr_min-content]">
             {/* Main Course Admin */}
-            <div className="py-1">
+            <div className="py-2">
                 <p className="font-text text-xs text-unactive">Main Course Admin:</p>
                 <div className="flex flex-row gap-2 py-2 items-center">
                     <div className='bg-blue-500 h-10 w-10 rounded-full'>
@@ -129,7 +129,7 @@ const CourseCourseAdminAssignmentProps = ({}) => {
             </div>
 
             {/* Table */}
-            <div className="col-span-4 py-4">
+            <div className="col-span-4 py-2">
                 <div className='w-full border-primary border rounded-md overflow-hidden shadow-md'>
                     <table className='text-left w-full'>
                     <thead className='font-header text-xs text-primary bg-secondaryprimary border-l-2 border-secondaryprimary'>
@@ -267,7 +267,7 @@ const CourseCourseAdminAssignmentProps = ({}) => {
             </div>
 
             {/* Paganitaion */}
-            <div className="col-span-4 h-full mr-5 flex flex-row items-center justify-between py-5 border-t border-divider">
+            <div className="col-span-4 h-full mr-5 flex flex-row items-center justify-between py-3 border-t border-divider">
                 <div>
                     <p className='text-sm font-text text-unactive'>
                         Showing <span className='font-header text-primary'>1</span> to <span className='font-header text-primary'>2</span> of <span className='font-header text-primary'>5</span> <span className='text-primary'>results</span>

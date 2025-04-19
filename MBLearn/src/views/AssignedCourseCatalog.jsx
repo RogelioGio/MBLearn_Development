@@ -1,4 +1,4 @@
-import { faArrowDownShortWide, faArrowDownZA, faArrowUpAZ, faArrowUpWideShort, faChalkboard, faChevronLeft, faChevronRight, faFilter, faFloppyDisk, faPen, faPersonChalkboard, faSearch, faSort } from "@fortawesome/free-solid-svg-icons"
+import { faArrowDownShortWide, faArrowDownZA, faArrowUpAZ, faArrowUpWideShort, faBook, faBookBookmark, faChalkboard, faChevronLeft, faChevronRight, faFilter, faFloppyDisk, faFolderPlus, faPen, faPersonChalkboard, faSearch, faSort } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Helmet } from "react-helmet"
 import AssignedCourseCatalogCard from "../modalsandprops/AssignedCourseCatalogCard"
@@ -28,6 +28,7 @@ export default function AssignedCourseCatalog() {
     const {user} = useStateContext();
     const [loading, setLoading] = useState(false);
     const [assigned_course, setAssignedCourse] = useState([]);
+    const [tab, setTab] = useState(1);
 
     // Sort Order State
     const [sort, setSort] = useState({
@@ -138,20 +139,59 @@ export default function AssignedCourseCatalog() {
 
 
     return(
-        <div className='grid grid-cols-4 grid-rows-[6.25rem_min-content_1fr_min-content] h-full w-full'>
+        <div className='grid grid-cols-4 grid-rows-[6.25rem_min-content_min-content_1fr_min-content] h-full w-full'>
             <Helmet>
                 {/* Title of the mark-up */}
-                <title>MBLearn | Assigned Courses Manager</title>
+                <title>MBLearn | Course Manager</title>
             </Helmet>
 
             {/* Header */}
             <div className='flex flex-col justify-center col-span-3 row-span-1 pr-5 border-b ml-5 border-divider'>
-                <h1 className='text-primary text-4xl font-header'>Assigned Courses Manager</h1>
-                <p className='font-text text-sm text-unactive' >View and manage the assigned course catalog for easy course access and tracking.</p>
+                <h1 className='text-primary text-4xl font-header'>Course Manager</h1>
+                <p className='font-text text-sm text-unactive' >View and manage the courses for easy course access and tracking.</p>
             </div>
 
+            <div className='col-start-4 row-start-1 flex flex-col justify-center pl-5 mr-5 border-divider border-b'>
+                <button className='inline-flex flex-row shadow-md items-center justify-center bg-primary font-header text-white text-base p-4 rounded-full hover:bg-primaryhover hover:scale-105 transition-all ease-in-out' onClick={()=>toggleModal('openAddCourse',true)}>
+                    <FontAwesomeIcon icon={faFolderPlus} className='mr-2'/>
+                    <p>Add Course</p>
+                </button>
+            </div>
+
+            {/* Tabs */}
+            <div className="px-5 col-span-4 w-full py-2 flex flex-row justify-between items-center gap-2">
+                <div className= {`w-full border-2 border-primary px-4 py-2 rounded-md shadow-md text-primary font-header ${tab === 1 ? "bg-primary text-white":null} hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out`} onClick={() => {setTab(1)}}>
+                        <p className="flex gap-2"><span><FontAwesomeIcon icon={faBookBookmark}/></span> My Courses</p>
+                        <p className="text-xs font-text">Manage and view all your inputted courses</p>
+                    </div>
+                    <div className={`w-full border-2 border-primary px-4 py-2 rounded-md shadow-md text-primary font-header ${tab === 2 ? "bg-primary text-white":null} hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out`} onClick={() => {setTab(2)}}>
+                        <p className="flex gap-2"><span><FontAwesomeIcon icon={faBook}/></span>Assigned Courses</p>
+                        <p className="text-xs font-text">Manage and view all your assigned courses</p>
+                    </div>
+            </div>
+
+            {/* Sorter */}
+            <div className="flex flex-row gap-2 pl-5 items-center">
+                {/* Sort by Name */}
+                <div className={`h-fit flex flex-row items-center border-2 border-primary py-2 px-4 font-header bg-secondarybackground rounded-md text-primary gap-2 w-fit hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md ${sort.nameOrder === "asc" ? '!bg-primary !text-white' : sort.nameOrder === "desc" ? '!bg-primary !text-white': 'bg-secondarybackground' }`} onClick={() => setOrder("nameOrder")}>
+                    <p>Name</p>
+                    <FontAwesomeIcon icon={sort.nameOrder === "asc" ? faArrowUpAZ : sort.nameOrder === "desc" ? faArrowDownZA : faSort}/>
+                </div>
+                {/* Sort By Date-Added */}
+                <div className={`h-fit flex flex-row items-center border-2 border-primary py-2 px-4 font-header bg-secondarybackground rounded-md text-primary gap-2 w-fit hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md ${sort.dateOrder === "asc" ? '!bg-primary !text-white' : sort.dateOrder === "desc" ? '!bg-primary !text-white': 'bg-secondarybackground' }`} onClick={() => setOrder("dateOrder")}>
+                    <p>Date</p>
+                    <FontAwesomeIcon icon={sort.dateOrder === "asc" ? faArrowUpWideShort : sort.dateOrder === "desc" ? faArrowDownShortWide : faSort}/>
+                </div>
+            </div>
+
+            {/* Filter */}
+            <div className="col-start-3 flex justify-end items-center pr-2">
+                <div className="h-fit p-2 flex justify-center items-center bg-primary aspect-square border-2 border-primary rounded-md shadow-md text-white hover:cursor-pointer hover:scale-105 transition-all ease-in-out">
+                    <FontAwesomeIcon icon={faFilter}/>
+                </div>
+            </div>
             {/* Search */}
-            <div className="col-start-4 row-start-1 row-span-1 flex flex-row justify-between items-center border-b mr-5 border-divider">
+            <div className="col-start-4 flex flex-row justify-between items-center mr-5 border-divider py-1 gap-2">
                 <div className=' inline-flex flex-row place-content-between border-2 border-primary rounded-md font-text shadow-md w-full'>
                     <input type="text" className='focus:outline-none text-sm px-4 w-full rounded-md bg-white' placeholder='Search...'/>
                     <div className='bg-primary py-2 px-4 text-white'>
@@ -160,37 +200,8 @@ export default function AssignedCourseCatalog() {
                 </div>
             </div>
 
-            {/* Sorter  and Assigned/Active toggle*/}
-            <div className="col-start-1 col-span-3 row-start-2 row-span-1 flex flex-row justify-between items-center ml-5 py-3">
-                <div className="flex flex-row gap-2">
-                    {/* Sort by Name */}
-                    <div className={`flex flex-row items-center border-2 border-primary py-2 px-4 font-header bg-secondarybackground rounded-md text-primary gap-2 w-fit hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md ${sort.nameOrder === "asc" ? '!bg-primary !text-white' : sort.nameOrder === "desc" ? '!bg-primary !text-white': 'bg-secondarybackground' }`} onClick={() => setOrder("nameOrder")}>
-                        <p>Course Name</p>
-                        <FontAwesomeIcon icon={sort.nameOrder === "asc" ? faArrowUpAZ : sort.nameOrder === "desc" ? faArrowDownZA : faSort}/>
-                    </div>
-                    {/* Sort By Date-Added */}
-                    <div className={`flex flex-row items-center border-2 border-primary py-2 px-4 font-header bg-secondarybackground rounded-md text-primary gap-2 w-fit hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md ${sort.dateOrder === "asc" ? '!bg-primary !text-white' : sort.dateOrder === "desc" ? '!bg-primary !text-white': 'bg-secondarybackground' }`} onClick={() => setOrder("dateOrder")}>
-                        <p>Assigned Date</p>
-                        <FontAwesomeIcon icon={sort.dateOrder === "asc" ? faArrowUpWideShort : sort.dateOrder === "desc" ? faArrowDownShortWide : faSort}/>
-                    </div>
-                </div>
-                {/* <div>
-                    <div className="inline-flex round-md shadow-md hover:cursor-pointer">
-                        <span className={`flex flex-row gap-5 items-center text-md font-header ring-2 ring-primary rounded-l-md px-5 py-2 hover:bg-primary hover:text-white transition-all ease-in-out ${state.tab === "assigned" ? "bg-primary text-white":"bg-white text-primary"}`} onClick={() => toggleState("tab", "assigned")}>
-                            <FontAwesomeIcon icon={faChalkboard}/>
-                            <p>Assigned Courses</p>
-                        </span>
-                        <span className={`flex flex-row gap-5 items-center text-md font-header ring-2 ring-primary rounded-r-md px-5 py-2  hover:bg-primary hover:text-white transition-all ease-in-out ${state.tab === "active" ? "bg-primary text-white":"bg-white text-primary"}`} onClick={()=> toggleState("tab", "active")}>
-                            <FontAwesomeIcon icon={faPersonChalkboard}/>
-                            <p>Active Assigned Courses</p>
-                        </span>
-                    </div>
-                </div> */}
-            </div>
-
             {/* Course Catalog */}
-            <div className="ml-5 col-span-3 row-start-3 row-span-1 grid grid-cols-3 grid-rows-2 gap-2 py-2">
-                {/* Course Card */}
+            <div className="mx-5 col-span-4 row-start-4 row-span-1 grid grid-cols-4 grid-rows-2 gap-2 py-2">
                 {
                     assigned_course && !loading ? assigned_course.map((course, index) => {
                         return(
@@ -212,14 +223,14 @@ export default function AssignedCourseCatalog() {
             </div>
 
             {/* Assigned Course Filter */}
-            <div className="col-start-4 row-start-2 mx-5 py-2 inline-flex justify-between items-center flex-row">
-                    {/* Filter Header */}
+            {/* <div className="col-start-4 row-start-2 mx-5 py-2 inline-flex justify-between items-center flex-row">
+                    Filter Header
                     <div>
                         <h1 className='font-header text-2xl text-primary'>Course Filter</h1>
                         <p className='text-md font-text text-unactive text-sm'>Categorize courses</p>
                     </div>
                     <div>
-                    {/* Course Button */}
+                    Course Button
                     {
                         user.role === "System Admin" ? (
 
@@ -235,13 +246,13 @@ export default function AssignedCourseCatalog() {
                         ):null
                     }
                     </div>
-            </div>
-            <div className="col-start-4 row-start-3 row-span-3 flex flex-col h-full">
+            </div> */}
+            {/* <div className="col-start-4 row-start-3 row-span-3 flex flex-col h-full">
                 <CourseFilterProps isEdit={state.editFilter}/>
-            </div>
+            </div> */}
 
             {/* Pagination */}
-            <div className="ml-5 col-span-3 row-start-4 row-span-1 flex flex-row justify-between items-center py-3 border-t border-divider">
+            <div className="mx-5 col-span-4 row-start-5 row-span-1 flex flex-row justify-between items-center py-3 border-t border-divider">
                 {/* Total number of entries and only be shown */}
                 <div>
                     <p className='text-sm font-text text-unactive'>

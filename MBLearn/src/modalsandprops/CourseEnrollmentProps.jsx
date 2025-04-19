@@ -1,4 +1,4 @@
-import { faChevronLeft, faChevronRight, faFilter, faSearch } from '@fortawesome/free-solid-svg-icons'
+import { faChevronLeft, faChevronRight, faFilter, faSearch, faUserPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React, { useEffect, useState } from 'react'
 import axiosClient from '../axios-client'
@@ -37,7 +37,7 @@ const CourseEnrollmentProps = ({course}) => {
     return(
         <div className="grid grid-cols-4 grid-rows-[min-content_min-content_1fr_min-content] h-full w-full">
             {/* Search */}
-            <div className='flex flex-row justify-center items-end '>
+            <div className='flex flex-row justify-center py-3'>
                 <div className=' inline-flex flex-row place-content-between border-2 border-primary rounded-md w-full font-text shadow-md'>
                     <input type="text" className='focus:outline-none text-sm px-4 w-full rounded-md bg-white' placeholder='Search...'/>
                     <div className='bg-primary py-2 px-4 text-white'>
@@ -45,12 +45,10 @@ const CourseEnrollmentProps = ({course}) => {
                     </div>
                 </div>
             </div>
-            <div className='col-start-4 pr-5 pl-2 py-2 flex flex-row justify-center items-end '>
-                <div className=' inline-flex flex-row place-content-between border-2 border-primary rounded-md w-full font-text shadow-md'>
-                    <input type="text" className='focus:outline-none text-sm px-4 w-full rounded-md bg-white' placeholder='Search...'/>
-                    <div className='bg-primary py-2 px-4 text-white'>
-                        <FontAwesomeIcon icon={faSearch}/>
-                    </div>
+            <div className='col-start-4 flex flex-row justify-end py-3'>
+                <div className='text-white border-2 border-primary py-2 px-5 bg-primary flex flex-row gap-2 justify-center items-center rounded-md shadow-md hover:scale-105 hover:cursor-pointer transition-all ease-in-out'>
+                    <FontAwesomeIcon icon={faUserPlus}/>
+                    <p className='font-header'>Enroll</p>
                 </div>
             </div>
             {/* Filter */}
@@ -149,7 +147,7 @@ const CourseEnrollmentProps = ({course}) => {
             </div>
 
             {/* Enrolment Table */}
-                <div className="col-span-4 h-full pr-5">
+            <div className="col-span-4 h-full py-2">
                     <div className='w-full border-primary border rounded-md overflow-hidden shadow-md'>
                         <table className='text-left w-full'>
                         <thead className='font-header text-xs text-primary bg-secondaryprimary border-l-2 border-secondaryprimary'>
@@ -349,10 +347,10 @@ const CourseEnrollmentProps = ({course}) => {
                             </tbody>
                         </table>
                     </div>
-                </div>
+            </div>
 
             {/* Pagination */}
-            <div className="col-span-4 h-full mr-5 flex flex-row items-center justify-between py-5 border-t border-divider">
+            <div className="col-span-4 h-full mr-5 flex flex-row items-center justify-between py-3 border-t border-divider">
                 <div>
                     <p className='text-sm font-text text-unactive'>
                         Showing <span className='font-header text-primary'>1</span> to <span className='font-header text-primary'>2</span> of <span className='font-header text-primary'>5</span> <span className='text-primary'>results</span>
