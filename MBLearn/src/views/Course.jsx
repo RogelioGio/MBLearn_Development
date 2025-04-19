@@ -20,6 +20,8 @@ import { set } from "date-fns"
 import AssignCourseAdmin from "../modalsandprops/AssignCourseAdminModal"
 import dayjs from "dayjs"
 import CourseLoading from "../assets/Course_Loading.svg"
+import CourseDetailsModal from "../modalsandprops/CourseDetailsModal"
+import CourseCourseAdminAssignmentProps from "../modalsandprops/CourseCourseAdminAssigmentProps"
 
 
 
@@ -33,14 +35,15 @@ export default function Course() {
     const [isLoading ,setLoading] = useState(true);
     const [tab, setTab] = useState("module");
     const [open, setOpen] = useState(false);
+    const [openDetails, setOpenDetails] = useState(false);
     const [assign, setAssign] = useState(false);
     const {selectCourse, selectedCourse, isFetching, resetSelectedCourse} = useCourse();
 
     const tabComponents = {
         module: <CourseModuleProps />,
         learner: <CourseLearenerProps />,
-        courseAdmin: null,
-        enrollment: <CourseEnrollmentProps />,
+        courseAdmin: <CourseCourseAdminAssignmentProps />,
+        enrollment: <CourseEnrollmentProps course={course}/>,
     };
 
     useEffect(() => {
@@ -72,7 +75,7 @@ export default function Course() {
                     <>
                         {/* Header */}
                         <div className="flex flex-row col-span-4 items-center justify-between gap-4">
-                            <div className="flex flex-row col-span-4 items-center gap-4">
+                            <div className="flex flex-row col-span-4 items-center gap-4 pl-5">
                                 {/* Back Button */}
                                 <div className="group aspect-square rounded-full border-primary border-2 flex flex-row justify-center items-center hover:bg-primary transition-all ease-in-out" onClick={() => navigate(-1)}>
                                     <FontAwesomeIcon icon={faArrowLeft} className="text-primary text-2xl cursor-pointer p-2 group-hover:text-white"/>
@@ -102,14 +105,14 @@ export default function Course() {
                                     <FontAwesomeIcon icon={faBookOpenReader} />
                                     <p className="font-header">Assign</p>
                                 </div>
-                                <div className={`text-primary text-sm border-2 border-primary h-full py-2 px-4 rounded-md shadow-md flex flex-row gap-2 items-center transition-all ease-in-out hover:scale-105 hover:bg-primary hover:text-white hover:cursor-pointer`}>
+                                <div className={`text-primary text-sm border-2 border-primary h-full py-2 px-4 rounded-md shadow-md flex flex-row gap-2 items-center transition-all ease-in-out hover:scale-105 hover:bg-primary hover:text-white hover:cursor-pointer`} onClick={()=>setOpenDetails(true)}>
                                     <FontAwesomeIcon icon={faCircleInfo} />
                                     <p className="font-header">Detail</p>
                                 </div>
                                 </div>
                             </div>
                         {/* Tabs */}
-                        <div className="border-b border-divider col-span-4 mr-5 flex flex-row">
+                        <div className="border-b border-divider col-span-4 mx-5 flex flex-row">
                             <div className={`group flex justify-center items-center px-5 hover:border-b-2 hover:border-b-primary transition-all ease-in-out hover:cursor-pointer ${tab === "module" ? "border-b-2 border-primary text-primary" : 'text-unactive'}`} onClick={()=> setTab("module")}>
                                 <p className="font-header group-hover:text-primary">Modules</p>
                             </div>
@@ -146,6 +149,8 @@ export default function Course() {
         <EditCourseModal open={open} close={()=>setOpen(false)} id={course?.id}/>
         {/* Assign Course Admin */}
         <AssignCourseAdmin open={assign} close={()=>setAssign(false)} id={course?.id}/>
+        {/* CourseDetail */}
+        <CourseDetailsModal open={openDetails} close={()=>setOpenDetails(false)} selectedCourse={course}/>
         </>
 
     )

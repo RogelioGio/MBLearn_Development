@@ -33,7 +33,9 @@ export default function BulkEnrollment() {
     const [selected, setSelected] = useState([]); //Select learner to ernoll
     const [results, setResults] = useState([]); //Enrolled results
     const [course, selectCourse] = useState([]); //Select course to enroll name
+    const [courseId, setCourseId] = useState([]); //Select course to enroll id
     const [isLoading, setLoading] = useState(true); //Loading state
+    const [learnerLoading, setLearnerLoading] = useState(true); //Loading state
     const selectAll = useRef(false) //select all learners
     const [tab, setTab] = useState(1)//Tabs
     const [enrolled, setEnrolled] = useState(false) //Modal for successfully Enrolled
@@ -86,30 +88,60 @@ export default function BulkEnrollment() {
         }
     }
 
+    //Handle Learner to be enroll
+    const handleLearnerChange = (courseId) => {
+        setLearnerLoading(true)
+        axiosClient.get(`/index-user-enrollments/${courseId}`,{
+            params: {
+                        page: pageState.currentPage,
+                        perPage: pageState.perPage
+                    }
+        }
+        ).then(({data})=>{
+            console.log(data)
+            setLearners(data.data)
+            pageChangeState('totalUser', data.total)
+            pageChangeState('lastPage', data.lastPage)
+            pageChangeState('currentPerPage', data.data.length)
+            setLearnerLoading(false)
+        }).catch((err)=>{
+            console.log(err)
+        })
+    }
+    useEffect(() => {
+        handleLearnerChange(courseId)
+    },[pageState.currentPage, pageState.perPage])
+
+
     //Handle course change
     const handleCourseChange = (Course) => {
-        selectCourse(Course);
+        selectCourse(Course?.name);
+        setCourseId(Course?.id);
+        //Fetch Learner
+        handleLearnerChange(Course?.id);
+
+
     }
 
     //Learner to enroll
-    const handleCheckbox = (user, course) => {
+    const handleCheckbox = (User, course) => {
         setSelected((prevUsers) => {
-            if(!user&&!course) return
+            if(!User&&!course) return
 
             const exists = prevUsers.some(
-                (entry) => entry.userId === user.id && entry.courseId === course.id
+                (entry) => entry.userId === User.id && entry.courseId === course.id
             );
 
             if(exists){
                 return prevUsers.filter(
-                    (entry) => !(entry.userId === user.id && entry.courseId === course.id )
+                    (entry) => !(entry.userId === User.id && entry.courseId === course.id )
                 )
             }else{
-                return [...prevUsers, {userId: user.id, courseId: course.id}]
+                return [...prevUsers, {userId: User.id, courseId: course.id, enrollerId: user.user_info_id }]
             }
         })
         setResults((prevCourses) => {
-            if(!user&&!course) return prevCourses;
+            if(!User&&!course) return prevCourses;
 
             const updated = [...prevCourses];
             const existingCourse = updated.findIndex(
@@ -120,18 +152,18 @@ export default function BulkEnrollment() {
                 const courseToUpdate = { ...updated[existingCourse] }
                 courseToUpdate.enrollees = courseToUpdate.enrollees || [];
                 const enrolled = existingCourse.enrollees?.some(
-                    (u) => u.id === user.id
+                    (u) => u.id === User.id
                 );
 
                 if(!enrolled){
-                    courseToUpdate.enrollees.push(user);
+                    courseToUpdate.enrollees.push(User);
                 }
 
                 updated[existingCourse] = courseToUpdate;
             } else {
                 updated.push({
                     course: course,
-                    enrollees: [user]
+                    enrollees: [User]
                 });
             }
             return updated;
@@ -182,61 +214,45 @@ export default function BulkEnrollment() {
     //handle ernollment
     const enrollLearners = () => {
         setEnrolling(true)
-        console.log(selected)
-        console.log(results)
+        // console.log(selected)
+        // console.log(results)
         if(selected.length === 0){
             setEmpty(true)
             setEnrolling(false)
             return
         }
-        setEnrolling(false)
-        setEnrolled(true)
 
-        // axiosClient.post('enrollments/bulk', selected)
-        // .then(({data}) => {
-        //     setEnrolling(false)
-        //     console.log(data);
-        //     setEnrolled(true);
-        //     setSelected([]);
-
-        // })
-        // .catch((err)=>console.log(err));
+        axiosClient.post('enrollments/bulk', selected)
+        .then(({data}) => {
+            setEnrolling(false)
+            console.log(data);
+            setEnrolled(true);
+            setSelected([]);
+        })
+        .catch((err)=>console.log(err));
     }
 
-    useEffect(()=>{
-        console.log(selected)
-        console.log(results)
-    },[selected])
+    // useEffect(()=>{
+    //     console.log(selected)
+    //     console.log(results)
+    // },[selected,results])
 
-    //Fetch Learners
     useEffect(() =>{
         setLoading(true)
+        setLearnerLoading(true)
 
         //fetch courses
         axiosClient.get('/courses').then(({data})=>{
             setAssigned_courses(data.data);
+            handleCourseChange(data.data[0]);
             selectCourse(data.data[0].name);
-
+            setLoading(false);
         }).catch((err)=>
         console.log(err)
         );
+    },[]);
 
-        axiosClient.get('/index-user/enrolees',{
-            params: {
-                page: pageState.currentPage,
-                perPage: pageState.perPage
-            }
-        })
-        .then(({data}) => {
-            setLearners(data.data)
-            pageChangeState('totalUser', data.total)
-            pageChangeState('lastPage', data.lastPage)
-            pageChangeState('currentPerPage', data.data.length)
-            setLoading(false)
-        })
-        .catch((err) => console.log(err))
 
-    },[pageState.currentPage, pageState.perPage]);
     useEffect(() => {
         pageChangeState('startNumber', (pageState.currentPage - 1) * pageState.perPage + 1)
         pageChangeState('endNumber', Math.min(pageState.currentPage * pageState.perPage, pageState.totalUser))
@@ -251,6 +267,13 @@ export default function BulkEnrollment() {
 
     //Formik for filter
     const formik = useFormik({});
+
+    //reset the operation
+    const reset = () => {
+        console.log("resseting")
+        handleCourseChange(assigned_courses[0]);
+        setResults([])
+    }
 
     return (
         <>
@@ -322,7 +345,7 @@ export default function BulkEnrollment() {
                                                 trainingtype={Course.training_type}
                                                 course={course}
                                                 selected={selected}
-                                                onclick={() => handleCourseChange(Course.name)}
+                                                onclick={() => handleCourseChange(Course)}
                                                 numberOfEnrollees={numberOfEnrollees}
                                                 />))
                                     }
@@ -402,7 +425,7 @@ export default function BulkEnrollment() {
 
             {/* Learner table */}
             {
-                isLoading ? (
+                learnerLoading ? (
                     <EnrollmentTableProps>
                         <LearnerLoadingProps/>
                     </EnrollmentTableProps>
@@ -411,7 +434,7 @@ export default function BulkEnrollment() {
                     course === Course.name ? (
                     <EnrollmentTableProps selectAll={selectAll} onchange={handleSelectAll} course={Course.name} key={Course.name}>
                         {
-                            isLoading ? (
+                            learnerLoading ? (
                                 <LearnerLoadingProps/>
                             ) :(
                             learners.map((learner)=>(
@@ -482,7 +505,7 @@ export default function BulkEnrollment() {
         </div>
 
         {/* Successfully Enrolled */}
-        <EnrolledSuccessfullyModal isOpen={enrolled} onClose={() => setEnrolled(false)} result={results}/>
+        <EnrolledSuccessfullyModal isOpen={enrolled} onClose={() => {setEnrolled(false); reset()}} result={results}/>
         {/* Error */}
         <EnrollmentFailedModal isOpen={enrollmentFailed} onClose={()=>setEnrollmentFailed(false)}/>
         {/* When no Selected Users */}

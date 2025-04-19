@@ -1,8 +1,38 @@
 import { faChevronLeft, faChevronRight, faSearch } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import axiosClient from '../axios-client'
+import Learner from '../components/Learner'
 
-const CourseEnrollmentProps = () => {
+const CourseEnrollmentProps = ({course}) => {
+    const [learners, setLearners] = useState([])
+    const [learnerLoading, setLearnerLoading] = useState(false)
+
+    const handleLearnerChange = (courseId) => {
+        setLearnerLoading(true)
+        axiosClient.get(`/index-user-enrollments/${courseId}`,
+            // {
+            // params: {
+        //                 page: pageState.currentPage,
+        //                 perPage: pageState.perPage
+        //             }
+            // }
+            ).then(({data})=>{
+                console.log(data)
+                setLearners(data.data)
+                // pageChangeState('totalUser', data.total)
+                // pageChangeState('lastPage', data.lastPage)
+                // pageChangeState('currentPerPage', data.data.length)
+                setLearnerLoading(false)
+            }).catch((err)=>{
+                console.log(err)
+            })
+        }
+
+    useEffect(() => {
+        handleLearnerChange(course.id)
+    },[])
+
     return(
         <div className="grid grid-cols-4 grid-rows-[min-content_auto_min-content] h-full w-full">
             {/* Filter & Search */}
@@ -149,8 +179,83 @@ const CourseEnrollmentProps = () => {
                             </thead>
                             <tbody className='bg-white divide-y divide-divider'>
                                 {
-                                    Array.from({ length: 5 }, (_, index) => (
-                                        <tr key={index} className={`font-text text-sm hover:bg-gray-200`}>
+                                    learnerLoading ? (
+                                        Array.from({length: 5}).map((_, index) => (
+                                            <tr key={index} className={`font-text text-sm hover:bg-gray-200`}>
+                                                <td className={`text-sm  py-3 px-4 border-l-2 border-transparent transition-all ease-in-out`}>
+                                                    <div className='flex items-center gap-4 flex-row'>
+                                                        {/* Checkbox */}
+                                                        <div className="group grid size-4 grid-cols-1">
+                                                            <input type="checkbox"
+                                                                className="col-start-1 row-start-1 appearance-none border border-divider rounded checked:border-primary checked:bg-primary focus:ring-2 focus:ring-primary focus:outline-none focus:ring-offset-1"
+                                                                // onClick={(e) => e.stopPropagation()}
+                                                                // onChange={(e) => {
+                                                                //     handleCheckbox(e, userID);
+                                                                // }}
+                                                                // checked={isChecked} // Updated this line
+                                                            />
+                                                            {/* Custom Checkbox styling */}
+                                                            <svg fill="none" viewBox="0 0 14 14" className="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-[:disabled]:stroke-gray-950/25">
+                                                                {/* Checked */}
+                                                                <path
+                                                                    d="M3 8L6 11L11 3.5"
+                                                                    strokeWidth={2}
+                                                                    strokeLinecap="round"
+                                                                    strokeLinejoin="round"
+                                                                    className="opacity-0 group-has-[:checked]:opacity-100"
+                                                                />
+                                                                {/* Indeterminate */}
+                                                                <path
+                                                                    d="M3 7H11"
+                                                                    strokeWidth={2}
+                                                                    strokeLinecap="round"
+                                                                    strokeLinejoin="round"
+                                                                    className="opacity-0 group-has-[:indeterminate]:opacity-100"
+                                                                    />
+                                                            </svg>
+                                                        </div>
+                                                        {/* User Image */}
+                                                        <div className='bg-blue-500 h-10 w-10 rounded-full'>
+                                                            {/* <img src={profile_url} alt="" className='rounded-full'/> */}
+                                                        </div>
+                                                        {/* Name and employee-id*/}
+                                                        <div>
+                                                            <p className='font-text'></p>
+                                                            <p className='text-unactive text-xs'>ID: </p>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td className='py-3 px-4'>
+                                                    <div className='flex flex-col'>
+                                                        {/* Division */}
+                                                        <p className='text-unactive'>Division</p>
+                                                    </div>
+                                                </td>
+                                                <td className='py-3 px-4'>
+                                                    <div className='flex flex-col'>
+                                                        {/* Department */}
+                                                        <p className='text-unactive'></p>
+                                                    </div>
+                                                </td>
+                                                <td className='py-3 px-4'>
+                                                    <div className='flex flex-col'>
+                                                        {/* Section */}
+                                                        <p className='text-unactive'>Section</p>
+                                                    </div>
+                                                </td>
+                                                <td className='py-3 px-4'>
+                                                    <div className='flex flex-col'>
+                                                    {/* Branch Location */}
+                                                    <p className='text-unactive'></p>
+                                                    {/* City Location */}
+                                                    <p className='text-unactive text-xs'></p>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        learners.map((learner, index) => (
+                                            <tr key={index} className={`font-text text-sm hover:bg-gray-200`}>
                                             <td className={`text-sm  py-3 px-4 border-l-2 border-transparent transition-all ease-in-out`}>
                                                 <div className='flex items-center gap-4 flex-row'>
                                                     {/* Checkbox */}
@@ -189,8 +294,8 @@ const CourseEnrollmentProps = () => {
                                                     </div>
                                                     {/* Name and employee-id*/}
                                                     <div>
-                                                        <p className='font-text'>Sample Name</p>
-                                                        <p className='text-unactive text-xs'>ID: Sample ID</p>
+                                                        <p className='font-text'>{learner.first_name} {learner.middle_name} {learner.last_name} {learner.name_suffix}</p>
+                                                        <p className='text-unactive text-xs'>ID: {learner.employeeID}</p>
                                                     </div>
                                                 </div>
                                             </td>
@@ -203,7 +308,7 @@ const CourseEnrollmentProps = () => {
                                             <td className='py-3 px-4'>
                                                 <div className='flex flex-col'>
                                                     {/* Department */}
-                                                    <p className='text-unactive'>Department</p>
+                                                    <p className='text-unactive'>{learner.department?.department_name}</p>
                                                 </div>
                                             </td>
                                             <td className='py-3 px-4'>
@@ -215,13 +320,14 @@ const CourseEnrollmentProps = () => {
                                             <td className='py-3 px-4'>
                                                 <div className='flex flex-col'>
                                                 {/* Branch Location */}
-                                                <p className='text-unactive'>Branch</p>
+                                                <p className='text-unactive'>{learner.branch?.branch_name}</p>
                                                 {/* City Location */}
-                                                <p className='text-unactive text-xs'>City</p>
+                                                <p className='text-unactive text-xs'>{learner.city?.city_name}</p>
                                                 </div>
                                             </td>
                                         </tr>
-                                    ))
+                                        ))
+                                    )
                                 }
 
                             </tbody>
