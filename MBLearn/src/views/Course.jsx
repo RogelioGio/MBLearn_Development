@@ -128,7 +128,7 @@ export default function Course() {
                         </div>
 
                         {/* Course Content */}
-                        <div className="w-full h-full col-span-4 row-span-1">
+                        <div className="w-full h-full col-span-4 row-span-1 px-5">
                             {tabComponents[tab] || null}
                         </div>
                     </>

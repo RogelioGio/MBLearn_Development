@@ -98,22 +98,15 @@ const handleFilter = (sectionId, value) => {
 const [courses, setCourses] = useState([])
 const fetchCourses = () => {
     toggleModal('loading', true)
-    axiosClient.get('/courses',{
-        params: {
-            page: pageState.currentPage,
-            perPage: pageState.perPage,
-        }
-    })
-    .then(({ data }) => {
+    axiosClient.get(`/select-user-added-course/${user.id}`)
+    .then(({data}) => {
         setCourses(data.data)
         pageChangeState("totalCourses", data.total)
         pageChangeState("lastPage", data.lastPage)
         toggleModal('loading', false)
-    })
-    .catch((err) => {
-        console.log(err);
-    });
-
+    }).catch((err) => {
+            console.log(err);
+        });
 }
 
 
@@ -293,7 +286,7 @@ const [pageState, setPagination] = useState({
             </div>
 
             {/* Dialog box */}
-            <CourseCardModal open={modalState.openCard} close={CloseDialog} classname='relative z-10' selectedCourse={selectedCourse}/>
+            {/* <CourseCardModal open={modalState.openCard} close={CloseDialog} classname='relative z-10' selectedCourse={selectedCourse}/> */}
             {/* Add Modal */}
             <AddCourseModal open={modalState.openAddCourse} onClose={()=>toggleModal('openAddCourse',false)}/>
             {/* Edit */}

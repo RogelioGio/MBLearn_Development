@@ -1,8 +1,9 @@
-import { faChevronLeft, faChevronRight, faSearch } from '@fortawesome/free-solid-svg-icons'
+import { faChevronLeft, faChevronRight, faFilter, faSearch } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React, { useEffect, useState } from 'react'
 import axiosClient from '../axios-client'
 import Learner from '../components/Learner'
+
 
 const CourseEnrollmentProps = ({course}) => {
     const [learners, setLearners] = useState([])
@@ -34,9 +35,26 @@ const CourseEnrollmentProps = ({course}) => {
     },[])
 
     return(
-        <div className="grid grid-cols-4 grid-rows-[min-content_auto_min-content] h-full w-full">
-            {/* Filter & Search */}
-            <div className="col-span-3 py-2 grid grid-cols-5 grid-rows-1 gap-2">
+        <div className="grid grid-cols-4 grid-rows-[min-content_min-content_1fr_min-content] h-full w-full">
+            {/* Search */}
+            <div className='flex flex-row justify-center items-end '>
+                <div className=' inline-flex flex-row place-content-between border-2 border-primary rounded-md w-full font-text shadow-md'>
+                    <input type="text" className='focus:outline-none text-sm px-4 w-full rounded-md bg-white' placeholder='Search...'/>
+                    <div className='bg-primary py-2 px-4 text-white'>
+                        <FontAwesomeIcon icon={faSearch}/>
+                    </div>
+                </div>
+            </div>
+            <div className='col-start-4 pr-5 pl-2 py-2 flex flex-row justify-center items-end '>
+                <div className=' inline-flex flex-row place-content-between border-2 border-primary rounded-md w-full font-text shadow-md'>
+                    <input type="text" className='focus:outline-none text-sm px-4 w-full rounded-md bg-white' placeholder='Search...'/>
+                    <div className='bg-primary py-2 px-4 text-white'>
+                        <FontAwesomeIcon icon={faSearch}/>
+                    </div>
+                </div>
+            </div>
+            {/* Filter */}
+            <div className="col-span-4 grid grid-cols-[1fr_1fr_1fr_1fr_1fr_min-content] gap-x-2">
                 <div className="inline-flex flex-col gap-1">
                     <label htmlFor="department" className="font-header text-xs flex flex-row justify-between">
                         <p className="text-xs font-text text-unactive">Division </p>
@@ -122,16 +140,14 @@ const CourseEnrollmentProps = ({course}) => {
                         </svg>
                     </div>
                 </div>
-            </div>
-
-            <div className='pr-5 pl-2 py-2 flex flex-row justify-center items-end'>
-                <div className=' inline-flex flex-row place-content-between border-2 border-primary rounded-md w-full font-text shadow-md'>
-                    <input type="text" className='focus:outline-none text-sm px-4 w-full rounded-md bg-white' placeholder='Search...'/>
-                    <div className='bg-primary py-2 px-4 text-white'>
-                        <FontAwesomeIcon icon={faSearch}/>
+                {/* Filter Button */}
+                <div className="flex flex-col justify-end py-1">
+                    <div className="aspect-square border-2 border-primary rounded-md shadow-md text-white bg-primary flex flex-row justify-center items-center hover:scale-105 hover:cursor-pointer transition-all ease-in-out">
+                        <FontAwesomeIcon icon={faFilter} className="p-2"/>
                     </div>
                 </div>
             </div>
+
             {/* Enrolment Table */}
                 <div className="col-span-4 h-full pr-5">
                     <div className='w-full border-primary border rounded-md overflow-hidden shadow-md'>
@@ -180,7 +196,7 @@ const CourseEnrollmentProps = ({course}) => {
                             <tbody className='bg-white divide-y divide-divider'>
                                 {
                                     learnerLoading ? (
-                                        Array.from({length: 5}).map((_, index) => (
+                                        Array.from({length: 4}).map((_, index) => (
                                             <tr key={index} className={`font-text text-sm hover:bg-gray-200`}>
                                                 <td className={`text-sm  py-3 px-4 border-l-2 border-transparent transition-all ease-in-out`}>
                                                     <div className='flex items-center gap-4 flex-row'>

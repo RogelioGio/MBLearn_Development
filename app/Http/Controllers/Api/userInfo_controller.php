@@ -234,7 +234,7 @@ class userInfo_controller extends Controller
                 $query->where('courses.id', $course->id);
             })->where('status', 'Active')
             ->with('roles','department','title','branch','city')
-            ->paginate(5);
+            ->paginate(4);
 
         return response()->json([
             'data' => $users->items(),
@@ -286,7 +286,7 @@ class userInfo_controller extends Controller
     }
 
     public function getAddedCourses(UserInfos $userInfos){
-        $courses = $userInfos->addedCourses()->with(['categories', 'types', 'training_modes'])->paginate(5);
+        $courses = $userInfos->addedCourses()->with(['categories', 'types', 'training_modes'])->paginate(3);
         return $courses;
     }
 
@@ -386,7 +386,7 @@ class userInfo_controller extends Controller
     }
 
     public function getUserCourses(UserInfos $userInfos){
-        $courses = $userInfos->enrolledCourses()->with(['categories', 'types', 'training_modes'])->paginate(4);
+        $courses = $userInfos->enrolledCourses()->with(['categories', 'types', 'training_modes'])->paginate(3);
         return $courses;
     }
 
