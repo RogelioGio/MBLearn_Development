@@ -1,11 +1,30 @@
 import { faChevronLeft, faChevronRight, faFilter, faSearch, faTrash, faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
+import axiosClient from "../axios-client";
 
-const CourseCourseAdminAssignmentProps = ({}) => {
+const CourseCourseAdminAssignmentProps = ({courseID}) => {
     const [assigned, setAssigned] = useState([])
+    const [loading, setLoading] = useState()
     // Function to get the assigned
+    const fetchAssignedCourseAdmins = () => {
+        setLoading(true)
+        axiosClient.get(`assigned-course-admins/${courseID.id}`)
+        .then(({data}) => {
+            setAssigned(data.data)
+            console.log(data.data)
+            setLoading(false)
+        }).catch((err) => {
+            console.log(err)
+        })
+    }
+
+    useEffect(()=>{
+        fetchAssignedCourseAdmins()
+    },[])
+
+
 
     return (
         <div className="w-full h-full grid grid-cols-4 grid-rows-[min-content_min-content_1fr_min-content]">
@@ -176,8 +195,8 @@ const CourseCourseAdminAssignmentProps = ({}) => {
                             </thead>
                     <tbody className="bg-white divide-y divide-divider">
                         {
-                            Array.from({length: 4}).map((_, index) => (
-                                <tr key={index} className={`font-text text-sm hover:bg-gray-200`}>
+                            loading ? ( Array.from({length: 4}).map((_, index) => (
+                                <tr key={index} className={`animate-pulse font-text text-sm hover:bg-gray-200`}>
                                     <td className={`text-sm  py-3 px-4 border-l-2 border-transparent transition-all ease-in-out`}>
                                         <div className='flex items-center gap-4 flex-row'>
                                             {/* Checkbox */}
@@ -215,50 +234,129 @@ const CourseCourseAdminAssignmentProps = ({}) => {
                                                 {/* <img src={profile_url} alt="" className='rounded-full'/> */}
                                             </div>
                                             {/* Name and employee-id*/}
-                                            <div>
-                                                <p className='font-text'>Sample Name</p>
-                                                <p className='text-unactive text-xs'>ID: Sample ID</p>
+                                            <div className="flex flex-col gap-2">
+                                            <div className="h-4 w-full bg-gray-300 rounded-full"></div>
+                                            <div className="h-3 w-28 bg-gray-300 rounded-full"></div>
                                             </div>
                                         </div>
                                     </td>
                                     <td className='py-3 px-4'>
                                         <div className='flex flex-col'>
                                             {/* Division */}
-                                            <p className='text-unactive'>Division</p>
+                                            <div className="h-4 w-full bg-gray-300 rounded-full"></div>
                                         </div>
                                     </td>
                                     <td className='py-3 px-4'>
                                         <div className='flex flex-col'>
                                             {/* Department */}
-                                            <p className='text-unactive'>Learner</p>
+                                            <div className="h-4 w-full bg-gray-300 rounded-full"></div>
                                         </div>
                                     </td>
                                     <td className='py-3 px-4'>
                                         <div className='flex flex-col'>
                                             {/* Section */}
-                                            <p className='text-unactive'>Section</p>
+                                            <div className="h-4 w-full bg-gray-300 rounded-full"></div>
                                         </div>
                                     </td>
                                     <td className='py-3 px-4'>
-                                        <div className='flex flex-col'>
-                                        {/* Branch Location */}
-                                        <p className='text-unactive'>Branch</p>
-                                        {/* City Location */}
-                                        <p className='text-unactive text-xs'>City</p>
-                                        </div>
-                                    </td>
+                                        <div className="flex flex-col gap-2">
+                                                <div className="h-4 w-full bg-gray-300 rounded-full"></div>
+                                                <div className="h-3 w-28 bg-gray-300 rounded-full"></div>
+                                                </div>
+                                        </td>
                                     <td className='py-3 px-4 '>
                                         <div className="flex flex-row item-center justify-end h-full gap-1">
-                                            <div className="flex justify-center items-center aspect-square p-2 bg-white shadow-md border-2 border-primary rounded-md text-primary hover:bg-primary cursor-pointer transition-all ease-in-out hover:text-white">
-                                                <FontAwesomeIcon icon={faPenToSquare}/>
-                                            </div>
-                                            <div className="flex justify-center items-center aspect-square p-2 bg-white shadow-md border-2 border-primary rounded-md text-primary hover:bg-primary cursor-pointer transition-all ease-in-out hover:text-white">
-                                                <FontAwesomeIcon icon={faTrash}/>
-                                            </div>
+                                            <div className="h-10 w-10 bg-gray-300 rounded-md"></div>
+                                            <div className="h-10 w-10 bg-gray-300 rounded-md"></div>
                                         </div>
                                     </td>
                                 </tr>
-                            ))
+                            ))):(
+                                assigned.map((admin) => (
+                                    <tr key={admin} className={`font-text text-sm hover:bg-gray-200`}>
+                                        <td className={`text-sm  py-3 px-4 border-l-2 border-transparent transition-all ease-in-out`}>
+                                            <div className='flex items-center gap-4 flex-row'>
+                                                {/* Checkbox */}
+                                                <div className="group grid size-4 grid-cols-1">
+                                                    <input type="checkbox"
+                                                        className="col-start-1 row-start-1 appearance-none border border-divider rounded checked:border-primary checked:bg-primary focus:ring-2 focus:ring-primary focus:outline-none focus:ring-offset-1"
+                                                        // onClick={(e) => e.stopPropagation()}
+                                                        // onChange={(e) => {
+                                                        //     handleCheckbox(e, userID);
+                                                        // }}
+                                                        // checked={isChecked} // Updated this line
+                                                    />
+                                                    {/* Custom Checkbox styling */}
+                                                    <svg fill="none" viewBox="0 0 14 14" className="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-[:disabled]:stroke-gray-950/25">
+                                                        {/* Checked */}
+                                                        <path
+                                                            d="M3 8L6 11L11 3.5"
+                                                            strokeWidth={2}
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            className="opacity-0 group-has-[:checked]:opacity-100"
+                                                        />
+                                                        {/* Indeterminate */}
+                                                        <path
+                                                            d="M3 7H11"
+                                                            strokeWidth={2}
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            className="opacity-0 group-has-[:indeterminate]:opacity-100"
+                                                            />
+                                                    </svg>
+                                                </div>
+                                                {/* User Image */}
+                                                <div className='bg-blue-500 h-10 w-10 rounded-full'>
+                                                    <img src={admin.profile_image} alt="" className='rounded-full'/>
+                                                </div>
+                                                {/* Name and employee-id*/}
+                                                <div>
+                                                    <p className='font-text'>{admin.first_name} {admin.middle_name} {admin.last_name} {admin.name_suffix}</p>
+                                                    <p className='text-unactive text-xs'>ID: {admin.employeeID}</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className='py-3 px-4'>
+                                            <div className='flex flex-col'>
+                                                {/* Division */}
+                                                <p className='text-unactive'>Division</p>
+                                            </div>
+                                        </td>
+                                        <td className='py-3 px-4'>
+                                            <div className='flex flex-col'>
+                                                {/* Department */}
+                                                <p className='text-unactive'>{admin.department?.department_name}</p>
+                                            </div>
+                                        </td>
+                                        <td className='py-3 px-4'>
+                                            <div className='flex flex-col'>
+                                                {/* Section */}
+                                                <p className='text-unactive'>Section</p>
+                                            </div>
+                                        </td>
+                                        <td className='py-3 px-4'>
+                                            <div className='flex flex-col'>
+                                            {/* Branch Location */}
+                                            <p className='text-unactive'>{admin.branch?.branch_name}</p>
+                                            {/* City Location */}
+                                            <p className='text-unactive text-xs'>{admin.branch?.city?.city_name}</p>
+                                            </div>
+                                        </td>
+                                        <td className='py-3 px-4 '>
+                                            <div className="flex flex-row item-center justify-end h-full gap-1">
+                                                <div className="flex justify-center items-center aspect-square p-2 bg-white shadow-md border border-primary rounded-md text-primary hover:bg-primary cursor-pointer transition-all ease-in-out hover:text-white">
+                                                    <FontAwesomeIcon icon={faPenToSquare}/>
+                                                </div>
+                                                <div className="flex justify-center items-center aspect-square p-2 bg-white shadow-md border border-primary rounded-md text-primary hover:bg-primary cursor-pointer transition-all ease-in-out hover:text-white">
+                                                    <FontAwesomeIcon icon={faTrash}/>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))
+                            )
+
                         }
 
                     </tbody>

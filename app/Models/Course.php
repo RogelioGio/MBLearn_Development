@@ -23,7 +23,6 @@ class Course extends Model
         'training_type',
         'type_id',
         'category_id',
-        'training_mode_id',
         'archived',
         'system_admin_id',
         'assigned_course_admin_id',
@@ -58,5 +57,5 @@ class Course extends Model
     public function training_modes():BelongsToMany{
         return $this->belongsToMany(Training_Mode::class, 'traning__mode__course', 'course_id', 'training_mode_id');
     }
-    
+
 }

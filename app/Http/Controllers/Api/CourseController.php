@@ -54,7 +54,6 @@ class CourseController extends Controller
         $data = $request->all();
         $type = Type::query()->find($data['type_id']);
         $category = Category::query()->find($data['category_id']);
-        $training_mode = Training_Mode::query()->find($data['training_mode_id']);
         $current_user = Auth::user();
 
 
@@ -67,7 +66,6 @@ class CourseController extends Controller
             "archived" => $data['archived'],]
             );
 
-        $course->training_modes()->syncWithoutDetaching($training_mode->id);
         $course->types()->syncWithoutDetaching($type->id);
         $course->categories()->syncWithoutDetaching($category->id);
         $course->save();

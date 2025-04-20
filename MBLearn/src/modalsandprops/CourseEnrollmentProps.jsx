@@ -195,7 +195,7 @@ const CourseEnrollmentProps = ({course}) => {
                                 {
                                     learnerLoading ? (
                                         Array.from({length: 4}).map((_, index) => (
-                                            <tr key={index} className={`font-text text-sm hover:bg-gray-200`}>
+                                            <tr key={index} className={`font-text text-sm hover:bg-gray-200 animate-pulse`}>
                                                 <td className={`text-sm  py-3 px-4 border-l-2 border-transparent transition-all ease-in-out`}>
                                                     <div className='flex items-center gap-4 flex-row'>
                                                         {/* Checkbox */}
@@ -229,40 +229,40 @@ const CourseEnrollmentProps = ({course}) => {
                                                             </svg>
                                                         </div>
                                                         {/* User Image */}
-                                                        <div className='bg-blue-500 h-10 w-10 rounded-full'>
+                                                        <div className='bg-blue-500 h-10 w-10 rounded-full animate-pulse'>
                                                             {/* <img src={profile_url} alt="" className='rounded-full'/> */}
                                                         </div>
                                                         {/* Name and employee-id*/}
-                                                        <div>
-                                                            <p className='font-text'></p>
-                                                            <p className='text-unactive text-xs'>ID: </p>
+                                                        <div className="flex flex-col gap-2">
+                                                        <div className="h-4 w-full bg-gray-300 rounded-full"></div>
+                                                        <div className="h-3 w-28 bg-gray-300 rounded-full"></div>
                                                         </div>
                                                     </div>
                                                 </td>
                                                 <td className='py-3 px-4'>
                                                     <div className='flex flex-col'>
                                                         {/* Division */}
-                                                        <p className='text-unactive'>Division</p>
+                                                        <div className="h-4 w-full bg-gray-300 rounded-full"></div>
                                                     </div>
                                                 </td>
                                                 <td className='py-3 px-4'>
                                                     <div className='flex flex-col'>
                                                         {/* Department */}
-                                                        <p className='text-unactive'></p>
+                                                        <div className="h-4 w-full bg-gray-300 rounded-full"></div>
                                                     </div>
                                                 </td>
                                                 <td className='py-3 px-4'>
                                                     <div className='flex flex-col'>
                                                         {/* Section */}
-                                                        <p className='text-unactive'>Section</p>
+                                                        <div className="h-4 w-full bg-gray-300 rounded-full"></div>
                                                     </div>
                                                 </td>
                                                 <td className='py-3 px-4'>
-                                                    <div className='flex flex-col'>
+                                                    <div className='flex flex-col gap-2'>
                                                     {/* Branch Location */}
-                                                    <p className='text-unactive'></p>
+                                                    <div className="h-4 w-full bg-gray-300 rounded-full"></div>
                                                     {/* City Location */}
-                                                    <p className='text-unactive text-xs'></p>
+                                                    <div className="h-4 w-full bg-gray-300 rounded-full"></div>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -304,7 +304,7 @@ const CourseEnrollmentProps = ({course}) => {
                                                     </div>
                                                     {/* User Image */}
                                                     <div className='bg-blue-500 h-10 w-10 rounded-full'>
-                                                        {/* <img src={profile_url} alt="" className='rounded-full'/> */}
+                                                        <img src={learner.profile_image} alt="" className='rounded-full'/>
                                                     </div>
                                                     {/* Name and employee-id*/}
                                                     <div>

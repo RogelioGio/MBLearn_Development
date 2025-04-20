@@ -326,7 +326,7 @@ const AddCourseModal = ({open,onClose}) => {
                                 <Stepper.Step icon={<FontAwesomeIcon icon={faBook} className="!text-primary"/>}>
                                 <div className="grid grid-cols-3 grid-rows-[min-content_auto] gap-x-3 gap-y-2">
                                     {/* Header */}
-                                    <div className='col-span-2 border-b border-divider pb-2'>
+                                    <div className='col-span-3 border-b border-divider pb-2'>
                                         <h1 className='text-primary font-header'>Step 3</h1>
                                         <p className='text-unactive font-text'>Review the course information and details</p>
                                     </div>
@@ -369,11 +369,11 @@ const AddCourseModal = ({open,onClose}) => {
                                                         <p className="font-text">{formik2.values.training_type || "Not selected"}</p>
                                                     </div>
                                                     {/* Short Description */}
-                                                    <div className="inline-flex flex-col gap-2 row-start-5 col-span-2">
+                                                    <div className="inline-flex flex-col gap-2 row-start-5 col-span-3">
                                                         <label htmlFor="short_desc" className="font-header text-xs flex flex-row justify-between uppercase">Short Description:</label>
                                                         <p className="font-text w-full whitespace-pre-wrap">{formik2.values.short_desc}</p>
                                                     </div>
-                                                    <div className="col-span-3 flex flex-row gap-2">
+                                                    <div className="col-span-3 flex flex-row gap-2 pt-3">
                                                     <button
                                                         onClick={()=>toggleState("steps", (current) => current - 1)}
                                                         className={`bg-white border-2 border-primary p-4 rounded-md font-header uppercase text-primary text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 hover:text-white hover:border-primaryhover transition-all ease-in-out w-full

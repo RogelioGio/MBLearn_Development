@@ -28,7 +28,7 @@ export default function AssignedCourseCatalog() {
     const {user} = useStateContext();
     const [loading, setLoading] = useState(false);
     const [assigned_course, setAssignedCourse] = useState([]);
-    const [tab, setTab] = useState(1);
+    const [tab, setTab] = useState("myCourses");
     const [openAddCourse, setOpenAddCourse] = useState(false);
 
     // Sort Order State
@@ -47,36 +47,45 @@ export default function AssignedCourseCatalog() {
         toggleSort(key, order);
     }
 
-    //UseState
-    // const [state, setState] = useState({
-    //     tab: "active",
-    //     editFilter: false,
-    // })
-    // const toggleState = (key,value) => {
-    //     setState((prev => ({
-    //         ...prev,
-    //         [key]:value,
-    //     })));
-    // }
 
-    const fetchCourses = () => {
+
+    const fetchCourses = (typeOfCourse) => {
         setLoading(true)
-        axiosClient.get(`/select-user-added-courses/${user.id}`,{
-            params: {
-                page: pageState.currentPage,
-                per_page: pageState.perPage,
-            }
-        })
-        .then(({ data }) => {
-            setAssignedCourse(data.data)
-            pageChangeState("totalCourses", data.total)
-            pageChangeState("lastPage", data.lastPage)
-            setLoading(false)
-        })
-        .catch((err) => {
-            console.log(err);
-        });
-
+        if(typeOfCourse === "myCourses"){
+            axiosClient.get(`/select-user-added-courses/${user.id}`,{
+                params: {
+                    page: pageState.currentPage,
+                    per_page: pageState.perPage,
+                }
+            })
+            .then(({ data }) => {
+                setAssignedCourse(data.data)
+                pageChangeState("totalCourses", data.total)
+                pageChangeState("lastPage", data.lastPage)
+                setLoading(false)
+            })
+            .catch((err) => {
+                console.log(err);
+            })
+        } else if(typeOfCourse ==="assignedCourses"){
+            axiosClient.get(`/select-user-assigned-courses/${user.id}`,{
+                    params: {
+                        page: pageState.currentPage,
+                        per_page: pageState.perPage,
+                    }
+                })
+                .then(({ data }) => {
+                    setAssignedCourse(data.data)
+                    pageChangeState("totalCourses", data.total)
+                    pageChangeState("lastPage", data.lastPage)
+                    setLoading(false)
+                })
+                .catch((err) => {
+                    console.log(err);
+                })
+        } else {
+            return null
+        }
     }
 
     const [pageState, setPagination] = useState({
@@ -102,8 +111,8 @@ export default function AssignedCourseCatalog() {
         },[pageState.currentPage, pageState.perPage, pageState.totalCourses])
 
         useEffect(()=>{
-            fetchCourses()
-        },[pageState.currentPage, pageState.perPage])
+            fetchCourses(tab)
+        },[pageState.currentPage, pageState.perPage, tab])
 
         //Next and Previous
         const back = () => {
@@ -162,11 +171,11 @@ export default function AssignedCourseCatalog() {
 
             {/* Tabs */}
             <div className="px-5 col-span-4 w-full py-2 flex flex-row justify-between items-center gap-2">
-                <div className= {`w-full border-2 border-primary px-4 py-2 rounded-md shadow-md text-primary font-header ${tab === 1 ? "bg-primary text-white":null} hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out`} onClick={() => {setTab(1)}}>
+                <div className= {`w-full border-2 border-primary px-4 py-2 rounded-md shadow-md text-primary font-header ${tab === "myCourses" ? "bg-primary text-white":null} hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out`} onClick={() => {setTab("myCourses")}}>
                         <p className="flex gap-2"><span><FontAwesomeIcon icon={faBookBookmark}/></span> My Courses</p>
                         <p className="text-xs font-text">Manage and view all your inputted courses</p>
                     </div>
-                    <div className={`w-full border-2 border-primary px-4 py-2 rounded-md shadow-md text-primary font-header ${tab === 2 ? "bg-primary text-white":null} hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out`} onClick={() => {setTab(2)}}>
+                    <div className={`w-full border-2 border-primary px-4 py-2 rounded-md shadow-md text-primary font-header ${tab === "assignedCourses" ? "bg-primary text-white":null} hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out`} onClick={() => {setTab("assignedCourses")}}>
                         <p className="flex gap-2"><span><FontAwesomeIcon icon={faBook}/></span>Assigned Courses</p>
                         <p className="text-xs font-text">Manage and view all your assigned courses</p>
                     </div>
