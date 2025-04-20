@@ -40,7 +40,7 @@ const navItems = {
     ],
     "Course Admin": [
         {icon:faHouse, text:"Home", to:"/courseadmin/dashboard"},
-        {icon:faChalkboard, text:"Course Manager", to:"/courseadmin/assignedcourses"},
+        {icon:faChalkboard, text:"Course Manager", to:"/courseadmin/courses"},
         // {icon:faBook, text:"My Course Maintenance", to:"/courseadmin/courselistmaintenance"},
         {icon:faPersonCirclePlus, text:"Enroll Trainee", to:"/courseadmin/bulkenrollment"},
         {icon:faChartPie, text:"Assigned Course Reports", to:"/courseadmin/coursereports"},

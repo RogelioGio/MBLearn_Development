@@ -1,4 +1,4 @@
-import { faBook, faChalkboardUser, faChevronLeft, faChevronRight, faFilter, faGraduationCap, faSearch, faUserPlus } from "@fortawesome/free-solid-svg-icons"
+import { faBook, faBookBookmark, faChalkboardUser, faChevronLeft, faChevronRight, faFilter, faGraduationCap, faSearch, faUserPlus } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Helmet } from "react-helmet"
 import axiosClient from "../axios-client"
@@ -16,14 +16,15 @@ import EnrollmentFailedModal from "../modalsandprops/EnrollmentFailedModal"
 import NoEmployeeSelectedModal from "../modalsandprops/NoEmployeeSelectedModal"
 import { set } from "date-fns"
 import { ScrollArea } from "../components/ui/scroll-area"
-// import {
-//     Carousel,
-//     CarouselContent,
-//     CarouselItem,
-//     CarouselNext,
-//     CarouselPrevious,
-//     } from "../components/ui/carousel";
-// import Autoplay from "embla-carousel-autoplay";
+import {
+    Sheet,
+    SheetContent,
+    SheetDescription,
+    SheetHeader,
+    SheetOverlay,
+    SheetTitle,
+    SheetTrigger,
+} from "../components/ui/sheet"
 
 export default function BulkEnrollment() {
 
@@ -297,41 +298,44 @@ export default function BulkEnrollment() {
                 </button>
             </div>
 
-            {/* Tab */}
-            {/* <div className="px-4 pb-3 mt-5 col-start-1 row-start-2">
-                <div className="w-full flex flex-row rounded-md shadow-md hover:cursor-pointer">
-                    <span className={`w-1/2 flex flex-row gap-5 items-center text-md font-header ring-2 ring-primary rounded-l-md px-5 py-2 text-primary hover:bg-primary hover:text-white transition-all ease-in-out ${tab === 1 ? 'bg-primary text-white':null}`} onClick={()=> setTab(1)}>
-                        <FontAwesomeIcon icon={faGraduationCap}/>
-                        Enrollees
-                    </span>
-                    <span className={` w-1/2 flex flex-row gap-5 items-center text-md font-header ring-2 ring-primary rounded-r-md px-5 py-2 text-primary hover:bg-primary hover:text-white transition-all ease-in-out ${tab === 2 ? 'bg-primary text-white':null}`} onClick={()=> setTab(2)}>
-                        <FontAwesomeIcon icon={faChalkboardUser}/>
-                        Enrolled
-                    </span>
-                </div>
-            </div> */}
-
-            <div className="px-4 pb-3 pt-5 col-start-1 row-start-2 flex flex-row items-center border-r border-divider">
-                <div>
-                    <h1 className='text-primary text-2xl font-header'>Courses</h1>
-                    <p className='font-text text-xs text-unactive' >All listed courses to enroll users into effortlessly.</p>
+            {/* Course Header */}
+            <div className="flex flex-row items-center pl-5 pr-4 border-r border-divider w-full">
+                <div className="inline-flex flex-col gap-1 row-start-3 col-span-1 py-2 w-full">
+                    <label htmlFor="department">
+                        <div>
+                            <p className="font-header text-lg text-primary">Courses</p>
+                            <p className="font-text text-xs text-unactive">Quickly choose a course a leaner can be enrolled</p>
+                        </div>
+                    </label>
+                    <div className="grid grid-cols-1">
+                        <select id="department" name="department" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                            // value={formik.values.department}
+                            // onChange={formik.handleChange}
+                            // onBlur={formik.handleBlur}
+                            >
+                            <option value=""> My Courses</option>
+                            <option value=""> Assigned Courses</option>
+                        </select>
+                        <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                        <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                        {/* {formik.touched.department && formik.errors.department ? (<div className="text-red-500 text-xs font-text">{formik.errors.department}</div>):null} */}
                 </div>
             </div>
 
             {/* Assigned Courses */}
-            <div className="col-start-1 row-start-3 row-span-2 mb-5 border-r border-divider h-full px-2 flex flex-col items-center gap-2 pb-4">
-
-
+            <div className="col-start-1 row-start-3 row-span-2 mb-5 border-r border-divider h-full pl-5 flex flex-col items-center gap-2 pb-4">
                         {
                         isLoading ? (
-                            <div className="flex flex-col gap-2 items-center justify-center text-center h-full">
+                            <div className="flex flex-col gap-2 items-center justify-center text-center h-full pr-4">
                                 <img src={CourseLoading} alt="" className="w-44"/>
                                 <p className="text-xs font-text text-primary">Hang tight! 🚀 Loading assigned courses for bulk enrollment—great things take a second!</p>
                             </div>
                         )
                         : (
-                            <ScrollArea className="h-[calc(100vh-12.25rem)]">
-                                <div className="mr-5 gap-2 h-full flex flex-col">
+                            <ScrollArea className="h-[calc(100vh-12.25rem)] mr-1">
+                                <div className="gap-2 h-full flex flex-col pr-4 snap-y snap-mandatory overflow-y-auto">
                                     {
                                         assigned_courses.map((Course) => (
 
@@ -355,67 +359,11 @@ export default function BulkEnrollment() {
                     }
             </div>
 
-            {/* Search and filter */}
-            <div className="col-start-2 col-span-3 row-start-2 row-span-1 px-5 flex flex-row justify-between items-center gap-5 py-2">
-                {/* Filter */}
-                <div className="w-full">
-                    <form className="flex flex-row gap-2 items-center w-full">
-                        <div className="inline-flex flex-col gap-1 w-full">
-                        <label htmlFor="employee_name" className="font-header text-xs flex flex-row justify-between">
-                            <p className="text-xs font-text text-unactive">Sample Filter </p>
-                        </label>
-                        <div className="grid grid-cols-1">
-                            <select id="employee_name" name="employee_name" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                                >
-                                <option value=''>Select an Section</option>
-                            </select>
-                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                            <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                            </svg>
-                        </div>
-                        </div>
-                        <div className="inline-flex flex-col gap-1 w-full">
-                        <label htmlFor="employee_name" className="font-header text-xs flex flex-row justify-between">
-                            <p className="text-xs font-text text-unactive">Sample Filter </p>
-                        </label>
-                        <div className="grid grid-cols-1">
-                            <select id="employee_name" name="employee_name" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                                >
-                                <option value=''>Select an Section</option>
-                            </select>
-                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                            <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                            </svg>
-                        </div>
-                        </div>
-                        <div className="inline-flex flex-col gap-1 w-full">
-                        <label htmlFor="employee_name" className="font-header text-xs flex flex-row justify-between">
-                            <p className="text-xs font-text text-unactive">Sample Filter </p>
-                        </label>
-                        <div className="grid grid-cols-1">
-                            <select id="employee_name" name="employee_name" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                                >
-                                <option value=''>Select an Section</option>
-                            </select>
-                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                            <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                            </svg>
-                        </div>
-                        </div>
-                        {/* Submit */}
-                        <div className='flex-row flex justify-end py-1 gap-2'>
-                            <button type='submit'>
-                                <div className='aspect-square px-3 flex flex-row justify-center items-center bg-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 ease-in-out transition-all '>
-                                    <FontAwesomeIcon icon={faFilter} className='text-white text-sm'/>
-                                </div>
-                            </button>
-                        </div>
-                    </form>
+            {/* Learner table */}
+            <div className='row-start-2 row-span-3 col-start-2 col-span-3 px-5 py-2 grid grid-rows-[min-content_1fr_min-content] grid-cols-3'>
 
-                </div>
-
-                {/* Search Bar */}
-                <div className=' inline-flex flex-row place-content-between border-2 border-primary rounded-md font-text shadow-md'>
+            <div className="col-start-3 w-full py-2">
+                <div className=' inline-flex flex-row place-content-between border-2 border-primary rounded-md font-text shadow-md w-full'>
                     <input type="text" className='focus:outline-none text-sm px-4 w-full rounded-md bg-white' placeholder='Search...'/>
                     <div className='bg-primary py-2 px-4 text-white'>
                         <FontAwesomeIcon icon={faSearch}/>
@@ -423,7 +371,23 @@ export default function BulkEnrollment() {
                 </div>
             </div>
 
-            {/* Learner table */}
+            <div className="col-start-2 pr-2 row-start-1 flex flex-row items-center justify-end">
+                <Sheet>
+                    <SheetTrigger>
+                        <div className="h-fit p-2 flex justify-center items-center bg-primary aspect-square border-2 border-primary rounded-md shadow-md text-white hover:cursor-pointer hover:scale-105 hover:bg-primaryhover transition-all ease-in-out">
+                            <FontAwesomeIcon icon={faFilter}/>
+                        </div>
+                    </SheetTrigger>
+                    <SheetOverlay className="bg-gray-500/75 backdrop-blur-sm transition-all" />
+                    <SheetContent className="h-full flex-col flex">
+                    <div>
+                        <h1 className='font-header text-2xl text-primary'>Learner Filter</h1>
+                        <p className='text-md font-text text-unactive text-sm'>Categorize learner to enroll</p>
+                    </div>
+                    </SheetContent>
+                </Sheet>
+            </div>
+
             {
                 learnerLoading ? (
                     <EnrollmentTableProps>
@@ -457,12 +421,9 @@ export default function BulkEnrollment() {
                         }
                     </EnrollmentTableProps>) : (null)
                 )))
-
-
             }
 
-            {/* User Pagination */}
-            <div className='row-start-4 row-span-1 col-start-2 col-span-3 mx-5 flex flex-row items-center justify-between'>
+            <div className='flex flex-row items-center justify-between col-span-3 border-t border-divider py-3'>
                 {/* Total number of entries and only be shown */}
                 <div>
                     <p className='text-sm font-text text-unactive'>
@@ -501,6 +462,7 @@ export default function BulkEnrollment() {
                         </a>
                     </nav>
                 </div>
+            </div>
             </div>
         </div>
 

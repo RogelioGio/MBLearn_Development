@@ -9,26 +9,27 @@ import axiosClient from "../axios-client"
 import { use } from "react"
 import CourseLoading from "../assets/Course_Loading.svg"
 import { set } from "date-fns"
-
-//Assigned Courses
-// const assigned_courses = [
-//     {name: "Effective Communication Skills in the Workplace", courseType:"Soft Skill Training", courseCategory:"Personal Development", duration: "2 Weeks", method: "Asynchronous"},
-//     {name: "Time Management and Productivity Hacks", courseType:"Soft Skill Training", courseCategory:"Personal Development", duration: "1 Weeks", method: "Online Training"},
-//     {name: "Advanced Excel for Financial Analysis", courseType:"Technical Training", courseCategory:"Finance & Accounting", duration: "3 Weeks", method: "Blended Learning"},
-//     {name: "Cybersecurity Awareness for Employees", courseType:"Compliance Training", courseCategory:"IT Security", duration: "2 Weeks", method: "Asynchronous"},
-//     {name: "Customer Service Excellence", courseType:"Soft Skill Training", courseCategory:"Customer Relations", duration: "2 Weeks", method: "Instructor-Led Training"},
-//     {name: "Agile Project Management Fundamentals", courseType:"Technical Training", courseCategory:"Project Management", duration: "4 Weeks", method: "Online Training"},
-//     {name: "Customer Service Excellence", courseType:"Soft Skill Training", courseCategory:"Customer Relations", duration: "2 Weeks", method: "Instructor-Led Training"},
-//     {name: "Agile Project Management Fundamentals", courseType:"Technical Training", courseCategory:"Project Management", duration: "4 Weeks", method: "Online Training"},
-// ]
+import AddCourseModal from "../modalsandprops/AddCourseModal"
+import {
+    Sheet,
+    SheetContent,
+    SheetDescription,
+    SheetHeader,
+    SheetOverlay,
+    SheetTitle,
+    SheetTrigger,
+} from "../components/ui/sheet"
+import { useCourseContext } from "../contexts/CourseListProvider"
 
 
 
 export default function AssignedCourseCatalog() {
+    const {coursetypes, coursecategories} = useCourseContext();
     const {user} = useStateContext();
     const [loading, setLoading] = useState(false);
     const [assigned_course, setAssignedCourse] = useState([]);
     const [tab, setTab] = useState(1);
+    const [openAddCourse, setOpenAddCourse] = useState(false);
 
     // Sort Order State
     const [sort, setSort] = useState({
@@ -47,16 +48,16 @@ export default function AssignedCourseCatalog() {
     }
 
     //UseState
-    const [state, setState] = useState({
-        tab: "active",
-        editFilter: false,
-    })
-    const toggleState = (key,value) => {
-        setState((prev => ({
-            ...prev,
-            [key]:value,
-        })));
-    }
+    // const [state, setState] = useState({
+    //     tab: "active",
+    //     editFilter: false,
+    // })
+    // const toggleState = (key,value) => {
+    //     setState((prev => ({
+    //         ...prev,
+    //         [key]:value,
+    //     })));
+    // }
 
     const fetchCourses = () => {
         setLoading(true)
@@ -139,6 +140,7 @@ export default function AssignedCourseCatalog() {
 
 
     return(
+    <>
         <div className='grid grid-cols-4 grid-rows-[6.25rem_min-content_min-content_1fr_min-content] h-full w-full'>
             <Helmet>
                 {/* Title of the mark-up */}
@@ -152,7 +154,7 @@ export default function AssignedCourseCatalog() {
             </div>
 
             <div className='col-start-4 row-start-1 flex flex-col justify-center pl-5 mr-5 border-divider border-b'>
-                <button className='inline-flex flex-row shadow-md items-center justify-center bg-primary font-header text-white text-base p-4 rounded-full hover:bg-primaryhover hover:scale-105 transition-all ease-in-out' onClick={()=>toggleModal('openAddCourse',true)}>
+                <button className='inline-flex flex-row shadow-md items-center justify-center bg-primary font-header text-white text-base p-4 rounded-full hover:bg-primaryhover hover:scale-105 transition-all ease-in-out' onClick={()=>setOpenAddCourse(true)}>
                     <FontAwesomeIcon icon={faFolderPlus} className='mr-2'/>
                     <p>Add Course</p>
                 </button>
@@ -186,9 +188,96 @@ export default function AssignedCourseCatalog() {
 
             {/* Filter */}
             <div className="col-start-3 flex justify-end items-center pr-2">
-                <div className="h-fit p-2 flex justify-center items-center bg-primary aspect-square border-2 border-primary rounded-md shadow-md text-white hover:cursor-pointer hover:scale-105 transition-all ease-in-out">
-                    <FontAwesomeIcon icon={faFilter}/>
-                </div>
+                <Sheet>
+                    <SheetTrigger>
+                        <div className="h-fit p-2 flex justify-center items-center bg-primary aspect-square border-2 border-primary rounded-md shadow-md text-white hover:cursor-pointer hover:scale-105 hover:bg-primaryhover transition-all ease-in-out">
+                            <FontAwesomeIcon icon={faFilter}/>
+                        </div>
+                    </SheetTrigger>
+                    <SheetOverlay className="bg-gray-500/75 backdrop-blur-sm transition-all" />
+                    <SheetContent className="h-full flex-col flex">
+                    <div>
+                        <h1 className='font-header text-2xl text-primary'>Course Filter</h1>
+                        <p className='text-md font-text text-unactive text-sm'>Categorize courses</p>
+                    </div>
+                    <div className="flex flex-col gap-2 w-full">
+                        <div className="inline-flex flex-col gap-2 row-start-4 col-span-1">
+                            <label htmlFor="course_type" className="font-header text-xs flex flex-row justify-between">
+                                <p className="font-text text-xs text-unactive">Course Type</p>
+                            </label>
+                            <div class="grid grid-cols-1">
+                                <select id="course_type" name="course_type" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
+                                    // value={formik2.values.course_type}
+                                    // onChange={formik2.handleChange}
+                                    // onBlur={formik2.handleBlur}
+                                >
+                                <option value="">Select a course type</option>
+                                {coursetypes.map((type) => (
+                                    <option key={type.id} value={type.id}>{type.type_name}</option>
+                                ))}
+                                </select>
+                                <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                                {/* {formik2.touched.course_type && formik2.errors.course_type ? (<div className="text-red-500 text-xs font-text">{formik2.errors.course_type}</div>):null} */}
+                        </div>
+                        <div className="inline-flex flex-col gap-2 row-start-4 col-span-1">
+                            <label htmlFor="course_type" className="font-header text-xs flex flex-row justify-between">
+                                <p className="font-text text-xs text-unactive">Course Category</p>
+                            </label>
+                            <div class="grid grid-cols-1">
+                                <select id="course_type" name="course_type" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
+                                    // value={formik2.values.course_type}
+                                    // onChange={formik2.handleChange}
+                                    // onBlur={formik2.handleBlur}
+                                >
+                                <option value="">Select a course category</option>
+                                {coursecategories.map((category) => (
+                                    <option key={category.id} value={category.id}>{category.category_name}</option>
+                                ))}
+                                </select>
+                                <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                                {/* {formik2.touched.course_type && formik2.errors.course_type ? (<div className="text-red-500 text-xs font-text">{formik2.errors.course_type}</div>):null} */}
+                        </div>
+                        <div className="inline-flex flex-col gap-2 row-start-4 col-span-1">
+                            <label htmlFor="course_type" className="font-header text-xs flex flex-row justify-between">
+                                <p className="font-text text-xs text-unactive">Training Type</p>
+                            </label>
+                            <div class="grid grid-cols-1">
+                                <select id="course_type" name="course_type" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
+                                    // value={formik2.values.course_type}
+                                    // onChange={formik2.handleChange}
+                                    // onBlur={formik2.handleBlur}
+                                >
+                                <option value="">Select a Training Type</option>
+                                <option value="">Mandatory</option>
+                                <option value="">Non-Mandatory</option>
+                                {/* {coursetypes.map((type) => (
+                                    <option key={type.id} value={type.id}>{type.type_name}</option>
+                                ))} */}
+                                </select>
+                                <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                                {/* {formik2.touched.course_type && formik2.errors.course_type ? (<div className="text-red-500 text-xs font-text">{formik2.errors.course_type}</div>):null} */}
+                        </div>
+                        <div className="flex flex-row gap-2 w-full py-2">
+                            <div className="border-2 border-primary rounded-md w-full py-2 px-4 font-header text-white bg-primary flex justify-center items-center hover:cursor-pointer hover:bg-primaryhover transition-all ease-in-out shadow-md">
+                                <p>Filter</p>
+                            </div>
+                            <div className="border-2 border-primary rounded-md w-full py-2 px-4 font-header text-primary bg-white flex justify-center items-center hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out shadow-md">
+                                <p>Clear</p>
+                            </div>
+                        </div>
+                    </div>
+                    </SheetContent>
+                </Sheet>
+
             </div>
             {/* Search */}
             <div className="col-start-4 flex flex-row justify-between items-center mr-5 border-divider py-1 gap-2">
@@ -219,37 +308,7 @@ export default function AssignedCourseCatalog() {
                             </div>
                         )
                 }
-
             </div>
-
-            {/* Assigned Course Filter */}
-            {/* <div className="col-start-4 row-start-2 mx-5 py-2 inline-flex justify-between items-center flex-row">
-                    Filter Header
-                    <div>
-                        <h1 className='font-header text-2xl text-primary'>Course Filter</h1>
-                        <p className='text-md font-text text-unactive text-sm'>Categorize courses</p>
-                    </div>
-                    <div>
-                    Course Button
-                    {
-                        user.role === "System Admin" ? (
-
-                                !state.editFilter ?
-                                <div className='relative group aspect-square w-10 rounded-full flex items-center justify-center bg-primarybg text-primary cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out' onClick={()=>toggleState('editFilter',true)}>
-                                    <FontAwesomeIcon icon={faPen}/>
-                                    <p className='absolute w-auto top-12 z-10 bg-tertiary text-white p-2 rounded-md text-xs scale-0 font-text group-hover:scale-100'>Edit</p>
-                                </div> :
-                                <div className='relative group aspect-square w-10 rounded-full flex items-center justify-center bg-primarybg text-primary cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out' onClick={()=>toggleState('editFilter',false)}>
-                                    <FontAwesomeIcon icon={faFloppyDisk}/>
-                                    <p className='absolute w-auto top-12 z-10 bg-tertiary text-white p-2 rounded-md text-xs scale-0 font-text group-hover:scale-100'>Save</p>
-                                </div>
-                        ):null
-                    }
-                    </div>
-            </div> */}
-            {/* <div className="col-start-4 row-start-3 row-span-3 flex flex-col h-full">
-                <CourseFilterProps isEdit={state.editFilter}/>
-            </div> */}
 
             {/* Pagination */}
             <div className="mx-5 col-span-4 row-start-5 row-span-1 flex flex-row justify-between items-center py-3 border-t border-divider">
@@ -294,7 +353,10 @@ export default function AssignedCourseCatalog() {
                     </nav>
                 </div>
             </div>
-
         </div>
+
+        {/* Add Course */}
+        <AddCourseModal open={openAddCourse} onClose={()=>setOpenAddCourse(false)}  />
+        </>
     )
 }

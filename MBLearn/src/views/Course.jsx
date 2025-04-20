@@ -24,10 +24,6 @@ import CourseDetailsModal from "../modalsandprops/CourseDetailsModal"
 import CourseCourseAdminAssignmentProps from "../modalsandprops/CourseCourseAdminAssigmentProps"
 import AddAssignCourseAdmin from "../modalsandprops/AddAssignCourseAdmin"
 
-
-
-
-
 export default function Course() {
     const navigate = useNavigate();
     const {user} = useStateContext();
@@ -48,6 +44,10 @@ export default function Course() {
     };
 
     useEffect(() => {
+        setLoading(true)
+    },[])
+
+    useEffect(() => {
         resetSelectedCourse(id);
         selectCourse(id);
         setLoading(isFetching);
@@ -59,9 +59,10 @@ export default function Course() {
         console.log(course)
     },[isFetching, isLoading])
 
-    useEffect(() => {
-        console.log("Active Tab:", tab);
-    }, [tab]);
+    // useEffect(() => {
+    //     console.log("Active Tab:", tab);
+    // }, [tab]);
+
 
     return(
         <>
