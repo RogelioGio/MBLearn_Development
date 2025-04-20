@@ -61,7 +61,7 @@ export default function AssignedCourseCatalog() {
 
     const fetchCourses = () => {
         setLoading(true)
-        axiosClient.get(`/select-user-assigned-courses/${user.id}`,{
+        axiosClient.get(`/select-user-added-courses/${user.id}`,{
             params: {
                 page: pageState.currentPage,
                 per_page: pageState.perPage,
