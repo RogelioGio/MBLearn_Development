@@ -226,6 +226,10 @@ class userInfo_controller extends Controller
     }
 
     public function indexEnrollingUsers(Request $request, Course $course){
+
+        $page = $request->input('page', 1);//Default page
+        $perPage = $request->input('perPage',4); //Number of entry per page
+
         $filter = new UserInfosFilter();
         $queryItems = $filter->transform($request);
         $users = UserInfos::query()
@@ -234,7 +238,7 @@ class userInfo_controller extends Controller
                 $query->where('courses.id', $course->id);
             })->where('status', 'Active')
             ->with('roles','department','title','branch','city')
-            ->paginate(4);
+            ->paginate($perPage);
 
         return response()->json([
             'data' => $users->items(),
@@ -244,10 +248,18 @@ class userInfo_controller extends Controller
         ],200);
     }
 
-    public function getAssignedCourses(UserInfos $userInfos){
+    public function getAssignedCourses(UserInfos $userInfos, Request $request){
 
-        $courses = $userInfos->assignedCourses()->with(['categories', 'types', 'training_modes'])->paginate(5);
-        return $courses;
+        $page = $request->input('page', 1);//Default page
+        $perPage = $request->input('perPage',6); //Number of entry per page
+        $courses = $userInfos->assignedCourses()->with(['categories', 'types', 'training_modes'])->paginate($perPage);
+
+        return response()->json([
+            'data' => $courses->items(),
+            'total' => $courses->total(),
+            'lastPage' => $courses->lastPage(),
+            'currentPage' => $courses->currentPage()
+        ],200);
     }
 
     public function indexArchivedUsers(Request $request){
@@ -285,9 +297,18 @@ class userInfo_controller extends Controller
         ]);
     }
 
-    public function getAddedCourses(UserInfos $userInfos){
-        $courses = $userInfos->addedCourses()->with(['categories', 'types', 'training_modes'])->paginate(3);
-        return $courses;
+    public function getAddedCourses(UserInfos $userInfos,Request $request){
+
+        $page = request()->input('page', 1);//Default page
+        $perPage = request()->input('perPage',5); //Number of entry per page
+
+        $courses = $userInfos->addedCourses()->with(['categories', 'types', 'training_modes'])->paginate($perPage);
+        return response()->json([
+            'data' => $courses->items(),
+            'total' => $courses->total(),
+            'lastPage' => $courses->lastPage(),
+            'currentPage' => $courses->currentPage()
+        ],200);
     }
 
     //You add user id then role id in url /addRole/{userInfos}/{role}

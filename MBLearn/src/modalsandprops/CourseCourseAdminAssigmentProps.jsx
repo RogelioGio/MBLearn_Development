@@ -10,7 +10,9 @@ const CourseCourseAdminAssignmentProps = ({courseID}) => {
     // Function to get the assigned
     const fetchAssignedCourseAdmins = () => {
         setLoading(true)
-        axiosClient.get(`assigned-course-admins/${courseID.id}`)
+        axiosClient.get(`assigned-course-admins/${courseID.id}`
+
+        )
         .then(({data}) => {
             setAssigned(data.data)
             console.log(data.data)

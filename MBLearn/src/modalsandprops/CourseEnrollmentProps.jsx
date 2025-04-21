@@ -12,17 +12,17 @@ const CourseEnrollmentProps = ({course}) => {
     const handleLearnerChange = (courseId) => {
         setLearnerLoading(true)
         axiosClient.get(`/index-user-enrollments/${courseId}`,
-            // {
-            // params: {
-        //                 page: pageState.currentPage,
-        //                 perPage: pageState.perPage
-        //             }
-            // }
+            {
+            params: {
+                        page: pageState.currentPage,
+                        perPage: pageState.perPage
+                    }
+            }
             ).then(({data})=>{
                 console.log(data)
                 setLearners(data.data)
-                // pageChangeState('totalUser', data.total)
-                // pageChangeState('lastPage', data.lastPage)
+                pageChangeState('total', data.total)
+                pageChangeState('lastPage', data.lastPage)
                 // pageChangeState('currentPerPage', data.data.length)
                 setLearnerLoading(false)
             }).catch((err)=>{
@@ -30,10 +30,58 @@ const CourseEnrollmentProps = ({course}) => {
             })
         }
 
-    useEffect(() => {
-        handleLearnerChange(course.id)
-    },[])
+    const [pageState, setPagination] = useState({
+        currentPage: 1,
+        perPage: 4,
+        total: 0,
+        lastPage:1,
+        startNumber: 0,
+        endNumber: 0,
+        currentPerPage:0
+    });
 
+    const pageChangeState = (key, value) => {
+        setPagination ((prev) => ({
+            ...prev,
+            [key]: value
+        }))
+    }
+
+    useEffect(() => {
+            pageChangeState('startNumber', (pageState.currentPage - 1) * pageState.perPage + 1)
+            pageChangeState('endNumber', Math.min(pageState.currentPage * pageState.perPage, pageState.total))
+        },[pageState.currentPage, pageState.perPage, pageState.total])
+
+        //Next and Previous
+        const back = () => {
+            if (learnerLoading) return;
+            if (pageState.currentPage > 1){
+                pageChangeState("currentPage", pageState.currentPage - 1)
+                pageChangeState("startNumber", pageState.perPage - 4)
+            }
+        }
+        const next = () => {
+            if (learnerLoading) return;
+            if (pageState.currentPage < pageState.lastPage){
+                pageChangeState("currentPage", pageState.currentPage + 1)
+            }
+        }
+
+        const Pages = [];
+        for(let p = 1; p <= pageState.lastPage; p++){
+            Pages.push(p)
+        }
+
+        const pageChange = (page) => {
+            if(learnerLoading) return;
+            if(page > 0 && page <= pageState.lastPage){
+                pageChangeState("currentPage", page)
+            }
+        }
+
+        useEffect(() => {
+            handleLearnerChange(course.id)
+        },[pageState.currentPage, course.id])
     return(
         <div className="grid grid-cols-4 grid-rows-[min-content_min-content_1fr_min-content] h-full w-full">
             {/* Search */}
@@ -352,39 +400,47 @@ const CourseEnrollmentProps = ({course}) => {
             {/* Pagination */}
             <div className="col-span-4 h-full mr-5 flex flex-row items-center justify-between py-3 border-t border-divider">
                 <div>
-                    <p className='text-sm font-text text-unactive'>
-                        Showing <span className='font-header text-primary'>1</span> to <span className='font-header text-primary'>2</span> of <span className='font-header text-primary'>5</span> <span className='text-primary'>results</span>
-                    </p>
+                    {
+                        learnerLoading ? <p>Loading Learners to be enrolled.....</p> :
+                        <p className='text-sm font-text text-unactive'>
+                            Showing <span className='font-header text-primary'>{pageState.startNumber}</span> to <span className='font-header text-primary'>{pageState.endNumber}</span> of <span className='font-header text-primary'>{pageState.total}</span> <span className='text-primary'>results</span>
+                        </p>
+                    }
                 </div>
                 {/* Paganation */}
-                <div>
-                    <nav className='isolate inline-flex -space-x-px round-md shadow-xs'>
-                        {/* Previous */}
-                        <a
-                            //onClick={back}
-                            className='relative inline-flex items-center rounded-l-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
-                            <FontAwesomeIcon icon={faChevronLeft}/>
-                        </a>
 
-                        {/* Current Page & Dynamic Paging */}
-                        {/* {Pages.map((page)=>(
+                <div>
+                    {
+                        learnerLoading ? null :
+                        <nav className='isolate inline-flex -space-x-px round-md shadow-xs'>
+                            {/* Previous */}
                             <a
-                                key={page}
-                                className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset
-                                    ${
-                                        page === pageState.currentPage
-                                        ? 'bg-primary text-white'
-                                        : 'bg-secondarybackground text-primary hover:bg-primary hover:text-white'
-                                    } transition-all ease-in-out`}
-                                    onClick={() => pageChange(page)}>
-                                {page}</a>
-                        ))} */}
-                        <a
-                            //onClick={next}
-                            className='relative inline-flex items-center rounded-r-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
-                            <FontAwesomeIcon icon={faChevronRight}/>
-                        </a>
-                    </nav>
+                                onClick={back}
+                                className='relative inline-flex items-center rounded-l-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
+                                <FontAwesomeIcon icon={faChevronLeft}/>
+                            </a>
+
+                            {/* Current Page & Dynamic Paging */}
+                            {Pages.map((page)=>(
+                                <a
+                                    key={page}
+                                    className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset
+                                        ${
+                                            page === pageState.currentPage
+                                            ? 'bg-primary text-white'
+                                            : 'bg-secondarybackground text-primary hover:bg-primary hover:text-white'
+                                        } transition-all ease-in-out`}
+                                        onClick={() => pageChange(page)}>
+                                    {page}</a>
+                            ))}
+                            <a
+                                onClick={next}
+                                className='relative inline-flex items-center rounded-r-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
+                                <FontAwesomeIcon icon={faChevronRight}/>
+                            </a>
+                        </nav>
+                    }
+
                 </div>
             </div>
         </div>

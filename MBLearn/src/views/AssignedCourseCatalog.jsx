@@ -55,10 +55,10 @@ export default function AssignedCourseCatalog() {
             axiosClient.get(`/select-user-added-courses/${user.id}`,{
                 params: {
                     page: pageState.currentPage,
-                    per_page: pageState.perPage,
+                    perPage: pageState.perPage,
                 }
             })
-            .then(({ data }) => {
+            .then(({data}) => {
                 setAssignedCourse(data.data)
                 pageChangeState("totalCourses", data.total)
                 pageChangeState("lastPage", data.lastPage)
@@ -90,7 +90,7 @@ export default function AssignedCourseCatalog() {
 
     const [pageState, setPagination] = useState({
         currentPage: 1,
-        perPage: 6,
+        perPage: 8,
         totalCourses: 0,
         lastPage:1,
         startNumber: 0,
@@ -116,14 +116,14 @@ export default function AssignedCourseCatalog() {
 
         //Next and Previous
         const back = () => {
-            if (modalState.loading) return;
+            if (loading) return;
             if (pageState.currentPage > 1){
                 pageChangeState("currentPage", pageState.currentPage - 1)
                 pageChangeState("startNumber", pageState.perPage - 4)
             }
         }
         const next = () => {
-            if (modalState.loading) return;
+            if (loading) return;
             if (pageState.currentPage < pageState.lastPage){
                 pageChangeState("currentPage", pageState.currentPage + 1)
             }
@@ -135,7 +135,7 @@ export default function AssignedCourseCatalog() {
         }
 
         const pageChange = (page) => {
-            if(modalState.loading) return;
+            if(loading) return;
             if(page > 0 && page <= pageState.lastPage){
                 pageChangeState("currentPage", page)
             }
@@ -323,43 +323,47 @@ export default function AssignedCourseCatalog() {
             <div className="mx-5 col-span-4 row-start-5 row-span-1 flex flex-row justify-between items-center py-3 border-t border-divider">
                 {/* Total number of entries and only be shown */}
                 <div>
-                    <p className='text-sm font-text text-unactive'>
-                        Showing <span className='font-header text-primary'>1</span> to <span className='font-header text-primary'>2</span> of <span className='font-header text-primary'>3</span> <span className='text-primary'>results</span>
-                    </p>
+                    {
+                        loading ? <p className='text-sm font-text text-primary'>Loading courses...</p>
+                        :
+                        <p className='text-sm font-text text-unactive'>
+                            Showing <span className='font-header text-primary'>{pageState.startNumber}</span> to <span className='font-header text-primary'>{pageState.endNumber}</span> of <span className='font-header text-primary'>{pageState.totalCourses}</span> <span className='text-primary'>results</span>
+                        </p>
+                    }
+
                 </div>
                 {/* Paganation */}
                 <div>
-                    <nav className='isolate inline-flex -space-x-px round-md shadow-xs'>
-                        {/* Previous */}
-                        <a
-                            // onClick={back}
-                            className='relative inline-flex items-center rounded-l-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
-                            <FontAwesomeIcon icon={faChevronLeft}/>
-                        </a>
-
-                        {/* Current Page & Dynamic Paging */}
-                        {/* {Pages.map((page)=>(
+                    {
+                        loading ? null : <nav className='isolate inline-flex -space-x-px round-md shadow-xs'>
+                            {/* Previous */}
                             <a
-                                key={page}
-                                className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset
-                                    ${
-                                        page === pageState.currentPage
-                                        ? 'bg-primary text-white'
-                                        : 'bg-secondarybackground text-primary hover:bg-primary hover:text-white'
-                                    } transition-all ease-in-out`}
-                                    onClick={() => pageChange(page)}>
-                                {page}</a>
-                        ))} */}
-                        {/* Sample */}
-                        <a href="#" className="relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset">
-                            1
-                        </a>
-                        <a
-                            // onClick={next}
-                            className='relative inline-flex items-center rounded-r-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
-                            <FontAwesomeIcon icon={faChevronRight}/>
-                        </a>
-                    </nav>
+                                onClick={back}
+                                className='relative inline-flex items-center rounded-l-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
+                                <FontAwesomeIcon icon={faChevronLeft}/>
+                            </a>
+
+                            {/* Current Page & Dynamic Paging */}
+                            {Pages.map((page)=>(
+                                <a
+                                    key={page}
+                                    className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset
+                                        ${
+                                            page === pageState.currentPage
+                                            ? 'bg-primary text-white'
+                                            : 'bg-secondarybackground text-primary hover:bg-primary hover:text-white'
+                                        } transition-all ease-in-out`}
+                                        onClick={() => pageChange(page)}>
+                                    {page}</a>
+                            ))}
+                            <a
+                                onClick={next}
+                                className='relative inline-flex items-center rounded-r-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
+                                <FontAwesomeIcon icon={faChevronRight}/>
+                            </a>
+                        </nav>
+                    }
+
                 </div>
             </div>
         </div>
