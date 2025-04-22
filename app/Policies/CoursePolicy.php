@@ -10,7 +10,7 @@ class CoursePolicy
 {
     public function before(UserCredentials $userCredentials): bool|null{
         if($userCredentials->userInfos->status === "Active"){
-            return true;
+            return null;
         }
         return false;
     }
