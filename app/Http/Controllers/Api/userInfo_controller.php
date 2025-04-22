@@ -30,16 +30,16 @@ class userInfo_controller extends Controller
     //Change, only have 1 request that has information for both the userinfos and usercreds
     public function addUser(AddUsersRequest $addUsersRequest){
 
-        $validatedData = $addUsersRequest->validated();
-        $title = Title::query()->find($validatedData['title_id']);
-        $department = Department::query()->find($validatedData['department_id']);
-        $branch = Branch::query()->find($validatedData['branch_id']);
-        $role = Role::query()->find($validatedData['role_id']);
+        $existingatedData = $addUsersRequest->validated();
+        $title = Title::query()->find($existingatedData['title_id']);
+        $department = Department::query()->find($existingatedData['department_id']);
+        $branch = Branch::query()->find($existingatedData['branch_id']);
+        $role = Role::query()->find($existingatedData['role_id']);
         $permissions = [];
 
-        $profile_image = $this -> generateProfileImageurl($validatedData['first_name'].$validatedData['last_name']);
-        $status = $validatedData['status'] ?? 'Active';
-        $existingUser = UserInfos::where('employeeID', $validatedData['employeeID'])->first();
+        $profile_image = $this -> generateProfileImageurl($existingatedData['first_name'].$existingatedData['last_name']);
+        $status = $existingatedData['status'] ?? 'Active';
+        $existingUser = UserInfos::where('employeeID', $existingatedData['employeeID'])->first();
 
         if ($existingUser) {
             return response()->json([
@@ -49,30 +49,30 @@ class userInfo_controller extends Controller
         }
 
         // Combine first name, middle initial, last name, and suffix into a full name
-        $fullName = trim("{$validatedData['first_name']} " .
-                            ("{$validatedData['middle_name']}" ? "{$validatedData['middle_name']}. " : "") .
-                            "{$validatedData['last_name']} " .
-                            ("{$validatedData['name_suffix']}" ? $validatedData['name_suffix'] : ""));
+        $fullName = trim("{$existingatedData['first_name']} " .
+                            ("{$existingatedData['middle_name']}" ? "{$existingatedData['middle_name']}. " : "") .
+                            "{$existingatedData['last_name']} " .
+                            ("{$existingatedData['name_suffix']}" ? $existingatedData['name_suffix'] : ""));
 
         // Generate profile image URL (pass the correct name variable)
         $profile_image = $this->generateProfileImageUrl($fullName);
 
         $userCredentials = UserCredentials::create([
-            'MBemail' => $validatedData['MBemail'],
-            'password' => $validatedData['password'],
+            'MBemail' => $existingatedData['MBemail'],
+            'password' => $existingatedData['password'],
         ]);
 
         $userInfo = UserInfos::create([
-            'employeeID' => $validatedData['employeeID'],
-            'first_name' => $validatedData['first_name'],
-            'last_name' => $validatedData['last_name'],
-            'middle_name' => $validatedData['middle_name'],
-            'name_suffix' => $validatedData['name_suffix'],
+            'employeeID' => $existingatedData['employeeID'],
+            'first_name' => $existingatedData['first_name'],
+            'last_name' => $existingatedData['last_name'],
+            'middle_name' => $existingatedData['middle_name'],
+            'name_suffix' => $existingatedData['name_suffix'],
             'status' =>$status,
             'profile_image' =>$profile_image
         ]);
 
-        foreach($validatedData['permissions'] as $tests){
+        foreach($existingatedData['permissions'] as $tests){
             foreach($tests as $key => $value){
                 $permissions[] = $value;
             }
@@ -97,7 +97,7 @@ class userInfo_controller extends Controller
     }
 
     public function bulkStoreUsers(BulkStoreUserRequest $bulkStoreUserRequest){
-
+        $output = [];
         $bulk = collect($bulkStoreUserRequest->all())->map(function ($arr, $key){
             $messyArray = [];
             $oneDArray = [];
@@ -127,7 +127,14 @@ class userInfo_controller extends Controller
             return $oneDArray;
         });
         foreach($bulk as $single){
-
+            $existing = UserInfos::query()->where('employeeID', '=', $single['employeeID'])->first();
+            $existingEmail = UserCredentials::query()->where('MBemail', '=', $single['MBemail'])->first();
+            $empID = $single['employeeID'];
+            $role = $single['role'];
+            $title = $single['title'];
+            $branch = $single['branch'];
+            $department = $single['department'];
+            $password = $single['password'];
             // Combine first name, middle initial, last name, and suffix into a full name
             $fullName = trim("{$single['first_name']} " .
                                 ("{$single['middle_name']}" ? "{$single['middle_name']}. " : "") .
@@ -139,6 +146,43 @@ class userInfo_controller extends Controller
 
             // Default status to 'Active' if not provided
             $status = $single['status'] ?? 'Active';
+
+            if($existing){
+                $output[] = "Employee ID: ".$empID." is already taken";
+                continue;
+            }
+
+            if($existingEmail){
+                $output[] = "MBemail: ".$single['MBemail']." is already taken";
+                continue;
+            }
+
+            if(11 > strlen($empID)){
+                $output[] = "Employee ID: ".$empID." is invalid";
+                continue;
+            }
+
+            if(8 > strlen($password)){
+                $output[] = "MBemail ".$single['MBemail']." has an invalid password";
+                continue;
+            }
+
+            if(!$title){
+                $output[] = "Employee ID ".$empID." has an invalid title";
+                continue;
+            }
+            if(!$role){
+                $output[] = "Employee ID ".$empID." has an invalid role";
+                continue;
+            }
+            if(!$branch){
+                $output[] = "Employee ID ".$empID." has an invalid branch";
+                continue;
+            }
+            if(!$department){
+                $output[] = "Employee ID ".$empID." has an invalid department";
+                continue;
+            }
             $userCredentials = UserCredentials::create([
                 "MBemail" => $single['MBemail'],
                 "password" => $single['password']
@@ -162,7 +206,7 @@ class userInfo_controller extends Controller
             $userCredentials->userInfos()->save($userInfo);
         }
         return response()->json([
-            'Message' => $bulkStoreUserRequest->all()
+            'Message' => $output
         ]);
     }
     /**
@@ -442,10 +486,10 @@ class userInfo_controller extends Controller
     public function updateUser(UserInfos $userInfos, updateUserInfo $request){
 
         //Input Validation
-        $validatedData = $request->validated();
-        $title = Title::query()->find($validatedData['title_id']);
-        $department = Department::query()->find($validatedData['department_id']);
-        $branch = Branch::query()->find($validatedData['branch_id']);
+        $existingatedData = $request->validated();
+        $title = Title::query()->find($existingatedData['title_id']);
+        $department = Department::query()->find($existingatedData['department_id']);
+        $branch = Branch::query()->find($existingatedData['branch_id']);
 
         if(!$userInfos){
             return response()->json(['message' => 'User not found'], 404);
@@ -455,7 +499,7 @@ class userInfo_controller extends Controller
         $userInfos->department()->associate($department);
         $userInfos->save();
 
-        $userInfos->update($validatedData);
+        $userInfos->update($existingatedData);
         //Update UserInfo
         return response()->json([
             "Message" => 'Updated User',
