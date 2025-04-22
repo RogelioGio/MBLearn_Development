@@ -36,8 +36,6 @@ class BulkStoreUserRequest extends FormRequest
             'data.*.branch' => 'required|string',
             'data.*.status' => 'nullable|in:Active, Inactive',
             'data.*.profile_image' => 'nullable|string|max:255',
-            'data.*.MBemail' => 'required|email',
-            'data.*.password' => 'required|string',
         ];
     }
 }

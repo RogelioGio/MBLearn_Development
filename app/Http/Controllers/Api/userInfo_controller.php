@@ -128,13 +128,15 @@ class userInfo_controller extends Controller
         });
         foreach($bulk as $single){
             $existing = UserInfos::query()->where('employeeID', '=', $single['employeeID'])->first();
-            $existingEmail = UserCredentials::query()->where('MBemail', '=', $single['MBemail'])->first();
+            $email = strtolower(preg_replace('/\s+/', '', $single['first_name'])
+                        .preg_replace('/\s+/', '', $single['last_name'])
+                        ."@mbtc.com");
+            $password = strtolower(preg_replace('/\s+/', '', $single['first_name'])."_".$single['employeeID']);
             $empID = $single['employeeID'];
             $role = $single['role'];
             $title = $single['title'];
             $branch = $single['branch'];
             $department = $single['department'];
-            $password = $single['password'];
             // Combine first name, middle initial, last name, and suffix into a full name
             $fullName = trim("{$single['first_name']} " .
                                 ("{$single['middle_name']}" ? "{$single['middle_name']}. " : "") .
@@ -152,18 +154,8 @@ class userInfo_controller extends Controller
                 continue;
             }
 
-            if($existingEmail){
-                $output[] = "MBemail: ".$single['MBemail']." is already taken";
-                continue;
-            }
-
             if(11 > strlen($empID)){
                 $output[] = "Employee ID: ".$empID." is invalid";
-                continue;
-            }
-
-            if(8 > strlen($password)){
-                $output[] = "MBemail ".$single['MBemail']." has an invalid password";
                 continue;
             }
 
@@ -184,8 +176,8 @@ class userInfo_controller extends Controller
                 continue;
             }
             $userCredentials = UserCredentials::create([
-                "MBemail" => $single['MBemail'],
-                "password" => $single['password']
+                "MBemail" => $email,
+                "password" => $password
             ]);
 
             $userInfo = UserInfos::create([
@@ -578,16 +570,18 @@ class userInfo_controller extends Controller
     }
 
     public function test(Request $request){
-        $user_id = $request->user()->id;
-        $users = UserInfos::query()
-            ->whereHas('roles', function(Builder $query){
-                $query->where('role_name', 'Course Admin');
-            })
-            ->whereDoesntHave('assignedCourses', function ($query) {
-            $query->where('courses.id', 2);
-        })->where('status', 'Active')->paginate(5);
+        $user_id = $request->user();
+        $arrays = $user_id->permissionsRole->toArray();
+        $perm_names = [];
+        $accept = false;
+        foreach($arrays as $array){
+            $perm_names[] = $array["permission_name"];
+        }
+        if(in_array("AddFormInput", $perm_names)){
+            $accept = true;
+        }
         return response()->json([
-            "message" => $users
+            "message" => $accept
         ]);
     }
 }
