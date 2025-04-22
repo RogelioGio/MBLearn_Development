@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBell, faBook, faBookBookmark, faBookOpen, faBookOpenReader, faChartGantt, faChartPie, faGear, faGears, faGraduationCap, faHouse, faMedal, faPersonCirclePlus, faRightFromBracket, faUser, faUserGroup, faUserLock, faUserShield, faUsersRays, } from '@fortawesome/free-solid-svg-icons'
+import { faBell, faBook, faBookBookmark, faBookOpen, faBookOpenReader, faChalkboard, faChartGantt, faChartPie, faGear, faGears, faGraduationCap, faHouse, faMedal, faPersonCirclePlus, faRightFromBracket, faUser, faUserGroup, faUserLock, faUserShield, faUsersRays, } from '@fortawesome/free-solid-svg-icons'
 import Small_Logo from '../assets/Small_Logo.svg'
 import axiosClient from '../axios-client';
 import { useEffect, useState } from 'react';
@@ -40,8 +40,8 @@ const navItems = {
     ],
     "Course Admin": [
         {icon:faHouse, text:"Home", to:"/courseadmin/dashboard"},
-        {icon:faBookBookmark, text:"Assigned Course Manager", to:"/courseadmin/assignedcourses"},
-        {icon:faBook, text:"My Course Maintenance", to:"/courseadmin/courselistmaintenance"},
+        {icon:faChalkboard, text:"Course Manager", to:"/courseadmin/courses"},
+        // {icon:faBook, text:"My Course Maintenance", to:"/courseadmin/courselistmaintenance"},
         {icon:faPersonCirclePlus, text:"Enroll Trainee", to:"/courseadmin/bulkenrollment"},
         {icon:faChartPie, text:"Assigned Course Reports", to:"/courseadmin/coursereports"},
         {icon:faUsersRays, text:"My Employees", to:"/courseadmin/myemployee"}

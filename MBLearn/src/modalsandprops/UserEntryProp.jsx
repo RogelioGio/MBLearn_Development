@@ -59,12 +59,18 @@ const User = ({re_move,click,userID,name,department,title,branch,city,profile_ur
                     </div>
                 </td>
                 <td className='py-3 px-4'>
+                    <p>Sample Division</p>
+                </td>
+                <td className='py-3 px-4'>
                     <div className='flex flex-col'>
                         {/* Department */}
                         <p className='text-unactive'>{department}</p>
                         {/* Title */}
                         <p className='text-unactive text-xs'>{title}</p>
                     </div>
+                </td>
+                <td className='py-3 px-4'>
+                    <p>Sample Section</p>
                 </td>
                 <td className='py-3 px-4'>
                     <div className='flex flex-col'>
@@ -74,33 +80,31 @@ const User = ({re_move,click,userID,name,department,title,branch,city,profile_ur
                     <p className='text-unactive text-xs'>{city}</p>
                     </div>
                 </td>
-                <td className='py-3 px-4'>
-                    <p className='text-unactive'>{role}</p>
-                </td>
 
                 {/* Action */}
                 <td className='py-3 px-4'>
                     <div className='flex gap-1 justify-end'>
 
-                    <button className='text-primary border border-primary rounded-md px-3 py-2 hover:bg-primary hover:text-white hover:scale-105 transition-all ease-in-out'
+                    <button className='text-primary border border-primary rounded-md px-3 py-2 bg-white hover:bg-primary hover:text-white transition-all ease-in-out'
                         onClick={(e) => userDetail(e, userID)}>
                         <FontAwesomeIcon icon={faEllipsis}/>
                     </button>
 
                     {
-                        user.user_infos.permissions?.some((permission)=> permission.permission_name ===  "EditUserInfo")? (<button onClick={(e) => edit(e,userID)}
-                        className='flex flex-row items-center justify-center gap-2 px-5 py-2 border border-primary rounded-md text-primary hover:bg-primary hover:text-white hover:scale-105 transition-all ease-in-out'>
-                            <FontAwesomeIcon icon={faUserPen}/>
-                            <p>Edit</p>
-                        </button>):(null)
+                        user.user_infos.permissions?.some((permission)=> permission.permission_name ===  "EditUserInfo")? (
+                            <button onClick={(e) => edit(e,userID)}
+                            className='flex justify-center items-center aspect-square p-2 w-fit bg-white shadow-md border border-primary rounded-md text-primary hover:bg-primary cursor-pointer transition-all ease-in-out hover:text-white'>
+                                <FontAwesomeIcon icon={faUserPen}/>
+                            </button>
+                        ):(null)
                     }
                     {
                         user.user_infos.permissions?.some((permission)=> permission.permission_name ===  "DeleteUserInfo")  ? (
                             <button onClick={(e) => _delete(e,userID)}
-                            className='flex flex-row items-center justify-center gap-2 px-5 py-2 border border-primary rounded-md text-primary hover:bg-primary hover:text-white hover:scale-105 transition-all ease-in-out'>
+                            className='inline-flex justify-center items-center aspect-square py-2 px-3 w-fit bg-white shadow-md border border-primary rounded-md text-primary hover:bg-primary cursor-pointer transition-all ease-in-out hover:text-white'>
                                 <FontAwesomeIcon icon={faTrashCan}/>
-                                <p>Remove</p>
                             </button>
+
                         ) : (null)
                     }
 

@@ -466,9 +466,10 @@ export default function UserManagementMaintenance() {
                                     </div>
                                     <p> EMPLOYEE NAME</p>
                             </th>
+                            <th className='py-4 px-4'>DIVISION</th>
                             <th className='py-4 px-4'>DEPARTMENT</th>
+                            <th className='py-4 px-4'>SECTION</th>
                             <th className='py-4 px-4'>LOCATION</th>
-                            <th className='py-4 px-4'>ROLE</th>
                             <th className='py-4 px-4'></th>
                         </tr>
                     </thead>

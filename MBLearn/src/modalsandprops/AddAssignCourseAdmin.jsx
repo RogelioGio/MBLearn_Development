@@ -1,4 +1,4 @@
-import { faChevronDown, faFilter, faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import { faChevronDown, faFilter, faSearch, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import React, { useEffect, useState } from "react";
@@ -250,9 +250,18 @@ const AddAssignCourseAdmin = ({courseID ,open, close}) => {
                                             </div>
                                         </DrawerContent>
                                     </Drawer>
+
+                                    <div className="col-start-5 col-span-2">
+                                        <div>
+                                            <div className=' inline-flex flex-row place-content-between border-2 border-primary rounded-md w-full font-text shadow-md'>
+                                                <input type="text" className='focus:outline-none text-sm px-4 w-full rounded-md bg-white' placeholder='Search...'/>
+                                                <div className='bg-primary py-2 px-4 text-white'>
+                                                    <FontAwesomeIcon icon={faSearch}/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-
-
                                 <div>
                                     {/* Course Admin Table */}
                                     <div className="py-1">

@@ -1,11 +1,14 @@
 import { faGraduationCap, faUserPen } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 
 const EnrolledSuccessfullyModal = ({ isOpen, onClose, result }) => {
-    const [selectedCourse, setSelectedCourse] = useState(result[0]?.course.id);
+    const [selectedCourse, setSelectedCourse] = useState();
+    useEffect(() => {
+        setSelectedCourse(result[0]?.course.id)
+    },[result])
     return(
         <Dialog open={isOpen} onClose={() => {}}>
             <DialogBackdrop transition className="fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in z-30"/>

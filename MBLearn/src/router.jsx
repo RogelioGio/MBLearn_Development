@@ -119,8 +119,11 @@ const router = createBrowserRouter([
                         </SelectedCourseProvider>
                     },
                     {
-                        path: "assignedcourses",
-                        element: <AssignedCourse/>
+                        path: "courses",
+                        element:
+                        <CourseListProvider>
+                                <AssignedCourse/>
+                        </CourseListProvider>
                     },
                     {
                         path: "coursereports",

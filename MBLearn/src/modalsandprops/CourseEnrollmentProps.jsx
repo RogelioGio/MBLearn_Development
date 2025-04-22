@@ -1,12 +1,106 @@
-import { faChevronLeft, faChevronRight, faSearch } from '@fortawesome/free-solid-svg-icons'
+import { faChevronLeft, faChevronRight, faFilter, faSearch, faUserPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import axiosClient from '../axios-client'
+import Learner from '../components/Learner'
 
-const CourseEnrollmentProps = () => {
+
+const CourseEnrollmentProps = ({course}) => {
+    const [learners, setLearners] = useState([])
+    const [learnerLoading, setLearnerLoading] = useState(false)
+
+    const handleLearnerChange = (courseId) => {
+        setLearnerLoading(true)
+        axiosClient.get(`/index-user-enrollments/${courseId}`,
+            {
+            params: {
+                        page: pageState.currentPage,
+                        perPage: pageState.perPage
+                    }
+            }
+            ).then(({data})=>{
+                console.log(data)
+                setLearners(data.data)
+                pageChangeState('total', data.total)
+                pageChangeState('lastPage', data.lastPage)
+                // pageChangeState('currentPerPage', data.data.length)
+                setLearnerLoading(false)
+            }).catch((err)=>{
+                console.log(err)
+            })
+        }
+
+    const [pageState, setPagination] = useState({
+        currentPage: 1,
+        perPage: 4,
+        total: 0,
+        lastPage:1,
+        startNumber: 0,
+        endNumber: 0,
+        currentPerPage:0
+    });
+
+    const pageChangeState = (key, value) => {
+        setPagination ((prev) => ({
+            ...prev,
+            [key]: value
+        }))
+    }
+
+    useEffect(() => {
+            pageChangeState('startNumber', (pageState.currentPage - 1) * pageState.perPage + 1)
+            pageChangeState('endNumber', Math.min(pageState.currentPage * pageState.perPage, pageState.total))
+        },[pageState.currentPage, pageState.perPage, pageState.total])
+
+        //Next and Previous
+        const back = () => {
+            if (learnerLoading) return;
+            if (pageState.currentPage > 1){
+                pageChangeState("currentPage", pageState.currentPage - 1)
+                pageChangeState("startNumber", pageState.perPage - 4)
+            }
+        }
+        const next = () => {
+            if (learnerLoading) return;
+            if (pageState.currentPage < pageState.lastPage){
+                pageChangeState("currentPage", pageState.currentPage + 1)
+            }
+        }
+
+        const Pages = [];
+        for(let p = 1; p <= pageState.lastPage; p++){
+            Pages.push(p)
+        }
+
+        const pageChange = (page) => {
+            if(learnerLoading) return;
+            if(page > 0 && page <= pageState.lastPage){
+                pageChangeState("currentPage", page)
+            }
+        }
+
+        useEffect(() => {
+            handleLearnerChange(course.id)
+        },[pageState.currentPage, course.id])
     return(
-        <div className="grid grid-cols-4 grid-rows-[min-content_auto_min-content] h-full w-full">
-            {/* Filter & Search */}
-            <div className="col-span-3 py-2 grid grid-cols-5 grid-rows-1 gap-2">
+        <div className="grid grid-cols-4 grid-rows-[min-content_min-content_1fr_min-content] h-full w-full">
+            {/* Search */}
+            <div className='flex flex-row justify-center py-3'>
+                <div className=' inline-flex flex-row place-content-between border-2 border-primary rounded-md w-full font-text shadow-md'>
+                    <input type="text" className='focus:outline-none text-sm px-4 w-full rounded-md bg-white' placeholder='Search...'/>
+                    <div className='bg-primary py-2 px-4 text-white'>
+                        <FontAwesomeIcon icon={faSearch}/>
+                    </div>
+                </div>
+            </div>
+            <div className='col-start-4 flex flex-row justify-end py-3'>
+                <div className='text-white border-2 border-primary py-2 px-5 bg-primary flex flex-row gap-2 justify-center items-center rounded-md shadow-md hover:scale-105 hover:cursor-pointer transition-all ease-in-out'>
+                    <FontAwesomeIcon icon={faUserPlus}/>
+                    <p className='font-header'>Enroll</p>
+                </div>
+            </div>
+            {/* Filter */}
+            <div className="col-span-4 grid grid-cols-[1fr_1fr_1fr_1fr_1fr_min-content] gap-x-2">
                 <div className="inline-flex flex-col gap-1">
                     <label htmlFor="department" className="font-header text-xs flex flex-row justify-between">
                         <p className="text-xs font-text text-unactive">Division </p>
@@ -92,18 +186,16 @@ const CourseEnrollmentProps = () => {
                         </svg>
                     </div>
                 </div>
-            </div>
-
-            <div className='pr-5 pl-2 py-2 flex flex-row justify-center items-end'>
-                <div className=' inline-flex flex-row place-content-between border-2 border-primary rounded-md w-full font-text shadow-md'>
-                    <input type="text" className='focus:outline-none text-sm px-4 w-full rounded-md bg-white' placeholder='Search...'/>
-                    <div className='bg-primary py-2 px-4 text-white'>
-                        <FontAwesomeIcon icon={faSearch}/>
+                {/* Filter Button */}
+                <div className="flex flex-col justify-end py-1">
+                    <div className="aspect-square border-2 border-primary rounded-md shadow-md text-white bg-primary flex flex-row justify-center items-center hover:scale-105 hover:cursor-pointer transition-all ease-in-out">
+                        <FontAwesomeIcon icon={faFilter} className="p-2"/>
                     </div>
                 </div>
             </div>
+
             {/* Enrolment Table */}
-                <div className="col-span-4 h-full pr-5">
+            <div className="col-span-4 h-full py-2">
                     <div className='w-full border-primary border rounded-md overflow-hidden shadow-md'>
                         <table className='text-left w-full'>
                         <thead className='font-header text-xs text-primary bg-secondaryprimary border-l-2 border-secondaryprimary'>
@@ -149,8 +241,83 @@ const CourseEnrollmentProps = () => {
                             </thead>
                             <tbody className='bg-white divide-y divide-divider'>
                                 {
-                                    Array.from({ length: 5 }, (_, index) => (
-                                        <tr key={index} className={`font-text text-sm hover:bg-gray-200`}>
+                                    learnerLoading ? (
+                                        Array.from({length: 4}).map((_, index) => (
+                                            <tr key={index} className={`font-text text-sm hover:bg-gray-200 animate-pulse`}>
+                                                <td className={`text-sm  py-3 px-4 border-l-2 border-transparent transition-all ease-in-out`}>
+                                                    <div className='flex items-center gap-4 flex-row'>
+                                                        {/* Checkbox */}
+                                                        <div className="group grid size-4 grid-cols-1">
+                                                            <input type="checkbox"
+                                                                className="col-start-1 row-start-1 appearance-none border border-divider rounded checked:border-primary checked:bg-primary focus:ring-2 focus:ring-primary focus:outline-none focus:ring-offset-1"
+                                                                // onClick={(e) => e.stopPropagation()}
+                                                                // onChange={(e) => {
+                                                                //     handleCheckbox(e, userID);
+                                                                // }}
+                                                                // checked={isChecked} // Updated this line
+                                                            />
+                                                            {/* Custom Checkbox styling */}
+                                                            <svg fill="none" viewBox="0 0 14 14" className="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-[:disabled]:stroke-gray-950/25">
+                                                                {/* Checked */}
+                                                                <path
+                                                                    d="M3 8L6 11L11 3.5"
+                                                                    strokeWidth={2}
+                                                                    strokeLinecap="round"
+                                                                    strokeLinejoin="round"
+                                                                    className="opacity-0 group-has-[:checked]:opacity-100"
+                                                                />
+                                                                {/* Indeterminate */}
+                                                                <path
+                                                                    d="M3 7H11"
+                                                                    strokeWidth={2}
+                                                                    strokeLinecap="round"
+                                                                    strokeLinejoin="round"
+                                                                    className="opacity-0 group-has-[:indeterminate]:opacity-100"
+                                                                    />
+                                                            </svg>
+                                                        </div>
+                                                        {/* User Image */}
+                                                        <div className='bg-blue-500 h-10 w-10 rounded-full animate-pulse'>
+                                                            {/* <img src={profile_url} alt="" className='rounded-full'/> */}
+                                                        </div>
+                                                        {/* Name and employee-id*/}
+                                                        <div className="flex flex-col gap-2">
+                                                        <div className="h-4 w-full bg-gray-300 rounded-full"></div>
+                                                        <div className="h-3 w-28 bg-gray-300 rounded-full"></div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td className='py-3 px-4'>
+                                                    <div className='flex flex-col'>
+                                                        {/* Division */}
+                                                        <div className="h-4 w-full bg-gray-300 rounded-full"></div>
+                                                    </div>
+                                                </td>
+                                                <td className='py-3 px-4'>
+                                                    <div className='flex flex-col'>
+                                                        {/* Department */}
+                                                        <div className="h-4 w-full bg-gray-300 rounded-full"></div>
+                                                    </div>
+                                                </td>
+                                                <td className='py-3 px-4'>
+                                                    <div className='flex flex-col'>
+                                                        {/* Section */}
+                                                        <div className="h-4 w-full bg-gray-300 rounded-full"></div>
+                                                    </div>
+                                                </td>
+                                                <td className='py-3 px-4'>
+                                                    <div className='flex flex-col gap-2'>
+                                                    {/* Branch Location */}
+                                                    <div className="h-4 w-full bg-gray-300 rounded-full"></div>
+                                                    {/* City Location */}
+                                                    <div className="h-4 w-full bg-gray-300 rounded-full"></div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        learners.map((learner, index) => (
+                                            <tr key={index} className={`font-text text-sm hover:bg-gray-200`}>
                                             <td className={`text-sm  py-3 px-4 border-l-2 border-transparent transition-all ease-in-out`}>
                                                 <div className='flex items-center gap-4 flex-row'>
                                                     {/* Checkbox */}
@@ -185,12 +352,12 @@ const CourseEnrollmentProps = () => {
                                                     </div>
                                                     {/* User Image */}
                                                     <div className='bg-blue-500 h-10 w-10 rounded-full'>
-                                                        {/* <img src={profile_url} alt="" className='rounded-full'/> */}
+                                                        <img src={learner.profile_image} alt="" className='rounded-full'/>
                                                     </div>
                                                     {/* Name and employee-id*/}
                                                     <div>
-                                                        <p className='font-text'>Sample Name</p>
-                                                        <p className='text-unactive text-xs'>ID: Sample ID</p>
+                                                        <p className='font-text'>{learner.first_name} {learner.middle_name} {learner.last_name} {learner.name_suffix}</p>
+                                                        <p className='text-unactive text-xs'>ID: {learner.employeeID}</p>
                                                     </div>
                                                 </div>
                                             </td>
@@ -203,7 +370,7 @@ const CourseEnrollmentProps = () => {
                                             <td className='py-3 px-4'>
                                                 <div className='flex flex-col'>
                                                     {/* Department */}
-                                                    <p className='text-unactive'>Department</p>
+                                                    <p className='text-unactive'>{learner.department?.department_name}</p>
                                                 </div>
                                             </td>
                                             <td className='py-3 px-4'>
@@ -215,56 +382,65 @@ const CourseEnrollmentProps = () => {
                                             <td className='py-3 px-4'>
                                                 <div className='flex flex-col'>
                                                 {/* Branch Location */}
-                                                <p className='text-unactive'>Branch</p>
+                                                <p className='text-unactive'>{learner.branch?.branch_name}</p>
                                                 {/* City Location */}
-                                                <p className='text-unactive text-xs'>City</p>
+                                                <p className='text-unactive text-xs'>{learner.city?.city_name}</p>
                                                 </div>
                                             </td>
                                         </tr>
-                                    ))
+                                        ))
+                                    )
                                 }
 
                             </tbody>
                         </table>
                     </div>
-                </div>
+            </div>
 
             {/* Pagination */}
-            <div className="col-span-4 h-full mr-5 flex flex-row items-center justify-between py-5 border-t border-divider">
+            <div className="col-span-4 h-full mr-5 flex flex-row items-center justify-between py-3 border-t border-divider">
                 <div>
-                    <p className='text-sm font-text text-unactive'>
-                        Showing <span className='font-header text-primary'>1</span> to <span className='font-header text-primary'>2</span> of <span className='font-header text-primary'>5</span> <span className='text-primary'>results</span>
-                    </p>
+                    {
+                        learnerLoading ? <p>Loading Learners to be enrolled.....</p> :
+                        <p className='text-sm font-text text-unactive'>
+                            Showing <span className='font-header text-primary'>{pageState.startNumber}</span> to <span className='font-header text-primary'>{pageState.endNumber}</span> of <span className='font-header text-primary'>{pageState.total}</span> <span className='text-primary'>results</span>
+                        </p>
+                    }
                 </div>
                 {/* Paganation */}
-                <div>
-                    <nav className='isolate inline-flex -space-x-px round-md shadow-xs'>
-                        {/* Previous */}
-                        <a
-                            //onClick={back}
-                            className='relative inline-flex items-center rounded-l-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
-                            <FontAwesomeIcon icon={faChevronLeft}/>
-                        </a>
 
-                        {/* Current Page & Dynamic Paging */}
-                        {/* {Pages.map((page)=>(
+                <div>
+                    {
+                        learnerLoading ? null :
+                        <nav className='isolate inline-flex -space-x-px round-md shadow-xs'>
+                            {/* Previous */}
                             <a
-                                key={page}
-                                className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset
-                                    ${
-                                        page === pageState.currentPage
-                                        ? 'bg-primary text-white'
-                                        : 'bg-secondarybackground text-primary hover:bg-primary hover:text-white'
-                                    } transition-all ease-in-out`}
-                                    onClick={() => pageChange(page)}>
-                                {page}</a>
-                        ))} */}
-                        <a
-                            //onClick={next}
-                            className='relative inline-flex items-center rounded-r-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
-                            <FontAwesomeIcon icon={faChevronRight}/>
-                        </a>
-                    </nav>
+                                onClick={back}
+                                className='relative inline-flex items-center rounded-l-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
+                                <FontAwesomeIcon icon={faChevronLeft}/>
+                            </a>
+
+                            {/* Current Page & Dynamic Paging */}
+                            {Pages.map((page)=>(
+                                <a
+                                    key={page}
+                                    className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset
+                                        ${
+                                            page === pageState.currentPage
+                                            ? 'bg-primary text-white'
+                                            : 'bg-secondarybackground text-primary hover:bg-primary hover:text-white'
+                                        } transition-all ease-in-out`}
+                                        onClick={() => pageChange(page)}>
+                                    {page}</a>
+                            ))}
+                            <a
+                                onClick={next}
+                                className='relative inline-flex items-center rounded-r-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
+                                <FontAwesomeIcon icon={faChevronRight}/>
+                            </a>
+                        </nav>
+                    }
+
                 </div>
             </div>
         </div>

@@ -125,7 +125,6 @@ const AddCourseModal = ({open,onClose}) => {
         description: formik2.values.short_desc,
         type_id: formik2.values.course_type,
         category_id: formik2.values.course_category,
-        training_mode_id: 1,
         training_type: "Mandatory",
         archived: "active",
         assignedCourseAdminId:"",
@@ -144,7 +143,7 @@ const AddCourseModal = ({open,onClose}) => {
     return(
         <>
         <Dialog open={open} onClose={()=>{}}>
-            <DialogBackdrop transition className="fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in z-50"/>
+            <DialogBackdrop transition className="fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in z-50 backdrop-blur-sm"/>
                 <div className='fixed inset-0 z-50 w-screen overflow-y-auto'>
                     <div className='flex min-h-full items-center justify-center p-4 text center'>
                     <DialogPanel transition className='w-[50rem] p-5 transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in'>
@@ -211,19 +210,19 @@ const AddCourseModal = ({open,onClose}) => {
                                 </Stepper.Step>
                                 <Stepper.Step  icon={<FontAwesomeIcon icon={faBookOpen} className="!text-primary"/>}>
                                     <form onSubmit={formik2.handleSubmit}>
-                                        <div className="grid grid-cols-[auto] grid-rows-[min-content_auto] gap-x-3 gap-y-2">
+                                        <div className="grid grid-cols-[auto_auto_auto] grid-rows-[min-content_auto] gap-x-3 gap-y-2">
                                             {/* Header */}
-                                            <div className='col-span-2 border-b border-divider pb-2'>
+                                            <div className='col-span-3 border-b border-divider pb-2'>
                                                 <h1 className='text-primary font-header'>Step 2</h1>
                                                 <p className='text-unactive font-text'>Change neccessary information within the given fields below </p>
                                             </div>
                                             {/* Inputed course ID */}
-                                            <div className="col-span-2 flex flex-row items-center justify-between">
+                                            <div className="col-span-3 flex flex-row items-center justify-between">
                                                 <h1 className="py-2 font-header text-primary">Course ID:</h1>
                                                 <p className="font-text">{formik.values.courseID}</p>
                                             </div>
                                             {/* Course Name */}
-                                            <div className="inline-flex flex-col gap-2 row-start-3 col-span-2">
+                                            <div className="inline-flex flex-col gap-2 row-start-3 col-span-3">
                                                 <label htmlFor="course_name" className="font-header text-xs flex flex-row justify-between">
                                                     <p className="uppercase">Course Name:</p>
                                                 </label>
@@ -277,27 +276,7 @@ const AddCourseModal = ({open,onClose}) => {
                                                 </div>
                                                     {formik2.touched.course_type && formik2.errors.course_type ? (<div className="text-red-500 text-xs font-text">{formik2.errors.course_type}</div>):null}
                                             </div>
-                                            <div className="inline-flex flex-col gap-2 row-start-5 col-span-1">
-                                                <label htmlFor="course_type" className="font-header text-xs flex flex-row justify-between">
-                                                    <p className="uppercase">Training Mode:</p>
-                                                </label>
-                                                <div class="grid grid-cols-1">
-                                                    <select id="traing_mode" name="traing_mode" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
-                                                        value={formik2.values.traing_mode}
-                                                        onChange={formik2.handleChange}
-                                                        onBlur={formik2.handleBlur}
-                                                    >
-                                                    <option value="">Select a training mode</option>
-                                                    <option value={1}>Online Training</option>
-
-                                                    </select>
-                                                    <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                                                    <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                                                    </svg>
-                                                </div>
-                                                    {formik2.touched.traingmodes && formik2.errors.traingmodes ? (<div className="text-red-500 text-xs font-text">{formik2.errors.traingmodes}</div>):null}
-                                            </div>
-                                            <div className="inline-flex flex-col gap-2 row-start-5 col-span-1">
+                                            <div className="inline-flex flex-col gap-2 row-start-4 col-span-1">
                                                 <label htmlFor="course_type" className="font-header text-xs flex flex-row justify-between">
                                                     <p className="uppercase">Training Type:</p>
                                                 </label>
@@ -319,7 +298,7 @@ const AddCourseModal = ({open,onClose}) => {
                                                     {formik2.touched.course_type && formik2.errors.course_type ? (<div className="text-red-500 text-xs font-text">{formik2.errors.course_type}</div>):null}
                                             </div>
                                             {/* Short Description */}
-                                            <div className="inline-flex flex-col gap-2 row-start-6 col-span-2">
+                                            <div className="inline-flex flex-col gap-2 row-start-5 col-span-3">
                                                 <label htmlFor="short_desc" className="font-header text-xs flex flex-row justify-between uppercase">Short Description:</label>
                                                 <textarea
                                                     name="short_desc"
@@ -330,22 +309,24 @@ const AddCourseModal = ({open,onClose}) => {
                                                     className='h-32 font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary resize-none'></textarea>
                                                     {formik2.touched.short_desc && formik2.errors.short_desc ? (<div className="text-red-500 text-xs font-text">{formik2.errors.short_desc}</div>):null}
                                             </div>
-                                            <button
-                                            onClick={()=>toggleState("steps", (current) => current - 1)}
-                                            className={`bg-white border-2 border-primary p-4 rounded-md font-header uppercase text-primary text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 hover:text-white hover:border-primaryhover transition-all ease-in-out w-full
-                                            `}>
-                                            Back</button>
-                                            <input type="submit"
-                                                value="Add Course"
-                                                className={`bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out w-full
-                                                `}/>
+                                            <div className="col-span-3 flex flex-row gap-2">
+                                                <button
+                                                onClick={()=>toggleState("steps", (current) => current - 1)}
+                                                className={`bg-white border-2 border-primary p-4 rounded-md font-header uppercase text-primary text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 hover:text-white hover:border-primaryhover transition-all ease-in-out w-full
+                                                `}>
+                                                Back</button>
+                                                <input type="submit"
+                                                    value="Add Course"
+                                                    className={`bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out w-full
+                                                    `}/>
+                                                </div>
                                         </div>
                                     </form>
                                 </Stepper.Step>
                                 <Stepper.Step icon={<FontAwesomeIcon icon={faBook} className="!text-primary"/>}>
-                                <div className="grid grid-cols-2 grid-rows-[min-content_auto] gap-x-3 gap-y-2">
+                                <div className="grid grid-cols-3 grid-rows-[min-content_auto] gap-x-3 gap-y-2">
                                     {/* Header */}
-                                    <div className='col-span-2 border-b border-divider pb-2'>
+                                    <div className='col-span-3 border-b border-divider pb-2'>
                                         <h1 className='text-primary font-header'>Step 3</h1>
                                         <p className='text-unactive font-text'>Review the course information and details</p>
                                     </div>
@@ -355,12 +336,12 @@ const AddCourseModal = ({open,onClose}) => {
                                                 <p>Loading....</p>
                                             ):(
                                                 <>
-                                                    <div className=" col-start-1 col-span-2 flex flex-row items-center justify-between">
+                                                    <div className=" col-start-1 col-span-3 flex flex-row items-center justify-between">
                                                         <h1 className="py-2 font-header text-primary">Course ID:</h1>
                                                         <p className="font-text">{formik.values.courseID}</p>
                                                     </div>
                                                     {/* Course Name */}
-                                                    <div className="inline-flex flex-col gap-2 row-start-3 col-span-2 col-start-1">
+                                                    <div className="inline-flex flex-col gap-2 row-start-3 col-span-3 col-start-1">
                                                         <label htmlFor="course_name" className="font-header text-xs flex flex-row justify-between">
                                                             <p className="uppercase">Course Name:</p>
                                                         </label>
@@ -380,11 +361,19 @@ const AddCourseModal = ({open,onClose}) => {
                                                         </label>
                                                         <p className="font-text">{coursecategories.find(coursecategory => coursecategory.id === Number(formik2.values.course_category))?.category_name || "Not selected"}</p>
                                                     </div>
+                                                    {/* Course Category */}
+                                                    <div className="inline-flex flex-col gap-2 row-start-4 col-span-1">
+                                                        <label htmlFor="course_category" className="font-header text-xs flex flex-row justify-between">
+                                                            <p className="uppercase">Training Type:</p>
+                                                        </label>
+                                                        <p className="font-text">{formik2.values.training_type || "Not selected"}</p>
+                                                    </div>
                                                     {/* Short Description */}
-                                                    <div className="inline-flex flex-col gap-2 row-start-5 col-span-2">
+                                                    <div className="inline-flex flex-col gap-2 row-start-5 col-span-3">
                                                         <label htmlFor="short_desc" className="font-header text-xs flex flex-row justify-between uppercase">Short Description:</label>
                                                         <p className="font-text w-full whitespace-pre-wrap">{formik2.values.short_desc}</p>
                                                     </div>
+                                                    <div className="col-span-3 flex flex-row gap-2 pt-3">
                                                     <button
                                                         onClick={()=>toggleState("steps", (current) => current - 1)}
                                                         className={`bg-white border-2 border-primary p-4 rounded-md font-header uppercase text-primary text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 hover:text-white hover:border-primaryhover transition-all ease-in-out w-full
@@ -395,6 +384,7 @@ const AddCourseModal = ({open,onClose}) => {
                                                         className={`bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out w-full
                                                         `}>
                                                         Confirm</button>
+                                                    </div>
                                                 </>
                                             )
                                         }

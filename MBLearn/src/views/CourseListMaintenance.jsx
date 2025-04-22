@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import CourseListCard from '../modalsandprops/CourseListCard';
-import CourseCardModal from '../modalsandprops/CourseCardModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFolderPlus, faSearch,  faArrowUpWideShort, faArrowDownWideShort, faPlus, faMinus, faChevronUp, faChevronDown, faPenToSquare, faTrash, faChevronLeft, faChevronRight, faLaptopFile, faChalkboardTeacher, faCheck, faPen, faFloppyDisk, faArrowUpAZ, faSort, faArrowDownAZ, faArrowDownShortWide, faArrowDownZA, faTrashCan } from '@fortawesome/free-solid-svg-icons'
 import { Menu, MenuButton, MenuItem, MenuItems, Disclosure, DisclosureButton, DisclosurePanel, Dialog, DialogBackdrop, DialogPanel, DialogTitle} from '@headlessui/react';
@@ -99,22 +98,15 @@ const handleFilter = (sectionId, value) => {
 const [courses, setCourses] = useState([])
 const fetchCourses = () => {
     toggleModal('loading', true)
-    axiosClient.get('/courses',{
-        params: {
-            page: pageState.currentPage,
-            perPage: pageState.perPage,
-        }
-    })
-    .then(({ data }) => {
+    axiosClient.get(`/select-user-added-course/${user.id}`)
+    .then(({data}) => {
         setCourses(data.data)
         pageChangeState("totalCourses", data.total)
         pageChangeState("lastPage", data.lastPage)
         toggleModal('loading', false)
-    })
-    .catch((err) => {
-        console.log(err);
-    });
-
+    }).catch((err) => {
+            console.log(err);
+        });
 }
 
 
@@ -294,7 +286,7 @@ const [pageState, setPagination] = useState({
             </div>
 
             {/* Dialog box */}
-            <CourseCardModal open={modalState.openCard} close={CloseDialog} classname='relative z-10' selectedCourse={selectedCourse}/>
+            {/* <CourseCardModal open={modalState.openCard} close={CloseDialog} classname='relative z-10' selectedCourse={selectedCourse}/> */}
             {/* Add Modal */}
             <AddCourseModal open={modalState.openAddCourse} onClose={()=>toggleModal('openAddCourse',false)}/>
             {/* Edit */}
