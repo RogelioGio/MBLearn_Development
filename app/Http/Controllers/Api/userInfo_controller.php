@@ -353,10 +353,11 @@ class userInfo_controller extends Controller
         $perPage = $request->input('perPage',5); //Number of entry per page
         $user_id = $request->user()->id;
         $admins = UserInfos::query()->whereHas('roles',function($query){
-            $query->where('role_name', '!=', 'Learner');
+            $query->where('role_name', '=', 'Course Admin');
         })->whereNot(function (Builder $query) use ($user_id){
             $query->where('id', $user_id);
         })
+        ->where('status', '=', 'Active')
         ->with('roles','division','section','department','title','branch','city')
         ->paginate($perPage);
 
