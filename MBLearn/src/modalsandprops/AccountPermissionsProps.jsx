@@ -63,9 +63,9 @@ const AccountPermissionProps = ({refPermissions, selectedRole, role, setAccountP
     return (
         <>
         {
-            selectedRole === "1" ? (
+            selectedRole === "1" || 1 ? (
                 <SystemAdminPermissionProps isChecked={isChecked} permissionswitch={permissionswitch}/>
-            ) : selectedRole === "2" ? (
+            ) : selectedRole === "2" || 2 ? (
                 <CourseAdminPermissionProps isChecked={isChecked} permissionswitch={permissionswitch}/>
             ) : (null)
         }

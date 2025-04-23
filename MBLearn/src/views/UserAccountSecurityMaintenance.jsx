@@ -141,6 +141,7 @@ export default function UserAccountSecurityMaintenance(){
         })
         .then((response) => {
             setUsers(response.data.data)
+            console.log(response)
             setIsLoading(false)
             pageChangeState("totalUsers", response.data.total)
             pageChangeState("lastPage", response.data.lastPage)
@@ -346,12 +347,13 @@ export default function UserAccountSecurityMaintenance(){
                 <table className='text-left min-w-full table-layout-fixed'>
                     <thead className='font-header text-xs text-primary bg-secondaryprimary uppercase'>
                         <tr>
-                            <th className='p-4 w-2/7'>EMPLOYEE NAME</th>
-                            <th className='p-4 w-1/7'>Branch & Location</th>
-                            <th className='p-4 w-1/7'>Division & Section</th>
-                            <th className='p-4 w-1/7'>ROLE</th>
-                            <th className='p-4 w-1/7'>Last Login Timestamp</th>
-                            <th className='p-4 w-1/7'></th>
+                            <th className='p-4 w-2/8'>EMPLOYEE NAME</th>
+                            <th className='p-4 w-1/8'>DIVISION</th>
+                            <th className='p-4 w-1/8'>DEPARTMENT</th>
+                            <th className='p-4 w-1/8'>SECTION</th>
+                            <th className='p-4 w-1/8'>ROLE</th>
+                            <th className='p-4 w-1/8'>Last Login Timestamp</th>
+                            <th className='p-4 w-1/8'></th>
                         </tr>
                     </thead>
                     <tbody className='bg-white divide-y divide-divider'>
@@ -366,10 +368,11 @@ export default function UserAccountSecurityMaintenance(){
                                         name={[user.user_infos?.first_name, user.user_infos?.middle_name, user.user_infos?.last_name].join(" ")}
                                         employeeID={user.user_infos?.employeeID}
                                         MBEmail={user.MBemail}
-                                        city={1}
-                                        branch={1}
-                                        department={1}
-                                        title={1}
+                                        city={user.user_infos?.city.city_name}
+                                        branch={user.user_infos?.branch.branch_name}
+                                        division = {user.user_infos?.division.division_name}
+                                        department={user.user_infos?.department.department_name}
+                                        section={user.user_infos?.section.section_name}
                                         role={user.user_infos?.roles?.[0]?.role_name}
                                         image={user.user_infos?.profile_image }
                                         status={user.user_infos?.status}
