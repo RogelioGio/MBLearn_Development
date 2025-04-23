@@ -12,8 +12,11 @@ use App\Http\Requests\updateUserInfo;
 use App\Models\Branch;
 use App\Models\Course;
 use App\Models\Department;
+use App\Models\Division;
 use App\Models\Permission;
 use App\Models\Role;
+use App\Models\Section;
+use App\Models\Subgroup;
 use App\Models\Title;
 use App\Models\UserInfos;
 use Illuminate\Http\Request;
@@ -35,6 +38,8 @@ class userInfo_controller extends Controller
         $department = Department::query()->find($existingatedData['department_id']);
         $branch = Branch::query()->find($existingatedData['branch_id']);
         $role = Role::query()->find($existingatedData['role_id']);
+        $division = Division::query()->find($existingatedData['division_id']);
+        $section = Section::query()->find($existingatedData['section_id']);
         $permissions = [];
 
         $profile_image = $this -> generateProfileImageurl($existingatedData['first_name'].$existingatedData['last_name']);
@@ -81,6 +86,8 @@ class userInfo_controller extends Controller
         $userInfo->branch()->associate($branch);
         $userInfo->title()->associate($title);
         $userInfo->department()->associate($department);
+        $userInfo->section()->associate($section);
+        $userInfo->division()->associate($division);
         $userInfo->roles()->sync($role->id);
         $userInfo->save();
         $userCredentials->userInfos()->save($userInfo);
@@ -97,7 +104,7 @@ class userInfo_controller extends Controller
     }
 
     public function bulkStoreUsers(BulkStoreUserRequest $bulkStoreUserRequest){
-        $output = [];
+        $output = ['Bulk Store Complete'];
         $bulk = collect($bulkStoreUserRequest->all())->map(function ($arr, $key){
             $messyArray = [];
             $oneDArray = [];
@@ -119,6 +126,14 @@ class userInfo_controller extends Controller
                         $branch = (Branch::query()->where('branch_name', '=', $value)->first());
                         $messyArray[] = [$key => $branch];
                         break;
+                    case 'division':
+                        $division = (Division::query()->where('division_name', '=', $value)->first());
+                        $messyArray[] = [$key => $division];
+                        break;
+                    case 'section':
+                        $section = (Section::query()->where('section_name', '=', $value)->first());
+                        $messyArray[] = [$key => $section];
+                        break;
                     default:
                         $messyArray[] = [$key => $value];
                 }
@@ -137,6 +152,8 @@ class userInfo_controller extends Controller
             $title = $single['title'];
             $branch = $single['branch'];
             $department = $single['department'];
+            $division = $single['division'];
+            $section = $single['section'];
             // Combine first name, middle initial, last name, and suffix into a full name
             $fullName = trim("{$single['first_name']} " .
                                 ("{$single['middle_name']}" ? "{$single['middle_name']}. " : "") .
@@ -175,6 +192,14 @@ class userInfo_controller extends Controller
                 $output[] = "Employee ID ".$empID." has an invalid department";
                 continue;
             }
+            if(!$section){
+                $output[] = "Employee ID ".$empID." has an invalid section";
+                continue;
+            }
+            if(!$division){
+                $output[] = "Employee ID ".$empID." has an invalid division";
+                continue;
+            }
             $userCredentials = UserCredentials::create([
                 "MBemail" => $email,
                 "password" => $password
@@ -193,6 +218,8 @@ class userInfo_controller extends Controller
             $userInfo->branch()->associate($single['branch']);
             $userInfo->title()->associate($single['title']);
             $userInfo->department()->associate($single['department']);
+            $userInfo->section()->associate($single['section']);
+            $userInfo->division()->associate($single['division']);
             $userInfo->roles()->sync($single['role']['id']);
             $userInfo->save();
             $userCredentials->userInfos()->save($userInfo);

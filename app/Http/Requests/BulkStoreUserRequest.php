@@ -33,6 +33,8 @@ class BulkStoreUserRequest extends FormRequest
             'data.*.role' => 'required|string',
             'data.*.department' => 'required|string',
             'data.*.title' => 'required|string',
+            'data.*.section' => 'required|string',
+            'data.*.division' => 'required|string',
             'data.*.branch' => 'required|string',
             'data.*.status' => 'nullable|in:Active, Inactive',
             'data.*.profile_image' => 'nullable|string|max:255',

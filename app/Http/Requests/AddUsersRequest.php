@@ -34,6 +34,8 @@ class AddUsersRequest extends FormRequest
             "department_id" => "required|integer|exists:departments,id",
             "title_id" => "required|integer|exists:titles,id",
             "branch_id" => "required|integer|exists:branches,id",
+            "section_id" => "required|integer|exists:sections,id",
+            "division_id" => "required|integer|exists:divisions,id",
             "status" => "nullable|in:Active, Inactive",
             "profile_image" => "nullable|string|max:255",
             "MBemail" => "required|email|unique:userCredentials,MBemail",
