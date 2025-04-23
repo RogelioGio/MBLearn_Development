@@ -164,22 +164,38 @@ class CourseController extends Controller
         return $users;
     }
 
-    public function getAssignedCourseAdmin(Course $course){
-        $perPage = 5;
-        $currentPage = request()->get('page', 1);
-        $admins = $course->assignedCourseAdmins->load(['branch', 'department', 'branch.city', 'title']);
-        $userCollection = collect($admins);
+    public function getAssignedCourseAdmin(Course $course, Request $request){
+        // $perPage = 5;
+        // $currentPage = request()->get('page', 1);
 
-        $paginatedAdmins = new LengthAwarePaginator(
-            $userCollection->forPage($currentPage, $perPage),
-            $userCollection->count(),
-            $perPage,
-            $currentPage,
-            ['path' => request()->url()]
-        );
+        // $admins = $course->assignedCourseAdmins->load(['branch', 'department', 'branch.city', 'title']);
+        // $userCollection = collect($admins);
+
+        // $paginatedAdmins = new LengthAwarePaginator(
+        //     $userCollection->forPage($currentPage, $perPage),
+        //     $userCollection->count(),
+        //     $perPage,
+        //     $currentPage,
+        //     ['path' => request()->url()]
+        // );
 
 
-        return $paginatedAdmins;
+        //return $paginatedAdmins;
+
+        $page = $request->input('page', 1); // default page
+        $perPage = $request->input('per_page', 5); // default per page
+
+        $admins = $course->assignedCourseAdmins()
+        ->with(['branch', 'department', 'branch.city', 'title'])
+        ->paginate($perPage);
+
+        return response()->json([
+            'data' => $admins ->items(),
+            'total' => $admins->total(),
+            'lastPage' => $admins->lastPage(),
+            'currentPage' => $admins->currentPage(),
+        ], 200);
+
     }
 
     /**

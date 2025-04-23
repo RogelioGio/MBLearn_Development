@@ -4,7 +4,7 @@ import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react'
 import React, { useState } from 'react'
 import { useStateContext } from '../contexts/ContextProvider'
 
-const User = ({re_move,click,userID,name,department,title,branch,city,profile_url,employeeID,role,edit,_delete,handleCheckbox,selected,isChecked,userDetail}) => {
+const User = ({re_move,click,userID,name,department,title,branch,city,profile_url,employeeID,role,edit,_delete,handleCheckbox,selected,isChecked,userDetail,division,section}) => {
     const selectedUsers = selected.some(
         (user) => user.Selected_ID === userID
     )
@@ -59,7 +59,7 @@ const User = ({re_move,click,userID,name,department,title,branch,city,profile_ur
                     </div>
                 </td>
                 <td className='py-3 px-4'>
-                    <p>Sample Division</p>
+                    <p>{division}</p>
                 </td>
                 <td className='py-3 px-4'>
                     <div className='flex flex-col'>
@@ -70,7 +70,7 @@ const User = ({re_move,click,userID,name,department,title,branch,city,profile_ur
                     </div>
                 </td>
                 <td className='py-3 px-4'>
-                    <p>Sample Section</p>
+                    <p>{section}</p>
                 </td>
                 <td className='py-3 px-4'>
                     <div className='flex flex-col'>
