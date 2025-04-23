@@ -281,7 +281,7 @@ class userInfo_controller extends Controller
             ->whereDoesntHave('assignedCourses', function ($query) use($course) {
                 $query->where('courses.id', $course->id);
             })->where('status', 'Active')
-            ->with('roles','department','title','branch','city')
+            ->with('roles','division','section','department','title','branch','city')
             ->paginate(5);
 
         return response()->json([
@@ -304,7 +304,7 @@ class userInfo_controller extends Controller
             ->whereDoesntHave('enrolledCourses', function ($query) use($course) {
                 $query->where('courses.id', $course->id);
             })->where('status', 'Active')
-            ->with('roles','department','title','branch','city')
+            ->with('roles','division','section','department','title','branch','city')
             ->paginate($perPage);
 
         return response()->json([
@@ -336,7 +336,10 @@ class userInfo_controller extends Controller
         $filter = new UserInfosFilter();
         $queryItems = $filter->transform($request);
 
-        $users =  UserInfos::query()->where($queryItems)->where('status', '=', 'Inactive')->with('roles','department','title','branch','city')->paginate($perPage);
+        $users =  UserInfos::query()->where($queryItems)
+                ->where('status', '=', 'Inactive')
+                ->with('roles','division','section','department','title','branch','city')
+                ->paginate($perPage);
 
         return response()->json([
             'data' => $users->items(),
@@ -353,8 +356,9 @@ class userInfo_controller extends Controller
             $query->where('role_name', '!=', 'Learner');
         })->whereNot(function (Builder $query) use ($user_id){
             $query->where('id', $user_id);
-        })->
-        with('roles','department','title','branch','city')->paginate($perPage);
+        })
+        ->with('roles','division','section','department','title','branch','city')
+        ->paginate($perPage);
 
         return response()->json([
             'data' => $admins->items(),
