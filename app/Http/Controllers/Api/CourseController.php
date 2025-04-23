@@ -71,7 +71,6 @@ class CourseController extends Controller
         $course->save();
         return response()->json([
             "course" => $course,
-            "training_modes" => $course->training_modes,
             "types" => $course->types,
             "categories" => $course->categories,
         ], 200);
