@@ -189,22 +189,13 @@ class CourseController extends Controller
         ->paginate($perPage);
 
         $main = $course->adder()->with(['branch', 'department', 'branch.city', 'title'])->get();
-        $items = $admins->getCollection();
-        $items->push($main);
-
-        $listAdmins = new LengthAwarePaginator(
-            $items,
-            $admins->total() + 1,
-            $admins->perPage(),
-            $admins->currentPage(),
-            ['path' => request()->url(), 'query' => request()->query()]
-        );
 
         return response()->json([
-            'data' => $admins->items()[0],
-            'total' => $listAdmins->total(),
-            'lastPage' => $listAdmins->lastPage(),
-            'currentPage' => $listAdmins->currentPage(),
+            'data' => $admins->items(),
+            'main' => $main,
+            'total' => $admins->total(),
+            'lastPage' => $admins->lastPage(),
+            'currentPage' => $admins->currentPage(),
         ], 200);
 
     }
