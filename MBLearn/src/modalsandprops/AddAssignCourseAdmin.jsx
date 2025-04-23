@@ -20,7 +20,7 @@ import {
     } from "../components/ui/drawer"
 
 const AddAssignCourseAdmin = ({courseID ,open, close}) => {
-    const {departments, cities, branches} = useCourseContext()
+    const {departments, cities, branches, divisions ,sections} = useCourseContext()
     const [loading, setLoading] = useState(false)
     const [selectedBranches, setSelectedBranches] = useState([])
     const [filteredEmployee, setFilteredEmployee] = useState([])
@@ -46,15 +46,11 @@ const AddAssignCourseAdmin = ({courseID ,open, close}) => {
         initialValues: {
             division: '',
             department: '',
+            section: '',
             branch: '',
             city: '',
             section:''
         },
-        validationSchema: Yup.object({
-            department: Yup.string().required('Required'),
-            branch: Yup.string().required('Required'),
-            city: Yup.string().required('Required'),
-        }),
         onSubmit: (values) => {
             setLoading(true)
             console.log(values)
@@ -156,7 +152,7 @@ const AddAssignCourseAdmin = ({courseID ,open, close}) => {
                                                     </DrawerDescription>
                                                 </DrawerHeader>
                                                 <div>
-                                                <form onSubmit={formik.handleSubmit} className="row-start-2 grid grid-cols-[1fr_1fr_1fr_1fr_1fr_auto] gap-x-1">
+                                                <form onSubmit={(e) => { e.preventDefault(); formik.handleSubmit(e); }} className="row-start-2 grid grid-cols-[1fr_1fr_1fr_1fr_1fr_auto] gap-x-1">
                                                     {/* Division */}
                                                     <div class="grid grid-cols-1 w-full row-start-1">
                                                         <select id="division" name="division" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
@@ -165,9 +161,9 @@ const AddAssignCourseAdmin = ({courseID ,open, close}) => {
                                                             onBlur={formik.handleBlur}
                                                         >
                                                         <option value="">Select a Division</option>
-                                                        {/* {departments.map((department) => (
-                                                            <option key={department.id} value={department.id}>{department.department_name}</option>
-                                                        ))} */}
+                                                        {divisions?.map((division) => (
+                                                            <option key={division.id} value={division.id}>{division.division_name}</option>
+                                                        ))}
                                                         </select>
                                                         <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
                                                         <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
@@ -199,9 +195,9 @@ const AddAssignCourseAdmin = ({courseID ,open, close}) => {
                                                             onBlur={formik.handleBlur}
                                                         >
                                                         <option value="">Select a Section</option>
-                                                        {/* {departments.map((department) => (
-                                                            <option key={department.id} value={department.id}>{department.department_name}</option>
-                                                        ))} */}
+                                                        {sections?.map((section) => (
+                                                            <option key={section.id} value={section.id}>{section.section_name}</option>
+                                                        ))}
                                                         </select>
                                                         <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
                                                         <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
