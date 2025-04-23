@@ -9,6 +9,8 @@ use App\Models\Category_Course;
 use App\Models\City;
 use App\Models\Course;
 use App\Models\Department;
+use App\Models\Division;
+use App\Models\Section;
 use App\Models\Training_Mode;
 use App\Models\Type;
 use Illuminate\Http\Request;
@@ -23,7 +25,9 @@ class CourseContextController extends Controller
             'trainingmodes' => Training_Mode::all(),
             'departments' => Department::all(),
             'cities' => City::all(),
-            'branches' => Branch::all()
+            'branches' => Branch::all(),
+            'divisions' => Division::all(),
+            'sections' => Section::all(),
         ]);
     }
 

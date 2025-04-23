@@ -10,7 +10,9 @@ export const CourseListProvider = ({children}) => {
         trainingmodes:[],
         departments:[],
         cities:[],
-        branches:[]
+        branches:[],
+        divisions:[],
+        sections: [],
     })
 
     useEffect(() => {

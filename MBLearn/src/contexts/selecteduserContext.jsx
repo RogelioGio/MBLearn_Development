@@ -17,15 +17,10 @@ export const SelectedUserProvider = ({children}) => {
             axiosClient.get(`/select-user/${userId}`)
             .then(response => {
                 setSelectedUser(response.data.data);
+                setIsFetching(false)
                 console.log("User fetched:", response.data.data);
             })
             .catch(err => console.error(err));
-
-            axiosClient.get(`/select-user-creds/${userId}`)
-            .then((res) => {
-                setSelectedUserCreds(res.data.data);
-                console.log("User credentials fetched:", res.data.data);
-            })
         }
     }, [userId]);
 
