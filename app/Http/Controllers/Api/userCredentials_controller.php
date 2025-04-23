@@ -112,7 +112,7 @@ class userCredentials_controller extends Controller
         }
 
         // Paginate the filtered results
-        $userCredentials = $query->paginate($perPage);
+        $userCredentials = $query->orderBy('created_at', 'desc')->paginate($perPage);
 
         return response()->json([
             'total' => $userCredentials->total(),

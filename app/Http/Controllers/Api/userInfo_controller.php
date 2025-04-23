@@ -259,6 +259,7 @@ class userInfo_controller extends Controller
             $query->where('id', $user_id);
         })
         ->with('roles','department','title','branch','city')
+        ->orderBy('created_at', 'desc')
         ->paginate($perPage);
 
         return response()->json([

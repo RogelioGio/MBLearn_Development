@@ -486,7 +486,9 @@ export default function UserManagementMaintenance() {
                                             userID={userEntry.id}
                                             click={OpenDialog}
                                             name={fullName}
+                                            division={userEntry.division?.division_name || "No Division Yet"}
                                             department={userEntry.department?.department_name || "No Department Yet"}
+                                            section={userEntry.section?.section_name || "No Section Yet"}
                                             title={userEntry.title?.title_name || "No Title Yet"}
                                             branch={userEntry.branch?.branch_name || "No Branch Yet"}
                                             city={userEntry.city?.city_name || "No City Yet"}
