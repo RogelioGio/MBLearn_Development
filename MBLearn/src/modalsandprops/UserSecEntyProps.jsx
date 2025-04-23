@@ -3,8 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useOption } from "../contexts/AddUserOptionProvider";
 import { useEffect } from "react";
 
-const UserSecEntyProps = ({user,name,employeeID,MBEmail,city,branch,department,title,role,image,status,edit}) => {
-    const {departments,cities,location,titles} = useOption();
+const UserSecEntyProps = ({user,name,employeeID,MBEmail,city,branch,division,section,department,role,image,status,edit}) => {
 
     return (
         <tr className='font-text text-sm hover:bg-gray-200'>
@@ -21,20 +20,19 @@ const UserSecEntyProps = ({user,name,employeeID,MBEmail,city,branch,department,t
                                 </div>
                             </div>
                         </td>
+                        {/* Divison */}
                         <td className='py-3 px-4'>
-                            {/* <div className='flex flex-col'> */}
-                            {/* Metrobank Working Email */}
-                            {/* <p className='text-unactive'>{MBEmail}</p>
-                            </div> */}
+                            {division}
                         </td>
                         <td className='py-3 px-4'>
-                            {/* <div className='flex flex-col'> */}
-                            {/* Metrobank Working Email */}
-                            {/* <p className='text-unactive'>{MBEmail}</p>
-                            </div> */}
+                            {department}
                         </td>
                         <td className='py-3 px-4'>
-                            <p className='text-unactive'>{role}</p>
+                            {section}
+                        </td>
+
+                        <td className='py-3 px-4'>
+                            {role}
                         </td>
 
                         {/* Last Login */}
@@ -45,10 +43,9 @@ const UserSecEntyProps = ({user,name,employeeID,MBEmail,city,branch,department,t
                         <td className='py-3 px-4'>
                             <div className='flex gap-1 justify-end'>
                             <button
-                                    className='flex flex-row items-center justify-center gap-2 px-5 py-2 border border-primary rounded-md text-primary hover:bg-primary hover:text-white hover:scale-105 transition-all ease-in-out'
+                                    className='flex flex-row items-center justify-center gap-2 px-3 py-3 border border-primary rounded-md text-primary hover:bg-primary hover:text-white hover:scale-105 transition-all ease-in-out'
                                     onClick={(e) => edit(e,user)}>
                                 <FontAwesomeIcon icon={faUserPen}/>
-                                <p>Edit</p>
                             </button>
                             </div>
                         </td>
