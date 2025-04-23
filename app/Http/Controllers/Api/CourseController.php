@@ -201,7 +201,7 @@ class CourseController extends Controller
         );
 
         return response()->json([
-            'data' => $listAdmins->items(),
+            'data' => $admins->items()[0],
             'total' => $listAdmins->total(),
             'lastPage' => $listAdmins->lastPage(),
             'currentPage' => $listAdmins->currentPage(),
