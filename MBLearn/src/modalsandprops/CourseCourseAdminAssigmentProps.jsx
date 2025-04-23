@@ -96,7 +96,7 @@ const CourseCourseAdminAssignmentProps = ({courseID}) => {
                     <div className='bg-blue-500 h-10 w-10 rounded-full'>
                     </div>
                     <div>
-                        <p className='font-header text-primary text-base'>John Doe</p>
+                        <p className='font-header text-primary text-base'></p>
                         <p className='text-unactive text-xs font-text'>ID: 123456789</p>
                     </div>
                 </div>

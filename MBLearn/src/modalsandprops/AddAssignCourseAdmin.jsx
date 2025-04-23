@@ -285,7 +285,7 @@ const AddAssignCourseAdmin = ({courseID ,open, close}) => {
                                                                     isfiltered={isfiltered}
                                                                     id = {employee.id}
                                                                     handleInput={handleSelectedCourseAdmin}
-                                                                    name={`${employee.first_name} ${employee.middle_name} ${employee.last_name} ${employee.name_suffix || ""}`.trim()}
+                                                                    name={`${employee.first_name} ${employee.middle_name || ""} ${employee.last_name} ${employee.name_suffix || ""}`.trim()}
                                                                     loading={loading}
                                                                     employeeID={employee.employeeID || "Not Available"}
                                                                     department={employee.department?.department_name || "Not Available"}
