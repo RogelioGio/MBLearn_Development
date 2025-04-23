@@ -258,7 +258,7 @@ class userInfo_controller extends Controller
         ->whereNot(function (Builder $query) use ($user_id){
             $query->where('id', $user_id);
         })
-        ->with('roles','department','title','branch','city')
+        ->with('roles','division','section','department','title','branch','city')
         ->paginate($perPage);
 
         return response()->json([
