@@ -87,7 +87,7 @@ class userCredentials_controller extends Controller
         // ]);
 
         $query = UserCredentials::with(['userInfos', 'userInfos.roles', 'userInfos.city', 'userInfos.branch',
-        'userInfos.department', 'userInfos.section', 'userInfos.division'])
+        'userInfos.department', 'userInfos.section', 'userInfos.division', 'userInfos.title'])
         ->whereHas('userInfos', function ($subQuery) use ($currentUserId) {
             $subQuery->where('status', 'Active')
             ->where('id', '!=', $currentUserId); // Ensure only Active users are fetched
@@ -174,7 +174,7 @@ class userCredentials_controller extends Controller
 
     public function findUser_Creds(UserCredentials $userCredentials){
         return $userCredentials->load(['userInfos', 'userInfos.roles', 'userInfos.city', 'userInfos.branch',
-        'userInfos.department', 'userInfos.section', 'userInfos.division']);
+        'userInfos.department', 'userInfos.section', 'userInfos.division', 'userInfos.title']);
     }
 
     public function showEnrolledCourses(UserCredentials $userCredentials){
