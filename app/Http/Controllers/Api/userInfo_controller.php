@@ -77,11 +77,14 @@ class userInfo_controller extends Controller
             'profile_image' =>$profile_image
         ]);
 
-        foreach($existingatedData['permissions'] as $tests){
-            foreach($tests as $key => $value){
-                $permissions[] = $value;
+        if($existingatedData['permissions']){
+            foreach($existingatedData['permissions'] as $tests){
+                foreach($tests as $key => $value){
+                    $permissions[] = $value;
+                }
             }
         }
+
 
         $userInfo->branch()->associate($branch);
         $userInfo->title()->associate($title);

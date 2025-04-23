@@ -40,7 +40,7 @@ class AddUsersRequest extends FormRequest
             "profile_image" => "nullable|string|max:255",
             "MBemail" => "required|email|unique:userCredentials,MBemail",
             "password" => "required|string|min:8",
-            "permissions.*.permission_Id" => "required|integer|exists:permissions,id",
+            "permissions.*.permission_Id" => "integer|exists:permissions,id",
         ];
 
         //permission : [{perjission_Id: 1}, {permission_Id: 2}, {permission_Id: 3}]
