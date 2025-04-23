@@ -185,14 +185,26 @@ class CourseController extends Controller
         $perPage = $request->input('per_page', 5); // default per page
 
         $admins = $course->assignedCourseAdmins()
-        ->with(['branch', 'department', 'branch.city', 'title'])
+        ->with(['branch', 'department', 'branch.city', 'title',])
         ->paginate($perPage);
 
+        $main = $course->adder()->with(['branch', 'department', 'branch.city', 'title'])->get();
+        $items = $admins->getCollection();
+        $items->push($main);
+
+        $listAdmins = new LengthAwarePaginator(
+            $items,
+            $admins->total() + 1,
+            $admins->perPage(),
+            $admins->currentPage(),
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
+
         return response()->json([
-            'data' => $admins ->items(),
-            'total' => $admins->total(),
-            'lastPage' => $admins->lastPage(),
-            'currentPage' => $admins->currentPage(),
+            'data' => $listAdmins->items(),
+            'total' => $listAdmins->total(),
+            'lastPage' => $listAdmins->lastPage(),
+            'currentPage' => $listAdmins->currentPage(),
         ], 200);
 
     }
