@@ -108,6 +108,7 @@ class userInfo_controller extends Controller
 
     public function bulkStoreUsers(BulkStoreUserRequest $bulkStoreUserRequest){
         $output = ['Bulk Store Complete'];
+        $count = 0;
         $bulk = collect($bulkStoreUserRequest->all())->map(function ($arr, $key){
             $messyArray = [];
             $oneDArray = [];
@@ -218,6 +219,7 @@ class userInfo_controller extends Controller
                 'profile_image' =>$profile_image
             ]);
 
+            $count += 1;
             $userInfo->branch()->associate($single['branch']);
             $userInfo->title()->associate($single['title']);
             $userInfo->department()->associate($single['department']);
@@ -227,6 +229,8 @@ class userInfo_controller extends Controller
             $userInfo->save();
             $userCredentials->userInfos()->save($userInfo);
         }
+        $counts = $count."/".$bulk->count()." Successfully Added Users";
+        array_splice($output, 1, 0, $counts);
         return response()->json([
             'Message' => $output
         ]);
