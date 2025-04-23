@@ -172,7 +172,10 @@ class userCredentials_controller extends Controller
 
     }
 
-
+    public function findUser_Creds(UserCredentials $userCredentials){
+        return $userCredentials->load(['userInfos', 'userInfos.roles', 'userInfos.city', 'userInfos.branch',
+        'userInfos.department', 'userInfos.section', 'userInfos.division']);
+    }
 
     public function showEnrolledCourses(UserCredentials $userCredentials){
         return CourseResource::collection($userCredentials->enrolledCourses);

@@ -70,7 +70,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::put('/update-user-creds/{userCredentials}',[userCredentials_controller::class, 'updateUserCredentials']);
     Route::get('/index-user-creds',[userCredentials_controller::class, 'userCredentialsList']);
     Route::get('/index-user-creds/inactive',[userCredentials_controller::class, 'UnuserCredentialsList']);
-    Route::get('/select-user-creds/{userCredentials}',[userCredentials_controller::class, 'findUser_EmployeeID']);
+    Route::get('/select-user-creds/{userCredentials}',[userCredentials_controller::class, 'findUser_Creds']);
     Route::delete('/delete-user-creds/{userCredentials}',[userCredentials_controller::class, 'deleteUser']);
     Route::get('/reset-user-creds',[userCredentials_controller::class, 'resetUsers']); //reset user table
     Route::get('get-profile-image',[userInfo_controller::class, 'getProfile']); //Get Profile Image for UserCredentials
