@@ -7,6 +7,7 @@ const AccountPermissionProps = ({refPermissions, selectedRole, role, setAccountP
     useEffect(() => {
         //console.log("Selected Role:", selectedRole);
         availablePermission();
+        console.log("courseID: " + selectedRole);
     }, [selectedRole]);
 
     const [accountPerm, _setAccountPerm] = useState()
@@ -33,7 +34,7 @@ const AccountPermissionProps = ({refPermissions, selectedRole, role, setAccountP
         if(setAccountPerm){
             setAccountPerm(accountPerm)
         }
-        console.log(permission)
+        //console.log(permission)
     },[permission])
 
     const isChecked = (permName) => {
@@ -41,15 +42,18 @@ const AccountPermissionProps = ({refPermissions, selectedRole, role, setAccountP
     };
     const permissionswitch = (permission_name ,checked) => {
             const perm = refPermissions.find(p => p.permission_name === permission_name);
+
         setPermissions(prev => {
             const exists = prev.some(p => p.permission_name === permission_name);
 
             if(checked && !exists) {
                 //setSaved(false)
+                console.log("Permission Name:", perm.permission_name);
                 return [...prev, {
                     permission_id: perm?.id,}];
             } else if (!checked && exists) {
                 //setSaved(false)
+                console.log("!Permission Name:", perm.permission_name);
                 return prev.filter(p=>p.permission_name !== permission_name)
             }
             return prev;
@@ -59,9 +63,9 @@ const AccountPermissionProps = ({refPermissions, selectedRole, role, setAccountP
     return (
         <>
         {
-            selectedRole === 1 ? (
+            selectedRole === "1" ? (
                 <SystemAdminPermissionProps isChecked={isChecked} permissionswitch={permissionswitch}/>
-            ) : selectedRole === 2 ? (
+            ) : selectedRole === "2" ? (
                 <CourseAdminPermissionProps isChecked={isChecked} permissionswitch={permissionswitch}/>
             ) : (null)
         }

@@ -3,24 +3,83 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect } from "react";
 import { useState } from "react";
 import axiosClient from "../axios-client";
+import { useOption } from "../contexts/AddUserOptionProvider";
 
 const CourseCourseAdminAssignmentProps = ({courseID}) => {
     const [assigned, setAssigned] = useState([])
     const [loading, setLoading] = useState()
+    const {cities, departments, titles, location, division, section} = useOption();
+
+
     // Function to get the assigned
     const fetchAssignedCourseAdmins = () => {
         setLoading(true)
-        axiosClient.get(`assigned-course-admins/${courseID.id}`
-
+        axiosClient.get(`assigned-course-admins/${courseID.id}`,
+            {
+                params: {
+                    page: pageState.currentPage,
+                    perPage: pageState.perPage
+                }
+            }
         )
         .then(({data}) => {
             setAssigned(data.data)
-            console.log(data.data)
+            pageChangeState('total', data.total)
+                pageChangeState('lastPage', data.lastPage)
             setLoading(false)
         }).catch((err) => {
             console.log(err)
         })
     }
+
+    const [pageState, setPagination] = useState({
+        currentPage: 1,
+        perPage: 4,
+        total: 0,
+        lastPage:1,
+        startNumber: 0,
+        endNumber: 0,
+        currentPerPage:0
+    });
+
+    const pageChangeState = (key, value) => {
+        setPagination ((prev) => ({
+            ...prev,
+            [key]: value
+        }))
+    }
+
+    useEffect(() => {
+            pageChangeState('startNumber', (pageState.currentPage - 1) * pageState.perPage + 1)
+            pageChangeState('endNumber', Math.min(pageState.currentPage * pageState.perPage, pageState.total))
+        },[pageState.currentPage, pageState.perPage, pageState.total])
+
+        //Next and Previous
+        const back = () => {
+            if (learnerLoading) return;
+            if (pageState.currentPage > 1){
+                pageChangeState("currentPage", pageState.currentPage - 1)
+                pageChangeState("startNumber", pageState.perPage - 4)
+            }
+        }
+        const next = () => {
+            if (learnerLoading) return;
+            if (pageState.currentPage < pageState.lastPage){
+                pageChangeState("currentPage", pageState.currentPage + 1)
+            }
+        }
+
+        const Pages = [];
+        for(let p = 1; p <= pageState.lastPage; p++){
+            Pages.push(p)
+        }
+
+        const pageChange = (page) => {
+            if(learnerLoading) return;
+            if(page > 0 && page <= pageState.lastPage){
+                pageChangeState("currentPage", page)
+            }
+        }
 
     useEffect(()=>{
         fetchAssignedCourseAdmins()
@@ -67,6 +126,11 @@ const CourseCourseAdminAssignmentProps = ({courseID}) => {
                             // onBlur={filterformik.handleBlur}
                             >
                             <option value=''>Select Division</option>
+                            {
+                                division?.map((division) => (
+                                    <option key={division.id} value={division.id}>{division.division_name}</option>
+                                ))
+                            }
                         </select>
                         <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
                         <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
@@ -84,6 +148,11 @@ const CourseCourseAdminAssignmentProps = ({courseID}) => {
                             // onBlur={filterformik.handleBlur}
                             >
                             <option value=''>Select Department</option>
+                            {
+                                departments?.map((department) => (
+                                    <option key={department.id} value={department.id}>{department.department_name}</option>
+                                ))
+                            }
                         </select>
                         <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
                         <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
@@ -101,6 +170,11 @@ const CourseCourseAdminAssignmentProps = ({courseID}) => {
                             // onBlur={filterformik.handleBlur}
                             >
                             <option value=''>Select Section</option>
+                            {
+                                section?.map((section) => (
+                                    <option key={section.id} value={section.id}>{section.section_name}</option>
+                                ))
+                            }
                         </select>
                         <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
                         <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
@@ -118,6 +192,11 @@ const CourseCourseAdminAssignmentProps = ({courseID}) => {
                             // onBlur={filterformik.handleBlur}
                             >
                             <option value=''>Select City</option>
+                            {
+                                cities?.map((city) => (
+                                    <option key={city.id} value={city.id}>{city.city_name}</option>
+                                ))
+                            }
                         </select>
                         <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
                         <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
@@ -135,6 +214,11 @@ const CourseCourseAdminAssignmentProps = ({courseID}) => {
                             // onBlur={filterformik.handleBlur}
                             >
                             <option value=''>Select Branch</option>
+                            {
+                                location?.map((location) => (
+                                    <option key={location.id} value={location.id}>{location.branch_name}</option>
+                                ))
+                            }
                         </select>
                         <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
                         <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
@@ -274,7 +358,7 @@ const CourseCourseAdminAssignmentProps = ({courseID}) => {
                                     </td>
                                 </tr>
                             ))):(
-                                assigned.map((admin) => (
+                                assigned?.map((admin) => (
                                     <tr key={admin} className={`font-text text-sm hover:bg-gray-200`}>
                                         <td className={`text-sm  py-3 px-4 border-l-2 border-transparent transition-all ease-in-out`}>
                                             <div className='flex items-center gap-4 flex-row'>
@@ -370,7 +454,7 @@ const CourseCourseAdminAssignmentProps = ({courseID}) => {
             <div className="col-span-4 h-full mr-5 flex flex-row items-center justify-between py-3 border-t border-divider">
                 <div>
                     <p className='text-sm font-text text-unactive'>
-                        Showing <span className='font-header text-primary'>1</span> to <span className='font-header text-primary'>2</span> of <span className='font-header text-primary'>5</span> <span className='text-primary'>results</span>
+                        Showing <span className='font-header text-primary'>{pageState.startNumber}</span> to <span className='font-header text-primary'>{pageState.endNumber}</span> of <span className='font-header text-primary'>{pageState.total}</span> <span className='text-primary'>results</span>
                     </p>
                 </div>
                 {/* Paganation */}
@@ -378,13 +462,13 @@ const CourseCourseAdminAssignmentProps = ({courseID}) => {
                     <nav className='isolate inline-flex -space-x-px round-md shadow-xs'>
                         {/* Previous */}
                         <a
-                            //onClick={back}
+                            onClick={back}
                             className='relative inline-flex items-center rounded-l-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
                             <FontAwesomeIcon icon={faChevronLeft}/>
                         </a>
 
                         {/* Current Page & Dynamic Paging */}
-                        {/* {Pages.map((page)=>(
+                        {Pages.map((page)=>(
                             <a
                                 key={page}
                                 className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset
@@ -395,9 +479,9 @@ const CourseCourseAdminAssignmentProps = ({courseID}) => {
                                     } transition-all ease-in-out`}
                                     onClick={() => pageChange(page)}>
                                 {page}</a>
-                        ))} */}
+                        ))}
                         <a
-                            //onClick={next}
+                            onClick={next}
                             className='relative inline-flex items-center rounded-r-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
                             <FontAwesomeIcon icon={faChevronRight}/>
                         </a>

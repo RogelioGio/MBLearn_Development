@@ -42,6 +42,8 @@ class AddUsersRequest extends FormRequest
             "password" => "required|string|min:8",
             "permissions.*.permission_Id" => "required|integer|exists:permissions,id",
         ];
+
+        //permission : [{perjission_Id: 1}, {permission_Id: 2}, {permission_Id: 3}]
     }
 
     public function messages(): array

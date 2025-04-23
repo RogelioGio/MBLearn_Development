@@ -38,7 +38,7 @@ export default function Course() {
 
     const tabComponents = {
         module: <CourseModuleProps />,
-        learner: <CourseLearenerProps />,
+        learner: <CourseLearenerProps course={course}/>,
         courseAdmin: <CourseCourseAdminAssignmentProps courseID={course}/>,
         enrollment: <CourseEnrollmentProps course={course}/>,
     };
