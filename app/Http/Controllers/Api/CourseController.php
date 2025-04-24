@@ -156,7 +156,7 @@ class CourseController extends Controller
     }
 
     public function getCourseUsers(Course $course){
-        $users = $course->enrolledUsers;
+        $users = $course->enrolledUsers()->with(['division','department','section','city','branch'])->get();
         return $users;
     }
 

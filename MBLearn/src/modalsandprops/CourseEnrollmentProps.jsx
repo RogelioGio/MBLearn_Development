@@ -12,11 +12,20 @@ import {
     SheetTitle,
     SheetTrigger,
 } from "../components/ui/sheet"
+import { useStateContext } from '../contexts/ContextProvider'
+import CourseEnrollmentSuccesfully from './CourseEnrollmentSuccessfullyModal'
+import NoEmployeeSelectedModal from './NoEmployeeSelectedModal'
 
 
 const CourseEnrollmentProps = ({course}) => {
+    const {user} = useStateContext();
     const [learners, setLearners] = useState([])
     const [learnerLoading, setLearnerLoading] = useState(false)
+    const [selected, setSelected] = useState([]); //Select learner to ernoll
+    const [results, setResults] = useState([]); //Enrolled results
+    const [enrolled, setEnrolled] = useState(false)
+    const [enrolling, setEnrolling] = useState(false)
+    const [empty, setEmpty] = useState(false) // opens the warning
 
     const handleLearnerChange = (courseId) => {
         setLearnerLoading(true)
@@ -91,7 +100,76 @@ const CourseEnrollmentProps = ({course}) => {
         useEffect(() => {
             handleLearnerChange(course.id)
         },[pageState.currentPage, course.id])
+
+        // Handle Enrollment
+        const handleCheckbox = (User, course) => {
+            setSelected((prevUsers) => {
+                if(!User&&!course) return
+
+                const exists = prevUsers.some(
+                    (entry) => entry.userId === User.id && entry.courseId === course.id
+                );
+
+                if(exists){
+                    return prevUsers.filter(
+                        (entry) => !(entry.userId === User.id && entry.courseId === course.id )
+                    )
+                }else{
+                    return [...prevUsers, {userId: User.id, courseId: course.id, enrollerId: user.user_info_id }]
+                }
+            })
+            setResults((prevCourses) => {
+                if(!User&&!course) return prevCourses;
+
+                const updated = [...prevCourses];
+                const existingCourse = updated.findIndex(
+                    (c) => c.course.id === course.id
+                );
+
+                if(existingCourse !== -1){
+                    const courseToUpdate = { ...updated[existingCourse] }
+                    courseToUpdate.enrollees = courseToUpdate.enrollees || [];
+                    const enrolled = existingCourse.enrollees?.some(
+                        (u) => u.id === User.id
+                    );
+
+                    if(!enrolled){
+                        courseToUpdate.enrollees.push(User);
+                    }
+
+                    updated[existingCourse] = courseToUpdate;
+                } else {
+                    updated.push({
+                        course: course,
+                        enrollees: [User]
+                    });
+                }
+                return updated;
+            });
+        }
+        const handleEnrollment  = () => {
+            setEnrolling(true)
+            if(selected.length <= 0){
+                setEmpty(true)
+                return
+            }
+
+            axiosClient.post('enrollments/bulk', selected)
+            .then(({data}) => {
+                setEnrolling(false)
+                setEnrolled(true);
+            })
+            .catch((err)=>console.log(err));
+        }
+        const close = () => {
+            setEnrolled(false)
+            setSelected([])
+            setResults([])
+            handleLearnerChange(course.id)
+        }
+
     return(
+        <>
         <div className="grid grid-cols-4 grid-rows-[min-content_1fr_min-content] h-full w-full">
             {/* Search */}
             <div className='flex flex-row justify-center py-3'>
@@ -102,6 +180,7 @@ const CourseEnrollmentProps = ({course}) => {
                     </div>
                 </div>
             </div>
+            {/* Filter */}
             <div className='flex items-center p-2'>
                 <Sheet>
                     <SheetTrigger>
@@ -213,9 +292,12 @@ const CourseEnrollmentProps = ({course}) => {
             </div>
             {/* Enroll */}
             <div className='col-start-4 flex flex-row justify-end py-3'>
-                <div className='text-white border-2 border-primary py-2 px-5 bg-primary flex flex-row gap-2 justify-center items-center rounded-md shadow-md hover:scale-105 hover:cursor-pointer transition-all ease-in-out'>
+                <div className='text-white border-2 border-primary py-2 px-5 bg-primary flex flex-row gap-2 justify-center items-center rounded-md shadow-md hover:scale-105 hover:cursor-pointer transition-all ease-in-out'
+                    onClick={handleEnrollment}>
                     <FontAwesomeIcon icon={faUserPlus}/>
-                    <p className='font-header'>Enroll</p>
+                    <p className='font-header'>
+                        { enrolling? "Enrolling": "Enroll"}
+                    </p>
                 </div>
             </div>
             {/* Filter */}
@@ -344,18 +426,16 @@ const CourseEnrollmentProps = ({course}) => {
                                         ))
                                     ) : (
                                         learners.map((learner, index) => (
-                                            <tr key={index} className={`font-text text-sm hover:bg-gray-200 hover:cursor-pointer`}>
+                                            <tr key={index} className={`font-text text-sm hover:bg-gray-200 hover:cursor-pointer`} onClick={()=>handleCheckbox(learner, course)}>
                                             <td className={`text-sm  py-3 px-4 border-l-2 border-transparent transition-all ease-in-out`}>
                                                 <div className='flex items-center gap-4 flex-row'>
                                                     {/* Checkbox */}
                                                     <div className="group grid size-4 grid-cols-1">
                                                         <input type="checkbox"
                                                             className="col-start-1 row-start-1 appearance-none border border-divider rounded checked:border-primary checked:bg-primary focus:ring-2 focus:ring-primary focus:outline-none focus:ring-offset-1"
-                                                            // onClick={(e) => e.stopPropagation()}
-                                                            // onChange={(e) => {
-                                                            //     handleCheckbox(e, userID);
-                                                            // }}
-                                                            // checked={isChecked} // Updated this line
+                                                            onClick={()=>handleCheckbox(learner, course)}
+                                                            onChange={()=>handleCheckbox(learner, course)}
+                                                            checked={selected.some((entry) => entry.userId === learner.id)} // Updated this line
                                                         />
                                                         {/* Custom Checkbox styling */}
                                                         <svg fill="none" viewBox="0 0 14 14" className="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-[:disabled]:stroke-gray-950/25">
@@ -473,6 +553,13 @@ const CourseEnrollmentProps = ({course}) => {
                 </div>
             </div>
         </div>
+
+        {/* Successfully */}
+        <CourseEnrollmentSuccesfully open={enrolled} close={close} result={results}/>
+        {/* Empty */}
+        <NoEmployeeSelectedModal isOpen={empty} onClose={()=>setEmpty(false)} />
+
+        </>
     )
 }
 export default CourseEnrollmentProps
