@@ -9,7 +9,7 @@ const CourseCourseAdminAssignmentProps = ({courseID}) => {
     const [assigned, setAssigned] = useState([])
     const [loading, setLoading] = useState()
     const {cities, departments, titles, location, division, section} = useOption();
-
+    const [main, setMain] = useState([])
 
     // Function to get the assigned
     const fetchAssignedCourseAdmins = () => {
@@ -24,6 +24,7 @@ const CourseCourseAdminAssignmentProps = ({courseID}) => {
         )
         .then(({data}) => {
             setAssigned(data.data)
+            setMain(data.main)
             pageChangeState('total', data.total)
                 pageChangeState('lastPage', data.lastPage)
             setLoading(false)
@@ -93,12 +94,37 @@ const CourseCourseAdminAssignmentProps = ({courseID}) => {
             <div className="py-2">
                 <p className="font-text text-xs text-unactive">Main Course Admin:</p>
                 <div className="flex flex-row gap-2 py-2 items-center">
-                    <div className='bg-blue-500 h-10 w-10 rounded-full'>
-                    </div>
-                    <div>
-                        <p className='font-header text-primary text-base'></p>
-                        <p className='text-unactive text-xs font-text'>ID: 123456789</p>
-                    </div>
+                    {
+                        !loading ? (
+                            <>
+                                <div className='bg-blue-500 h-10 w-10 rounded-full'>
+                                    {
+                                        main?.[0]?.profile_image ? (
+                                            <img src={main?.[0]?.profile_image} alt="" className="rounded-full"/>
+                                        ) : (
+                                            <div className='bg-blue-500 h-10 w-10 rounded-full'>
+
+                                            </div>
+                                        )
+                                    }
+                                </div>
+                                <div>
+                                    <p className='font-header text-primary text-base'>{main?.[0]?.first_name} {main?.[0]?.middle_name} {main?.[0]?.last_name} {main?.[0]?.name_suffix}</p>
+                                    <p className='text-unactive text-xs font-text'>ID: {main?.[0]?.employeeID}</p>
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <div className='bg-blue-500 h-10 w-10 rounded-full animate-pulse'>
+                                </div>
+                                <div>
+                                    <div className="w-40 rounded-full h-6 bg-gray-300  my-1 animate-pulse"></div>
+                                    <div className="w-10 rounded-full h-4 bg-gray-300  my-1 animate-pulse"></div>
+                                </div>
+                            </>
+                        )
+                    }
+
                 </div>
             </div>
             {/* Search bar */}
@@ -357,7 +383,15 @@ const CourseCourseAdminAssignmentProps = ({courseID}) => {
                                         </div>
                                     </td>
                                 </tr>
-                            ))):(
+                            ))):
+                            assigned.length === 0 ? (
+                                <tr className='font-text text-sm hover:bg-gray-200'>
+                                        <td colSpan={6} className='text-center text-unactive py-3 px-4'>
+                                            No Assigned Course Admin
+                                        </td>
+                                    </tr>
+                            ) :
+                            (
                                 assigned?.map((admin) => (
                                     <tr key={admin} className={`font-text text-sm hover:bg-gray-200`}>
                                         <td className={`text-sm  py-3 px-4 border-l-2 border-transparent transition-all ease-in-out`}>

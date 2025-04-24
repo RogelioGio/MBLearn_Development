@@ -1,4 +1,4 @@
-import { faArrowDownShortWide, faArrowDownZA, faArrowUpAZ, faArrowUpWideShort, faBook, faBookBookmark, faChalkboard, faChevronLeft, faChevronRight, faFilter, faFloppyDisk, faFolderPlus, faPen, faPersonChalkboard, faSearch, faSort } from "@fortawesome/free-solid-svg-icons"
+import { faArrowDownShortWide, faArrowDownZA, faArrowUpAZ, faArrowUpWideShort, faBook, faBookBookmark, faBookmark, faChalkboard, faChevronLeft, faChevronRight, faFilter, faFloppyDisk, faFolderPlus, faPen, faPersonChalkboard, faSearch, faSort, faSwatchbook } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Helmet } from "react-helmet"
 import AssignedCourseCatalogCard from "../modalsandprops/AssignedCourseCatalogCard"
@@ -30,6 +30,7 @@ export default function AssignedCourseCatalog() {
     const [assigned_course, setAssignedCourse] = useState([]);
     const [tab, setTab] = useState("myCourses");
     const [openAddCourse, setOpenAddCourse] = useState(false);
+    const [isFiltered, setFiltered] = useState(false);
 
     // Sort Order State
     const [sort, setSort] = useState({
@@ -52,7 +53,7 @@ export default function AssignedCourseCatalog() {
     const fetchCourses = (typeOfCourse) => {
         setLoading(true)
         if(typeOfCourse === "myCourses"){
-            axiosClient.get(`/select-user-added-courses/${user.id}`,{
+            axiosClient.get(`/select-user-added-courses/${user.user_infos?.id}`,{
                 params: {
                     page: pageState.currentPage,
                     perPage: pageState.perPage,
@@ -68,7 +69,7 @@ export default function AssignedCourseCatalog() {
                 console.log(err);
             })
         } else if(typeOfCourse ==="assignedCourses"){
-            axiosClient.get(`/select-user-assigned-courses/${user.id}`,{
+            axiosClient.get(`/select-user-assigned-courses/${user.user_infos?.id}`,{
                     params: {
                         page: pageState.currentPage,
                         per_page: pageState.perPage,
@@ -83,8 +84,17 @@ export default function AssignedCourseCatalog() {
                 .catch((err) => {
                     console.log(err);
                 })
-        } else {
-            return null
+        } else if((typeOfCourse === "allCourses")){
+            axiosClient.get('/courses')
+            .then(({ data }) => {
+                setAssignedCourse(data.data)
+                pageChangeState("totalCourses", data.total)
+                pageChangeState("lastPage", data.lastPage)
+                setLoading(false)
+            })
+            .catch((err) => {
+                console.log(err);
+            })
         }
     }
 
@@ -171,13 +181,21 @@ export default function AssignedCourseCatalog() {
 
             {/* Tabs */}
             <div className="px-5 col-span-4 w-full py-2 flex flex-row justify-between items-center gap-2">
-                <div className= {`w-full border-2 border-primary px-4 py-2 rounded-md shadow-md text-primary font-header ${tab === "myCourses" ? "bg-primary text-white":null} hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out`} onClick={() => {setTab("myCourses")}}>
+                <div className= {`w-full border-2 border-primary px-4 py-2 rounded-md shadow-md text-primary font-header ${tab === "myCourses" ? "bg-primary text-white":"bg-white"} hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out`} onClick={() => {setTab("myCourses")}}>
                         <p className="flex gap-2"><span><FontAwesomeIcon icon={faBookBookmark}/></span> My Courses</p>
                         <p className="text-xs font-text">Manage and view all your inputted courses</p>
                     </div>
-                    <div className={`w-full border-2 border-primary px-4 py-2 rounded-md shadow-md text-primary font-header ${tab === "assignedCourses" ? "bg-primary text-white":null} hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out`} onClick={() => {setTab("assignedCourses")}}>
+                    <div className={`w-full border-2 border-primary px-4 py-2 rounded-md shadow-md text-primary font-header ${tab === "assignedCourses" ? "bg-primary text-white":"bg-white"} hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out`} onClick={() => {setTab("assignedCourses")}}>
                         <p className="flex gap-2"><span><FontAwesomeIcon icon={faBook}/></span>Assigned Courses</p>
                         <p className="text-xs font-text">Manage and view all your assigned courses</p>
+                    </div>
+                    <div className={`w-full border-2 border-primary px-4 py-2 rounded-md shadow-md text-primary font-header ${tab === "allCourses" ? "bg-primary text-white":"bg-white"} hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out`} onClick={() => {setTab("allCourses")}}>
+                        <p className="flex gap-2"><span><FontAwesomeIcon icon={faSwatchbook}/></span>All Courses Catalog</p>
+                        <p className="text-xs font-text">View all availbale courses in MBLearn</p>
+                    </div>
+                    <div className={`w-full border-2 border-primary px-4 py-2 rounded-md shadow-md text-primary font-header ${tab === "archivedCourses" ? "bg-primary text-white":"bg-white"} hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out`} onClick={() => {setTab("archivedCourses")}}>
+                        <p className="flex gap-2"><span><FontAwesomeIcon icon={faBookmark}/></span>Archived Courses</p>
+                        <p className="text-xs font-text">View all archived courses</p>
                     </div>
             </div>
 
@@ -199,7 +217,7 @@ export default function AssignedCourseCatalog() {
             <div className="col-start-3 flex justify-end items-center pr-2">
                 <Sheet>
                     <SheetTrigger>
-                        <div className="h-fit p-2 flex justify-center items-center bg-primary aspect-square border-2 border-primary rounded-md shadow-md text-white hover:cursor-pointer hover:scale-105 hover:bg-primaryhover transition-all ease-in-out">
+                        <div className={`h-fit p-2 flex justify-center items-center bg-primary aspect-square border-2 border-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 hover:bg-primaryhover hover:text-white transition-all ease-in-out ${isFiltered ? "bg-primary text-white":"bg-white text-primary"}`}>
                             <FontAwesomeIcon icon={faFilter}/>
                         </div>
                     </SheetTrigger>
@@ -324,7 +342,7 @@ export default function AssignedCourseCatalog() {
                 {/* Total number of entries and only be shown */}
                 <div>
                     {
-                        loading ? <p className='text-sm font-text text-primary'>Loading courses...</p>
+                        loading ? <p className='text-sm font-text text-unactive'>Loading courses...</p>
                         :
                         <p className='text-sm font-text text-unactive'>
                             Showing <span className='font-header text-primary'>{pageState.startNumber}</span> to <span className='font-header text-primary'>{pageState.endNumber}</span> of <span className='font-header text-primary'>{pageState.totalCourses}</span> <span className='text-primary'>results</span>

@@ -1,4 +1,4 @@
-import { faChevronLeft, faChevronRight, faFilter, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faAward, faBookOpen, faChevronLeft, faChevronRight, faFilter, faGraduationCap, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Center, Group, Paper, RingProgress, SimpleGrid, Text } from '@mantine/core';
 import React, { useEffect, useState } from 'react';
@@ -30,15 +30,24 @@ const CourseLearnerProps = ({course}) => {
                 {/* Header */}
                 <div className='w-full grid grid-row-1 grid-cols-3 gap-2 col-span-4 pt-2'>
                     <div className= {`text-primary p-3 border-2 border-primary bg-white rounded-md hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out ${tab === 1 ? "!bg-primary text-white":null}`} onClick={() => setTab(1)}>
-                        <h1 className="font-header text-lg">Latest Learner Batch</h1>
+                        <div className='flex flex-row items-center gap-2'>
+                            <FontAwesomeIcon icon={faGraduationCap}/>
+                            <h1 className="font-header text-lg">Latest Learner Batch</h1>
+                        </div>
                         <p className="font-text text-xs">Latest batch of learner that is going to take this course</p>
                     </div>
                     <div className= {`text-primary p-3 border-2 border-primary bg-white rounded-md hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out ${tab === 2 ? "!bg-primary text-white":null}`} onClick={() => setTab(2)}>
-                        <h1 className="font-header text-lg ">Ongoing Batch</h1>
+                    <div className='flex flex-row items-center gap-2'>
+                            <FontAwesomeIcon icon={faBookOpen}/>
+                            <h1 className="font-header text-lg">On-going Batch</h1>
+                        </div>
                         <p className="font-text text-xs">On-going batch that is currently taking the course</p>
                     </div>
                     <div className= {`text-primary p-3 border-2 border-primary bg-white rounded-md hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out ${tab === 3 ? "!bg-primary text-white":null}`} onClick={() => setTab(3)}>
-                        <h1 className="font-header text-lg ">Previous Batch</h1>
+                    <div className='flex flex-row items-center gap-2'>
+                            <FontAwesomeIcon icon={faAward}/>
+                            <h1 className="font-header text-lg">Previous Batch</h1>
+                        </div>
                         <p className="font-text text-xs">Previous batch that is done taking the course</p>
                     </div>
                 </div>
@@ -130,7 +139,7 @@ const CourseLearnerProps = ({course}) => {
                                     ))
                                 ) : learners.length === 0 ? (
                                     <tr className='font-text text-sm hover:bg-gray-200'>
-                                        <td colSpan={6} className='text-center py-3 px-4'>
+                                        <td colSpan={6} className='text-center text-unactive py-3 px-4'>
                                             No Enrollees
                                         </td>
                                     </tr>

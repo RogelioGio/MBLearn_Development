@@ -122,7 +122,7 @@ export default function Course() {
                                 <p className="font-header group-hover:text-primary">Learners</p>
                             </div>
                             <div className= {`group flex justify-center items-center px-5 hover:border-b-2 hover:border-b-primary transition-all ease-in-out hover:cursor-pointer ${tab === "courseAdmin" ? "border-b-2 border-primary text-primary" : 'text-unactive'}`} onClick={()=> setTab("courseAdmin")}>
-                                <p className="font-header group-hover:text-primary">Co-course Admins</p>
+                                <p className="font-header group-hover:text-primary">Course Admins</p>
                             </div>
                             <div className= {`group flex justify-center items-center px-5 hover:border-b-2 hover:border-b-primary transition-all ease-in-out hover:cursor-pointer ${tab === "enrollment" ? "border-b-2 border-primary text-primary" : 'text-unactive'}`} onClick={()=> setTab("enrollment")}>
                                 <p className="font-header group-hover:text-primary">Enroll Learner</p>

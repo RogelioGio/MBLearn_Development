@@ -401,7 +401,9 @@ const CourseEnrollmentProps = ({course}) => {
             <div className="col-span-4 h-full mr-5 flex flex-row items-center justify-between py-3 border-t border-divider">
                 <div>
                     {
-                        learnerLoading ? <p>Loading Learners to be enrolled.....</p> :
+                        learnerLoading ? <p className='text-sm font-text text-unactive'>
+                        Retrieving Learner to be enrolled...
+                        </p> :
                         <p className='text-sm font-text text-unactive'>
                             Showing <span className='font-header text-primary'>{pageState.startNumber}</span> to <span className='font-header text-primary'>{pageState.endNumber}</span> of <span className='font-header text-primary'>{pageState.total}</span> <span className='text-primary'>results</span>
                         </p>
