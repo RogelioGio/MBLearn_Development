@@ -56,13 +56,12 @@ class CourseController extends Controller
         $category = Category::query()->find($data['category_id']);
         $current_user = Auth::user();
 
-
         $course = Course::create([
             "name" => $data['name'],
             "CourseID" => $data['CourseID'],
             "description" => $data['description'],
             "training_type" =>$data['training_type'],
-            "system_admin_id" => $current_user->id,
+            "system_admin_id" => $current_user->userInfos->id,
             "archived" => $data['archived'],]
             );
 
