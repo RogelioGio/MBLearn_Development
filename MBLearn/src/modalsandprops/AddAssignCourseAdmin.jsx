@@ -18,6 +18,7 @@ import {
     DrawerTitle,
     DrawerTrigger,
     } from "../components/ui/drawer"
+import AssignCourseAdminModalSuccessfully from "./AssignCourseAdminSuccessfullyModal";
 
 const AddAssignCourseAdmin = ({courseID ,open, close,}) => {
     const {departments, cities, branches, divisions ,sections} = useCourseContext()
@@ -26,6 +27,8 @@ const AddAssignCourseAdmin = ({courseID ,open, close,}) => {
     const [filteredEmployee, setFilteredEmployee] = useState([])
     const [selectedCourseAdmin, setSelectedCourseAdmin] = useState([])
     const [assiging, setAssigning] = useState(false)
+    const [assigned, setAssigned] = useState(false)
+    const [number, setNumber] = useState(0)
 
     useEffect(()=>{
         setIsFiltered(false)
@@ -114,19 +117,28 @@ const AddAssignCourseAdmin = ({courseID ,open, close,}) => {
         .then((response) => {
             console.log(response.data)
             setAssigning(false)
-
+            setAssigned(true)
+            setNumber(selectedCourseAdmin.length)
         })
         .catch((error) => {console.log(error)})
         //assign-course-admin/{course}'
         console.log(formattedData);
     }
 
+    const handleClose = () => {
+        setSelectedCourseAdmin([])
+        setFilteredEmployee([])
+        setAssigned(false)
+        close()
+    }
+
     return(
+        <>
         <Dialog open={open} onClose={()=>{}}>
         <DialogBackdrop transition className="backdrop-blur-sm fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in z-20"/>
             <div className='fixed inset-0 z-20 w-screen overflow-y-auto'>
                 <div className='flex min-h-full items-center justify-center p-4'>
-                    <DialogPanel transition className='z-20 relative overflow-hidden transform rounded-md w-3/4 bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in'>
+                    <DialogPanel transition className='z-20 relative overflow-hidden transform rounded-md w-5/6 bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in'>
                         <div className='bg-white rounded-md h-full p-5 flex flex-col'>
                            {/* Header */}
                             <div className="pt-2 pb-4 mx-4 border-b border-divider flex flex-col justify-between item-center">
@@ -274,14 +286,16 @@ const AddAssignCourseAdmin = ({courseID ,open, close,}) => {
                                                 <thead className='font-header text-xs text-primary bg-secondaryprimary'>
                                                     <tr>
                                                         <th className='py-4 px-4'>EMPLOYEE NAME</th>
+                                                        <th className='py-4 px-4'>DIVISION</th>
                                                         <th className='py-4 px-4'>DEPARTMENT</th>
-                                                        <th className='py-4 px-4'>BRANCH</th>
+                                                        <th className='py-4 px-4'>SECTION</th>
+                                                        <th className='py-4 px-4'>LOCATION</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody className='bg-white divide-y divide-divider'>
                                                     {loading ? (
                                                         <tr className="font-text text-sm hover:bg-gray-200">
-                                                            <td colSpan={4} className="text-center py-3 px-4 font-text text-primary">
+                                                            <td colSpan={6} className="text-center py-3 px-4 font-text text-primary">
                                                                 Loading Eligable Course Admins...
                                                             </td>
                                                         </tr>
@@ -296,7 +310,9 @@ const AddAssignCourseAdmin = ({courseID ,open, close,}) => {
                                                                     name={`${employee.first_name} ${employee.middle_name || ""} ${employee.last_name} ${employee.name_suffix || ""}`.trim()}
                                                                     loading={loading}
                                                                     employeeID={employee.employeeID || "Not Available"}
+                                                                    division={employee.division?.division_name || "Not Available"}
                                                                     department={employee.department?.department_name || "Not Available"}
+                                                                    section={employee.section?.section_name || "Not Available"}
                                                                     title={employee.title?.title_name || "Not Available"}
                                                                     branch={employee.branch?.branch_name || "Not Available"}
                                                                     city={employee.city?.city_name || "Not Available"}
@@ -306,7 +322,7 @@ const AddAssignCourseAdmin = ({courseID ,open, close,}) => {
                                                             ))
                                                         ) : (
                                                             <tr className="font-text text-sm hover:bg-gray-200">
-                                                                <td colSpan={4} className="text-center py-3 px-4 font-text text-primary">
+                                                                <td colSpan={6} className="text-center py-3 px-4 font-text text-primary">
                                                                     Filter first the course admin you want to add for the course
                                                                 </td>
                                                             </tr>
@@ -337,6 +353,8 @@ const AddAssignCourseAdmin = ({courseID ,open, close,}) => {
                 </div>
             </div>
     </Dialog>
+    <AssignCourseAdminModalSuccessfully open={assigned} close={handleClose} number={number}/>
+    </>
     )
 };
 

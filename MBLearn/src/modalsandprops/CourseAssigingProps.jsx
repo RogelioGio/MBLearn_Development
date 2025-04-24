@@ -1,4 +1,4 @@
-const CourseAssigningProps = ({isfiltered, id, handleInput, loading, name, employeeID, department, title, branch, city, profile_image,selectedCourseAdmin}) => {
+const CourseAssigningProps = ({isfiltered, id, handleInput, loading, name, employeeID, division, department, section, title, branch, city, profile_image,selectedCourseAdmin}) => {
     return (
         <tr className='font-text text-sm hover:bg-gray-200 hover:cursor-pointer' onClick={(e) => handleInput(e,id)}>
             {
@@ -49,8 +49,12 @@ const CourseAssigningProps = ({isfiltered, id, handleInput, loading, name, emplo
                                 </div>
 
                                 {/* User Image */}
-                                <div className='bg-blue-500 h-10 w-10 rounded-full'>
-                                    <img src={profile_image} alt="" className='rounded-full'/>
+                                <div className= 'h-10 w-10 rounded-full'>
+                                    {
+                                        profile_image ?
+                                        <img src={profile_image} alt="" className='rounded-full'/>
+                                        : <div className="bg-blue-500"></div>
+                                    }
                                 </div>
                                 {/* Name and employee-id*/}
                                 <div>
@@ -60,12 +64,18 @@ const CourseAssigningProps = ({isfiltered, id, handleInput, loading, name, emplo
                             </div>
                         </td>
                         <td className='py-3 px-4'>
+                            <p className='text-unactive'>{division}</p>
+                        </td>
+                        <td className='py-3 px-4'>
                             <div className='flex flex-col'>
                                 {/* Department */}
                                 <p className='text-unactive'>{department}</p>
                                 {/* Title */}
-                                <p className='text-unactive text-xs'>{title}</p>
+                                {/* <p className='text-unactive text-xs'>{title}</p> */}
                             </div>
+                        </td>
+                        <td className='py-3 px-4'>
+                            <p className='text-unactive'>{section}</p>
                         </td>
                         <td className='py-3 px-4'>
                             <div className='flex flex-col'>

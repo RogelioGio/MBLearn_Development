@@ -3,6 +3,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React, { useEffect, useState } from 'react'
 import axiosClient from '../axios-client'
 import Learner from '../components/Learner'
+import {
+    Sheet,
+    SheetContent,
+    SheetDescription,
+    SheetHeader,
+    SheetOverlay,
+    SheetTitle,
+    SheetTrigger,
+} from "../components/ui/sheet"
 
 
 const CourseEnrollmentProps = ({course}) => {
@@ -32,7 +41,7 @@ const CourseEnrollmentProps = ({course}) => {
 
     const [pageState, setPagination] = useState({
         currentPage: 1,
-        perPage: 4,
+        perPage: 6,
         total: 0,
         lastPage:1,
         startNumber: 0,
@@ -83,7 +92,7 @@ const CourseEnrollmentProps = ({course}) => {
             handleLearnerChange(course.id)
         },[pageState.currentPage, course.id])
     return(
-        <div className="grid grid-cols-4 grid-rows-[min-content_min-content_1fr_min-content] h-full w-full">
+        <div className="grid grid-cols-4 grid-rows-[min-content_1fr_min-content] h-full w-full">
             {/* Search */}
             <div className='flex flex-row justify-center py-3'>
                 <div className=' inline-flex flex-row place-content-between border-2 border-primary rounded-md w-full font-text shadow-md'>
@@ -93,6 +102,116 @@ const CourseEnrollmentProps = ({course}) => {
                     </div>
                 </div>
             </div>
+            <div className='flex items-center p-2'>
+                <Sheet>
+                    <SheetTrigger>
+                    <div className='text-lg text-primary border-primary border-2 bg-white aspect-square rounded-md shadow-md flex flex-row justify-center items-center hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out'>
+                        <FontAwesomeIcon icon={faFilter} className='p-2'/>
+                    </div>
+                    </SheetTrigger>
+                    <SheetOverlay className="bg-gray-500/75 backdrop-blur-sm transition-all" />
+                    <SheetContent className="h-full flex-col flex">
+                    <div>
+                            <h1 className='font-header text-2xl text-primary'>Learner Filter</h1>
+                            <p className='text-md font-text text-unactive text-sm'>Categorize learner to enroll</p>
+                        </div>
+                        <div className="col-span-4 grid grid-cols-[1fr_1fr_1fr_1fr_1fr_min-content] gap-x-2">
+                    <div className="inline-flex flex-col gap-1">
+                        <label htmlFor="department" className="font-header text-xs flex flex-row justify-between">
+                            <p className="text-xs font-text text-unactive">Division </p>
+                        </label>
+                        <div className="grid grid-cols-1">
+                            <select id="department" name="department" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                // value={filterformik.values.department}
+                                // onChange={filterformik.handleChange}
+                                // onBlur={filterformik.handleBlur}
+                                >
+                                <option value=''>Select Division</option>
+                            </select>
+                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                            <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div className="inline-flex flex-col gap-1">
+                        <label htmlFor="department" className="font-header text-xs flex flex-row justify-between">
+                            <p className="text-xs font-text text-unactive">Department </p>
+                        </label>
+                        <div className="grid grid-cols-1">
+                            <select id="department" name="department" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                // value={filterformik.values.department}
+                                // onChange={filterformik.handleChange}
+                                // onBlur={filterformik.handleBlur}
+                                >
+                                <option value=''>Select Department</option>
+                            </select>
+                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                            <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div className="inline-flex flex-col gap-1">
+                        <label htmlFor="department" className="font-header text-xs flex flex-row justify-between">
+                            <p className="text-xs font-text text-unactive">Section </p>
+                        </label>
+                        <div className="grid grid-cols-1">
+                            <select id="department" name="department" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                // value={filterformik.values.department}
+                                // onChange={filterformik.handleChange}
+                                // onBlur={filterformik.handleBlur}
+                                >
+                                <option value=''>Select Section</option>
+                            </select>
+                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                            <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div className="inline-flex flex-col gap-1">
+                        <label htmlFor="department" className="font-header text-xs flex flex-row justify-between">
+                            <p className="text-xs font-text text-unactive">City </p>
+                        </label>
+                        <div className="grid grid-cols-1">
+                            <select id="department" name="department" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                // value={filterformik.values.department}
+                                // onChange={filterformik.handleChange}
+                                // onBlur={filterformik.handleBlur}
+                                >
+                                <option value=''>Select City</option>
+                            </select>
+                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                            <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div className="inline-flex flex-col gap-1">
+                        <label htmlFor="department" className="font-header text-xs flex flex-row justify-between">
+                            <p className="text-xs font-text text-unactive">Branch </p>
+                        </label>
+                        <div className="grid grid-cols-1">
+                            <select id="department" name="department" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                // value={filterformik.values.department}
+                                // onChange={filterformik.handleChange}
+                                // onBlur={filterformik.handleBlur}
+                                >
+                                <option value=''>Select Branch</option>
+                            </select>
+                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                            <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    </div>
+                    {/* Filter Button */}
+                    <div className="flex flex-col justify-end py-1">
+                        <div className="aspect-square border-2 border-primary rounded-md shadow-md text-white bg-primary flex flex-row justify-center items-center hover:scale-105 hover:cursor-pointer transition-all ease-in-out">
+                            <FontAwesomeIcon icon={faFilter} className="p-2"/>
+                        </div>
+                    </div>
+                </div>
+                    </SheetContent>
+                </Sheet>
+            </div>
+            {/* Enroll */}
             <div className='col-start-4 flex flex-row justify-end py-3'>
                 <div className='text-white border-2 border-primary py-2 px-5 bg-primary flex flex-row gap-2 justify-center items-center rounded-md shadow-md hover:scale-105 hover:cursor-pointer transition-all ease-in-out'>
                     <FontAwesomeIcon icon={faUserPlus}/>
@@ -100,102 +219,10 @@ const CourseEnrollmentProps = ({course}) => {
                 </div>
             </div>
             {/* Filter */}
-            <div className="col-span-4 grid grid-cols-[1fr_1fr_1fr_1fr_1fr_min-content] gap-x-2">
-                <div className="inline-flex flex-col gap-1">
-                    <label htmlFor="department" className="font-header text-xs flex flex-row justify-between">
-                        <p className="text-xs font-text text-unactive">Division </p>
-                    </label>
-                    <div className="grid grid-cols-1">
-                        <select id="department" name="department" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                            // value={filterformik.values.department}
-                            // onChange={filterformik.handleChange}
-                            // onBlur={filterformik.handleBlur}
-                            >
-                            <option value=''>Select Division</option>
-                        </select>
-                        <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                        <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
-                </div>
-                <div className="inline-flex flex-col gap-1">
-                    <label htmlFor="department" className="font-header text-xs flex flex-row justify-between">
-                        <p className="text-xs font-text text-unactive">Department </p>
-                    </label>
-                    <div className="grid grid-cols-1">
-                        <select id="department" name="department" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                            // value={filterformik.values.department}
-                            // onChange={filterformik.handleChange}
-                            // onBlur={filterformik.handleBlur}
-                            >
-                            <option value=''>Select Department</option>
-                        </select>
-                        <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                        <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
-                </div>
-                <div className="inline-flex flex-col gap-1">
-                    <label htmlFor="department" className="font-header text-xs flex flex-row justify-between">
-                        <p className="text-xs font-text text-unactive">Section </p>
-                    </label>
-                    <div className="grid grid-cols-1">
-                        <select id="department" name="department" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                            // value={filterformik.values.department}
-                            // onChange={filterformik.handleChange}
-                            // onBlur={filterformik.handleBlur}
-                            >
-                            <option value=''>Select Section</option>
-                        </select>
-                        <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                        <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
-                </div>
-                <div className="inline-flex flex-col gap-1">
-                    <label htmlFor="department" className="font-header text-xs flex flex-row justify-between">
-                        <p className="text-xs font-text text-unactive">City </p>
-                    </label>
-                    <div className="grid grid-cols-1">
-                        <select id="department" name="department" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                            // value={filterformik.values.department}
-                            // onChange={filterformik.handleChange}
-                            // onBlur={filterformik.handleBlur}
-                            >
-                            <option value=''>Select City</option>
-                        </select>
-                        <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                        <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
-                </div>
-                <div className="inline-flex flex-col gap-1">
-                    <label htmlFor="department" className="font-header text-xs flex flex-row justify-between">
-                        <p className="text-xs font-text text-unactive">Branch </p>
-                    </label>
-                    <div className="grid grid-cols-1">
-                        <select id="department" name="department" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                            // value={filterformik.values.department}
-                            // onChange={filterformik.handleChange}
-                            // onBlur={filterformik.handleBlur}
-                            >
-                            <option value=''>Select Branch</option>
-                        </select>
-                        <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                        <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
-                </div>
-                {/* Filter Button */}
-                <div className="flex flex-col justify-end py-1">
-                    <div className="aspect-square border-2 border-primary rounded-md shadow-md text-white bg-primary flex flex-row justify-center items-center hover:scale-105 hover:cursor-pointer transition-all ease-in-out">
-                        <FontAwesomeIcon icon={faFilter} className="p-2"/>
-                    </div>
-                </div>
-            </div>
+
 
             {/* Enrolment Table */}
-            <div className="col-span-4 h-full py-2">
+            <div className="col-span-4 h-full">
                     <div className='w-full border-primary border rounded-md overflow-hidden shadow-md'>
                         <table className='text-left w-full'>
                         <thead className='font-header text-xs text-primary bg-secondaryprimary border-l-2 border-secondaryprimary'>
@@ -242,7 +269,7 @@ const CourseEnrollmentProps = ({course}) => {
                             <tbody className='bg-white divide-y divide-divider'>
                                 {
                                     learnerLoading ? (
-                                        Array.from({length: 4}).map((_, index) => (
+                                        Array.from({length: 6}).map((_, index) => (
                                             <tr key={index} className={`font-text text-sm hover:bg-gray-200 animate-pulse`}>
                                                 <td className={`text-sm  py-3 px-4 border-l-2 border-transparent transition-all ease-in-out`}>
                                                     <div className='flex items-center gap-4 flex-row'>
@@ -317,7 +344,7 @@ const CourseEnrollmentProps = ({course}) => {
                                         ))
                                     ) : (
                                         learners.map((learner, index) => (
-                                            <tr key={index} className={`font-text text-sm hover:bg-gray-200`}>
+                                            <tr key={index} className={`font-text text-sm hover:bg-gray-200 hover:cursor-pointer`}>
                                             <td className={`text-sm  py-3 px-4 border-l-2 border-transparent transition-all ease-in-out`}>
                                                 <div className='flex items-center gap-4 flex-row'>
                                                     {/* Checkbox */}
@@ -364,7 +391,7 @@ const CourseEnrollmentProps = ({course}) => {
                                             <td className='py-3 px-4'>
                                                 <div className='flex flex-col'>
                                                     {/* Division */}
-                                                    <p className='text-unactive'>Division</p>
+                                                    <p className='text-unactive'>{learner.division?.division_name}</p>
                                                 </div>
                                             </td>
                                             <td className='py-3 px-4'>
@@ -376,7 +403,7 @@ const CourseEnrollmentProps = ({course}) => {
                                             <td className='py-3 px-4'>
                                                 <div className='flex flex-col'>
                                                     {/* Section */}
-                                                    <p className='text-unactive'>Section</p>
+                                                    <p className='text-unactive'>{learner.section?.section_name}</p>
                                                 </div>
                                             </td>
                                             <td className='py-3 px-4'>
@@ -398,7 +425,7 @@ const CourseEnrollmentProps = ({course}) => {
             </div>
 
             {/* Pagination */}
-            <div className="col-span-4 h-full mr-5 flex flex-row items-center justify-between py-3 border-t border-divider">
+            <div className="col-span-4 h-full flex flex-row items-center justify-between py-3 border-t border-divider">
                 <div>
                     {
                         learnerLoading ? <p className='text-sm font-text text-unactive'>

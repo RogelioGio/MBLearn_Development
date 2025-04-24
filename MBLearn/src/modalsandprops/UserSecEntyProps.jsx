@@ -22,17 +22,17 @@ const UserSecEntyProps = ({user,name,employeeID,MBEmail,city,branch,division,sec
                         </td>
                         {/* Divison */}
                         <td className='py-3 px-4'>
-                            {division}
+                            <p className="text-unactive">{division}</p>
                         </td>
                         <td className='py-3 px-4'>
-                            {department}
+                            <p className="text-unactive">{department}</p>
                         </td>
                         <td className='py-3 px-4'>
-                            {section}
+                            <p className="text-unactive">{section}</p>
                         </td>
 
                         <td className='py-3 px-4'>
-                            {role}
+                            <p className="text-unactive">{role}</p>
                         </td>
 
                         {/* Last Login */}

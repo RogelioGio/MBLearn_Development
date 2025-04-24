@@ -63,7 +63,7 @@ const User = ({re_move,click,userID,name,department,title,branch,city,profile_ur
                     </div>
                 </td>
                 <td className='py-3 px-4'>
-                    <p>{division}</p>
+                    <p className='text-unactive'>{division}</p>
                 </td>
                 <td className='py-3 px-4'>
                     <div className='flex flex-col'>
@@ -72,7 +72,7 @@ const User = ({re_move,click,userID,name,department,title,branch,city,profile_ur
                     </div>
                 </td>
                 <td className='py-3 px-4'>
-                    <p>{section}</p>
+                    <p className='text-unactive'>{section}</p>
                 </td>
                 <td className='py-3 px-4'>
                     <div className='flex flex-col'>
