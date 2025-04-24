@@ -90,21 +90,19 @@ class CourseController extends Controller
     public function assignCourseAdmin(BulkAssignCourseAdmins $bulkAssignCourseAdmins, Course $course){
         $bulk = collect($bulkAssignCourseAdmins->all())->map(function($arr, $key){
             $messyArray = [];
-            $oneDArray = [];
             foreach($arr as $key => $value){
                 $temp = UserInfos::find($value);
                 $roles = $temp->roles->toArray();
                 foreach($roles as $role)
                 if(in_array('Course Admin',$role) || in_array('System Admin', $role)){
-                    $messyArray[] = [$key => $value];
+                    $messyArray = $value;
                 }
             }
-            $oneDArray = array_reduce($messyArray, 'array_merge', []);
-            return $oneDArray;
+            return $messyArray;
         });
         $course->assignedCourseAdmins()->syncWithoutDetaching($bulk);
         return response()->json([
-            'message' => "Course Admins Assigned to $course->name"
+            'message' => "Course Admins assigned to ".$course->name
         ]);
     }
 
