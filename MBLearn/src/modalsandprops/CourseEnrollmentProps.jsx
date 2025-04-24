@@ -15,10 +15,11 @@ import {
 import { useStateContext } from '../contexts/ContextProvider'
 import CourseEnrollmentSuccesfully from './CourseEnrollmentSuccessfullyModal'
 import NoEmployeeSelectedModal from './NoEmployeeSelectedModal'
-
+import { useOption } from '../contexts/AddUserOptionProvider'
 
 const CourseEnrollmentProps = ({course}) => {
     const {user} = useStateContext();
+    const {cities, departments, titles, location, division, section} = useOption();
     const [learners, setLearners] = useState([])
     const [learnerLoading, setLearnerLoading] = useState(false)
     const [selected, setSelected] = useState([]); //Select learner to ernoll
@@ -194,7 +195,7 @@ const CourseEnrollmentProps = ({course}) => {
                             <h1 className='font-header text-2xl text-primary'>Learner Filter</h1>
                             <p className='text-md font-text text-unactive text-sm'>Categorize learner to enroll</p>
                         </div>
-                        <div className="col-span-4 grid grid-cols-[1fr_1fr_1fr_1fr_1fr_min-content] gap-x-2">
+
                     <div className="inline-flex flex-col gap-1">
                         <label htmlFor="department" className="font-header text-xs flex flex-row justify-between">
                             <p className="text-xs font-text text-unactive">Division </p>
@@ -206,6 +207,11 @@ const CourseEnrollmentProps = ({course}) => {
                                 // onBlur={filterformik.handleBlur}
                                 >
                                 <option value=''>Select Division</option>
+                                {
+                                    division?.map((division)=> (
+                                        <option key={division.id} value={division.id}>{division.division_name}</option>
+                                    ))
+                                }
                             </select>
                             <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
                             <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
@@ -223,6 +229,11 @@ const CourseEnrollmentProps = ({course}) => {
                                 // onBlur={filterformik.handleBlur}
                                 >
                                 <option value=''>Select Department</option>
+                                {
+                                    departments?.map((department)=> (
+                                        <option key={department.id} value={department.id}>{department.department_name}</option>
+                                    ))
+                                }
                             </select>
                             <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
                             <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
@@ -240,6 +251,11 @@ const CourseEnrollmentProps = ({course}) => {
                                 // onBlur={filterformik.handleBlur}
                                 >
                                 <option value=''>Select Section</option>
+                                {
+                                    section?.map((section)=> (
+                                        <option key={section.id} value={section.id}>{section.section_name}</option>
+                                    ))
+                                }
                             </select>
                             <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
                             <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
@@ -257,6 +273,11 @@ const CourseEnrollmentProps = ({course}) => {
                                 // onBlur={filterformik.handleBlur}
                                 >
                                 <option value=''>Select City</option>
+                                {
+                                    cities?.map((city)=> (
+                                        <option key={city.id} value={city.id}>{city.city_name}</option>
+                                    ))
+                                }
                             </select>
                             <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
                             <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
@@ -274,6 +295,11 @@ const CourseEnrollmentProps = ({course}) => {
                                 // onBlur={filterformik.handleBlur}
                                 >
                                 <option value=''>Select Branch</option>
+                                {
+                                    location?.map((branch)=> (
+                                        <option key={branch.id} value={branch.id}>{branch.branch_name}</option>
+                                    ))
+                                }
                             </select>
                             <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
                             <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
@@ -281,17 +307,24 @@ const CourseEnrollmentProps = ({course}) => {
                         </div>
                     </div>
                     {/* Filter Button */}
-                    <div className="flex flex-col justify-end py-1">
+                    {/* <div className="flex flex-col justify-end py-1">
                         <div className="aspect-square border-2 border-primary rounded-md shadow-md text-white bg-primary flex flex-row justify-center items-center hover:scale-105 hover:cursor-pointer transition-all ease-in-out">
                             <FontAwesomeIcon icon={faFilter} className="p-2"/>
                         </div>
-                    </div>
-                </div>
+                    </div> */}
                     </SheetContent>
                 </Sheet>
             </div>
             {/* Enroll */}
-            <div className='col-start-4 flex flex-row justify-end py-3'>
+            <div className='col-start-4 flex flex-row justify-between items-center py-3'>
+                <div className='w-full'>
+                    {
+                        selected.length > 0 ? (
+                            <p className='text-sm font-text text-unactive'><span className='text-primary'>{selected.length}</span> users selected to enroll</p>
+                        ) : (null)
+                    }
+                </div>
+
                 <div className='text-white border-2 border-primary py-2 px-5 bg-primary flex flex-row gap-2 justify-center items-center rounded-md shadow-md hover:scale-105 hover:cursor-pointer transition-all ease-in-out'
                     onClick={handleEnrollment}>
                     <FontAwesomeIcon icon={faUserPlus}/>
