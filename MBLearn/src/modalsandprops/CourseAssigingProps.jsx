@@ -1,6 +1,6 @@
 const CourseAssigningProps = ({isfiltered, id, handleInput, loading, name, employeeID, department, title, branch, city, profile_image,selectedCourseAdmin}) => {
     return (
-        <tr className='font-text text-sm hover:bg-gray-200'>
+        <tr className='font-text text-sm hover:bg-gray-200 hover:cursor-pointer' onClick={(e) => handleInput(e,id)}>
             {
                 loading ? (
                     // Show loading message while waiting for API response

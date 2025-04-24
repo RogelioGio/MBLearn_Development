@@ -151,7 +151,7 @@ export default function Course() {
         <EditCourseModal open={open} close={()=>setOpen(false)} id={course?.id}/>
         {/* Assign Course Admin */}
         {/* <AssignCourseAdmin open={assign} close={()=>setAssign(false)} id={course?.id}/> */}
-        <AddAssignCourseAdmin courseID={course?.id} open={assign}  close={()=>setAssign(false)}/>
+        <AddAssignCourseAdmin courseID={course?.id} open={assign}  close={()=>setAssign(false)} />
         {/* CourseDetail */}
         <CourseDetailsModal open={openDetails} close={()=>setOpenDetails(false)} selectedCourse={course}/>
         </>
