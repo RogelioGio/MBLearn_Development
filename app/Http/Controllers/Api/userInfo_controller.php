@@ -150,7 +150,7 @@ class userInfo_controller extends Controller
             $email = strtolower(preg_replace('/\s+/', '', $single['first_name'])
                         .preg_replace('/\s+/', '', $single['last_name'])
                         ."@mbtc.com");
-            $password = strtolower(preg_replace('/\s+/', '', $single['first_name'])."_".$single['employeeID']);
+            $password = preg_replace('/\s+/', '', $single['first_name'])."_".$single['employeeID'];
             $empID = $single['employeeID'];
             $role = $single['role'];
             $title = $single['title'];
