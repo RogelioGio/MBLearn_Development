@@ -48,8 +48,12 @@ const User = ({re_move,click,userID,name,department,title,branch,city,profile_ur
                         </div>
 
                         {/* User Image */}
-                        <div className='bg-blue-500 h-10 w-10 rounded-full'>
-                            <img src={profile_url} alt="" className='rounded-full'/>
+                        <div className= 'h-10 w-10 rounded-full'>
+                            {
+                                profile_url ? <img src={profile_url} alt="" className='rounded-full'/>
+                                : <div className='bg-blue-500 h-10 w-10 rounded-full'></div>
+                            }
+
                         </div>
                         {/* Name and employee-id*/}
                         <div>
@@ -59,18 +63,16 @@ const User = ({re_move,click,userID,name,department,title,branch,city,profile_ur
                     </div>
                 </td>
                 <td className='py-3 px-4'>
-                    <p>{division}</p>
+                    <p className='text-unactive'>{division}</p>
                 </td>
                 <td className='py-3 px-4'>
                     <div className='flex flex-col'>
                         {/* Department */}
                         <p className='text-unactive'>{department}</p>
-                        {/* Title */}
-                        <p className='text-unactive text-xs'>{title}</p>
                     </div>
                 </td>
                 <td className='py-3 px-4'>
-                    <p>{section}</p>
+                    <p className='text-unactive'>{section}</p>
                 </td>
                 <td className='py-3 px-4'>
                     <div className='flex flex-col'>

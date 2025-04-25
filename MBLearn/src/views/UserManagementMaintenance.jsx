@@ -21,10 +21,20 @@ import EditUserSuccessfully from '../modalsandprops/EditUserSuccesfuly';
 import { useNavigate } from 'react-router-dom';
 import { useContext } from 'react';
 import { useStateContext } from '../contexts/ContextProvider';
+import {
+    Sheet,
+    SheetContent,
+    SheetDescription,
+    SheetHeader,
+    SheetOverlay,
+    SheetTitle,
+    SheetTrigger,
+} from "../components/ui/sheet"
+
 
 
 export default function UserManagementMaintenance() {
-    const {departments,cities,location} = useOption();
+    const {departments,cities,location, division, section} = useOption();
     const [checkedUsers, setCheckedUser] = useState([]);
     const selectAllRef = useRef(null);
     const navigate = useNavigate();
@@ -56,7 +66,9 @@ export default function UserManagementMaintenance() {
     //filterFormik
     const filterformik = useFormik({
         initialValues: {
+            division: '',
             department: '',
+            section: '',
             branch: '',
             city:'',
         },
@@ -69,7 +81,7 @@ export default function UserManagementMaintenance() {
             console.log(values)
             setLoading(true)
             setIsFiltered(true); // Set to true when filtered
-            axiosClient.get(`/index-user?department_id[eq]=${values.department}&branch_id[eq]=${values.branch}`)
+            axiosClient.get(`/index-user?division_id[eq]=${values.division}&department_id[eq]=${values.department}&section_id[eq]=${values.section}&branch_id[eq]=${values.branch}`)
             .then((res) => {
                 setUsers(res.data.data);
                 setLoading(false)
@@ -341,90 +353,154 @@ export default function UserManagementMaintenance() {
 
 
             {/* User Filter */}
-            <form onSubmit={filterformik.handleSubmit} className='col-start-1 col-span-3 row-start-2 row-span-1 px-5 py-3 grid grid-cols-[auto_auto_auto_auto_min-content] w-full gap-2'>
-                <div className="inline-flex flex-col gap-1">
-                <label htmlFor="department" className="font-header text-xs flex flex-row justify-between">
-                    <p className="text-xs font-text text-unactive">Department </p>
-                </label>
-                <div className="grid grid-cols-1">
-                    <select id="department" name="department" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                        value={filterformik.values.department}
-                        onChange={filterformik.handleChange}
-                        onBlur={filterformik.handleBlur}
-                        >
-                        <option value=''>Select Department</option>
-                        {
-                            departments.map((department) => (
-                                <option key={department.id} value={department.id}>{department.department_name}</option>
-                            ))
-                        }
-                    </select>
-                    <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                    <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                    </svg>
-                </div>
-                </div>
-                <div className="inline-flex flex-col gap-1">
-                <label htmlFor="city" className="font-header text-xs flex flex-row justify-between">
-                    <p className="text-xs font-text text-unactive">City</p>
-                </label>
-                <div className="grid grid-cols-1">
-                    <select id="city" name="city" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                        value={filterformik.values.city}
-                        onChange={handleBranchesOptions}
-                        onBlur={filterformik.handleBlur}
-                        >
-                        <option value=''>Select Branch City</option>
-                        {
-                            cities.map((city) => (
-                                <option key={city.id} value={city.id}>{city.city_name}</option>
-                            ))
-                        }
-                    </select>
-                    <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                    <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                    </svg>
-                </div>
-                </div>
-                <div className="inline-flex flex-col gap-1">
-                <label htmlFor="branch" className="font-header text-xs flex flex-row justify-between">
-                    <p className="text-xs font-text text-unactive">Location</p>
-                </label>
-                <div className="grid grid-cols-1">
-                    <select id="branch" name="branch" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                        value={filterformik.values.branch}
-                        onChange={filterformik.handleChange}
-                        onBlur={filterformik.handleBlur}
-                        >
-                        <option value=''>Select Branch Location</option>
-                        {selectedBranches.map((branch) => (
-                            <option key={branch.id} value={branch.id}>{branch.branch_name}</option>
-                        ))}
-                    </select>
-                    <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                    <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                    </svg>
-                </div>
-                </div>
-                {/* Filter Button */}
-                <div className='flex-row flex justify-start py-1 gap-2 items-end'>
-                <button type='submit'>
-                    <div className='aspect-square px-3 flex flex-row justify-center items-center bg-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 ease-in-out transition-all '>
-                        <FontAwesomeIcon icon={faFilter} className='text-white text-sm'/>
-                    </div>
-                </button>
-                {
-                    isFiltered ? (
-                    <button type='button' onClick={resetFilter}>
-                        <div className='aspect-square px-3 flex flex-row justify-center items-center border-2 border-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 ease-in-out transition-all '>
-                            <FontAwesomeIcon icon={faXmark} className='text-primary text-sm'/>
+            <div className='flex flex-row py-3 justify-start items-center px-5'>
+                <Sheet>
+                    <SheetTrigger>
+                        <div className= {`flex flex-row items-center justify-center bg-white text-primary gap-2 border-2 border-primary w-fit py-2 px-4 rounded-md hover:text-white hover:bg-primary transition-all ease-in-out hover:cursor-pointer ${isFiltered ? "!bg-primary text-white":null}`}>
+                            <FontAwesomeIcon icon={faFilter}/>
+                            <p className='font-header text-sm'>Filter</p>
                         </div>
-                    </button>):(
-                        null
-                    )
-                }
-                </div>
-            </form>
+                    </SheetTrigger>
+                    <SheetOverlay className="bg-gray-500/75 backdrop-blur-sm transition-all" />
+                    <SheetContent className="h-full flex-col flex">
+                    <div>
+                        <h1 className='font-header text-2xl text-primary'>User Filter</h1>
+                        <p className='text-md font-text text-unactive text-sm'>Categorize user with the given parameters</p>
+                    </div>
+
+                    <form onSubmit={filterformik.handleSubmit} className='flex-col flex gap-3'>
+                        <div className="inline-flex flex-col gap-1">
+                        <label htmlFor="division" className="font-header text-xs flex flex-row justify-between">
+                            <p className="text-xs font-text text-unactive">Division </p>
+                        </label>
+                        <div className="grid grid-cols-1">
+                            <select id="division" name="division" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                value={filterformik.values.division}
+                                onChange={filterformik.handleChange}
+                                onBlur={filterformik.handleBlur}
+                                >
+                                <option value=''>Select Division</option>
+                                {
+                                    division.map((division) => (
+                                        <option key={division.id} value={division.id}>{division.division_name}</option>
+                                    ))
+                                }
+                            </select>
+                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                            <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        </div>
+                        <div className="inline-flex flex-col gap-1">
+                        <label htmlFor="department" className="font-header text-xs flex flex-row justify-between">
+                            <p className="text-xs font-text text-unactive">Department </p>
+                        </label>
+                        <div className="grid grid-cols-1">
+                            <select id="department" name="department" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                value={filterformik.values.department}
+                                onChange={filterformik.handleChange}
+                                onBlur={filterformik.handleBlur}
+                                >
+                                <option value=''>Select Department</option>
+                                {
+                                    departments.map((department) => (
+                                        <option key={department.id} value={department.id}>{department.department_name}</option>
+                                    ))
+                                }
+                            </select>
+                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                            <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        </div>
+                        <div className="inline-flex flex-col gap-1">
+                        <label htmlFor="section" className="font-header text-xs flex flex-row justify-between">
+                            <p className="text-xs font-text text-unactive">Section</p>
+                        </label>
+                        <div className="grid grid-cols-1">
+                            <select id="section" name="section" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                value={filterformik.values.section}
+                                onChange={filterformik.handleChange}
+                                onBlur={filterformik.handleBlur}
+                                >
+                                <option value=''>Select Section</option>
+                                {
+                                    section.map((section) => (
+                                        <option key={section.id} value={section.id}>{section.section_name}</option>
+                                    ))
+                                }
+                            </select>
+                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                            <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        </div>
+                        <div className="inline-flex flex-col gap-1">
+                        <label htmlFor="city" className="font-header text-xs flex flex-row justify-between">
+                            <p className="text-xs font-text text-unactive">City</p>
+                        </label>
+                        <div className="grid grid-cols-1">
+                            <select id="city" name="city" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                value={filterformik.values.city}
+                                onChange={handleBranchesOptions}
+                                onBlur={filterformik.handleBlur}
+                                >
+                                <option value=''>Select Branch City</option>
+                                {
+                                    cities.map((city) => (
+                                        <option key={city.id} value={city.id}>{city.city_name}</option>
+                                    ))
+                                }
+                            </select>
+                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                            <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        </div>
+                        <div className="inline-flex flex-col gap-1">
+                        <label htmlFor="branch" className="font-header text-xs flex flex-row justify-between">
+                            <p className="text-xs font-text text-unactive">Location</p>
+                        </label>
+                        <div className="grid grid-cols-1">
+                            <select id="branch" name="branch" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                value={filterformik.values.branch}
+                                onChange={filterformik.handleChange}
+                                onBlur={filterformik.handleBlur}
+                                >
+                                <option value=''>Select Branch Location</option>
+                                {selectedBranches.map((branch) => (
+                                    <option key={branch.id} value={branch.id}>{branch.branch_name}</option>
+                                ))}
+                            </select>
+                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                            <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        </div>
+                        <div className='flex-row flex justify-between w-full py-1 gap-2 items-end'>
+                        <button type='submit' className={`w-full`}>
+                            <div className='px-3 py-2 flex flex-row justify-center gap-2 items-center bg-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 ease-in-out transition-all '>
+                                <p className='text-white font-header'>Filter</p>
+                                <FontAwesomeIcon icon={faFilter} className='text-white text-sm'/>
+                            </div>
+                        </button>
+                        {
+                            isFiltered ? (
+                            <button type='button' onClick={resetFilter}>
+                                <div className='aspect-square px-3 flex flex-row justify-center items-center border-2 border-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 ease-in-out transition-all '>
+                                    <FontAwesomeIcon icon={faXmark} className='text-primary text-sm'/>
+                                </div>
+                            </button>):(
+                                null
+                            )
+                        }
+                        </div>
+                    </form>
+
+                    </SheetContent>
+                </Sheet>
+            </div>
+            {/*  */}
 
 
             {/* Userlist Table */}
@@ -433,7 +509,7 @@ export default function UserManagementMaintenance() {
                 <table className='text-left w-full overflow-y-scroll'>
                     <thead className='font-header text-xs text-primary bg-secondaryprimary border-l-2 border-secondaryprimary'>
                         <tr>
-                            <th className='py-4 px-4 flex items-center flex-row gap-4'>
+                            <th className='py-4 px-4 flex items-center flex-row gap-4 w-2/7'>
                                  {/* Checkbox */}
                                     <div className="group grid size-4 grid-cols-1">
                                         <input
@@ -466,11 +542,11 @@ export default function UserManagementMaintenance() {
                                     </div>
                                     <p> EMPLOYEE NAME</p>
                             </th>
-                            <th className='py-4 px-4'>DIVISION</th>
-                            <th className='py-4 px-4'>DEPARTMENT</th>
-                            <th className='py-4 px-4'>SECTION</th>
-                            <th className='py-4 px-4'>LOCATION</th>
-                            <th className='py-4 px-4'></th>
+                            <th className='py-4 px-4  w-1/7'>DIVISION</th>
+                            <th className='py-4 px-4  w-1/7'>DEPARTMENT</th>
+                            <th className='py-4 px-4  w-1/7'>SECTION</th>
+                            <th className='py-4 px-4  w-1/7'>LOCATION</th>
+                            <th className='py-4 px-4  w-1/7'></th>
                         </tr>
                     </thead>
                     <tbody className='bg-white divide-y divide-divider'>
@@ -528,39 +604,53 @@ export default function UserManagementMaintenance() {
             <div className='row-start-5 row-span-1 col-start-1 col-span-4 border-t border-divider mx-5 py-3 flex flex-row items-center justify-between'>
                 {/* Total number of entries and only be shown */}
                 <div>
-                    <p className='text-sm font-text text-unactive'>
-                        Showing <span className='font-header text-primary'>{pageState.startNumber}</span> to <span className='font-header text-primary'>{pageState.endNumber}</span> of <span className='font-header text-primary'>{pageState.totalUsers}</span> <span className='text-primary'>results</span>
-                    </p>
+                    {
+                        !isLoading ? (
+                            <p className='text-sm font-text text-unactive'>
+                                Showing <span className='font-header text-primary'>{pageState.startNumber}</span> to <span className='font-header text-primary'>{pageState.endNumber}</span> of <span className='font-header text-primary'>{pageState.totalUsers}</span> <span className='text-primary'>results</span>
+                            </p>
+                        ) : (
+                            <p className='text-sm font-text text-unactive'>
+                                Retrieving Users.....
+                            </p>
+                        )
+                    }
+
                 </div>
                 {/* Paganation */}
                 <div>
-                    <nav className='isolate inline-flex -space-x-px round-md shadow-xs'>
-                        {/* Previous */}
-                        <a
-                            onClick={back}
-                            className='relative inline-flex items-center rounded-l-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
-                            <FontAwesomeIcon icon={faChevronLeft}/>
-                        </a>
+                    {
+                        !isLoading ? (
+                            <nav className='isolate inline-flex -space-x-px round-md shadow-xs'>
+                                {/* Previous */}
+                                <a
+                                    onClick={back}
+                                    className='relative inline-flex items-center rounded-l-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
+                                    <FontAwesomeIcon icon={faChevronLeft}/>
+                                </a>
 
-                        {/* Current Page & Dynamic Paging */}
-                        {Pages.map((page)=>(
-                            <a
-                                key={page}
-                                className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset
-                                    ${
-                                        page === pageState.currentPage
-                                        ? 'bg-primary text-white'
-                                        : 'bg-secondarybackground text-primary hover:bg-primary hover:text-white'
-                                    } transition-all ease-in-out`}
-                                    onClick={() => pageChange(page)}>
-                                {page}</a>
-                        ))}
-                        <a
-                            onClick={next}
-                            className='relative inline-flex items-center rounded-r-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
-                            <FontAwesomeIcon icon={faChevronRight}/>
-                        </a>
-                    </nav>
+                                {/* Current Page & Dynamic Paging */}
+                                {Pages.map((page)=>(
+                                    <a
+                                        key={page}
+                                        className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset
+                                            ${
+                                                page === pageState.currentPage
+                                                ? 'bg-primary text-white'
+                                                : 'bg-secondarybackground text-primary hover:bg-primary hover:text-white'
+                                            } transition-all ease-in-out`}
+                                            onClick={() => pageChange(page)}>
+                                        {page}</a>
+                                ))}
+                                <a
+                                    onClick={next}
+                                    className='relative inline-flex items-center rounded-r-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
+                                    <FontAwesomeIcon icon={faChevronRight}/>
+                                </a>
+                            </nav>
+                        ) : (null)
+                    }
+
                 </div>
             </div>
 

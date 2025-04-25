@@ -18,13 +18,17 @@ import {
     DrawerTitle,
     DrawerTrigger,
     } from "../components/ui/drawer"
+import AssignCourseAdminModalSuccessfully from "./AssignCourseAdminSuccessfullyModal";
 
-const AddAssignCourseAdmin = ({courseID ,open, close}) => {
+const AddAssignCourseAdmin = ({courseID ,open, close,}) => {
     const {departments, cities, branches, divisions ,sections} = useCourseContext()
     const [loading, setLoading] = useState(false)
     const [selectedBranches, setSelectedBranches] = useState([])
     const [filteredEmployee, setFilteredEmployee] = useState([])
     const [selectedCourseAdmin, setSelectedCourseAdmin] = useState([])
+    const [assiging, setAssigning] = useState(false)
+    const [assigned, setAssigned] = useState(false)
+    const [number, setNumber] = useState(0)
 
     useEffect(()=>{
         setIsFiltered(false)
@@ -54,7 +58,7 @@ const AddAssignCourseAdmin = ({courseID ,open, close}) => {
         onSubmit: (values) => {
             setLoading(true)
             console.log(values)
-            axiosClient.get(`/index-user?department_id[eq]=${values.department}&branch_id[eq]=${values.branch}`)
+            axiosClient.get(`/index-course-admins?department_id[eq]=${values.department}&branch_id[eq]=${values.branch}&division_id[eq]=${values.division}&section_id[eq]=${values.section}`)
             .then((response) => {
                 console.log(response.data.data)
                 setFilteredEmployee(response.data.data)
@@ -97,28 +101,44 @@ const AddAssignCourseAdmin = ({courseID ,open, close}) => {
     }
 
     const handleSelectedCourseAdmin = (e, id) => {
-        if (e.target.checked) {
-            setSelectedCourseAdmin((prev) => [...prev, id]);
-        } else {
-            setSelectedCourseAdmin((prev) => prev.filter((item) => item !== id));
-        }
+         // If event came from a checkbox, don't let it bubble to <tr>
+        e.stopPropagation();
+
+        // We check manually if the item is already selected
+        setSelectedCourseAdmin((prev) =>
+            prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+        );
     }
 
     const handleAssigningCourseAdmin = () => {
         const formattedData = selectedCourseAdmin.map(id => ({ user_id: id }));
+        setAssigning(true)
         axiosClient.post(`/assign-course-admin/${courseID}`, formattedData)
-        .then((response) => {console.log(response.data)})
+        .then((response) => {
+            console.log(response.data)
+            setAssigning(false)
+            setAssigned(true)
+            setNumber(selectedCourseAdmin.length)
+        })
         .catch((error) => {console.log(error)})
         //assign-course-admin/{course}'
         console.log(formattedData);
     }
 
+    const handleClose = () => {
+        setSelectedCourseAdmin([])
+        setFilteredEmployee([])
+        setAssigned(false)
+        close()
+    }
+
     return(
+        <>
         <Dialog open={open} onClose={()=>{}}>
-        <DialogBackdrop transition className="fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in z-20"/>
+        <DialogBackdrop transition className="backdrop-blur-sm fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in z-20"/>
             <div className='fixed inset-0 z-20 w-screen overflow-y-auto'>
                 <div className='flex min-h-full items-center justify-center p-4'>
-                    <DialogPanel transition className='z-20 relative overflow-hidden transform rounded-md w-3/4 bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in'>
+                    <DialogPanel transition className='z-20 relative overflow-hidden transform rounded-md w-5/6 bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in'>
                         <div className='bg-white rounded-md h-full p-5 flex flex-col'>
                            {/* Header */}
                             <div className="pt-2 pb-4 mx-4 border-b border-divider flex flex-col justify-between item-center">
@@ -266,15 +286,17 @@ const AddAssignCourseAdmin = ({courseID ,open, close}) => {
                                                 <thead className='font-header text-xs text-primary bg-secondaryprimary'>
                                                     <tr>
                                                         <th className='py-4 px-4'>EMPLOYEE NAME</th>
+                                                        <th className='py-4 px-4'>DIVISION</th>
                                                         <th className='py-4 px-4'>DEPARTMENT</th>
-                                                        <th className='py-4 px-4'>BRANCH</th>
+                                                        <th className='py-4 px-4'>SECTION</th>
+                                                        <th className='py-4 px-4'>LOCATION</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody className='bg-white divide-y divide-divider'>
                                                     {loading ? (
                                                         <tr className="font-text text-sm hover:bg-gray-200">
-                                                            <td colSpan={4} className="text-center py-3 px-4 font-text text-primary">
-                                                                Loading...
+                                                            <td colSpan={6} className="text-center py-3 px-4 font-text text-primary">
+                                                                Loading Eligable Course Admins...
                                                             </td>
                                                         </tr>
                                                     ) : (
@@ -288,7 +310,9 @@ const AddAssignCourseAdmin = ({courseID ,open, close}) => {
                                                                     name={`${employee.first_name} ${employee.middle_name || ""} ${employee.last_name} ${employee.name_suffix || ""}`.trim()}
                                                                     loading={loading}
                                                                     employeeID={employee.employeeID || "Not Available"}
+                                                                    division={employee.division?.division_name || "Not Available"}
                                                                     department={employee.department?.department_name || "Not Available"}
+                                                                    section={employee.section?.section_name || "Not Available"}
                                                                     title={employee.title?.title_name || "Not Available"}
                                                                     branch={employee.branch?.branch_name || "Not Available"}
                                                                     city={employee.city?.city_name || "Not Available"}
@@ -298,7 +322,7 @@ const AddAssignCourseAdmin = ({courseID ,open, close}) => {
                                                             ))
                                                         ) : (
                                                             <tr className="font-text text-sm hover:bg-gray-200">
-                                                                <td colSpan={4} className="text-center py-3 px-4 font-text text-primary">
+                                                                <td colSpan={6} className="text-center py-3 px-4 font-text text-primary">
                                                                     Filter first the course admin you want to add for the course
                                                                 </td>
                                                             </tr>
@@ -315,8 +339,12 @@ const AddAssignCourseAdmin = ({courseID ,open, close}) => {
                                         <p>Cancel</p>
                                     </div>
                                     <div className="flex flex-row justify-center items-center border-2 border-primary py-2 px-4 font-header bg-primary rounded-md text-white gap-2 w-full hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md"
-                                        onClick={handleAssigningCourseAdmin}>
-                                        <p>Add Course Admin</p>
+                                        onClick={assiging ? null : handleAssigningCourseAdmin}>
+                                            {
+                                                assiging ? (
+                                                    <p>Assiging...</p>
+                                                ) : (<p>Add Course Admin</p>)
+                                            }
                                     </div>
                                 </div>
                             </div>
@@ -325,6 +353,8 @@ const AddAssignCourseAdmin = ({courseID ,open, close}) => {
                 </div>
             </div>
     </Dialog>
+    <AssignCourseAdminModalSuccessfully open={assigned} close={handleClose} number={number}/>
+    </>
     )
 };
 

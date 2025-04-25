@@ -22,17 +22,17 @@ const UserSecEntyProps = ({user,name,employeeID,MBEmail,city,branch,division,sec
                         </td>
                         {/* Divison */}
                         <td className='py-3 px-4'>
-                            {division}
+                            <p className="text-unactive">{division}</p>
                         </td>
                         <td className='py-3 px-4'>
-                            {department}
+                            <p className="text-unactive">{department}</p>
                         </td>
                         <td className='py-3 px-4'>
-                            {section}
+                            <p className="text-unactive">{section}</p>
                         </td>
 
                         <td className='py-3 px-4'>
-                            {role}
+                            <p className="text-unactive">{role}</p>
                         </td>
 
                         {/* Last Login */}
@@ -43,7 +43,7 @@ const UserSecEntyProps = ({user,name,employeeID,MBEmail,city,branch,division,sec
                         <td className='py-3 px-4'>
                             <div className='flex gap-1 justify-end'>
                             <button
-                                    className='flex flex-row items-center justify-center gap-2 px-3 py-3 border border-primary rounded-md text-primary hover:bg-primary hover:text-white hover:scale-105 transition-all ease-in-out'
+                                    className='flex justify-center items-center aspect-square p-2 w-fit bg-white shadow-md border border-primary rounded-md text-primary hover:bg-primary cursor-pointer transition-all ease-in-out hover:text-white'
                                     onClick={(e) => edit(e,user)}>
                                 <FontAwesomeIcon icon={faUserPen}/>
                             </button>
