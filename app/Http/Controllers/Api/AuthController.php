@@ -63,7 +63,7 @@ class AuthController extends Controller
         }
 
         if(Auth::attempt($credentials)){
-            $user->update(['timeout_count' => 0]);
+            $user->update(['timeout_count' => 0, 'last_logged_in' => now()]);
             RateLimiter::clear($key);
             //Generate Login Token
             $token = $user->createToken('authToken')->plainTextToken;
