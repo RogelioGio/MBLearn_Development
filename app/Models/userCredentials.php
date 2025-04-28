@@ -28,6 +28,7 @@ class UserCredentials extends Model implements Authenticatable
     protected $fillable = [
         'MBemail',
         'password',
+        'last_logged_in',
         'user_info_id',
     ];
 
