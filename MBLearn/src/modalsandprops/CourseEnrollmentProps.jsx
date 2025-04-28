@@ -116,7 +116,7 @@ const CourseEnrollmentProps = ({course}) => {
                         (entry) => !(entry.userId === User.id && entry.courseId === course.id )
                     )
                 }else{
-                    return [...prevUsers, {userId: User.id, courseId: course.id, enrollerId: user.user_info_id }]
+                    return [...prevUsers, {userId: User.id, courseId: course.id, enrollerId: user.user_infos.id }]
                 }
             })
             setResults((prevCourses) => {

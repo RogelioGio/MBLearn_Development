@@ -366,7 +366,7 @@ class userInfo_controller extends Controller
             $query->where('id', $user_id);
         })
         ->where('status', '=', 'Active')
-        
+
         ->with('roles','division','section','department','title','branch','city')
         ->paginate($perPage);
 
@@ -380,15 +380,16 @@ class userInfo_controller extends Controller
 
     public function getAddedCourses(UserInfos $userInfos,Request $request){
 
-        $page = request()->input('page', 1);//Default page
-        $perPage = request()->input('perPage',5); //Number of entry per page
+        $page = $request->input('page', 1);//Default page
+        $perPage = $request->input('perPage',5); //Number of entry per page
 
         $courses = $userInfos->addedCourses()->with(['categories', 'types', 'training_modes'])->paginate($perPage);
         return response()->json([
             'data' => $courses->items(),
             'total' => $courses->total(),
             'lastPage' => $courses->lastPage(),
-            'currentPage' => $courses->currentPage()
+            'currentPage' => $courses->currentPage(),
+            'per' => $courses->perPage()
         ],200);
     }
 
@@ -487,9 +488,17 @@ class userInfo_controller extends Controller
         ]);
     }
 
-    public function getUserCourses(UserInfos $userInfos){
-        $courses = $userInfos->enrolledCourses()->with(['categories', 'types', 'training_modes'])->paginate(3);
-        return $courses;
+    public function getUserCourses(UserInfos $userInfos, Request $request){
+        $page = $request->input('page', 1); // default page
+        $perPage = $request->input('per_page', 8); // default per page
+
+        $courses = $userInfos->enrolledCourses()->with(['categories', 'types', 'training_modes'])->paginate($perPage);
+        return response() -> json([
+            'data' => $courses->items(),
+            'total' => $courses->total(),
+            'lastPage' => $courses->lastPage(),
+            'currentPage' => $courses->currentPage(),
+        ]);
     }
 
     /**

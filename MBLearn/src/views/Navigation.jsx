@@ -36,7 +36,7 @@ const navItems = {
         {icon:faUserLock, text:"System Access Maintenance", to:"/systemadmin/useraccountsmaintenance"},
         {icon:faGears, text:"System Configuration Maintenance", to:"/systemadmin/systemconfigurationmaintenance"},
         {icon:faChartPie, text:"System-Level Reports", to:"/systemadmin/systemlevelreports"},
-        {icon:faChartGantt, text:"Activity Logs", to:"/systemadmin/activitylogs"},
+        //{icon:faChartGantt, text:"Activity Logs", to:"/systemadmin/activitylogs"},
     ],
     "Course Admin": [
         {icon:faHouse, text:"Home", to:"/courseadmin/dashboard"},
@@ -44,11 +44,11 @@ const navItems = {
         // {icon:faBook, text:"My Course Maintenance", to:"/courseadmin/courselistmaintenance"},
         {icon:faPersonCirclePlus, text:"Enroll Trainee", to:"/courseadmin/bulkenrollment"},
         {icon:faChartPie, text:"Assigned Course Reports", to:"/courseadmin/coursereports"},
-        {icon:faUsersRays, text:"My Employees", to:"/courseadmin/myemployee"}
+        // {icon:faUsersRays, text:"My Employees", to:"/courseadmin/myemployee"}
     ],
     "Learner": [
         {icon:faHouse, text:"Home", to:"/learner/dashboard"},
-        {icon:faBook, text:"Courses Manager", to:"/learner/learnercoursemanager"},
+        {icon:faBook, text:"Courses Manager", to:"/learner/learnercoursemanager/#"},
         {icon:faMedal, text:"Certificates" , to:"/learner/learnercertificates"},
         {icon:faGraduationCap, text:"Self Enrollment", to:"/learner/learnerselfenrollment"},
     ]

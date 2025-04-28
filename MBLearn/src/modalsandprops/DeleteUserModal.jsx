@@ -7,7 +7,7 @@ import { useOption } from "../contexts/AddUserOptionProvider"
 import { useUser } from "../contexts/selecteduserContext"
 
 const DeleteUserModal = ({open,close,classname,EmployeeID,close_confirmation,updateTable}) => {
-    const {departments,titles,location,cities = []} = useOption()||{};
+    const {departments,titles,location,cities,division,section} = useOption()||{};
     const {selectUser, selectedUser, isFetching} = useUser()
     const [loading, setLoading] = useState(true)
     const [deleting, setDeleting] = useState(false)
@@ -78,46 +78,57 @@ const DeleteUserModal = ({open,close,classname,EmployeeID,close_confirmation,upd
                                             </div>
                                         ):(
                                             <div className="p-5">
-                                                <div className="grid grid-cols-3 pb-4">
+                                                <div className="grid grid-cols-3 pb-4 gap-4">
 
                                                     {/* Name */}
-                                                    <div className="row-start-2 col-span-2 py-2">
+                                                    <div className="row-start-2 col-span-3">
                                                         <p className="font-text text-xs text-unactive">Employee's Full Name</p>
                                                         <p className="font-text text-base">{selectedUser?.first_name || "Not Available"} {selectedUser?.middle_name || ""} {selectedUser?.last_name || ""} {selectedUser?.suffix || ""}</p>
                                                     </div>
 
                                                     {/* EmployeeID */}
-                                                    <div className="row-start-2 col-span-1 py-2 pl-4">
+                                                    <div className="row-start-3 col-span-1">
                                                         <p className="font-text text-xs text-unactive">Employee ID</p>
                                                         <p className="font-text text-base">{selectedUser?.employeeID}</p>
                                                     </div>
 
                                                     {/* System Role */}
-                                                    <div className="row-start-3 col-span-1 py-2">
-                                                        <p className="font-text text-xs text-unactive">Employee's Account Role</p>
+                                                    <div className="row-start-3 col-span-1">
+                                                        <p className="font-text text-xs text-unactive">Account Role</p>
                                                         <p className="font-text text-base">{selectedUser?.roles?.[0]?.role_name || "N/a"}</p>
                                                     </div>
 
-                                                    {/* Department */}
-                                                    <div className="row-start-3 col-start-2 py-2 pl-4">
-                                                        <p className="font-text text-xs text-unactive">Department</p>
-                                                        <p className="font-text text-base">{selectedUser?.department_id ? departments.find(dept => dept.id === selectedUser.department_id)?.department_name || "No department" : "No department"}</p>
-                                                    </div>
-
-
                                                     {/* Job Title*/}
-                                                    <div className="row-start-3 col-start-3 py-2 pl-4">
+                                                    <div className="row-start-3 col-start-3">
                                                         <p className="font-text text-xs text-unactive">Title</p>
                                                         <p className="font-text text-base">{selectedUser?.title_id ? titles.find(title => title.id === selectedUser.title_id)?.title_name || "No Title" : "No Title"}</p>
                                                     </div>
 
+                                                     {/* Department */}
+                                                    <div className="row-start-4 col-start-1">
+                                                        <p className="font-text text-xs text-unactive">Division</p>
+                                                        <p className="font-text text-base">{selectedUser?.division_id ? division.find(div => div.id === selectedUser.division_id)?.division_name || "No Division" : "No Division"}</p>
+                                                    </div>
+
+                                                    {/* Department */}
+                                                    <div className="row-start-4 col-start-2">
+                                                        <p className="font-text text-xs text-unactive">Department</p>
+                                                        <p className="font-text text-base">{selectedUser?.department_id ? departments.find(dept => dept.id === selectedUser.department_id)?.department_name || "No department" : "No department"}</p>
+                                                    </div>
+
+                                                    {/* Department */}
+                                                    <div className="row-start-4 col-start-3">
+                                                        <p className="font-text text-xs text-unactive">Section</p>
+                                                        <p className="font-text text-base">{selectedUser?.section_id ? section.find(sect => sect.id === selectedUser.section_id)?.section_name || "No Section" : "No Section"}</p>
+                                                    </div>
+
                                                     {/* City */}
-                                                    <div className="row-start-4 col-start-1 py-2">
+                                                    <div className="row-start-5 col-start-1">
                                                         <p className="font-text text-xs text-unactive">City</p>
                                                         <p className="font-text text-base">{selectedUser?.city.id ? cities.find(city => city.id === selectedUser.city.id)?.city_name || "No city" : "No city"}</p>
                                                     </div>
                                                     {/* Branch*/}
-                                                    <div className="row-start-4 col-span-2 py-2 pl-4">
+                                                    <div className="row-start-5 col-span-2">
                                                         <p className="font-text text-xs text-unactive">Branch</p>
                                                         <p className="font-text text-base">{selectedUser?.branch_id ? location.find(location => location.id === selectedUser.branch_id)?.branch_name || "No Branch" : "No Branch"}</p>
                                                     </div>

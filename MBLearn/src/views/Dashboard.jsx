@@ -36,11 +36,16 @@ const DashboardLayout = ({role,name,user}) => {
                 <div className='col-span-3 row-span-1 px-5 py-2 w-full h-full'>
                     <AnnouncmentCarousel/>
                 </div>
-                <div className='col-span-1 row-span-1 pb-2 pt-5 mr-5 '>
-                        <div className='bg-white w-full h-full rounded-md shadow-md p-5'>
-
-                        </div>
+                <div className='col-span-1 row-span-1 pr-5 py-2 grid grid-cols-1 grid-rows-[min-content_1fr]'>
+                    <div className="pb-3">
+                        <p className="font-header text-primary text-base">Calendar</p>
+                        <p className="font-text text-unactive text-xs">Stay organized by tracking schedule and activities</p>
                     </div>
+                    <div className="bg-white w-full h-full rounded-md shadow-md border-2 border-primary">
+
+                    </div>
+                </div>
+
 
                 {/* Changing Content */}
                 {/* <div className='col-span-3 row-start-3 ml-5 pr-2 pt-2 pb-5'>
