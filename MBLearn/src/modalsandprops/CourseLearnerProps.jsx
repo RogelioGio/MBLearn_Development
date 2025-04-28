@@ -12,7 +12,7 @@ const CourseLearnerProps = ({course}) => {
     // Tab
     const [tab, setTab] = useState(1);
     const [learners, setLearners] = useState([]);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         setLoading(true);
@@ -69,7 +69,7 @@ const CourseLearnerProps = ({course}) => {
                 </div>
 
                 {/* Learners */}
-                <div className='col-span-4 flex flex-col py-3'>
+                <div className='col-span-4 flex flex-col'>
                     <div className="w-full border-primary border rounded-md overflow-hidden shadow-md">
                         <table className='text-left w-full overflow-y-scroll'>
                         <thead className='font-header text-xs text-primary bg-secondaryprimary'>
@@ -85,8 +85,8 @@ const CourseLearnerProps = ({course}) => {
                         <tbody className='bg-white divide-y divide-divider'>
                             {
                                 loading ? (
-                                    Array.from({ length: 4 }, (_, index) => (
-                                        <tr className='font-text text-sm hover:bg-gray-200' onClick={() => click(employeeID)}>
+                                    Array.from({ length: 5 }, (_, index) => (
+                                        <tr className='font-text text-sm hover:bg-gray-200 animate-pulse' onClick={() => click(employeeID)}>
                                             <td className='text-sm  py-3 px-4'>
                                                 <div className='flex items-center gap-2'>
                                                     {/* User Image */}
@@ -94,46 +94,33 @@ const CourseLearnerProps = ({course}) => {
                                                         {/* //<img src={profile_url} alt="" className='rounded-full'/> */}
                                                     </div>
                                                     {/* Name and employee-id*/}
-                                                    <div>
-                                                        <p className='font-text'>SampleName</p>
-                                                        <p className='text-unactive text-xs'>ID: 1234567789</p>
+                                                    <div className='w-3/4 flex flex-col gap-2'>
+                                                        <div className='h-4 w-full bg-gray-300 rounded-full'></div>
+                                                        <div className='h-4 w-1/2 bg-gray-300 rounded-full'></div>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td className='py-3 px-4'>
-                                                <p className='text-unactive'>Division</p>
+                                                <div className='h-4 w-full bg-gray-300 rounded-full'></div>
                                             </td>
                                             <td className='py-3 px-4'>
-                                                <div className='flex flex-col'>
-                                                    {/* Department */}
-                                                    <p className='text-unactive'>IT</p>
-                                                    {/* Title */}
-                                                    <p className='text-unactive text-xs'>Developer</p>
+                                                <div className='flex flex-col gap-2'>
+                                                <div className='h-4 w-full bg-gray-300 rounded-full'></div>
+                                                <div className='h-4 w-1/2 bg-gray-300 rounded-full'></div>
                                                 </div>
                                             </td>
                                             <td className='py-3 px-4'>
-                                            <p className='text-unactive'>Section</p>
+                                                <div className='h-4 w-full bg-gray-300 rounded-full'></div>
                                             </td>
                                             <td className='py-3 px-4'>
-                                                <div className='flex flex-col'>
-                                                {/* Branch Location */}
-                                                <p className='text-unactive'>General Santos</p>
-                                                {/* City Location */}
-                                                <p className='text-unactive text-xs'>Novaliches</p>
+                                            <div className='flex flex-col gap-2'>
+                                                <div className='h-4 w-full bg-gray-300 rounded-full'></div>
+                                                <div className='h-4 w-1/2 bg-gray-300 rounded-full'></div>
                                                 </div>
                                             </td>
-                                            <td className='py-3 px-4 flex flex-row gap-2'>
-                                                <RingProgress
-                                                    size={35} // Diameter of the ring
-                                                    roundCaps
-                                                    thickness={4} // Thickness of the progress bar
-                                                    sections={[{ value: stat.progress, color: "blue" }]} // Lighter blue progress
-                                                    rootColor="hsl(218, 97%, 15%)" // Darker blue track
-                                                    />
-                                                <div>
-                                                    <p className='font-header'>{stat.progress}%</p>
-                                                    <p className='font-text text-xs'>Employee Progress</p>
-                                                </div>
+                                            <td className='py-3 px-4 flex flex-col gap-2'>
+                                                <div className='h-4 w-full bg-gray-300 rounded-full'></div>
+                                                <div className='h-4 w-1/2 bg-gray-300 rounded-full'></div>
                                             </td>
                                             </tr>
                                     ))
@@ -155,12 +142,12 @@ const CourseLearnerProps = ({course}) => {
                                                 {/* Name and employee-id*/}
                                                 <div>
                                                     <p className='font-text'>{learner.first_name} {learner.middle_name} {learner.last_name} {learner.suffix_name}</p>
-                                                    <p className='text-unactive text-xs'>{learner.employeeID}</p>
+                                                    <p className='text-unactive text-xs'>ID: {learner.employeeID}</p>
                                                 </div>
                                             </div>
                                         </td>
                                         <td className='py-3 px-4'>
-                                            <p className='text-unactive'>Division</p>
+                                            <p className='text-unactive'>{learner.division?.division_name}</p>
                                         </td>
                                         <td className='py-3 px-4'>
                                             <div className='flex flex-col'>
@@ -171,7 +158,7 @@ const CourseLearnerProps = ({course}) => {
                                             </div>
                                         </td>
                                         <td className='py-3 px-4'>
-                                        <p className='text-unactive'>Section</p>
+                                        <p className='text-unactive'>{learner.section?.section_name}</p>
                                         </td>
                                         <td className='py-3 px-4'>
                                             <div className='flex flex-col'>

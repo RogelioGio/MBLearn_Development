@@ -47,10 +47,10 @@ const navItems = {
         {icon:faUsersRays, text:"My Employees", to:"/courseadmin/myemployee"}
     ],
     "Learner": [
-        {icon:faHouse, text:"Home"},
-        {icon:faBook, text:"My Courses"},
-        {icon:faMedal, text:"Certificates"},
-        {icon:faBookOpen, text:"Course Catalog"},
+        {icon:faHouse, text:"Home", to:"/learner/dashboard"},
+        {icon:faBook, text:"Courses Manager", to:"/learner/learnercoursemanager"},
+        {icon:faMedal, text:"Certificates" , to:"/learner/learnercertificates"},
+        {icon:faGraduationCap, text:"Self Enrollment", to:"/learner/learnerselfenrollment"},
     ]
 }
 

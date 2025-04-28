@@ -27,6 +27,9 @@ import SelectUser from "./views/SelectedUser";
 import { SelectedCourseProvider } from "./contexts/selectedcourseContext";
 import CsvToJson from "./views/CsvToJson";
 import AccountSettings from "./views/AccountSetting";
+import LearnerCourseManager from "./views/LearnerCourseManager";
+import LearnerCertficates from "./views/LearnerCertificates";
+import LearnerSelfEnrollment from "./views/LearnerSelfEnrollment";
 
 const router = createBrowserRouter([
 
@@ -148,6 +151,22 @@ const router = createBrowserRouter([
                         element: <Dashboard/>
                     },
                     {
+                        path: "learnercoursemanager",
+                        element: <SelectedCourseProvider>
+                                    <CourseListProvider>
+                                        <LearnerCourseManager/>
+                                    </CourseListProvider>
+                            </SelectedCourseProvider>
+                    },
+                    {
+                        path: "learnercertificates",
+                        element: <LearnerCertficates/>
+                    },
+                    {
+                        path: "learnerselfenrollment",
+                        element: <LearnerSelfEnrollment/>
+                    },
+                    {
                         path:"course/:id",
                         element:
                         <SelectedCourseProvider>
@@ -156,6 +175,7 @@ const router = createBrowserRouter([
                             </CourseListProvider>
                         </SelectedCourseProvider>
                     },
+
                 ]
             },
         ]

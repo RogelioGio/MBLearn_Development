@@ -50,38 +50,45 @@ const LearnerDashboard = ({name,user}) => {
                     <h1 className="font-header text-primary text-base">Enrolled Courses</h1>
                     <p className="font-text text-unactive text-xs">View all your enrolled courses in one place and stay on top of your learning journey.</p>
                 </div>
-                <div className="w-full h-full grid grid-cols-4 grid-rows-1 gap-2">
-                    {
-                        enrolled.map((course) => {
-                            return (
-                                <div className="bg-white border border-divider w-full h-full shadow-md rounded-md hover:scale-105 hover:cursor-pointer flex flex-col transition-all ease-in-out" onClick={() => navigate(`/learner/course/${course.id}`)}>
-                                    <div className="flex justify-start bg-gradient-to-b from-[hsl(239,94%,19%)] via-[hsl(214,97%,27%)] to-[hsl(201,100%,36%)] w-full h-2/5 rounded-t-md p-2">
-                                        {/* Thumbnail */}
-                                        <div>
-                                    {
-                                        course.training_type ? (<span className="inline-flex items-center rounded-md bg-white px-2 py-1 text-xs font-medium text-primary font-text">
-                                            {course.training_type}
-                                        </span>)
-                                        :(null)
-                                    }
+                {
+                    enrolled.length > 0 ? (
+                        <div className="w-full h-full grid grid-cols-4 grid-rows-1 gap-2">
+                            {
+                                enrolled.map((course) => {
+                                    return (
+                                        <div className="bg-white border border-divider w-full h-full shadow-md rounded-md hover:scale-105 hover:cursor-pointer flex flex-col transition-all ease-in-out" onClick={() => navigate(`/learner/course/${course.id}`)}>
+                                            <div className="flex justify-start bg-gradient-to-b from-[hsl(239,94%,19%)] via-[hsl(214,97%,27%)] to-[hsl(201,100%,36%)] w-full h-2/5 rounded-t-md p-2">
+                                                {/* Thumbnail */}
+                                                <div>
+                                            {
+                                                course.training_type ? (<span className="inline-flex items-center rounded-md bg-white px-2 py-1 text-xs font-medium text-primary font-text">
+                                                    {course.training_type}
+                                                </span>)
+                                                :(null)
+                                            }
+                                                </div>
+                                            </div>
+                                            <div className="border w-full h-full p-3 grid grid-cols-1 grid-rows-[min-content_1fr_1fr]">
+                                                <div className="flex flex-col justify-center">
+                                                    <p className="font-header text-sm text-primary">{course.name}</p>
+                                                    <p className="font-text text-unactive text-xs">{course.types[0]?.type_name} - {course.categories[0]?.category_name}</p>
+                                                </div>
+                                                <div className="flex flex-col justify-center">
+                                                    <p className="font-text text-unactive text-xs">Deadline: MMMM/DD/YYYY </p>
+                                                </div>
+                                                {/* Prgress */}
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="border w-full h-full p-3 grid grid-cols-1 grid-rows-[min-content_1fr_1fr]">
-                                        <div className="flex flex-col justify-center">
-                                            <p className="font-header text-sm text-primary">{course.name}</p>
-                                            <p className="font-text text-unactive text-xs">{course.types[0]?.type_name} - {course.categories[0]?.category_name}</p>
-                                        </div>
-                                        <div className="flex flex-col justify-center">
-                                            <p className="font-text text-unactive text-xs">Deadline: MMMM/DD/YYYY </p>
-                                        </div>
-                                        {/* Prgress */}
-                                    </div>
-                                </div>
-                            )
-                        })
-                    }
-
-                </div>
+                                    )
+                                })
+                            }
+                        </div>
+                    ) : (
+                        <div className="w-full h-full flex items-center justify-center gap-2">
+                            <p className="text-unactive font-text">No Courses Enrolled Yet</p>
+                        </div>
+                    )
+                }
             </div>
 
 
