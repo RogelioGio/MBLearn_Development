@@ -34,6 +34,8 @@ class updateUserInfo extends FormRequest
             'department_id' => 'required|integer|exists:departments,id',
             'title_id' => 'required|integer|exists:titles,id',
             'branch_id' => 'required|integer|exists:branches,id',
+            "section_id" => "required|integer|exists:sections,id",
+            "division_id" => "required|integer|exists:divisions,id",
             'status' => 'nullable|in:Active, Inactive',
         ];
     }

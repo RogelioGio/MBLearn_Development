@@ -548,16 +548,27 @@ class userInfo_controller extends Controller
         $title = Title::query()->find($existingatedData['title_id']);
         $department = Department::query()->find($existingatedData['department_id']);
         $branch = Branch::query()->find($existingatedData['branch_id']);
+        $section = Section::query()->find($existingatedData['section_id']);
+        $division = Division::query()->find($existingatedData['division_id']);
 
         if(!$userInfos){
             return response()->json(['message' => 'User not found'], 404);
         }
         $userInfos->branch()->associate($branch);
         $userInfos->title()->associate($title);
+        $userInfos->section()->associate($section);
+        $userInfos->division()->associate($division);
         $userInfos->department()->associate($department);
         $userInfos->save();
 
-        $userInfos->update($existingatedData);
+        $userInfos->update([
+            "employeeID" => $existingatedData['employeeID'],
+            "first_name" => $existingatedData['first_name'],
+            "last_name" => $existingatedData['last_name'],
+            "middle_name" => $existingatedData['middle_name'],
+            "name_suffix" => $existingatedData['name_suffix'],
+            "status" => $existingatedData['status']
+        ]);
         //Update UserInfo
         return response()->json([
             "Message" => 'Updated User',
@@ -616,17 +627,11 @@ class userInfo_controller extends Controller
 
     public function test(Request $request){
         $user_id = $request->user();
-        $arrays = $user_id->permissionsRole->toArray();
-        $perm_names = [];
-        $accept = false;
-        foreach($arrays as $array){
-            $perm_names[] = $array["permission_name"];
-        }
-        if(in_array("AddFormInput", $perm_names)){
-            $accept = true;
-        }
+        $time = now();
+        $user_id->update(['last_logged_in' => now()]);
         return response()->json([
-            "message" => $accept
+            "time" => $time,
+            "user" => $user_id
         ]);
     }
 }
