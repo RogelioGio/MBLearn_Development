@@ -22,6 +22,7 @@
     .profile-menu-item {
         @apply flex items-center place-content-between gap-4 font-text text-text_unhover min-w-max cursor-pointer hover:text-white transition-all ease-in-out;
     }
+
 }
 
 /* index.css or styles.css */
