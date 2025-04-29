@@ -138,7 +138,7 @@ export default function BulkEnrollment() {
                     (entry) => !(entry.userId === User.id && entry.courseId === course.id )
                 )
             }else{
-                return [...prevUsers, {userId: User.id, courseId: course.id, enrollerId: user.user_info_id }]
+                return [...prevUsers, {userId: User.id, courseId: course.id, enrollerId: user.user_infos.id, deadline: "2025-06-01" }]
             }
         })
         setResults((prevCourses) => {

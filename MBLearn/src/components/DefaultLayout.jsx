@@ -88,8 +88,10 @@ export default function DefaultLayout() {
         .then(({data})=>{
             setUser(data)
             setLoading(false)
+
         }).catch((e)=>{
-            console.error(e)
+            setLoading(false)
+            localStorage.removeItem('ACCESS_TOKEN');
         })
     },[])
 

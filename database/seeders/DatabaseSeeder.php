@@ -43,10 +43,6 @@ class DatabaseSeeder extends Seeder
             'first_name' => 'Jericho',
             'last_name' => 'Ilanga',
             'middle_name'=> 'S.',
-            'department'=> 'IT Department',
-            'title'=> 'title',
-            'branch'=> 'Novaliches',
-            'city'=> 'Quezon City',
             'status'=> 'Active',
             'profile_image'=> 'https://ui-avatars.com/api/?name=System+Admin&color=ffffff&background=03045e&bold=true&size=400',
         ]);

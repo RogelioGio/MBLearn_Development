@@ -328,14 +328,19 @@ export default function UserManagementMaintenance() {
 
             {/* Add Button */}
             <div className='col-start-4 row-start-1 flex flex-col justify-center pl-5 mr-5 border-divider border-b'>
-                {
+                {/* {
                     user.user_infos.permissions?.some((permission)=> permission.permission_name === "AddUserInfo") ? (
                         <button className='inline-flex flex-row shadow-md items-center justify-center bg-primary font-header text-white text-base p-4 rounded-full hover:bg-primaryhover hover:scale-105 transition-all ease-in-out' onClick={() => toggleModal("isOpenAdd",true)}>
                             <FontAwesomeIcon icon={faUserPlus} className='mr-2'/>
                             <p>Add User</p>
                         </button>
                     ) : (null)
-                }
+                } */}
+
+                <button className='inline-flex flex-row shadow-md items-center justify-center bg-primary font-header text-white text-base p-4 rounded-full hover:bg-primaryhover hover:scale-105 transition-all ease-in-out' onClick={() => toggleModal("isOpenAdd",true)}>
+                            <FontAwesomeIcon icon={faUserPlus} className='mr-2'/>
+                            <p>Add User</p>
+                        </button>
 
 
             </div>
