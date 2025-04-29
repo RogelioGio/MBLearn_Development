@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\BulkFormInput;
 use App\Models\Section;
 use App\Http\Requests\StoreSectionRequest;
 use App\Http\Requests\UpdateSectionRequest;
@@ -25,6 +26,17 @@ class SectionController extends Controller
     {
         $validated = $request->validated();
         return Section::create($validated);
+    }
+
+    public function bulkStore(BulkFormInput $request){
+        $bulk = $request->validated();
+        $test = [];
+        foreach($bulk as $index => $output){
+            $test[] = Section::create(['section_name' => $output["forminputname"]]);
+        }
+        return response()->json([
+            "Sections" => $test
+        ]);
     }
 
     /**

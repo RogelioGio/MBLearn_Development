@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\BulkFormInput;
 use App\Models\Title;
 use App\Http\Requests\StoreTitleRequest;
 use App\Http\Requests\UpdateTitleRequest;
@@ -25,6 +26,17 @@ class TitleController extends Controller
     {
         $title = Title::create($request->validated());
         return $title;
+    }
+
+    public function bulkStore(BulkFormInput $request){
+        $bulk = $request->validated();
+        $test = [];
+        foreach($bulk as $index => $output){
+            $test[] = Title::create(['title_name' => $output["forminputname"]]);
+        }
+        return response()->json([
+            "Titles" => $test
+        ]);
     }
 
     /**

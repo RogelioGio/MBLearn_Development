@@ -32,7 +32,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function(){
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', function (Request $request) {
-        return $request->user()->load(['userInfos.permissions','userInfos.roles',]);
+        return $request->user()->load(['userInfos', 'userInfos.permissions','userInfos.roles',]);
     });
     //test purposes amd account implementation (postman testing)
     // Route::post('/add-test-user', [UserController::class, 'addTestUser']);
@@ -97,16 +97,24 @@ Route::middleware('auth:sanctum')->group(function(){
     //Form Input API
     Route::apiResource('/courses', CourseController::class);
     Route::apiResource('/categories', CategoryController::class);
+    Route::post('/categories/bulk', [CategoryController::class, 'bulkStore']);
     Route::apiResource('/modes', Training_ModeController::class);
     Route::apiResource('/types', TypeController::class);
+    Route::post('types/bulk', [TypeController::class, 'bulkStore']);
     Route::apiResource('/subgroups', SubgroupController::class);
     Route::apiResource('/cities', CityController::class);
+    Route::post('/cities/bulk', [CityController::class, 'bulkStore']);
     Route::apiResource('/departments', DepartmentController::class);
+    Route::post('/departments/bulk', [DepartmentController::class, 'bulkStore']);
     Route::apiResource('/branches', BranchController::class);
+    Route::post('/branches/bulk', [BranchController::class, 'bulkStore']);
     Route::apiResource('/titles', TitleController::class);
+    Route::post('/titles/bulk', [TitleController::class, 'bulkStore']);
     Route::apiResource('/subgroups', SubgroupController::class);
     Route::apiResource('/divisions', DivisionController::class);
+    Route::post('/divisions/bulk', [DivisionController::class, 'bulkStore']);
     Route::apiResource('/sections', SectionController::class);
+    Route::post('/sections/bulk', [SectionController::class, 'bulkStore']);
     Route::apiResource('/permissions', PermissionController::class);
 
     //Assigning Course Admin to Course
@@ -116,6 +124,7 @@ Route::middleware('auth:sanctum')->group(function(){
 
     //Role API (get and post with /roles, get, put, and delete with /roles/{roleid} every api resource is same as this)
     Route::apiResource('/roles', RoleController::class);
+    Route::post('/roles/bulk', [RoleController::class, 'bulkStore']);
     Route::get('/rolepermissions/{role}', [RoleController::class, 'showRolePermissions']);
 
     //Fetching All Option for dropdown

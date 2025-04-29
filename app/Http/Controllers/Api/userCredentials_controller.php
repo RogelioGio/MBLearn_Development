@@ -75,7 +75,7 @@ class userCredentials_controller extends Controller
 
         $page = $request->input('page', 1);//Default page
         $perPage = $request->input('perPage',5); //Number of entry per page
-        $currentUserId = $request->user()->id;
+        $currentUserId = $request->user()->userInfos->id;
 
         // $userCredentials = UserCredentials::with(['userInfos', 'userInfos.roles'])->paginate($perPage);
 
@@ -175,10 +175,6 @@ class userCredentials_controller extends Controller
     public function findUser_Creds(UserCredentials $userCredentials){
         return $userCredentials->load(['userInfos', 'userInfos.roles', 'userInfos.city', 'userInfos.branch',
         'userInfos.department', 'userInfos.section', 'userInfos.division', 'userInfos.title']);
-    }
-
-    public function showEnrolledCourses(UserCredentials $userCredentials){
-        return CourseResource::collection($userCredentials->enrolledCourses);
     }
 
     //find by employeeID in the user maintenance management
