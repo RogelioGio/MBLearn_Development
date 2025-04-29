@@ -12,7 +12,7 @@ import EditUserCredsModal from "./EditUserCredsModal"
 import EdituserErrorModal from "./EdituserErrorModal"
 
 const EditUserModal = ({open, close, classname, ID, close_confirmation}) =>{
-    const { roles = [], departments = [], titles = [], location = [], cities = [], } = useOption() || {};
+    const { roles = [], departments = [], titles = [], location = [], cities = [], division, section} = useOption() || {};
     const {selectedUser, selectUser, isFetching} = useUser();
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState();
@@ -60,7 +60,9 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation}) =>{
                 first_name: 'Loading...',
                 middle_name: 'Loading...',
                 last_name: 'Loading...',
+                division: 'loading...',
                 department_id: 'Loading...',
+                section:'Loading...',
                 title_id: 'Loading...',
                 branch_id: 'Loading...',
                 city: 'Loading...',
@@ -71,7 +73,9 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation}) =>{
                 first_name: selectedUser?.first_name || '',
                 middle_name: selectedUser?.middle_name || '',
                 last_name: selectedUser?.last_name || '',
+                division_id: selectedUser?.division_id || '',
                 department_id: selectedUser?.department_id || '',
+                section_id: selectedUser?.section_id || '',
                 title_id: selectedUser?.title_id || '',
                 branch_id: selectedUser?.branch_id || '',
                 city: selectedUser?.city?.id || '',
@@ -146,9 +150,9 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation}) =>{
                                                 <p className="px-40 py-32 self-center font-text text-unactive">Loading User Information....</p>
                                             ) :
                                             (
-                                                <form onSubmit={formik.handleSubmit} className="grid grid-cols-3 gap-y-2 py-4 w-full">
+                                            <form onSubmit={formik.handleSubmit} className="grid grid-cols-3 gap-y-2 py-4 w-full">
                                             {/* Name */}
-                                            <div className="gap-2 row-start-2 col-span-3 pr-2 grid grid-cols-[auto_auto_auto_min-content] grid-row-1">
+                                            <div className="gap-2 row-start-2 col-span-3 grid grid-cols-[auto_auto_auto_min-content] grid-row-1">
                                                 <div className="inline-flex flex-col justify-between">
                                                     <label htmlFor="first_name" className="font-text text-xs flex flex-row justify-between">
                                                         <p>First Name: </p>
@@ -189,7 +193,7 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation}) =>{
                                                         {formik.touched.last_name && formik.errors.last_name ? (<div className="text-red-500 text-xs font-text">{formik.errors.last_name}</div>):null}
                                                     </div>
                                                 </div>
-                                                <div className="inline-flex flex-col justify-between">
+                                                <div className="inline-flex flex-col justify-between w-10">
                                                     <label htmlFor="suffix" className="font-text text-xs flex flex-row justify-between">
                                                         <p>Suffix: </p>
                                                     </label>
@@ -203,25 +207,78 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation}) =>{
                                                 </div>
                                             </div>
 
-                                            {/* EmployeeID */}
-                                            <div className="inline-flex flex-col gap-2 row-start-3 col-start-1 pr-2">
-                                                <label htmlFor="employeeID" className="font-text text-xs flex flex-row justify-between">
-                                                    <p>Employee ID</p>
-                                                </label>
-                                                <input type="text" name="employeeID"
-                                                        value={formik.values.employeeID}
-                                                        onChange={formik.handleChange}
-                                                        onBlur={formik.handleBlur}
-                                                        disabled={loading}
-                                                        className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
+                                            <div className="gap-x-2 row-start-3 col-span-3 grid grid-cols-2 grid-row-1">
+                                                 {/* EmployeeID */}
+                                                <div className="inline-flex flex-col gap-2 col-start-1">
+                                                    <label htmlFor="employeeID" className="font-text text-xs flex flex-row justify-between">
+                                                        <p>Employee ID</p>
+                                                    </label>
+                                                    <input type="text" name="employeeID"
+                                                            value={formik.values.employeeID}
+                                                            onChange={formik.handleChange}
+                                                            onBlur={formik.handleBlur}
+                                                            disabled={loading}
+                                                            className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
+                                                    <div className="h-4">
+                                                        {formik.touched.employeeID && formik.errors.employeeID ? (<div className="text-red-500 text-xs font-text">{formik.errors.employeeID}</div>):null}
+                                                    </div>
+                                                </div>
+
+                                                {/* Job Title */}
+                                                <div className="inline-flex flex-col gap-2 col-span-1">
+                                                {/* Must be dropdown */}
+                                                <label htmlFor="title" className="font-text text-xs">Title:</label>
+                                                <div className="grid grid-cols-1">
+                                                            <select id="title_id" name="title_id" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                                                value={formik.values.title_id}
+                                                                onChange={formik.handleChange}
+                                                                onBlur={formik.handleBlur}
+                                                                disabled={loading}>
+                                                            <option value="">Select Posistion</option>
+                                                                {
+                                                                    titles.map((title) => (
+                                                                        <option key={title.id} value={title.id}>{title.title_name}</option>
+                                                                    ))
+                                                                }
+                                                            </select>
+                                                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                                            <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                                            </svg>
+                                                    </div>
                                                 <div className="h-4">
-                                                    {formik.touched.employeeID && formik.errors.employeeID ? (<div className="text-red-500 text-xs font-text">{formik.errors.employeeID}</div>):null}
+                                                    {formik.touched.title_id && formik.errors.title_id ? (<div className="text-red-500 text-xs font-text">{formik.errors.title_id}</div>):null}
+                                                </div>
+                                            </div>
+                                            </div>
+
+                                            {/* Division */}
+                                            <div className="inline-flex flex-col gap-2 row-start-4 col-span-1 pr-2">
+                                                {/* Must be dropdown */}
+                                                <label htmlFor="division" className="font-text text-xs flex">Division:</label>
+                                                <div className="grid grid-cols-1">
+                                                            <select id="division_id" name="division_id" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                                                value={formik.values.division_id}
+                                                                onChange={formik.handleChange}
+                                                                onBlur={formik.handleBlur}
+                                                                disabled={loading}>
+                                                                <option value="">Select Division</option>
+                                                                {
+                                                                    division.map((division) => (
+                                                                        <option key={division.id} value={division.id}>{division.division_name}</option>
+                                                                    ))
+                                                                }
+                                                            </select>
+                                                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                                            <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                                            </svg>
+                                                        </div>
+                                                <div className="h-4">
+                                                    {formik.touchdivision_id && formik.errors.division_id ? (<div className="text-red-500 text-xs font-text">{formik.errors.division_id}</div>):null}
                                                 </div>
                                             </div>
 
-
                                             {/* Department */}
-                                            <div className="inline-flex flex-col gap-2 row-start-3 col-span-1 pr-2">
+                                            <div className="inline-flex flex-col gap-2 row-start-4 col-span-1 pr-2">
                                                 {/* Must be dropdown */}
                                                 <label htmlFor="department" className="font-text text-xs flex">Deparment:</label>
                                                 <div className="grid grid-cols-1">
@@ -246,87 +303,90 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation}) =>{
                                                 </div>
                                             </div>
 
-                                            {/* Job Title */}
-                                            <div className="inline-flex flex-col gap-2 row-start-3 col-span-1">
+                                            {/* Section */}
+                                            <div className="inline-flex flex-col gap-2 row-start-4 col-span-1 pr-2">
                                                 {/* Must be dropdown */}
-                                                <label htmlFor="title" className="font-text text-xs">Title:</label>
+                                                <label htmlFor="section_id" className="font-text text-xs flex">Section:</label>
                                                 <div className="grid grid-cols-1">
-                                                            <select id="title_id" name="title_id" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                                                                value={formik.values.title_id}
+                                                            <select id="section_id" name="section_id" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                                                value={formik.values.section_id}
                                                                 onChange={formik.handleChange}
                                                                 onBlur={formik.handleBlur}
                                                                 disabled={loading}>
-                                                            <option value="">Select Posistion</option>
+                                                                <option value="">Select section</option>
                                                                 {
-                                                                    titles.map((title) => (
-                                                                        <option key={title.id} value={title.id}>{title.title_name}</option>
+                                                                    section.map((section) => (
+                                                                        <option key={section.id} value={section.id}>{section.section_name}</option>
                                                                     ))
                                                                 }
                                                             </select>
                                                             <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
                                                             <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
                                                             </svg>
-                                                    </div>
+                                                        </div>
                                                 <div className="h-4">
-                                                    {formik.touched.title_id && formik.errors.title_id ? (<div className="text-red-500 text-xs font-text">{formik.errors.title_id}</div>):null}
+                                                    {formik.touchsection_id && formik.errors.section_id ? (<div className="text-red-500 text-xs font-text">{formik.errors.section_id}</div>):null}
                                                 </div>
                                             </div>
 
-
-                                            {/* City Location */}
-                                            <div className="inline-flex flex-col gap-2 row-start-4 col-span-1 pr-2">
-                                                <label htmlFor="city" className="font-text text-xs flex flex-row justify-between">
-                                                    <p>City:</p>
-                                                    {formik.touched.city && formik.errors.city ? (<div className="text-red-500 text-xs font-text">{formik.errors.city}</div>):null}
-                                                </label>
-                                                <div className="grid grid-cols-1">
-                                                            <select id="city" name="city" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                                                            value={formik.values.city}
-                                                            onChange={handleBranchesOptions}
-                                                            onBlur={formik.handleBlur}
-                                                            disabled={loading}>
-                                                                <option value="">Select City</option>
-                                                                {
-                                                                    cities.map((city) => (
-                                                                        <option key={city.id} value={city.id}>{city.city_name}</option>
-                                                                    ))
-                                                                }
-                                                            </select>
-                                                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                                                            <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                                                            </svg>
-                                                    </div>
-                                                <div className="h-4">
-                                                    {formik.touched.city && formik.errors.city ? (<div className="text-red-500 text-xs font-text">{formik.errors.city}</div>):null}
-                                                </div>
-                                            </div>
-
-                                            {/* Branch Location */}
-                                            <div className="inline-flex flex-col gap-2 row-start-4 col-span-2 pr-2">
-                                                <label htmlFor="branch" className="font-text text-xs">Branch Location:</label>
-                                                <div className="grid grid-cols-1">
-                                                                <select id="branch_id" name="branch_id" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                                                                    value={formik.values.branch_id}
-                                                                    onChange={formik.handleChange}
-                                                                    onBlur={formik.handleBlur}
-                                                                    disabled={loading}>
-                                                                    <option value="">Select Location</option>
+                                            <div className="gap-x-2 row-start-5 col-span-3 grid grid-cols-2 grid-row-1">
+                                                {/* City Location */}
+                                                <div className="inline-flex flex-col gap-2 col-span-1 ">
+                                                    <label htmlFor="city" className="font-text text-xs flex flex-row justify-between">
+                                                        <p>City:</p>
+                                                        {formik.touched.city && formik.errors.city ? (<div className="text-red-500 text-xs font-text">{formik.errors.city}</div>):null}
+                                                    </label>
+                                                    <div className="grid grid-cols-1">
+                                                                <select id="city" name="city" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                                                value={formik.values.city}
+                                                                onChange={handleBranchesOptions}
+                                                                onBlur={formik.handleBlur}
+                                                                disabled={loading}>
+                                                                    <option value="">Select City</option>
                                                                     {
-                                                                    selectedBranches.map((location) => (
-                                                                        <option key={location.id} value={location.id}>{location.branch_name}</option>
-                                                                    ))
+                                                                        cities.map((city) => (
+                                                                            <option key={city.id} value={city.id}>{city.city_name}</option>
+                                                                        ))
                                                                     }
                                                                 </select>
                                                                 <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
                                                                 <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
                                                                 </svg>
+                                                        </div>
+                                                    <div className="h-4">
+                                                        {formik.touched.city && formik.errors.city ? (<div className="text-red-500 text-xs font-text">{formik.errors.city}</div>):null}
                                                     </div>
-                                                <div className="h-4">
-                                                    {formik.touched.branch_id && formik.errors.branch_id ? (<div className="text-red-500 text-xs font-text">{formik.errors.branch_id}</div>):null}
+                                                </div>
+
+                                                {/* Branch Location */}
+                                                <div className="inline-flex flex-col gap-2 col-span-1">
+                                                    <label htmlFor="branch" className="font-text text-xs">Branch Location:</label>
+                                                    <div className="grid grid-cols-1">
+                                                                    <select id="branch_id" name="branch_id" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                                                        value={formik.values.branch_id}
+                                                                        onChange={formik.handleChange}
+                                                                        onBlur={formik.handleBlur}
+                                                                        disabled={loading}>
+                                                                        <option value="">Select Location</option>
+                                                                        {
+                                                                        selectedBranches.map((location) => (
+                                                                            <option key={location.id} value={location.id}>{location.branch_name}</option>
+                                                                        ))
+                                                                        }
+                                                                    </select>
+                                                                    <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                                                    <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                                                    </svg>
+                                                        </div>
+                                                    <div className="h-4">
+                                                        {formik.touched.branch_id && formik.errors.branch_id ? (<div className="text-red-500 text-xs font-text">{formik.errors.branch_id}</div>):null}
+                                                    </div>
                                                 </div>
                                             </div>
+
+
                                             {/* Submit */}
-                                            <div className="row-start-5 col-span-3 py-2 flex flex-row gap-2">
+                                            <div className="row-start-6 col-span-3 py-2 flex flex-row gap-2">
                                                 <button type="button" className="w-full inline-flex flex-col items-center gap-2 p-4 rounded-md font-header uppercase text-primary border-2 border-primary text-xs hover:text-white hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out"
                                                     onClick={close}>
                                                     <p>Cancel</p>

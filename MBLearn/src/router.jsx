@@ -151,7 +151,7 @@ const router = createBrowserRouter([
                         element: <Dashboard/>
                     },
                     {
-                        path: "learnercoursemanager",
+                        path: "learnercoursemanager/:coursetype?",
                         element: <SelectedCourseProvider>
                                     <CourseListProvider>
                                         <LearnerCourseManager/>

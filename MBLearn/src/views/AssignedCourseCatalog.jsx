@@ -352,8 +352,7 @@ export default function AssignedCourseCatalog() {
                 </div>
                 {/* Paganation */}
                 <div>
-                    {
-                        loading ? null : <nav className='isolate inline-flex -space-x-px round-md shadow-xs'>
+                        <nav className='isolate inline-flex -space-x-px round-md shadow-xs'>
                             {/* Previous */}
                             <a
                                 onClick={back}
@@ -362,26 +361,29 @@ export default function AssignedCourseCatalog() {
                             </a>
 
                             {/* Current Page & Dynamic Paging */}
-                            {Pages.map((page)=>(
-                                <a
-                                    key={page}
-                                    className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset
-                                        ${
-                                            page === pageState.currentPage
-                                            ? 'bg-primary text-white'
-                                            : 'bg-secondarybackground text-primary hover:bg-primary hover:text-white'
-                                        } transition-all ease-in-out`}
-                                        onClick={() => pageChange(page)}>
-                                    {page}</a>
-                            ))}
+                            {
+                                loading ? (<a className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset`}>...</a>)
+                                :
+                                (Pages.map((page)=>(
+                                    <a
+                                        key={page}
+                                        className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset
+                                            ${
+                                                page === pageState.currentPage
+                                                ? 'bg-primary text-white'
+                                                : 'bg-secondarybackground text-primary hover:bg-primary hover:text-white'
+                                            } transition-all ease-in-out`}
+                                            onClick={() => pageChange(page)}>
+                                        {page}</a>
+                                ))
+                            )
+                            }
                             <a
                                 onClick={next}
                                 className='relative inline-flex items-center rounded-r-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
                                 <FontAwesomeIcon icon={faChevronRight}/>
                             </a>
                         </nav>
-                    }
-
                 </div>
             </div>
         </div>

@@ -6,7 +6,8 @@ import { useEffect } from "react";
 const UserSecEntyProps = ({user,name,employeeID,MBEmail,city,branch,division,section,department,role,image,status,edit}) => {
 
     return (
-        <tr className='font-text text-sm hover:bg-gray-200'>
+        <tr className='font-text text-sm hover:bg-gray-200 hover:cursor-pointer'
+        onClick={(e) => edit(e,user)} >
                         <td className='text-sm py-3 px-4'>
                             <div className='flex items-center gap-2'>
                                 {/* User Image */}
@@ -16,12 +17,17 @@ const UserSecEntyProps = ({user,name,employeeID,MBEmail,city,branch,division,sec
                                 {/* Name */}
                                 <div>
                                     <p className='font-text'>{name}</p>
-                                    <p className='text-unactive'>{MBEmail}</p>
+                                    <p className='text-unactive'>ID: {employeeID}</p>
                                 </div>
                             </div>
                         </td>
-                        {/* Divison */}
+
                         <td className='py-3 px-4'>
+                            <p className="text-unactive">{MBEmail}</p>
+                        </td>
+
+                        {/* Divison */}
+                        {/* <td className='py-3 px-4'>
                             <p className="text-unactive">{division}</p>
                         </td>
                         <td className='py-3 px-4'>
@@ -29,7 +35,7 @@ const UserSecEntyProps = ({user,name,employeeID,MBEmail,city,branch,division,sec
                         </td>
                         <td className='py-3 px-4'>
                             <p className="text-unactive">{section}</p>
-                        </td>
+                        </td> */}
 
                         <td className='py-3 px-4'>
                             <p className="text-unactive">{role}</p>
@@ -40,7 +46,7 @@ const UserSecEntyProps = ({user,name,employeeID,MBEmail,city,branch,division,sec
                         </td>
 
                         {/* Action */}
-                        <td className='py-3 px-4'>
+                        {/* <td className='py-3 px-4'>
                             <div className='flex gap-1 justify-end'>
                             <button
                                     className='flex justify-center items-center aspect-square p-2 w-fit bg-white shadow-md border border-primary rounded-md text-primary hover:bg-primary cursor-pointer transition-all ease-in-out hover:text-white'
@@ -48,7 +54,7 @@ const UserSecEntyProps = ({user,name,employeeID,MBEmail,city,branch,division,sec
                                 <FontAwesomeIcon icon={faUserPen}/>
                             </button>
                             </div>
-                        </td>
+                        </td> */}
 
                 </tr>
     );

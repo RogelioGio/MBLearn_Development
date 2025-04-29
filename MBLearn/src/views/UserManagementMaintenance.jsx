@@ -611,7 +611,7 @@ export default function UserManagementMaintenance() {
                             </p>
                         ) : (
                             <p className='text-sm font-text text-unactive'>
-                                Retrieving Users.....
+                                Retrieving users.....
                             </p>
                         )
                     }
@@ -619,18 +619,21 @@ export default function UserManagementMaintenance() {
                 </div>
                 {/* Paganation */}
                 <div>
-                    {
-                        !isLoading ? (
-                            <nav className='isolate inline-flex -space-x-px round-md shadow-xs'>
-                                {/* Previous */}
-                                <a
-                                    onClick={back}
-                                    className='relative inline-flex items-center rounded-l-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
-                                    <FontAwesomeIcon icon={faChevronLeft}/>
-                                </a>
+                    <nav className='isolate inline-flex -space-x-px round-md shadow-xs'>
+                        {/* Previous */}
+                        <a
+                            onClick={back}
+                            className='relative inline-flex items-center rounded-l-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
+                            <FontAwesomeIcon icon={faChevronLeft}/>
+                        </a>
 
-                                {/* Current Page & Dynamic Paging */}
-                                {Pages.map((page)=>(
+                        {/* Current Page & Dynamic Paging */}
+                        {
+                            isLoading ? (
+                                <a className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset`}>
+                                ...</a>
+                            ) : (
+                                Pages.map((page)=>(
                                     <a
                                         key={page}
                                         className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset
@@ -641,15 +644,15 @@ export default function UserManagementMaintenance() {
                                             } transition-all ease-in-out`}
                                             onClick={() => pageChange(page)}>
                                         {page}</a>
-                                ))}
-                                <a
-                                    onClick={next}
-                                    className='relative inline-flex items-center rounded-r-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
-                                    <FontAwesomeIcon icon={faChevronRight}/>
-                                </a>
-                            </nav>
-                        ) : (null)
-                    }
+                                ))
+                            )
+                        }
+                        <a
+                            onClick={next}
+                            className='relative inline-flex items-center rounded-r-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
+                            <FontAwesomeIcon icon={faChevronRight}/>
+                        </a>
+                    </nav>
 
                 </div>
             </div>

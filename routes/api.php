@@ -80,7 +80,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('/reset-user',[userInfo_controller::class, 'resetUser']); //reset user table
 
     //User with course API
-    Route::get('/select-user-courses/{userInfos}', [userInfo_controller::class, 'getUserCourses']);
+    Route::get('/select-user-courses/{userInfos}', [userInfo_controller::class, 'getUserCselect-user-added-coursesourses']);
     Route::get('/select-course-users/{course}', [CourseController::class, 'getCourseUsers']);
     Route::get('/select-user-assigned-courses/{userInfos}', [userInfo_controller::class, 'getAssignedCourses']);
     Route::get('/select-user-added-courses/{userInfos}', [userInfo_controller::class, 'getAddedCourses']);

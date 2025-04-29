@@ -62,10 +62,11 @@ const CourseDetailsModal = ({open,close,classname,selectedCourse}) => {
                                                 <div className='grid grid-cols-3 grid-rows-[min-content] gap-x-2 pt-2'>
                                                     <div className='col-start-1 col-span-2 row-start-1 flex flex-row gap-2'>
                                                         <div className='bg-blue-500 h-10 w-10 rounded-full'>
+                                                            <img src={selectedCourse?.adder?.profile_image} alt="" className='rounded-full' />
                                                         </div>
                                                         <div>
-                                                            <p className='font-text'>John Doe</p>
-                                                            <p className='text-unactive text-xs'>ID: 123456789</p>
+                                                            <p className='font-text'>{selectedCourse?.adder?.first_name} {selectedCourse?.adder?.middle_name} {selectedCourse?.adder?.last_name} {selectedCourse?.adder?.name_suffix}</p>
+                                                            <p className='text-unactive text-xs font-text'>ID: {selectedCourse?.adder?.employeeID}</p>
                                                         </div>
                                                     </div>
                                                     <div>

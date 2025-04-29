@@ -155,9 +155,18 @@ class CourseController extends Controller
         ]);
     }
 
-    public function getCourseUsers(Course $course){
-        $users = $course->enrolledUsers()->with(['division','department','section','city','branch'])->get();
-        return $users;
+    public function getCourseUsers(Course $course, Request $request){
+        $page = $request->input('page', 1); // default page
+        $perPage = $request->input('per_page', 8); // default per page
+
+        $users = $course->enrolledUsers()->with(['division','department','section','city','branch'])->paginate($perPage);
+
+        return response() -> json([
+            'data' => $users->items(),
+            'total' => $users->total(),
+            'lastPage' => $users->lastPage(),
+            'currentPage' => $users->currentPage(),
+        ]);
     }
 
     public function getAssignedCourseAdmin(Course $course, Request $request){

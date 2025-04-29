@@ -16,6 +16,8 @@ import { useStateContext } from '../contexts/ContextProvider'
 import CourseEnrollmentSuccesfully from './CourseEnrollmentSuccessfullyModal'
 import NoEmployeeSelectedModal from './NoEmployeeSelectedModal'
 import { useOption } from '../contexts/AddUserOptionProvider'
+import { Train } from 'lucide-react'
+import TrainingDurationModal from './TrainingDurationModal'
 
 const CourseEnrollmentProps = ({course}) => {
     const {user} = useStateContext();
@@ -23,6 +25,7 @@ const CourseEnrollmentProps = ({course}) => {
     const [learners, setLearners] = useState([])
     const [learnerLoading, setLearnerLoading] = useState(false)
     const [selected, setSelected] = useState([]); //Select learner to ernoll
+    const [durationModal, setDurationModal] = useState(true)
     const [results, setResults] = useState([]); //Enrolled results
     const [enrolled, setEnrolled] = useState(false)
     const [enrolling, setEnrolling] = useState(false)
@@ -116,7 +119,7 @@ const CourseEnrollmentProps = ({course}) => {
                         (entry) => !(entry.userId === User.id && entry.courseId === course.id )
                     )
                 }else{
-                    return [...prevUsers, {userId: User.id, courseId: course.id, enrollerId: user.user_info_id }]
+                    return [...prevUsers, {userId: User.id, courseId: course.id, enrollerId: user.user_infos.id }]
                 }
             })
             setResults((prevCourses) => {
@@ -155,17 +158,20 @@ const CourseEnrollmentProps = ({course}) => {
                 return
             }
 
-            axiosClient.post('enrollments/bulk', selected)
-            .then(({data}) => {
-                setEnrolling(false)
-                setEnrolled(true);
-            })
-            .catch((err)=>console.log(err));
+            // axiosClient.post('enrollments/bulk', selected)
+            // .then(({data}) => {
+            //     setEnrolling(false)
+            //     setEnrolled(true);
+            // })
+            // .catch((err)=>console.log(err));
+            setEnrolling(false)
+            setEnrolled(true);
         }
         const close = () => {
             setEnrolled(false)
             setSelected([])
             setResults([])
+
             handleLearnerChange(course.id)
         }
 
@@ -587,11 +593,12 @@ const CourseEnrollmentProps = ({course}) => {
             </div>
         </div>
 
+        {/* Training Duration */}
+        <TrainingDurationModal open={durationModal} close={()=>setDurationModal(false)} />
         {/* Successfully */}
         <CourseEnrollmentSuccesfully open={enrolled} close={close} result={results}/>
         {/* Empty */}
         <NoEmployeeSelectedModal isOpen={empty} onClose={()=>setEmpty(false)} />
-
         </>
     )
 }

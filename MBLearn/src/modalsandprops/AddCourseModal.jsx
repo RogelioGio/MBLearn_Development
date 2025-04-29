@@ -9,6 +9,33 @@ import { useEffect, useState } from 'react';
 import axiosClient from "../axios-client";
 import { useCourseContext } from "../contexts/CourseListProvider";
 
+function normalizationDuration(values, setField) {
+    let months = parseInt(values.months) || 0;
+    let weeks = parseInt(values.weeks) || 0;
+    let days = parseInt(values.days) || 0;
+
+    if (weeks >= 4) {
+        const addMonths = Math.floor(weeks / 4);
+        months += addMonths;
+        weeks = weeks % 4;
+    }
+
+    if (days >= 7) {
+        const addWeeks = Math.floor(days / 7);
+        weeks += addWeeks;
+        days = days % 7;
+    }
+
+    if (weeks >= 4) {
+        const addMonths = Math.floor(weeks / 4);
+        months += addMonths;
+        weeks = weeks % 4;
+    }
+
+    setField('months', months > 0 ? months : '');
+    setField('weeks', weeks > 0 ? weeks : '');
+    setField('days', days > 0 ? days : '');
+}
 
 const AddCourseModal = ({open,onClose}) => {
     const {coursetypes, coursecategories, traingmodes} = useCourseContext();
@@ -56,8 +83,10 @@ const AddCourseModal = ({open,onClose}) => {
             course_name:'',
             course_type:'',
             course_category:'',
-            traingmodes:'',
             training_type:'',
+            months:'',
+            weeks:'',
+            days:'',
             short_desc:'',
         },
         //validation
@@ -73,6 +102,18 @@ const AddCourseModal = ({open,onClose}) => {
                 .required('Course category shouldnt be empty'), // Check if course name is empty
             course_type: Yup.string()
                 .required('Course type shouldnt be empty'), // Check if course name is empty
+            months: Yup.number()
+                .typeError('Invalid Input')
+                .positive('Must be a positive number')
+                .integer('Must be a whole number'),
+            weeks: Yup.number()
+                .typeError('Invalid Input')
+                .positive('Must be a positive number')
+                .integer('Must be a whole number'),
+            days: Yup.number()
+                .typeError('Invalid Input')
+                .positive('Must be a positive number')
+                .integer('Must be a whole number'),
             short_desc: Yup.string()
                 .required('Short description shouldnt be empty') // Check if course name is empty
                 .max(500, 'Short description shouldnt exceed 500 characters') // Check if course name exceeds 50 characters
@@ -83,6 +124,7 @@ const AddCourseModal = ({open,onClose}) => {
                 ...values,
                 course_id: formik.values.courseID, // Overrides the course_id field
             };
+            console.log("Final Values: ", finalValues);
 
             toggleState("steps", (current) => current + 1);
         }
@@ -179,9 +221,9 @@ const AddCourseModal = ({open,onClose}) => {
                                                 <p className='text-unactive font-text'>Please input an valid Course ID to be added in the course catalog of MBLearn</p>
                                             </div>
                                             {/* Input */}
-                                            <div className='row-start-2'>
+                                            <div className='row-start-2 py-2'>
                                             <label htmlFor="name" className="font-header text-xs flex flex-row justify-between pb-2">
-                                            <p className="uppercase">Course ID:</p>
+                                            <p className="font-text">Course ID:</p>
                                             </label>
                                             <input type="text" name="courseID"
                                                 value={formik.values.courseID}
@@ -224,7 +266,7 @@ const AddCourseModal = ({open,onClose}) => {
                                             {/* Course Name */}
                                             <div className="inline-flex flex-col gap-2 row-start-3 col-span-3">
                                                 <label htmlFor="course_name" className="font-header text-xs flex flex-row justify-between">
-                                                    <p className="uppercase">Course Name:</p>
+                                                    <p className="font-text text-unactive">Course Name:</p>
                                                 </label>
                                                 <input type="text" name="course_name"
                                                     value={formik2.values.course_name}
@@ -236,7 +278,7 @@ const AddCourseModal = ({open,onClose}) => {
                                             {/* Course Category */}
                                             <div className="inline-flex flex-col gap-2 row-start-4 col-span-1">
                                                 <label htmlFor="course_category" className="font-header text-xs flex flex-row justify-between">
-                                                    <p className="uppercase">Course Category:</p>
+                                                    <p className="font-text text-unactive">Course Category:</p>
                                                 </label>
                                                 <div class="grid grid-cols-1">
                                                     <select id="course_category" name="course_category" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
@@ -253,11 +295,13 @@ const AddCourseModal = ({open,onClose}) => {
                                                     <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
                                                     </svg>
                                                 </div>
+                                                {formik2.touched.course_category && formik2.errors.course_category ? (<div className="text-red-500 text-xs font-text">{formik2.errors.course_category}</div>):null}
+
                                             </div>
-                                             {/* Course Type */}
+                                            {/* Course Type */}
                                             <div className="inline-flex flex-col gap-2 row-start-4 col-span-1">
                                                 <label htmlFor="course_type" className="font-header text-xs flex flex-row justify-between">
-                                                    <p className="uppercase">Course Type:</p>
+                                                    <p className="font-text text-unactive">Course Type:</p>
                                                 </label>
                                                 <div class="grid grid-cols-1">
                                                     <select id="course_type" name="course_type" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
@@ -276,9 +320,10 @@ const AddCourseModal = ({open,onClose}) => {
                                                 </div>
                                                     {formik2.touched.course_type && formik2.errors.course_type ? (<div className="text-red-500 text-xs font-text">{formik2.errors.course_type}</div>):null}
                                             </div>
+                                            {/* Training Type */}
                                             <div className="inline-flex flex-col gap-2 row-start-4 col-span-1">
                                                 <label htmlFor="course_type" className="font-header text-xs flex flex-row justify-between">
-                                                    <p className="uppercase">Training Type:</p>
+                                                    <p className="font-text text-unactive">Training Type:</p>
                                                 </label>
                                                 <div class="grid grid-cols-1">
                                                     <select id="training_type" name="training_type" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
@@ -297,9 +342,68 @@ const AddCourseModal = ({open,onClose}) => {
                                                 </div>
                                                     {formik2.touched.course_type && formik2.errors.course_type ? (<div className="text-red-500 text-xs font-text">{formik2.errors.course_type}</div>):null}
                                             </div>
+                                            {/* Course Duration */}
+                                            <div className="col-span-3 text-xs row-start-5">
+                                                <p className="font-text text-unactive">Default Course Duration:</p>
+                                            </div>
+                                                {/* Months */}
+                                                <div className="inline-flex flex-col row-start-6">
+                                                <input type="text" name="months"
+                                                    value={formik2.values.months}
+                                                    onChange={formik2.handleChange}
+                                                    onBlur={(e) => {
+                                                        formik2.handleBlur(e);
+                                                        normalizationDuration({
+                                                            ...formik2.values,
+                                                            months: e.target.value,
+                                                        }, formik2.setFieldValue);
+                                                    }}
+                                                    className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
+                                                    <label htmlFor="course_name" className="font-header text-xs flex flex-row justify-between">
+                                                    <p className="font-text text-unactive pb-2">Months</p>
+                                                    </label>
+                                                    {formik2.touched.months && formik2.errors.months ? (<div className="text-red-500 text-xs font-text">{formik2.errors.months}</div>):null}
+                                                </div>
+                                                {/* Weeks */}
+                                                <div className="inline-flex flex-col row-start-6">
+                                                <input type="text" name="weeks"
+                                                    value={formik2.values.weeks}
+                                                    onChange={formik2.handleChange}
+                                                    onBlur={(e) => {
+                                                        formik2.handleBlur(e);
+                                                        normalizationDuration({
+                                                            ...formik2.values,
+                                                            weeks: e.target.value,
+                                                        }, formik2.setFieldValue);
+                                                    }}
+                                                    className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
+                                                    <label htmlFor="course_name" className="font-header text-xs flex flex-row justify-between">
+                                                    <p className="font-text text-unactive pb-2">Weeks</p>
+                                                    </label>
+                                                    {formik2.touched.weeks && formik2.errors.weeks ? (<div className="text-red-500 text-xs font-text">{formik2.errors.weeks}</div>):null}
+                                                </div>
+                                                {/* Days */}
+                                                <div className="inline-flex flex-col row-start-6">
+                                                <input type="text" name="days"
+                                                    value={formik2.values.days}
+                                                    onChange={formik2.handleChange}
+                                                    onBlur={(e) => {
+                                                        formik2.handleBlur(e);
+                                                        normalizationDuration({
+                                                            ...formik2.values,
+                                                            days: e.target.value,
+                                                        }, formik2.setFieldValue);
+                                                    }}
+                                                    className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
+                                                    <label htmlFor="course_name" className="font-header text-xs flex flex-row justify-between pb-2">
+                                                    <p className="font-text text-unactive">Days</p>
+                                                    </label>
+                                                    {formik2.touched.days && formik2.errors.days ? (<div className="text-red-500 text-xs font-text">{formik2.errors.days}</div>):null}
+                                                </div>
+
                                             {/* Short Description */}
-                                            <div className="inline-flex flex-col gap-2 row-start-5 col-span-3">
-                                                <label htmlFor="short_desc" className="font-header text-xs flex flex-row justify-between uppercase">Short Description:</label>
+                                            <div className="inline-flex flex-col gap-2 row-start-7 col-span-3">
+                                                <label htmlFor="short_desc" className="font-text text-unactive text-xs flex flex-row justify-between">Short Description:</label>
                                                 <textarea
                                                     name="short_desc"
                                                     id=""
@@ -341,39 +445,64 @@ const AddCourseModal = ({open,onClose}) => {
                                                         <p className="font-text">{formik.values.courseID}</p>
                                                     </div>
                                                     {/* Course Name */}
-                                                    <div className="inline-flex flex-col gap-2 row-start-3 col-span-3 col-start-1">
-                                                        <label htmlFor="course_name" className="font-header text-xs flex flex-row justify-between">
-                                                            <p className="uppercase">Course Name:</p>
+                                                    <div className="inline-flex flex-col gap-1 row-start-3 col-span-3 col-start-1">
+                                                        <label htmlFor="course_name" className="font-text text-xs flex flex-row justify-between text-unactive">
+                                                            <p>Course Name:</p>
                                                         </label>
                                                         <p className="font-text">{formik2.values.course_name}</p>
                                                     </div>
                                                     {/* Course Type */}
-                                                    <div className="inline-flex flex-col gap-2 row-start-4 col-span-1">
-                                                        <label htmlFor="course_type" className="font-header text-xs flex flex-row justify-between">
-                                                            <p className="uppercase">Course Type:</p>
+                                                    <div className="inline-flex flex-col gap-1 row-start-4 col-span-1">
+                                                        <label htmlFor="course_type" className="font-text text-xs flex flex-row justify-between text-unactive">
+                                                            <p>Course Type:</p>
                                                         </label>
                                                         <p className="font-text">{coursetypes.find(coursetype => coursetype.id === Number(formik2.values.course_type))?.type_name || "Not selected"}</p>
                                                     </div>
                                                     {/* Course Category */}
                                                     <div className="inline-flex flex-col gap-2 row-start-4 col-span-1">
-                                                        <label htmlFor="course_category" className="font-header text-xs flex flex-row justify-between">
-                                                            <p className="uppercase">Course Category:</p>
+                                                        <label htmlFor="course_category" className="font-text text-unactive text-xs flex flex-row justify-between ">
+                                                            <p>Course Category:</p>
                                                         </label>
                                                         <p className="font-text">{coursecategories.find(coursecategory => coursecategory.id === Number(formik2.values.course_category))?.category_name || "Not selected"}</p>
                                                     </div>
-                                                    {/* Course Category */}
+                                                    {/* Training Type */}
                                                     <div className="inline-flex flex-col gap-2 row-start-4 col-span-1">
-                                                        <label htmlFor="course_category" className="font-header text-xs flex flex-row justify-between">
-                                                            <p className="uppercase">Training Type:</p>
+                                                        <label htmlFor="course_category" className="font-text text-unactive text-xs flex flex-row justify-between">
+                                                            <p>Training Type:</p>
                                                         </label>
                                                         <p className="font-text">{formik2.values.training_type || "Not selected"}</p>
                                                     </div>
+                                                    {/* Duration */}
+                                                    <div  className="inline-flex flex-col gap-2 row-start-5 col-span-1">
+                                                        <p className="font-text text-unactive text-xs">Duration:</p>
+                                                    </div>
+                                                    {/* Month*/}
+                                                    <div className="inline-flex flex-col row-start-6 col-span-1">
+                                                        <p className="font-text">{formik2.values.months || "Not selected"} Month/s</p>
+                                                        <label htmlFor="course_category" className="font-text text-unactive text-xs flex flex-row justify-between">
+                                                            <p>Month</p>
+                                                        </label>
+                                                    </div>
+                                                    {/* Month*/}
+                                                    <div className="inline-flex flex-col row-start-6 col-span-1">
+                                                        <p className="font-text">{formik2.values.weeks || "Not selected"} Week/s</p>
+                                                        <label htmlFor="course_category" className="font-text text-unactive text-xs flex flex-row justify-between">
+                                                            <p>Week</p>
+                                                        </label>
+                                                    </div>
+                                                    {/* Month*/}
+                                                    <div className="inline-flex flex-col row-start-6 col-span-1">
+                                                        <p className="font-text">{formik2.values.days || "Not selected"} Day/s</p>
+                                                        <label htmlFor="course_category" className="font-text text-unactive text-xs flex flex-row justify-between">
+                                                            <p>Day</p>
+                                                        </label>
+                                                    </div>
                                                     {/* Short Description */}
-                                                    <div className="inline-flex flex-col gap-2 row-start-5 col-span-3">
-                                                        <label htmlFor="short_desc" className="font-header text-xs flex flex-row justify-between uppercase">Short Description:</label>
+                                                    <div className="inline-flex flex-col gap-2 row-start-7 col-span-3">
+                                                        <label htmlFor="short_desc" className="font-text text-unactive text-xs flex flex-row justify-between">Short Description:</label>
                                                         <p className="font-text w-full whitespace-pre-wrap">{formik2.values.short_desc}</p>
                                                     </div>
-                                                    <div className="col-span-3 flex flex-row gap-2 pt-3">
+                                                    <div className="col-span-3 flex flex-row gap-2 pt-3 row-start-8">
                                                     <button
                                                         onClick={()=>toggleState("steps", (current) => current - 1)}
                                                         className={`bg-white border-2 border-primary p-4 rounded-md font-header uppercase text-primary text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 hover:text-white hover:border-primaryhover transition-all ease-in-out w-full
