@@ -66,6 +66,15 @@ class EnrollmentController extends Controller
     public function getEndDate(GetEndDatesRequest $request){
         $bulk = $request->validated();
         $test = [];
+
+        foreach($bulk as $index => $dat){
+            $exists = Enrollment::query()->where([
+                ['user_id', '=', $dat['user_id']],
+                ['course_id', '=', $dat['course_id']],
+            ])->exists();
+            
+            
+        }
     }
 
     //Fetch Learners
