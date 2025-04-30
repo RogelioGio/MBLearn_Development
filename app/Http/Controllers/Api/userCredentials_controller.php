@@ -193,6 +193,18 @@ class userCredentials_controller extends Controller
             ],404);
         }
     }
+
+    public function restoreUser(UserCredentials $userCredentials)
+    {
+        if($userCredentials){
+            $userCredentials->userInfos->status = "Active";
+            $userCredentials->save();
+            return response()->json(['message' => 'User restored'], 200);
+        }else {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+    }
+
     public function resetUsers()
     {
         // Truncate the users table

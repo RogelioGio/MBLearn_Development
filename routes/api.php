@@ -65,6 +65,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('/select-employeeid/{employeeID}',[userInfo_controller::class, 'findUser_EmployeeID']);
     Route::put('/update-user-info/{userInfos}',[userInfo_controller::class, 'updateUser']);
     Route::delete('/delete-user/{userInfos}',[userInfo_controller::class, 'deleteUser']);
+    Route::update('/restore-user/{userInfos}', [userInfo_controller::class, 'restoreUser']);
 
     Route::post('/addusercredentials', [userCredentials_controller::class, 'addUserCredentials']);
     Route::put('/update-user-creds/{userCredentials}',[userCredentials_controller::class, 'updateUserCredentials']);
@@ -77,6 +78,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::put('/update-user-creds/{userCredentials}',[userCredentials_controller::class, 'updateUserCredentials']);
     Route::get('/index-user-creds',[userCredentials_controller::class, 'userCredentialsList']);
     Route::get('/select-user-creds/{employeeID}',[userCredentials_controller::class, 'findUser_EmployeeID']);
+    Route::update('/restore-user-creds/{userCredentials}', [userCredentials_controller::class, 'restoreUser']);
     Route::get('/reset-user',[userInfo_controller::class, 'resetUser']); //reset user table
 
     //User with course API

@@ -513,19 +513,19 @@ class userInfo_controller extends Controller
         $user = UserInfos::with(['city', 'branch', 'department', 'title', 'roles', 'userCredentials']) // Added 'roles'
         ->find($userInfos->id);
 
-    if (!$user) {
-        return response()->json(['message' => 'User not found'], 404);
-    }
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
 
-    return response()->json([
-        'data' => $user,
-        'city' => $user->city,
-        'branch' => $user->branch,
-        'department' => $user->department,
-        'title' => $user->title,
-        'credentials' => $user->userCredential,
-        'roles' => $user->roles, // Include roles in the response
-    ]);
+        return response()->json([
+            'data' => $user,
+            'city' => $user->city,
+            'branch' => $user->branch,
+            'department' => $user->department,
+            'title' => $user->title,
+            'credentials' => $user->userCredential,
+            'roles' => $user->roles, // Include roles in the response
+        ]);
     }
 
     //Find User using employeeID
