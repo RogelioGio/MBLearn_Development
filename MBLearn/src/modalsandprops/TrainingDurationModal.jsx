@@ -5,17 +5,112 @@ import { Popover, PopoverContent, PopoverTrigger } from "../components/ui/popove
 import { Calendar } from "../components/ui/calendar";
 import * as React from "react"
 import { useState } from "react";
-import { addDays, format } from "date-fns"
+import { addDays, addMonths, addWeeks, differenceInDays, differenceInMonths, differenceInWeeks, format } from "date-fns"
+import { useEffect } from "react";
+import { useFormik } from "formik";
 
-const TraningDurationModal = ({ open, close }) => {
-    const [date, setDate] = React.useState({
-        from: new Date(),
-        to: addDays(new Date(), 20),
-      });
+function normalizationDuration(values, setField) {
+    let months = parseInt(values.months) || 0;
+    let weeks = parseInt(values.weeks) || 0;
+    let days = parseInt(values.days) || 0;
 
-      const handleDateChange = (newDate) => {
-        setDate(newDate);
-      };
+    if (weeks >= 4) {
+        const addMonths = Math.floor(weeks / 4);
+        months += addMonths;
+        weeks = weeks % 4;
+    }
+
+    if (days >= 7) {
+        const addWeeks = Math.floor(days / 7);
+        weeks += addWeeks;
+        days = days % 7;
+    }
+
+    if (weeks >= 4) {
+        const addMonths = Math.floor(weeks / 4);
+        months += addMonths;
+        weeks = weeks % 4;
+    }
+
+    setField('months', months > 0 ? months : '');
+    setField('weeks', weeks > 0 ? weeks : '');
+    setField('days', days > 0 ? days : '');
+}
+
+const TraningDurationModal = ({ open, close, enroll, date, _setDate }) => {
+    const [duration, setDuration] = useState({
+        months: 1,
+        weeks: 1,
+        days: 8,
+    })
+
+
+
+    const calculateDuration = (fromDate, duration) => {
+        let result = fromDate;
+        result = addMonths(result, duration.months)
+        result = addWeeks(result, duration.weeks)
+        result = addDays(result, duration.days)
+        return result
+    }
+
+    const formik = useFormik({
+        initialValues:{
+            months: duration.months,
+            weeks: duration.weeks,
+            days: duration.days
+        },
+        onSubmit:(values) => {
+            console.log(values)
+        }
+    })
+
+    const handleDateChange = (newDate) => {
+
+        _setDate(newDate);
+
+        if (!newDate?.from || !newDate?.to) {
+            setDuration({
+                months: 0,
+                weeks: 0,
+                days: 0,
+            });
+        } else {
+
+            const { from, to } = newDate;
+
+            const months = differenceInMonths(to, from);
+            const weeks = differenceInWeeks(to, addMonths(from, months));
+            const days = differenceInDays(to, addMonths(addWeeks(from, weeks), months));
+
+            setDuration({
+                months,
+                weeks,
+                days,
+            });
+
+        };
+    };
+
+    useEffect(() => {
+        _setDate((d) => ({
+            from: d?.from,
+            to: calculateDuration(d?.from, duration),
+        }));
+        }, [open]);
+
+    useEffect(() => {
+        formik.setFieldValue('months', duration.months);
+        formik.setFieldValue('weeks', duration.weeks);
+        formik.setFieldValue('days', duration.days);
+    }, [duration]);
+
+
+    // useEffect(()=>{
+    //     console.log("to",date?.to)
+    //     console.log("from",date?.from)
+    //     console.log(duration)
+    // },[date])
 
 
     return (
@@ -40,22 +135,30 @@ const TraningDurationModal = ({ open, close }) => {
                                     </div>
                                 </div>
                                 {/* Course Default Duration */}
-                                <div className="px-4 col-span-2 grid grid-cols-3 grid-rows-[min-content_auto] gap-2 py-2">
+                                <form onSubmit={formik.handleSubmit} className="col-span-2">
+                                <div className="px-4 grid grid-cols-3 grid-rows-[min-content_auto] gap-2 py-2">
                                     <div  className="inline-flex flex-col gap-2 row-start-1 col-span-1">
                                         <p className="font-text text-unactive text-xs"> Course Duration:</p>
                                     </div>
                                     {/* Months */}
                                     <div className="inline-flex flex-col row-start-2">
                                     <input type="text" name="months"
-                                        // value={formik2.values.months}
-                                        // onChange={formik2.handleChange}
-                                        // onBlur={(e) => {
-                                        //     formik2.handleBlur(e);
-                                        //     normalizationDuration({
-                                        //         ...formik2.values,
-                                        //         months: e.target.value,
-                                        //     }, formik2.setFieldValue);
-                                        // }}
+                                        value={formik.values.months}
+                                        onChange={formik.handleChange}
+                                        onBlur={(e) => {
+                                            formik.handleBlur(e);
+                                            normalizationDuration({
+                                                ...formik.values,
+                                                months: e.target.value,
+                                            }, formik.setFieldValue);
+
+                                            const updated = parseInt(e.target.value, 10) || 0
+                                            setDuration((d) => ({
+                                                ...d,
+                                                months: updated
+                                            }))
+                                        }}
+                                        readOnly
                                         className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
                                         <label htmlFor="course_name" className="font-header text-xs flex flex-row justify-between">
                                         <p className="font-text text-unactive pb-2">Months</p>
@@ -65,15 +168,22 @@ const TraningDurationModal = ({ open, close }) => {
                                     {/* Weeks */}
                                     <div className="inline-flex flex-col row-start-2">
                                     <input type="text" name="weeks"
-                                        // value={formik2.values.weeks}
-                                        // onChange={formik2.handleChange}
-                                        // onBlur={(e) => {
-                                        //     formik2.handleBlur(e);
-                                        //     normalizationDuration({
-                                        //         ...formik2.values,
-                                        //         weeks: e.target.value,
-                                        //     }, formik2.setFieldValue);
-                                        // }}
+                                        value={formik.values.weeks}
+                                        onChange={formik.handleChange}
+                                        onBlur={(e) => {
+                                            formik.handleBlur(e);
+                                            normalizationDuration({
+                                                ...formik.values,
+                                                weeks: e.target.value,
+                                            }, formik.setFieldValue);
+
+                                            const updated = parseInt(e.target.value, 10) || 0
+                                            setDuration((d) => ({
+                                                ...d,
+                                                weeks: updated
+                                            }))
+                                        }}
+                                        readOnly
                                         className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
                                         <label htmlFor="course_name" className="font-header text-xs flex flex-row justify-between">
                                         <p className="font-text text-unactive pb-2">Weeks</p>
@@ -83,15 +193,22 @@ const TraningDurationModal = ({ open, close }) => {
                                     {/* Days */}
                                     <div className="inline-flex flex-col row-start-2">
                                     <input type="text" name="days"
-                                        // value={formik2.values.days}
-                                        // onChange={formik2.handleChange}
-                                        // onBlur={(e) => {
-                                        //     formik2.handleBlur(e);
-                                        //     normalizationDuration({
-                                        //         ...formik2.values,
-                                        //         days: e.target.value,
-                                        //     }, formik2.setFieldValue);
-                                        // }}
+                                        value={formik.values.days}
+                                        onChange={formik.handleChange}
+                                        onBlur={(e) => {
+                                            formik.handleBlur(e);
+                                            normalizationDuration({
+                                                ...formik.values,
+                                                days: e.target.value,
+                                            }, formik.setFieldValue);
+
+                                            const updated = parseInt(e.target.value, 10) || 0
+                                            setDuration((d) => ({
+                                                ...d,
+                                                days: updated
+                                            }))
+                                        }}
+                                        readOnly
                                         className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
                                         <label htmlFor="course_name" className="font-header text-xs flex flex-row justify-between pb-2">
                                         <p className="font-text text-unactive">Days</p>
@@ -99,6 +216,7 @@ const TraningDurationModal = ({ open, close }) => {
                                         {/* {formik2.touched.days && formik2.errors.days ? (<div className="text-red-500 text-xs font-text">{formik2.errors.days}</div>):null} */}
                                     </div>
                                 </div>
+                                </form>
                                 {/* Start Date and End Date */}
                                 <div className="col-span-2 flex flex-row gap-4 w-full px-4">
                                 <div className="flex-col gap-2 flex w-full">
@@ -106,7 +224,17 @@ const TraningDurationModal = ({ open, close }) => {
                                     <Popover>
                                         <PopoverTrigger asChild>
                                             <button className="flex flex-row justify-between items-center font-text border border-divider rounded-md py-2 px-4 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary">
-                                                <p>Pick a Date</p>
+                                                <p>{
+                                                    date?.from ? (
+                                                        date?.to ? (
+                                                            <>
+                                                            {format(date.from, "LLL dd, y")} -{" "}
+                                                            {format(date.to, "LLL dd, y")}
+                                                            </>
+                                                        ) : (format(date.from, "LLL dd, y"))
+                                                    ) : ("Pick a Date")
+
+                                                    }</p>
                                                 <FontAwesomeIcon icon={faCalendar} className="text-primary text-lg"/>
                                             </button>
                                         </PopoverTrigger>
@@ -116,9 +244,9 @@ const TraningDurationModal = ({ open, close }) => {
                                                 mode="range"
                                                 defaultMonth={date?.from}
                                                 selected={date}
-                                                onSelect={setDate}
+                                                onSelect={handleDateChange}
+                                                disabled={{ before: new Date() }}
                                                 numberOfMonths={2}
-
                                             />
                                         </PopoverContent>
                                     </Popover>
@@ -132,11 +260,12 @@ const TraningDurationModal = ({ open, close }) => {
                                         `}>
                                         Cancel</button>
                                     <button
-                                        //onClick={()=>submitCourse()}
+                                        onClick={()=>enroll()}
                                         className={`bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out w-full
                                         `}>
                                         Set Duration</button>
                                     </div>
+
                                 </div>
                         </DialogPanel>
                     </div>

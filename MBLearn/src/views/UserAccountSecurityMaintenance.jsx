@@ -64,7 +64,7 @@ export default function UserAccountSecurityMaintenance(){
         onSubmit: values => {
             setIsLoading(true)
             setIsFiltered(true)
-            axiosClient.get(`/index-user-creds?department_id[eq]=${values.department}&branch_id[eq]=${values.branch}`)
+            axiosClient.get(`/index-user-creds?department_id[eq]=${values.department}&branch_id[eq]=${values.branch}&role_id[eq]=${values.role}`)
             .then((res) => {
                 setUsers(res.data.data);
                 console.log(res)
@@ -376,6 +376,7 @@ export default function UserAccountSecurityMaintenance(){
                                         role={user.user_infos?.roles?.[0]?.role_name}
                                         image={user.user_infos?.profile_image }
                                         status={user.user_infos?.status}
+                                        lastLogin={user?.last_logged_id}
                                         edit={OpenEdit}
                                         />
                                 ))

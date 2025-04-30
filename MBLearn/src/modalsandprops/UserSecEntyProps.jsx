@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useOption } from "../contexts/AddUserOptionProvider";
 import { useEffect } from "react";
 
-const UserSecEntyProps = ({user,name,employeeID,MBEmail,city,branch,division,section,department,role,image,status,edit}) => {
+const UserSecEntyProps = ({user,name,employeeID,MBEmail,city,branch,division,section,department,role,image,status,lastLogin,edit}) => {
 
     return (
         <tr className='font-text text-sm hover:bg-gray-200 hover:cursor-pointer'
@@ -42,7 +42,8 @@ const UserSecEntyProps = ({user,name,employeeID,MBEmail,city,branch,division,sec
                         </td>
 
                         {/* Last Login */}
-                        <td>
+                        <td className="py-3 px-4">
+                        <p className="text-unactive">{lastLogin != null ? lastLogin : "Not Logged Yet"}</p>
                         </td>
 
                         {/* Action */}

@@ -337,7 +337,6 @@ export default function UserManagementMaintenance() {
                     ) : (null)
                 }
 
-
             </div>
 
 
@@ -553,7 +552,18 @@ export default function UserManagementMaintenance() {
                         {
                             isLoading ? (
                                 <UserListLoadingProps className="z-10"/>
-                            ) : (
+                            ) : users.length === 0 ? (
+                                // <tr>
+                                //     <td colSpan={6} className='flex items-center justify-center p-5 text-unactive font-text w-full'>
+                                //         <p>There is no users that met the selected criteria</p>
+                                //     </td>
+                                // </tr>
+                                <tr className="font-text text-sm">
+                                    <td colSpan={6} className="text-center py-3 px-4 font-text text-unactive">
+                                    There is no users that met the selected criteria
+                                    </td>
+                                </tr>
+                            ):(
                                 users.map(userEntry => {
                                     const { first_name, middle_name, last_name } = userEntry || {};
                                     const fullName = [first_name, middle_name, last_name].filter(Boolean).join(" ");

@@ -25,11 +25,17 @@ const CourseEnrollmentProps = ({course}) => {
     const [learners, setLearners] = useState([])
     const [learnerLoading, setLearnerLoading] = useState(false)
     const [selected, setSelected] = useState([]); //Select learner to ernoll
-    const [durationModal, setDurationModal] = useState(true)
+    const [durationModal, setDurationModal] = useState(false)
     const [results, setResults] = useState([]); //Enrolled results
     const [enrolled, setEnrolled] = useState(false)
     const [enrolling, setEnrolling] = useState(false)
     const [empty, setEmpty] = useState(false) // opens the warning
+
+    const [date, setDate] = React.useState({
+            from: new Date(),
+            to: undefined,
+        });
+
 
     const handleLearnerChange = (courseId) => {
         setLearnerLoading(true)
@@ -157,7 +163,29 @@ const CourseEnrollmentProps = ({course}) => {
                 setEmpty(true)
                 return
             }
+            setDurationModal(true)
+        }
+        const close = () => {
+            setEnrolled(false)
+            setTimeout(()=>{
+                setSelected([])
+                setResults([])
+                handleLearnerChange(course.id)
+            },100)
+        }
 
+        const closeEnrolling = () => {
+            setSelected([])
+            setResults([])
+            setEnrolling(false)
+            setDurationModal(false)
+            setDate({
+                from: new Date(),
+                to: undefined,
+            });
+        }
+
+        const handleEnrolling = () => {
             // axiosClient.post('enrollments/bulk', selected)
             // .then(({data}) => {
             //     setEnrolling(false)
@@ -165,14 +193,11 @@ const CourseEnrollmentProps = ({course}) => {
             // })
             // .catch((err)=>console.log(err));
             setEnrolling(false)
-            setEnrolled(true);
-        }
-        const close = () => {
-            setEnrolled(false)
-            setSelected([])
-            setResults([])
+            setDurationModal(false)
+            setEnrolled(true)
 
-            handleLearnerChange(course.id)
+            console.log("to",date?.to)
+            console.log("from",date?.from)
         }
 
     return(
@@ -558,8 +583,6 @@ const CourseEnrollmentProps = ({course}) => {
                 {/* Paganation */}
 
                 <div>
-                    {
-                        learnerLoading ? null :
                         <nav className='isolate inline-flex -space-x-px round-md shadow-xs'>
                             {/* Previous */}
                             <a
@@ -569,32 +592,36 @@ const CourseEnrollmentProps = ({course}) => {
                             </a>
 
                             {/* Current Page & Dynamic Paging */}
-                            {Pages.map((page)=>(
-                                <a
-                                    key={page}
-                                    className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset
-                                        ${
-                                            page === pageState.currentPage
-                                            ? 'bg-primary text-white'
-                                            : 'bg-secondarybackground text-primary hover:bg-primary hover:text-white'
-                                        } transition-all ease-in-out`}
-                                        onClick={() => pageChange(page)}>
-                                    {page}</a>
-                            ))}
+                            {
+                                learnerLoading ? (
+                                    <a className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset`}>...</a>
+                                ) : (
+                                    Pages.map((page)=>(
+                                        <a
+                                            key={page}
+                                            className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset
+                                                ${
+                                                    page === pageState.currentPage
+                                                    ? 'bg-primary text-white'
+                                                    : 'bg-secondarybackground text-primary hover:bg-primary hover:text-white'
+                                                } transition-all ease-in-out`}
+                                                onClick={() => pageChange(page)}>
+                                            {page}</a>
+                                    ))
+                                )
+                            }
                             <a
                                 onClick={next}
                                 className='relative inline-flex items-center rounded-r-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
                                 <FontAwesomeIcon icon={faChevronRight}/>
                             </a>
                         </nav>
-                    }
-
                 </div>
             </div>
         </div>
 
         {/* Training Duration */}
-        <TrainingDurationModal open={durationModal} close={()=>setDurationModal(false)} />
+        <TrainingDurationModal open={durationModal} close={closeEnrolling} enroll={handleEnrolling} date={date} _setDate={setDate}/>
         {/* Successfully */}
         <CourseEnrollmentSuccesfully open={enrolled} close={close} result={results}/>
         {/* Empty */}
