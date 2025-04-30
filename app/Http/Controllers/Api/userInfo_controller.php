@@ -285,7 +285,7 @@ class userInfo_controller extends Controller
         $users = UserInfos::query()
             ->where($queryItems)
             ->whereHas('roles', function(Builder $query){
-                $query->where('role_name', 'Course Admin');
+                $query->whereNot('role_name', 'Learner');
             })
             ->whereDoesntHave('assignedCourses', function ($query) use($course) {
                 $query->where('courses.id', $course->id);
