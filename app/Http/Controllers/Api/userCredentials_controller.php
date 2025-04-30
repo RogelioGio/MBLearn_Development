@@ -112,6 +112,12 @@ class userCredentials_controller extends Controller
             });
         }
 
+        if ($request->has('role_id')){
+            $query->whereHas('roles', function($subQuery) use ($request){
+                $subQuery->where('role_id', $request->input('role_id'));
+            });
+        }
+
         // Paginate the filtered results
         $userCredentials = $query->orderBy('created_at', 'desc')->paginate($perPage);
 
