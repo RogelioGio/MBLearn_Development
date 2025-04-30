@@ -106,7 +106,7 @@ export default function LearnerCourseManager() {
 
     const fetchCourses = () => {
         setLoading(true)
-        axiosClient.get(`/select-user-courses/${user.id}`,
+        axiosClient.get(`/select-user-courses/${user.user_infos?.id}`,
             {
                 params: {
                     page: pageState.currentPage,
