@@ -52,7 +52,7 @@ class CourseController extends Controller
             $querySort->where('training_type', $request->input('training_type'));
         }
 
-        $courses = $querySort->with(['categories', 'types', 'training_modes'])->where('archived', '=', 'active')->paginate();
+        $courses = $querySort->with(['categories', 'types', 'training_modes'])->where('archived', '=', 'active')->get();
 
         return response() -> json([
             'data' => $courses,
