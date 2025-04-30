@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Filters\CourseSort;
 use App\Filters\UserInfosFilter;
 use App\helpers\LogActivityHelper;
 use App\Http\Controllers\Controller;
@@ -329,7 +330,28 @@ class userInfo_controller extends Controller
 
         $page = $request->input('page', 1);//Default page
         $perPage = $request->input('perPage',6); //Number of entry per page
-        $courses = $userInfos->assignedCourses()->with(['categories', 'types', 'training_modes'])->paginate($perPage);
+        $sort = new CourseSort();
+        $builder = $userInfos->assignedCourses();
+        $querySort = $sort->transform($builder, $request);
+
+        
+        if($request->has('type_id')){
+            $querySort->whereHas('types', function($subQuery) use ($request){
+                $subQuery->where('type_id', $request->input('type_id'));
+            });
+        }
+
+        if($request->has('category_id')){
+            $querySort->whereHas('categories', function($subQuery) use ($request){
+                $subQuery->where('category_id', $request->input('category_id'));
+            });
+        }
+
+        if($request->has('training_type')){
+            $querySort->where('training_type', $request->input('training_type'));
+        }
+
+        $courses = $querySort->with(['categories', 'types', 'training_modes'])->where('archived', '=', 'active')->paginate($perPage);
 
         return response()->json([
             'data' => $courses->items(),
@@ -388,8 +410,29 @@ class userInfo_controller extends Controller
 
         $page = $request->input('page', 1);//Default page
         $perPage = $request->input('perPage',5); //Number of entry per page
+        $sort = new CourseSort();
+        $builder = $userInfos->addedCourses();
+        $querySort = $sort->transform($builder, $request);
 
-        $courses = $userInfos->addedCourses()->with(['categories', 'types', 'training_modes'])->paginate($perPage);
+        
+        if($request->has('type_id')){
+            $querySort->whereHas('types', function($subQuery) use ($request){
+                $subQuery->where('type_id', $request->input('type_id'));
+            });
+        }
+
+        if($request->has('category_id')){
+            $querySort->whereHas('categories', function($subQuery) use ($request){
+                $subQuery->where('category_id', $request->input('category_id'));
+            });
+        }
+
+        if($request->has('training_type')){
+            $querySort->where('training_type', $request->input('training_type'));
+        }
+
+        $courses = $querySort->with(['categories', 'types', 'training_modes'])->where('archived', '=', 'active')->paginate($perPage);
+
         return response()->json([
             'data' => $courses->items(),
             'total' => $courses->total(),
@@ -497,12 +540,30 @@ class userInfo_controller extends Controller
     public function getUserCourses(UserInfos $userInfos, Request $request){
         $page = $request->input('page', 1); // default page
         $perPage = $request->input('per_page', 8); // default per page
+        $sort = new CourseSort();
+        $builder = $userInfos->enrolledCourses();
+        $querySort = $sort->transform($builder, $request);
 
-        $courses = $userInfos->enrolledCourses()->with(['categories', 'types', 'training_modes'])->paginate($perPage);
-        $count = 0;
+        if($request->has('type_id')){
+            $querySort->whereHas('types', function($subQuery) use ($request){
+                $subQuery->where('type_id', $request->input('type_id'));
+            });
+        }
+
+        if($request->has('category_id')){
+            $querySort->whereHas('categories', function($subQuery) use ($request){
+                $subQuery->where('category_id', $request->input('category_id'));
+            });
+        }
+
+        if($request->has('training_type')){
+            $querySort->where('training_type', $request->input('training_type'));
+        }
+
+        $courses = $querySort->with(['categories', 'types', 'training_modes'])->where('archived', '=', 'active')->paginate($perPage);
         $deadline = [];
+
         foreach($courses as $course){
-            $count += 1;
             $deadline[] = Enrollment::query()
             ->where('user_id', '=', $userInfos->id)
             ->where('course_id', '=', $course->id)

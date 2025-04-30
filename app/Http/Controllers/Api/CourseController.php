@@ -179,7 +179,7 @@ class CourseController extends Controller
         $page = $request->input('page', 1); // default page
         $perPage = $request->input('per_page', 8); // default per page
 
-        $users = $course->enrolledUsers()->with(['division','department','section','city','branch'])->paginate($perPage);
+        $users = $course->enrolledUsers()->with(['division','department','section','city','branch'])->where('archived', '=', 'active')->paginate($perPage);
 
         return response() -> json([
             'data' => $users->items(),

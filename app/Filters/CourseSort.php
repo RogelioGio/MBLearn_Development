@@ -19,7 +19,7 @@ class CourseSort{
 
 
     //TODO: maybe add errors for more than one query
-    public function transform(Builder $builder, Request $request){
+    public function transform($builder, Request $request){
         $sortBy = "name";
         $sortDirection = "asc";
 
