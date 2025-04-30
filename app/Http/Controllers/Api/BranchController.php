@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Filters\BranchFilter;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\BulkFormInput;
 use App\Models\Branch;
 use App\Http\Requests\StoreBranchRequest;
 use App\Http\Requests\UpdateBranchRequest;
@@ -27,6 +28,18 @@ class BranchController extends Controller
         }
         return Branch::all();
     }
+
+    public function bulkStore(BulkFormInput $request){
+        $bulk = $request->validated();
+        $test = [];
+        foreach($bulk as $index => $output){
+            $test[] = Branch::create(['branch_name' => $output["forminputname"]]);
+        }
+        return response()->json([
+            "Branches" => $test
+        ]);
+    }
+
 
     /**
      * Store a newly created resource in storage.

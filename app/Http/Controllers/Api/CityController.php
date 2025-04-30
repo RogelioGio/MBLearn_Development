@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\BulkFormInput;
 use App\Models\City;
 use App\Http\Requests\StoreCityRequest;
 use App\Http\Requests\UpdateCityRequest;
@@ -27,6 +28,17 @@ class CityController extends Controller
         $validated = $request->validated();
         $city = City::create($validated);
         return $city;
+    }
+
+    public function bulkStore(BulkFormInput $request){
+        $bulk = $request->validated();
+        $test = [];
+        foreach($bulk as $index => $output){
+            $test[] = City::create(['city_name' => $output["forminputname"]]);
+        }
+        return response()->json([
+            "Cities" => $test
+        ]);
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\BulkFormInput;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use App\Models\Category;
@@ -25,6 +26,17 @@ class CategoryController extends Controller
     {
         $category = Category::create($request->validated());
         return $category;
+    }
+
+    public function bulkStore(BulkFormInput $request){
+        $bulk = $request->validated();
+        $test = [];
+        foreach($bulk as $index => $output){
+            $test[] = Category::create(['category_name' => $output["forminputname"]]);
+        }
+        return response()->json([
+            "Categories" => $test
+        ]);
     }
 
     /**

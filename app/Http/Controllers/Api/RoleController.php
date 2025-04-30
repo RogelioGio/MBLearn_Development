@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\BulkFormInput;
 use App\Http\Requests\StoreRoleRequest;
 use App\Http\Requests\UpdateRolePermissionRequest;
 use App\Models\Permission;
@@ -30,6 +31,17 @@ class RoleController extends Controller
     {
         $role = Role::create($request->all());
         return $role;
+    }
+
+    public function bulkStore(BulkFormInput $request){
+        $bulk = $request->validated();
+        $test = [];
+        foreach($bulk as $index => $output){
+            $test[] = Role::create(['role_name' => $output["forminputname"]]);
+        }
+        return response()->json([
+            "Roles" => $test
+        ]);
     }
 
     /**

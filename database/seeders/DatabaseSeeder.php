@@ -51,7 +51,7 @@ class DatabaseSeeder extends Seeder
         $firstinfos->userCredentials()->associate($firstcreds);
         $firstinfos->save();
 
-        UserInfos::factory(10)->create();
-        Course::factory(10)->create();
+        // UserInfos::factory(10)->create();
+        // Course::factory(10)->create();
     }
 }

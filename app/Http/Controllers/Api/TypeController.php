@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\BulkFormInput;
 use App\Http\Requests\StoreTypeRequest;
 use App\Models\Type;
 use Illuminate\Http\Request;
@@ -25,6 +26,17 @@ class TypeController extends Controller
     {
         $type = Type::create($request->validated());
         return $type;
+    }
+
+    public function bulkStore(BulkFormInput $request){
+        $bulk = $request->validated();
+        $test = [];
+        foreach($bulk as $index => $output){
+            $test[] = Type::create(['type_name' => $output["forminputname"]]);
+        }
+        return response()->json([
+            "Course Types" => $test
+        ]);
     }
 
     /**

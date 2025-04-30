@@ -252,7 +252,7 @@ class userInfo_controller extends Controller
         Gate::authorize('viewAny', UserInfos::class);
         $page = $request->input('page', 1);//Default page
         $perPage = $request->input('perPage',5); //Number of entry per page
-        $user_id = $request->user()->id;
+        $user_id = $request->user()->userInfos->id;
 
         $filter = new UserInfosFilter();
         $queryItems = $filter->transform($request);
@@ -635,12 +635,19 @@ class userInfo_controller extends Controller
     }
 
     public function test(Request $request){
-        $user_id = $request->user();
-        $time = now();
-        $user_id->update(['last_logged_in' => now()]);
+        $user = $request->user();
+        $arrays = $user->permissions->toArray();
+        $perm_names = [];
+        foreach($arrays as $array){
+            $perm_names[] = $array["permission_name"];
+        }
+        if(in_array("AddUserInfo", $perm_names)){
+            return response()->json([
+                "hello" => "true"
+            ]);
+        }
         return response()->json([
-            "time" => $time,
-            "user" => $user_id
+            "hello" => $perm_names
         ]);
     }
 }
