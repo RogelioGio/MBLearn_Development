@@ -328,20 +328,14 @@ export default function UserManagementMaintenance() {
 
             {/* Add Button */}
             <div className='col-start-4 row-start-1 flex flex-col justify-center pl-5 mr-5 border-divider border-b'>
-                {/* {
+                {
                     user.user_infos.permissions?.some((permission)=> permission.permission_name === "AddUserInfo") ? (
                         <button className='inline-flex flex-row shadow-md items-center justify-center bg-primary font-header text-white text-base p-4 rounded-full hover:bg-primaryhover hover:scale-105 transition-all ease-in-out' onClick={() => toggleModal("isOpenAdd",true)}>
                             <FontAwesomeIcon icon={faUserPlus} className='mr-2'/>
                             <p>Add User</p>
                         </button>
                     ) : (null)
-                } */}
-
-                <button className='inline-flex flex-row shadow-md items-center justify-center bg-primary font-header text-white text-base p-4 rounded-full hover:bg-primaryhover hover:scale-105 transition-all ease-in-out' onClick={() => toggleModal("isOpenAdd",true)}>
-                            <FontAwesomeIcon icon={faUserPlus} className='mr-2'/>
-                            <p>Add User</p>
-                        </button>
-
+                }
 
             </div>
 
@@ -558,7 +552,18 @@ export default function UserManagementMaintenance() {
                         {
                             isLoading ? (
                                 <UserListLoadingProps className="z-10"/>
-                            ) : (
+                            ) : users.length === 0 ? (
+                                // <tr>
+                                //     <td colSpan={6} className='flex items-center justify-center p-5 text-unactive font-text w-full'>
+                                //         <p>There is no users that met the selected criteria</p>
+                                //     </td>
+                                // </tr>
+                                <tr className="font-text text-sm">
+                                    <td colSpan={6} className="text-center py-3 px-4 font-text text-unactive">
+                                    There is no users that met the selected criteria
+                                    </td>
+                                </tr>
+                            ):(
                                 users.map(userEntry => {
                                     const { first_name, middle_name, last_name } = userEntry || {};
                                     const fullName = [first_name, middle_name, last_name].filter(Boolean).join(" ");
