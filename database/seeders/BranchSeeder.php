@@ -12,6 +12,6 @@ class BranchSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        $branches = ["Metrobank Ayala Avenue Center Branch", "Metrobank Salcedo Village Branch", "Metrobank Rada-Rodriguez Branch"];
     }
 }

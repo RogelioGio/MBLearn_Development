@@ -12,6 +12,6 @@ class TitleSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        $title = ["Bank Clerk", "Student", "Bankcruptcy Specialisst", "Banking Associate", "Fraud Specialist"];
     }
 }

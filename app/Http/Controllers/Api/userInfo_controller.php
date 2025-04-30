@@ -45,6 +45,7 @@ class userInfo_controller extends Controller
         $profile_image = $this -> generateProfileImageurl($existingatedData['first_name'].$existingatedData['last_name']);
         $status = $existingatedData['status'] ?? 'Active';
         $existingUser = UserInfos::where('employeeID', $existingatedData['employeeID'])->first();
+        $existingEmail = UserCredentials::where('MBemail', $existingatedData['MBemail'])->first();
 
         if ($existingUser) {
             return response()->json([
@@ -61,6 +62,10 @@ class userInfo_controller extends Controller
 
         // Generate profile image URL (pass the correct name variable)
         $profile_image = $this->generateProfileImageUrl($fullName);
+
+        if($existingEmail){
+            
+        }
 
         $userCredentials = UserCredentials::create([
             'MBemail' => $existingatedData['MBemail'],
