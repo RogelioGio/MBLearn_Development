@@ -62,8 +62,11 @@ class CourseController extends Controller
             "description" => $data['description'],
             "training_type" =>$data['training_type'],
             "system_admin_id" => $current_user->userInfos->id,
-            "archived" => $data['archived'],]
-            );
+            "archived" => $data['archived'],
+            "months" => $data['months'],
+            "weeks" => $data["weeks"],
+            "days" => $data['days']
+            ]);
 
         $course->types()->syncWithoutDetaching($type->id);
         $course->categories()->syncWithoutDetaching($category->id);

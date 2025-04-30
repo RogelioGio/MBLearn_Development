@@ -24,6 +24,9 @@ class Course extends Model
         'type_id',
         'category_id',
         'archived',
+        'months',
+        'weeks',
+        'days',
         'system_admin_id',
         'assigned_course_admin_id',
     ];

@@ -29,6 +29,9 @@ class StoreCourseRequest extends FormRequest
             "type_id" => "required|exists:types,id",
             "category_id"=> "required|exists:categories,id",
             "training_type" => "required",
+            "months" => "nullable|integer",
+            "weeks" => "nullable|integer",
+            "days" => "nullable|integer",
             "archived" => "required",
         ];
     }
