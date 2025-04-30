@@ -26,7 +26,9 @@ class BulkStoreEnrollmentRequest extends FormRequest
         return [
             '*.userId'=> 'required|integer|exists:userInfo,id',
             '*.courseId'=> ['required', 'integer', 'exists:courses,id'],
-            '*.enrollerId'=> 'required|integer'
+            '*.enrollerId'=> 'required|integer',
+            '*.start_date'=> 'nullable|date_format:Y-m-d H:i:s',
+            '*.end_date' => 'nullable|date_format:Y-m-d H:i:s'
         ];
     }
 
