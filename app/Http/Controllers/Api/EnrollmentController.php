@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BulkStoreEnrollmentRequest;
+use App\Http\Requests\GetEndDatesRequest;
 use App\Http\Requests\StoreEnrollmentRequest;
 use App\Http\Requests\UpdateEnrollmentRequest;
 use App\Http\Resources\CourseResource;
 use App\Http\Resources\EnrollmentResource;
+use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\UserInfos;
 use Illuminate\Http\Request;
@@ -59,6 +61,11 @@ class EnrollmentController extends Controller
             "Message" => "Bulk Store complete",
             "Data" => $test
         ]);
+    }
+
+    public function getEndDate(GetEndDatesRequest $request){
+        $bulk = $request->validated();
+        $test = [];
     }
 
     //Fetch Learners

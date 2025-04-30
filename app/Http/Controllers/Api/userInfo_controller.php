@@ -13,6 +13,7 @@ use App\Models\Branch;
 use App\Models\Course;
 use App\Models\Department;
 use App\Models\Division;
+use App\Models\Enrollment;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\Section;
@@ -498,6 +499,23 @@ class userInfo_controller extends Controller
         $perPage = $request->input('per_page', 8); // default per page
 
         $courses = $userInfos->enrolledCourses()->with(['categories', 'types', 'training_modes'])->paginate($perPage);
+        $count = 0;
+        $deadline = [];
+        foreach($courses as $course){
+            $count += 1;
+            $deadline[] = Enrollment::query()
+            ->where('user_id', '=', $userInfos->id)
+            ->where('course_id', '=', $course->id)
+            ->pluck('end_date');
+        }
+        
+        foreach($deadline as $line){
+            $courses->getCollection()->transform(function ($item) use($line){
+                $item->deadline = $line;
+                return $item;
+            });
+        }
+
         return response() -> json([
             'data' => $courses->items(),
             'total' => $courses->total(),
