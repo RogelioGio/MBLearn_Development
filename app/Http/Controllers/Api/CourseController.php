@@ -29,13 +29,30 @@ class CourseController extends Controller
         $filter = new CourseFilter();
         $sort = new CourseSort();
         $builder = Course::query();
-        $queryItems = $filter->transform($request);
         $querySort = $sort->transform($builder, $request);
 
         // $page = $request->input('page',1); // default page
         // $perPage = $request->input('per_page', 3); // default per page
 
-        $courses = $querySort->with(['categories', 'types', 'training_modes'])->where('archived', '=', 'active')->get();
+
+
+        if($request->has('type_id')){
+            $querySort->whereHas('types', function($subQuery) use ($request){
+                $subQuery->where('type_id', $request->input('type_id'));
+            });
+        }
+
+        if($request->has('category_id')){
+            $querySort->whereHas('categories', function($subQuery) use ($request){
+                $subQuery->where('category_id', $request->input('category_id'));
+            });
+        }
+
+        if($request->has('training_type')){
+            $querySort->where('training_type', $request->input('training_type'));
+        }
+
+        $courses = $querySort->with(['categories', 'types', 'training_modes'])->where('archived', '=', 'active')->paginate();
 
         return response() -> json([
             'data' => $courses,

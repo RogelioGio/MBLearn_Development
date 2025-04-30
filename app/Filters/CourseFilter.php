@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 class CourseFilter{
     protected $allowedParamaters = [
         'type_id' => ['eq'],
-        'training_mode_id' => ['eq'],
+        'training_type' => ['eq'],
         'category_id' => ['eq'],
     ];
 
