@@ -37,11 +37,11 @@ function normalizationDuration(values, setField) {
     setField('days', days > 0 ? days : '');
 }
 
-const TraningDurationModal = ({ open, close, enroll, date, _setDate }) => {
+const TraningDurationModal = ({ open, close, enroll, date, _setDate, course}) => {
     const [duration, setDuration] = useState({
-        months: 1,
-        weeks: 1,
-        days: 8,
+        months: course.months !== null ? course.months : 0,
+        weeks: course.weeks !== null ? course.weeks : 0,
+        days: course.days !== null ? course.days : 0,
     })
 
 
@@ -97,6 +97,11 @@ const TraningDurationModal = ({ open, close, enroll, date, _setDate }) => {
             from: d?.from,
             to: calculateDuration(d?.from, duration),
         }));
+        setDuration ((d) => ({
+            months: course.months !== null ? course.months : 0,
+            weeks: course.weeks !== null ? course.weeks : 0,
+            days: course.days !== null ? course.days : 0,
+        }))
         }, [open]);
 
     useEffect(() => {

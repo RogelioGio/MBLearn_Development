@@ -1,5 +1,5 @@
 
-const Learner = ({profile_image, id, name, employeeID, department, title, branch, city, enrolled, selectedCourse ,handleCheckbox}) => {
+const Learner = ({profile_image, id, name, employeeID, department, title, branch, city, enrolled, selectedCourse,division, section ,handleCheckbox}) => {
 
     const selectedEnrollee = enrolled.some(
         (entry) => entry.userId == id.id && entry.courseId === selectedCourse.id
@@ -8,7 +8,7 @@ const Learner = ({profile_image, id, name, employeeID, department, title, branch
         <tr className={`font-text text-sm text-primary hover:bg-gray-200 cursor-pointer ${selectedEnrollee ? 'bg-gray-200':''}`} onClick={()=>handleCheckbox(id, selectedCourse)}>
 
                 {/* Employee Name */}
-                <td className={`font-header p-4 flex flex-row items-center gap-4 border-l-2 border-transparent transition-all ease-in-out ${selectedEnrollee ? '!border-primary':''}`}>
+                <td className={`font-header p-4 flex flex-row items-center gap-4 border-l-2 border-transparent transition-all ease-in-out ${selectedEnrollee ? '!border-primary':''} h-full`}>
 
                     {/* Checkbox */}
                     <div className="group grid size-4 grid-cols-1">
@@ -49,7 +49,7 @@ const Learner = ({profile_image, id, name, employeeID, department, title, branch
 
                 {/* Division */}
                 <td className="p-4 font-text text-unactive">
-                    <p> Division </p>
+                    <p className="text-sm"> {division} </p>
                 </td>
 
                 {/* Department */}
@@ -60,7 +60,7 @@ const Learner = ({profile_image, id, name, employeeID, department, title, branch
 
                 {/* Section*/}
                 <td className="p-4 font-text text-unactive">
-                <p> Section </p>
+                    <p> {section} </p>
                 </td>
 
                 {/* Branch */}

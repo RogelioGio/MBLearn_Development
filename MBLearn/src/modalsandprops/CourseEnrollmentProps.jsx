@@ -18,6 +18,8 @@ import NoEmployeeSelectedModal from './NoEmployeeSelectedModal'
 import { useOption } from '../contexts/AddUserOptionProvider'
 import { Train } from 'lucide-react'
 import TrainingDurationModal from './TrainingDurationModal'
+import { format } from 'date-fns'
+
 
 const CourseEnrollmentProps = ({course}) => {
     const {user} = useStateContext();
@@ -186,18 +188,28 @@ const CourseEnrollmentProps = ({course}) => {
         }
 
         const handleEnrolling = () => {
-            // axiosClient.post('enrollments/bulk', selected)
-            // .then(({data}) => {
-            //     setEnrolling(false)
-            //     setEnrolled(true);
-            // })
-            // .catch((err)=>console.log(err));
-            setEnrolling(false)
-            setDurationModal(false)
-            setEnrolled(true)
+            const enrolees = selected.map(e => ({
+                ...e,
+                start_date: format(new Date(date.from), 'yyyy-MM-dd HH:mm:ss'),
+                end_date: format(new Date(date.to), 'yyyy-MM-dd HH:mm:ss')
+            }))
+            console.log(enrolees)
 
-            console.log("to",date?.to)
-            console.log("from",date?.from)
+            axiosClient.post('enrollments/bulk', enrolees)
+            .then(({data}) => {
+                setEnrolling(false)
+                setDurationModal(false)
+                setEnrolled(true);
+            })
+            .catch((err)=>console.log(err));
+            // setEnrolling(false)
+            // setDurationModal(false)
+            // setEnrolled(true)
+
+            // console.log("to",format(new Date(date.to), 'yyyy-MM-dd HH:mm:ss'))
+            // console.log("from",format(new Date(date.from), 'yyyy-MM-dd HH:mm:ss'))
+
+
         }
 
     return(
@@ -621,7 +633,7 @@ const CourseEnrollmentProps = ({course}) => {
         </div>
 
         {/* Training Duration */}
-        <TrainingDurationModal open={durationModal} close={closeEnrolling} enroll={handleEnrolling} date={date} _setDate={setDate}/>
+        <TrainingDurationModal open={durationModal} close={closeEnrolling} enroll={handleEnrolling} date={date} _setDate={setDate} course={course}/>
         {/* Successfully */}
         <CourseEnrollmentSuccesfully open={enrolled} close={close} result={results}/>
         {/* Empty */}

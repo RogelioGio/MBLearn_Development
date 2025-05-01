@@ -37,9 +37,10 @@ function normalizationDuration(values, setField) {
     setField('days', days > 0 ? days : '');
 }
 
-const AddCourseModal = ({open,onClose}) => {
+const AddCourseModal = ({open,onClose,tab}) => {
     const {coursetypes, coursecategories, traingmodes} = useCourseContext();
     const [hover, setHover] = useState(false);
+    const [adding, setAdding] = useState(false);
 
     useEffect(() => {
         if (!open) {
@@ -167,15 +168,20 @@ const AddCourseModal = ({open,onClose}) => {
         description: formik2.values.short_desc,
         type_id: formik2.values.course_type,
         category_id: formik2.values.course_category,
-        training_type: "Mandatory",
+        training_type: formik2.values.training_type,
+        months: formik2.values.months,
+        weeks: formik2.values.weeks,
+        days: formik2.values.days,
         archived: "active",
         assignedCourseAdminId:"",
     }
 
     const submitCourse = () => {
+        setAdding(true)
         axiosClient.post('/courses', payload)
         .then((res) => {
             toggleState("steps", (current) => current + 1)
+            setAdding(false)
             console.log(res)
         }).catch((err) => {
             console.log(err)
@@ -188,9 +194,9 @@ const AddCourseModal = ({open,onClose}) => {
             <DialogBackdrop transition className="fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in z-50 backdrop-blur-sm"/>
                 <div className='fixed inset-0 z-50 w-screen overflow-y-auto'>
                     <div className='flex min-h-full items-center justify-center p-4 text center'>
-                    <DialogPanel transition className='w-[50rem] p-5 transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in'>
+                    <DialogPanel transition className='w-[75vw] p-5 transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in'>
 
-                        <div className='grid grid-cols-[auto_auto_min-content] grid-rows-[min-content] mx-5 py-5 border-b border-divider gap-y-4'>
+                        <div className='grid grid-cols-[1fr_1fr_1fr] grid-rows-[min-content] mx-5 py-5 border-b border-divider gap-y-4'>
                             {/* Header */}
                             <div className='col-span-2'>
                                 <h1 className='text-primary font-header text-3xl'>Add Course</h1>
@@ -234,7 +240,7 @@ const AddCourseModal = ({open,onClose}) => {
                                                 {/* Validation Errors */}
                                             </div>
                                             {formik.touched.courseID && formik.errors.courseID ? (<div className="text-red-500 text-xs font-text">{formik.errors.courseID}</div>):null}
-                                            <div className='row-start-2 flex flex-col justify-end'>
+                                            <div className='row-start-2 flex flex-col justify-end pb-2'>
                                             <button
                                                 type="submit"
                                                 disabled={formik.values.courseID.length < 11}
@@ -252,7 +258,7 @@ const AddCourseModal = ({open,onClose}) => {
                                 </Stepper.Step>
                                 <Stepper.Step  icon={<FontAwesomeIcon icon={faBookOpen} className="!text-primary"/>}>
                                     <form onSubmit={formik2.handleSubmit}>
-                                        <div className="grid grid-cols-[auto_auto_auto] grid-rows-[min-content_auto] gap-x-3 gap-y-2">
+                                        <div className="grid grid-cols-[1fr_1fr_1fr] grid-rows-[min-content_auto] gap-x-3 gap-y-2">
                                             {/* Header */}
                                             <div className='col-span-3 border-b border-divider pb-2'>
                                                 <h1 className='text-primary font-header'>Step 2</h1>
@@ -512,7 +518,7 @@ const AddCourseModal = ({open,onClose}) => {
                                                         onClick={()=>submitCourse()}
                                                         className={`bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out w-full
                                                         `}>
-                                                        Confirm</button>
+                                                        {adding ? "Adding course..." : "Confirm"}</button>
                                                     </div>
                                                 </>
                                             )

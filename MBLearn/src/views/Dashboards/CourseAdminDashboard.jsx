@@ -33,7 +33,8 @@ const CourseAdminDashboard = ({name, user}) => {
     const fetchCourses = (typeOfCourse) => {
         setLoading(true)
         if(typeOfCourse === "myCourses"){
-            axiosClient.get(`/select-user-added-courses/${user.id}`,{
+            setAssignedCourse([])
+            axiosClient.get(`/select-user-added-courses/${user.user_infos.id}`,{
                 params: {
                     page: 1,
                     //pageState.currentPage,
@@ -51,7 +52,8 @@ const CourseAdminDashboard = ({name, user}) => {
                 console.log(err);
             })
         } else if(typeOfCourse ==="assignedCourses"){
-            axiosClient.get(`/select-user-assigned-courses/${user.id}`,{
+            setAssignedCourse([])
+            axiosClient.get(`/select-user-assigned-courses/${user.user_infos.id}`,{
                     params: {
                         page: 1,
                         //pageState.currentPage,
@@ -100,14 +102,14 @@ const CourseAdminDashboard = ({name, user}) => {
             <div className='row-start-3 col-span-3 px-5 pt-2 p-2 flex flex-col'>
                 {/* Header */}
                 <div className="grid grid-cols-[auto_min-content] grid-rows-1 gap-10">
-                    <div className="grid grid-cols-[1fr_1fr] gap-4 pb-2">
+                    <div className="grid grid-cols-[1fr_1fr] gap-2 pb-2">
                         <div className={`group flex flex-col justify-center py-2 px-4 border-2 border-primary rounded-md bg-white shadow-md hover:cursor-pointer hover:bg-primary ease-in-out transition-all ${tab === "myCourses" ? "!bg-primary !text-white":"text-primary"}`} onClick={()=>setTab("myCourses")}>
                             <p className="font-header text-base group-hover:text-white"><span><FontAwesomeIcon icon={faBookBookmark}/></span> My Courses</p>
-                            <p className="font-text text-xs group-hover:text-white">View all your inputted courses in one place</p>
+                            {/* <p className="font-text text-xs group-hover:text-white">View all your inputted courses in one place</p> */}
                         </div>
                         <div className={`group flex flex-col justify-center py-2 px-4 border-2 border-primary rounded-md bg-white shadow-md hover:cursor-pointer hover:bg-primary ease-in-out transition-all ${tab === "assignedCourses" ? "!bg-primary !text-white":"text-primary"}`} onClick={()=>setTab("assignedCourses")}>
                             <p className="font-header text-base group-hover:text-white"><span><FontAwesomeIcon icon={faBook}/></span> Assigned Courses</p>
-                            <p className="font-text text-xs group-hover:text-white">View all your assigned courses in one place</p>
+                            {/* <p className="font-text text-xs group-hover:text-white">View all your assigned courses in one place</p> */}
                         </div>
                     </div>
                     <div className="col-start-2 flex flex-row gap-2 items-center pb-2">
@@ -137,6 +139,10 @@ const CourseAdminDashboard = ({name, user}) => {
                                     </div>
                                 </div>
                             ))
+                        ): assignedCourse.length === 0 ?(
+                            <div className="col-span-4 flex justify-center items-center h-full">
+                                <p className="font-text text-unactive">No Courses Found</p>
+                            </div>
                         ):(
                             assignedCourse.map((course) => (
                                 <div key={course.id} className="bg-white border border-divider w-full h-full shadow-md rounded-md hover:scale-105 hover:cursor-pointer flex flex-col transition-all ease-in-out" onClick={() => navigate(`/learner/course/${course.id}`)}>
