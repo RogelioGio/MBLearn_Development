@@ -76,16 +76,7 @@ class userCredentials_controller extends Controller
         $page = $request->input('page', 1);//Default page
         $perPage = $request->input('perPage',5); //Number of entry per page
         $currentUserId = $request->user()->userInfos->id;
-
-        // $userCredentials = UserCredentials::with(['userInfos', 'userInfos.roles'])->paginate($perPage);
-
-        // return response()->json([
-        //     'total' => $userCredentials->total(),
-        //     'lastPage' => $userCredentials->lastPage(),
-        //     'currentPage' => $userCredentials->currentPage(),
-        //     'data' => $userCredentials->items()
-        // ]);
-
+        $count = 0;
         $query = UserCredentials::with(['userInfos', 'userInfos.roles', 'userInfos.city', 'userInfos.branch',
         'userInfos.department', 'userInfos.section', 'userInfos.division', 'userInfos.title'])
         ->whereHas('userInfos', function ($subQuery) use ($currentUserId) {
@@ -95,27 +86,35 @@ class userCredentials_controller extends Controller
 
         // Apply filters based on userInfos attributes
         if ($request->has('status')) {
-            $query->whereHas('userInfos', function ($subQuery) use ($request) {
-                $subQuery->where('status', $request->input('status'));
-            });
+            if(!($request->input('status')['eq'] == "")){
+                $query->whereHas('userInfos', function ($subQuery) use ($request) {
+                    $subQuery->where('status', $request->input('status'));
+                });
+            }
         }
 
         if ($request->has('department_id')) {
-            $query->whereHas('userInfos', function ($subQuery) use ($request) {
-                $subQuery->where('department_id', $request->input('department_id'));
-            });
+            if(!($request->input('department_id')['eq'] == "")){
+                $query->whereHas('userInfos', function ($subQuery) use ($request) {
+                    $subQuery->where('department_id', $request->input('department_id'));
+                });
+            }
         }
 
         if ($request->has('branch_id')) {
-            $query->whereHas('userInfos', function ($subQuery) use ($request) {
-                $subQuery->where('branch_id', $request->input('branch_id'));
-            });
+            if(!($request->input('branch_id')['eq'] == "")){
+                $query->whereHas('userInfos', function ($subQuery) use ($request) {
+                    $subQuery->where('branch_id', $request->input('branch_id'));
+                });
+            }
         }
 
         if ($request->has('role_id')){
-            $query->whereHas('roles', function($subQuery) use ($request){
-                $subQuery->where('role_id', $request->input('role_id'));
-            });
+            if(!($request->input('role_id')['eq'] == "")){
+                $query->whereHas('roles', function($subQuery) use ($request){
+                    $subQuery->where('role_id', $request->input('role_id'));
+                });
+            }
         }
 
         // Paginate the filtered results
