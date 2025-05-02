@@ -180,7 +180,7 @@ class userInfo_controller extends Controller
             $status = $single['status'] ?? 'Active';
 
             if($existing){
-                $output[1][] = "Employee: ".$fullName." is already taken";
+                $output[1][] = "Employee: ".$fullName." employee ID is already taken";
                 continue;
             }
 
