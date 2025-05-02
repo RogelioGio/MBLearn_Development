@@ -116,7 +116,7 @@ class userInfo_controller extends Controller
     }
 
     public function bulkStoreUsers(BulkStoreUserRequest $bulkStoreUserRequest){
-        $output = ['Bulk Store Complete'];
+        $output = [];
         $count = 0;
         $bulk = collect($bulkStoreUserRequest->all())->map(function ($arr, $key){
             $messyArray = [];
@@ -180,37 +180,37 @@ class userInfo_controller extends Controller
             $status = $single['status'] ?? 'Active';
 
             if($existing){
-                $output[] = "Employee ID: ".$fullName." is already taken";
+                $output[1][] = "Employee: ".$fullName." is already taken";
                 continue;
             }
 
             if(11 > strlen($empID)){
-                $output[] = "Employee ID: ".$empID." is invalid";
+                $output[1][] = "Employee: ".$fullName."'s employee ID is less than 11 characters";
                 continue;
             }
 
             if(!$title){
-                $output[] = "Employee ID ".$empID." has an invalid title";
+                $output[1][] = "Employee: ".$fullName." has an invalid title";
                 continue;
             }
             if(!$role){
-                $output[] = "Employee ID ".$empID." has an invalid role";
+                $output[1][] = "Employee: ".$fullName." has an invalid role";
                 continue;
             }
             if(!$branch){
-                $output[] = "Employee ID ".$empID." has an invalid branch";
+                $output[1][] = "Employee: ".$fullName." has an invalid branch";
                 continue;
             }
             if(!$department){
-                $output[] = "Employee ID ".$empID." has an invalid department";
+                $output[1][] = "Employee: ".$fullName." has an invalid department";
                 continue;
             }
             if(!$section){
-                $output[] = "Employee ID ".$empID." has an invalid section";
+                $output[1][] = "Employee: ".$fullName." has an invalid section";
                 continue;
             }
             if(!$division){
-                $output[] = "Employee ID ".$empID." has an invalid division";
+                $output[1][] = "Employee: ".$fullName." has an invalid division";
                 continue;
             }
             $userCredentials = UserCredentials::create([
@@ -239,9 +239,9 @@ class userInfo_controller extends Controller
             $userCredentials->userInfos()->save($userInfo);
         }
         $counts = $count."/".$bulk->count()." Successfully Added Users";
-        array_splice($output, 1, 0, $counts);
+        array_splice($output, 0, 0, $counts);
         return response()->json([
-            'Message' => $output
+            'data' => $output
         ]);
     }
     /**
@@ -738,11 +738,16 @@ class userInfo_controller extends Controller
     }
 
     public function test(Request $request){
-        $appTimezone = date_default_timezone_get();
-        $now = Carbon::now("Asia/Hong_Kong");
+        $array = [];
+        for($i = 0; $i<10; $i++){
+            $array[0][] = $i;
+        }
+
+        $counts = " Successfully Added Users";
+        array_splice($array, 0, 0, $counts);
 
         return response()->json([
-            "hello" => $now->toDateTimeString()
+            'message' => $array
         ]);
     }
 }
