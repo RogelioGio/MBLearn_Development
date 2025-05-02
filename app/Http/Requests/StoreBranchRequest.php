@@ -25,6 +25,7 @@ class StoreBranchRequest extends FormRequest
     public function rules(): array
     {
         return [
+            "city_id" => 'required|integer|exists:cities,id',
             "branch_name" => 'required|string|unique:branches,branch_name'
         ];
     }
