@@ -24,8 +24,10 @@ use App\Models\UserInfos;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\UserCredentials;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon as SupportCarbon;
 use Illuminate\Support\Facades\Gate;
 
 class userInfo_controller extends Controller
@@ -178,7 +180,7 @@ class userInfo_controller extends Controller
             $status = $single['status'] ?? 'Active';
 
             if($existing){
-                $output[] = "Employee ID: ".$empID." is already taken";
+                $output[] = "Employee ID: ".$fullName." is already taken";
                 continue;
             }
 
@@ -736,19 +738,11 @@ class userInfo_controller extends Controller
     }
 
     public function test(Request $request){
-        $user = $request->user();
-        $arrays = $user->permissions->toArray();
-        $perm_names = [];
-        foreach($arrays as $array){
-            $perm_names[] = $array["permission_name"];
-        }
-        if(in_array("AddUserInfo", $perm_names)){
-            return response()->json([
-                "hello" => "true"
-            ]);
-        }
+        $appTimezone = date_default_timezone_get();
+        $now = Carbon::now("Asia/Hong_Kong");
+
         return response()->json([
-            "hello" => $perm_names
+            "hello" => $now->toDateTimeString()
         ]);
     }
 }
