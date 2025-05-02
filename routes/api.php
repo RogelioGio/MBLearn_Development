@@ -22,7 +22,6 @@ use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\SectionController;
 use App\Http\Controllers\Api\SubgroupController;
 use App\Http\Controllers\Api\TitleController;
-use App\Http\Controllers\Api\Training_ModeController;
 use App\Http\Controllers\Api\TypeController;
 use App\Models\UserInfos;
 
@@ -100,10 +99,10 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::apiResource('/courses', CourseController::class);
     Route::apiResource('/categories', CategoryController::class);
     Route::post('/categories/bulk', [CategoryController::class, 'bulkStore']);
-    Route::apiResource('/modes', Training_ModeController::class);
+
     Route::apiResource('/types', TypeController::class);
     Route::post('types/bulk', [TypeController::class, 'bulkStore']);
-    Route::apiResource('/subgroups', SubgroupController::class);
+
     Route::apiResource('/cities', CityController::class);
     Route::post('/cities/bulk', [CityController::class, 'bulkStore']);
     Route::apiResource('/departments', DepartmentController::class);
