@@ -25,6 +25,7 @@ import {
     SheetTitle,
     SheetTrigger,
 } from "../components/ui/sheet"
+import BulkEnrollmentCourseDuration from "../modalsandprops/BulkEnrollmentCourseDuration"
 
 export default function BulkEnrollment() {
 
@@ -44,6 +45,7 @@ export default function BulkEnrollment() {
     const [enrollmentFailed, setEnrollmentFailed] = useState(false) //Enrollment failed state
     const [empty, setEmpty] = useState(false) //No selected user state
     const [enrolling, setEnrolling] = useState(false) //Enrolling state
+    const [openDuration, setOpenDuration] = useState(true)
 
     //Pagenation States
     const [pageState, setPagination] = useState({
@@ -238,20 +240,20 @@ export default function BulkEnrollment() {
     //     console.log(results)
     // },[selected,results])
 
-    useEffect(() =>{
-        setLoading(true)
-        setLearnerLoading(true)
+    // useEffect(() =>{
+    //     setLoading(true)
+    //     setLearnerLoading(true)
 
-        //fetch courses
-        axiosClient.get('/courses').then(({data})=>{
-            setAssigned_courses(data.data);
-            handleCourseChange(data.data[0]);
-            selectCourse(data.data[0].name);
-            setLoading(false);
-        }).catch((err)=>
-        console.log(err)
-        );
-    },[]);
+    //     //fetch courses
+    //     axiosClient.get('/courses').then(({data})=>{
+    //         setAssigned_courses(data.data);
+    //         handleCourseChange(data.data[0]);
+    //         selectCourse(data.data[0].name);
+    //         setLoading(false);
+    //     }).catch((err)=>
+    //     console.log(err)
+    //     );
+    // },[]);
 
 
     useEffect(() => {
@@ -267,7 +269,50 @@ export default function BulkEnrollment() {
     }
 
     //Formik for filter
-    const formik = useFormik({});
+    const formik = useFormik({
+        initialValues : {
+            filter: "myCourses"
+        }
+    });
+
+    useEffect(() => {
+        console.log(formik.values.filter)
+        setLoading(true)
+        setLearnerLoading(true)
+        if(formik.values.filter === "myCourses"){
+            axiosClient.get(`/select-user-added-courses/${user.user_infos?.id}`,{
+                params: {
+                    page: pageState.currentPage,
+                    perPage: pageState.perPage,
+                }
+            })
+            .then(({data}) => {
+                setAssigned_courses(data.data)
+                pageChangeState("totalCourses", data.total)
+                pageChangeState("lastPage", data.lastPage)
+                setLoading(false)
+            })
+            .catch((err) => {
+                console.log(err);
+            })
+        } else if(formik.values.filter ==="Assigned"){
+            axiosClient.get(`/select-user-assigned-courses/${user.user_infos?.id}`,{
+                    params: {
+                        page: pageState.currentPage,
+                        per_page: pageState.perPage,
+                    }
+                })
+                .then(({ data }) => {
+                    setAssigned_courses(data.data)
+                    pageChangeState("totalCourses", data.total)
+                    pageChangeState("lastPage", data.lastPage)
+                    setLoading(false)
+                })
+                .catch((err) => {
+                    console.log(err);
+                })
+        }
+    },[formik.values.filter])
 
     //reset the operation
     const reset = () => {
@@ -301,20 +346,20 @@ export default function BulkEnrollment() {
             {/* Course Header */}
             <div className="flex flex-row items-center pl-5 pr-4 border-r border-divider w-full">
                 <div className="inline-flex flex-col gap-1 row-start-3 col-span-1 py-2 w-full">
-                    <label htmlFor="department">
+                    <label htmlFor="filter">
                         <div>
                             <p className="font-header text-lg text-primary">Courses</p>
                             <p className="font-text text-xs text-unactive">Quickly choose a course a leaner can be enrolled</p>
                         </div>
                     </label>
                     <div className="grid grid-cols-1">
-                        <select id="department" name="department" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                            // value={formik.values.department}
-                            // onChange={formik.handleChange}
-                            // onBlur={formik.handleBlur}
+                        <select id="filter" name="filter" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                            value={formik.values.filter}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
                             >
-                            <option value=""> My Courses</option>
-                            <option value=""> Assigned Courses</option>
+                            <option value="myCourses"> My Courses</option>
+                            <option value="Assigned"> Assigned Courses</option>
                         </select>
                         <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
                         <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
@@ -325,7 +370,7 @@ export default function BulkEnrollment() {
             </div>
 
             {/* Assigned Courses */}
-            <div className="col-start-1 row-start-3 row-span-2 mb-5 border-r border-divider h-full pl-5 flex flex-col items-center gap-2 pb-4">
+            <div className="col-start-1 row-start-3 row-span-2 mb-5 border-r border-divider h-full pl-5 pr-4 flex flex-col items-center gap-2 pb-4">
                         {
                         isLoading ? (
                             <div className="flex flex-col gap-2 items-center justify-center text-center h-full pr-4">
@@ -334,9 +379,9 @@ export default function BulkEnrollment() {
                             </div>
                         )
                         : (
-                            <ScrollArea className="h-[calc(100vh-12.25rem)] mr-1">
-                                <div className="gap-2 h-full flex flex-col pr-4 snap-y snap-mandatory overflow-y-auto">
-                                    {
+                            <ScrollArea className="h-[calc(100vh-12.25rem)] w-full mr-1">
+                                <div className="gap-2 h-full flex flex-col snap-y snap-mandatory overflow-y-auto">
+                                {
                                         assigned_courses.map((Course) => (
 
                                             <AssignedCourseEnrollmentCard
@@ -408,7 +453,9 @@ export default function BulkEnrollment() {
                                     profile_image={learner?.profile_image}
                                     name={[learner?.first_name, learner?.middle_name, learner?.last_name].filter(Boolean).join(" ")}
                                     employeeID={learner?.employeeID}
+                                    division={learner?.division.division_name}
                                     department={learner?.department.department_name}
+                                    section={learner?.section.section_name}
                                     title={learner?.title.title_name}
                                     branch={learner?.branch.branch_name}
                                     city={learner?.city.city_name}
@@ -468,6 +515,8 @@ export default function BulkEnrollment() {
 
         {/* Successfully Enrolled */}
         <EnrolledSuccessfullyModal isOpen={enrolled} onClose={() => {setEnrolled(false); reset()}} result={results}/>
+        {/* Training Duration */}
+        <BulkEnrollmentCourseDuration open={openDuration} close={()=>{setOpenDuration(false)}}/>
         {/* Error */}
         <EnrollmentFailedModal isOpen={enrollmentFailed} onClose={()=>setEnrollmentFailed(false)}/>
         {/* When no Selected Users */}

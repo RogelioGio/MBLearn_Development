@@ -20,6 +20,7 @@ import {
     SheetTrigger,
 } from "../components/ui/sheet"
 import { useCourseContext } from "../contexts/CourseListProvider"
+import { useFormik } from "formik"
 
 
 
@@ -34,8 +35,8 @@ export default function AssignedCourseCatalog() {
 
     // Sort Order State
     const [sort, setSort] = useState({
-        nameOrder : "none",
-        dateOrder : "none",
+        name : "none",
+        created_at : "none",
     });
     const toggleSort = (key,value) => {
         setSort((prev => ({
@@ -43,12 +44,28 @@ export default function AssignedCourseCatalog() {
             [key]:value,
         })));
     }
-    const setOrder = (key) => {
+    const setOrder = (key, tab) => {
         const order = sort[key] === "none" ? "asc" : sort[key] === "asc" ? "desc" : "none";
         toggleSort(key, order);
+
+        if(tab === "myCourses"){
+            axiosClient.get('')
+        }else if(tab === "assignedCourses"){
+
+        }else if(tab === "allCourses"){
+            setLoading(true)
+            axiosClient.get(`/courses?${key}[${order}]=true`)
+            .then(({ data }) => {
+                setAssignedCourse(data.data)
+                pageChangeState("totalCourses", data.total)
+                pageChangeState("lastPage", data.lastPage)
+                setLoading(false)
+            })
+            .catch((err) => {
+                console.log(err);
+            })
+        }
     }
-
-
 
     const fetchCourses = (typeOfCourse) => {
         setLoading(true)
@@ -84,7 +101,7 @@ export default function AssignedCourseCatalog() {
                 .catch((err) => {
                     console.log(err);
                 })
-        } else if((typeOfCourse === "allCourses")){
+        } else if(typeOfCourse === "allCourses"){
             axiosClient.get('/courses')
             .then(({ data }) => {
                 setAssignedCourse(data.data)
@@ -97,6 +114,7 @@ export default function AssignedCourseCatalog() {
             })
         }
     }
+
 
     const [pageState, setPagination] = useState({
         currentPage: 1,
@@ -157,6 +175,68 @@ export default function AssignedCourseCatalog() {
         //     })
         // },[assigned_course])
 
+        const formik = useFormik({
+            initialValues: {
+                type: "",
+                category: "",
+                training_type: "",
+            },
+            onSubmit: (values) => {
+                console.log(values);
+
+                // if(tab === "myCourses"){
+                //     axiosClient.get(`/select-user-added-courses/${user.user_infos?.id}`,{
+                //         params: {
+                //             page: pageState.currentPage,
+                //             perPage: pageState.perPage,
+                //         }
+                //     })
+                //     .then(({data}) => {
+                //         setAssignedCourse(data.data)
+                //         pageChangeState("totalCourses", data.total)
+                //         pageChangeState("lastPage", data.lastPage)
+                //         setLoading(false)
+                //     })
+                //     .catch((err) => {
+                //         console.log(err);
+                //     })
+                // } else if(tab ==="assignedCourses"){
+                //     axiosClient.get(`/select-user-assigned-courses/${user.user_infos?.id}`,{
+                //             params: {
+                //                 page: pageState.currentPage,
+                //                 per_page: pageState.perPage,
+                //             }
+                //         })
+                //         .then(({ data }) => {
+                //             setAssignedCourse(data.data)
+                //             pageChangeState("totalCourses", data.total)
+                //             pageChangeState("lastPage", data.lastPage)
+                //             setLoading(false)
+                //         })
+                //         .catch((err) => {
+                //             console.log(err);
+                //         })
+                // } else if(tab === "allCourses"){
+                //     axiosClient.get('/courses')
+                //     .then(({ data }) => {
+                //         setAssignedCourse(data.data)
+                //         pageChangeState("totalCourses", data.total)
+                //         pageChangeState("lastPage", data.lastPage)
+                //         setLoading(false)
+                //     })
+                //     .catch((err) => {
+                //         console.log(err);
+                //     })
+                // }
+                setFiltered(true)
+            }
+        })
+
+        const clearFilter = () => {
+            setFiltered(false)
+            formik.resetForm()
+        }
+
 
     return(
     <>
@@ -202,14 +282,14 @@ export default function AssignedCourseCatalog() {
             {/* Sorter */}
             <div className="flex flex-row gap-2 pl-5 items-center">
                 {/* Sort by Name */}
-                <div className={`h-fit flex flex-row items-center border-2 border-primary py-2 px-4 font-header bg-secondarybackground rounded-md text-primary gap-2 w-fit hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md ${sort.nameOrder === "asc" ? '!bg-primary !text-white' : sort.nameOrder === "desc" ? '!bg-primary !text-white': 'bg-secondarybackground' }`} onClick={() => setOrder("nameOrder")}>
+                <div className={`h-fit flex flex-row items-center border-2 border-primary py-2 px-4 font-header bg-secondarybackground rounded-md text-primary gap-2 w-fit hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md ${sort.name === "asc" ? '!bg-primary !text-white' : sort.name === "desc" ? '!bg-primary !text-white': 'bg-secondarybackground' }`} onClick={() => setOrder("name", tab)}>
                     <p>Name</p>
-                    <FontAwesomeIcon icon={sort.nameOrder === "asc" ? faArrowUpAZ : sort.nameOrder === "desc" ? faArrowDownZA : faSort}/>
+                    <FontAwesomeIcon icon={sort.name === "asc" ? faArrowUpAZ : sort.name === "desc" ? faArrowDownZA : faSort}/>
                 </div>
                 {/* Sort By Date-Added */}
-                <div className={`h-fit flex flex-row items-center border-2 border-primary py-2 px-4 font-header bg-secondarybackground rounded-md text-primary gap-2 w-fit hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md ${sort.dateOrder === "asc" ? '!bg-primary !text-white' : sort.dateOrder === "desc" ? '!bg-primary !text-white': 'bg-secondarybackground' }`} onClick={() => setOrder("dateOrder")}>
+                <div className={`h-fit flex flex-row items-center border-2 border-primary py-2 px-4 font-header bg-secondarybackground rounded-md text-primary gap-2 w-fit hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md ${sort.created_at === "asc" ? '!bg-primary !text-white' : sort.created_at === "desc" ? '!bg-primary !text-white': 'bg-secondarybackground' }`} onClick={() => setOrder("created_at", tab)}>
                     <p>Date</p>
-                    <FontAwesomeIcon icon={sort.dateOrder === "asc" ? faArrowUpWideShort : sort.dateOrder === "desc" ? faArrowDownShortWide : faSort}/>
+                    <FontAwesomeIcon icon={sort.created_at === "asc" ? faArrowUpWideShort : sort.created_at === "desc" ? faArrowDownShortWide : faSort}/>
                 </div>
             </div>
 
@@ -227,16 +307,17 @@ export default function AssignedCourseCatalog() {
                         <h1 className='font-header text-2xl text-primary'>Course Filter</h1>
                         <p className='text-md font-text text-unactive text-sm'>Categorize courses</p>
                     </div>
+                    <form onSubmit={formik.handleSubmit}>
                     <div className="flex flex-col gap-2 w-full">
                         <div className="inline-flex flex-col gap-2 row-start-4 col-span-1">
-                            <label htmlFor="course_type" className="font-header text-xs flex flex-row justify-between">
+                            <label htmlFor="type" className="font-header text-xs flex flex-row justify-between">
                                 <p className="font-text text-xs text-unactive">Course Type</p>
                             </label>
                             <div class="grid grid-cols-1">
-                                <select id="course_type" name="course_type" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
-                                    // value={formik2.values.course_type}
-                                    // onChange={formik2.handleChange}
-                                    // onBlur={formik2.handleBlur}
+                                <select id="type" name="type" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
+                                    value={formik.values.type}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
                                 >
                                 <option value="">Select a course type</option>
                                 {coursetypes.map((type) => (
@@ -247,17 +328,16 @@ export default function AssignedCourseCatalog() {
                                 <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
                                 </svg>
                             </div>
-                                {/* {formik2.touched.course_type && formik2.errors.course_type ? (<div className="text-red-500 text-xs font-text">{formik2.errors.course_type}</div>):null} */}
                         </div>
                         <div className="inline-flex flex-col gap-2 row-start-4 col-span-1">
-                            <label htmlFor="course_type" className="font-header text-xs flex flex-row justify-between">
+                            <label htmlFor="category" className="font-header text-xs flex flex-row justify-between">
                                 <p className="font-text text-xs text-unactive">Course Category</p>
                             </label>
                             <div class="grid grid-cols-1">
-                                <select id="course_type" name="course_type" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
-                                    // value={formik2.values.course_type}
-                                    // onChange={formik2.handleChange}
-                                    // onBlur={formik2.handleBlur}
+                                <select id="category" name="category" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
+                                    value={formik.values.category}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
                                 >
                                 <option value="">Select a course category</option>
                                 {coursecategories.map((category) => (
@@ -271,21 +351,18 @@ export default function AssignedCourseCatalog() {
                                 {/* {formik2.touched.course_type && formik2.errors.course_type ? (<div className="text-red-500 text-xs font-text">{formik2.errors.course_type}</div>):null} */}
                         </div>
                         <div className="inline-flex flex-col gap-2 row-start-4 col-span-1">
-                            <label htmlFor="course_type" className="font-header text-xs flex flex-row justify-between">
+                            <label htmlFor="training_type" className="font-header text-xs flex flex-row justify-between">
                                 <p className="font-text text-xs text-unactive">Training Type</p>
                             </label>
                             <div class="grid grid-cols-1">
-                                <select id="course_type" name="course_type" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
-                                    // value={formik2.values.course_type}
-                                    // onChange={formik2.handleChange}
-                                    // onBlur={formik2.handleBlur}
+                                <select id="training_type" name="training_type" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
+                                    value={formik.values.training_type}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
                                 >
                                 <option value="">Select a Training Type</option>
-                                <option value="">Mandatory</option>
-                                <option value="">Non-Mandatory</option>
-                                {/* {coursetypes.map((type) => (
-                                    <option key={type.id} value={type.id}>{type.type_name}</option>
-                                ))} */}
+                                <option value="Mandatory">Mandatory</option>
+                                <option value="Unmandatory">Non-Mandatory</option>
                                 </select>
                                 <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
                                 <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
@@ -294,14 +371,20 @@ export default function AssignedCourseCatalog() {
                                 {/* {formik2.touched.course_type && formik2.errors.course_type ? (<div className="text-red-500 text-xs font-text">{formik2.errors.course_type}</div>):null} */}
                         </div>
                         <div className="flex flex-row gap-2 w-full py-2">
-                            <div className="border-2 border-primary rounded-md w-full py-2 px-4 font-header text-white bg-primary flex justify-center items-center hover:cursor-pointer hover:bg-primaryhover transition-all ease-in-out shadow-md">
-                                <p>Filter</p>
-                            </div>
-                            <div className="border-2 border-primary rounded-md w-full py-2 px-4 font-header text-primary bg-white flex justify-center items-center hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out shadow-md">
-                                <p>Clear</p>
-                            </div>
+                        <button
+                        type="submit"
+                        className="border-2 border-primary rounded-md w-full py-2 px-4 font-header text-white bg-primary flex justify-center items-center hover:cursor-pointer hover:bg-primaryhover transition-all ease-in-out shadow-md"
+                        >
+                        <p>Filter</p>
+                        </button>
+                            {
+                                isFiltered ? (<div className="border-2 border-primary rounded-md w-full py-2 px-4 font-header text-primary bg-white flex justify-center items-center hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out shadow-md" onClick={clearFilter}>
+                                                    <p>Clear</p>
+                                                </div>) : null
+                            }
                         </div>
                     </div>
+                    </form>
                     </SheetContent>
                 </Sheet>
 
@@ -389,7 +472,7 @@ export default function AssignedCourseCatalog() {
         </div>
 
         {/* Add Course */}
-        <AddCourseModal open={openAddCourse} onClose={()=>setOpenAddCourse(false)}  />
+        <AddCourseModal open={openAddCourse} onClose={()=>setOpenAddCourse(false)} tab={tab}/>
         </>
     )
 }

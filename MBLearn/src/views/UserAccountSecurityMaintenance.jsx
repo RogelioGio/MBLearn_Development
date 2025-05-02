@@ -376,7 +376,7 @@ export default function UserAccountSecurityMaintenance(){
                                         role={user.user_infos?.roles?.[0]?.role_name}
                                         image={user.user_infos?.profile_image }
                                         status={user.user_infos?.status}
-                                        lastLogin={user?.last_logged_id}
+                                        lastLogin={user?.last_logged_in}
                                         edit={OpenEdit}
                                         />
                                 ))

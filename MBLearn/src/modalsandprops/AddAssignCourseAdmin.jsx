@@ -58,7 +58,7 @@ const AddAssignCourseAdmin = ({courseID ,open, close,}) => {
         onSubmit: (values) => {
             setLoading(true)
             console.log(values)
-            axiosClient.get(`/index-course-admins?department_id[eq]=${values.department}&branch_id[eq]=${values.branch}&division_id[eq]=${values.division}&section_id[eq]=${values.section}`)
+            axiosClient.get(`/get-available-course-admins/${courseID}?department_id[eq]=${values.department}&branch_id[eq]=${values.branch}&division_id[eq]=${values.division}&section_id[eq]=${values.section}`)
             .then((response) => {
                 console.log(response.data.data)
                 setFilteredEmployee(response.data.data)

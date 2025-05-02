@@ -13,25 +13,26 @@ const LearnerDashboard = ({name,user}) => {
 
     useEffect(()=>{
         setLoading(true)
-    axiosClient.get(`/select-user-courses/${user.id}`
-        ,{
-            params: {
-                page: 1,
-                // pageState.currentPage,
-                perPage: 4
-                // pageState.perPage,
+        console.log(user)
+        axiosClient.get(`/select-user-courses/${user.user_infos.id}`
+            ,{
+                params: {
+                    page: 1,
+                    // pageState.currentPage,
+                    perPage: 4
+                    // pageState.perPage,
+                }
             }
-        }
-    )
-    .then(({data}) => {
-        console.log(data.data)
-        setEnrolled(data.data)
-        setLoading(false)
-    })
-    .catch((err) => {
-        console.log(err)
-        setLoading(false)
-    });
+        )
+        .then(({data}) => {
+            console.log(data.data)
+            setEnrolled(data.data)
+            setLoading(false)
+        })
+        .catch((err) => {
+            console.log(err)
+            setLoading(false)
+        });
     }, [])
 
     useEffect(() => {

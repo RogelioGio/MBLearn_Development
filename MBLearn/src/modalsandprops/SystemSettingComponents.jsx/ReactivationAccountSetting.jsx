@@ -93,7 +93,7 @@ const ReactivationAccountSetting = () => {
                                 users.map(user => (
                                     <UserReactivationProps
                                     key={user.id}
-                                    id={user.id}
+                                    id={user.user_infos.id}
                                     image={user.user_infos?.profile_image}
                                     name={[user.user_infos?.first_name, user.user_infos?.middle_name, user.user_infos?.last_name].join(" ")}
                                     MBEmail={user.MBemail}
