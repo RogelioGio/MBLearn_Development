@@ -334,22 +334,28 @@ class userInfo_controller extends Controller
         $builder = $userInfos->assignedCourses();
         $querySort = $sort->transform($builder, $request);
 
-        
         if($request->has('type_id')){
-            $querySort->whereHas('types', function($subQuery) use ($request){
-                $subQuery->where('type_id', $request->input('type_id'));
-            });
+            if(!($request->input('type_id')['eq'] == "")){
+                $querySort->whereHas('types', function($subQuery) use ($request){
+                    $subQuery->where('type_id', $request->input('type_id'));
+                });
+            }
         }
 
         if($request->has('category_id')){
-            $querySort->whereHas('categories', function($subQuery) use ($request){
-                $subQuery->where('category_id', $request->input('category_id'));
-            });
+            if(!($request->input('category_id')['eq'] == "")){
+                $querySort->whereHas('categories', function($subQuery) use ($request){
+                    $subQuery->where('category_id', $request->input('category_id'));
+                });
+            }
         }
 
         if($request->has('training_type')){
-            $querySort->where('training_type', $request->input('training_type'));
+            if(!($request->input('training_type')['eq'] == "")){
+                $querySort->where('training_type', $request->input('training_type'));
+            }
         }
+
 
         $courses = $querySort->with(['categories', 'types', 'training_modes'])->where('archived', '=', 'active')->paginate($perPage);
 
@@ -414,21 +420,26 @@ class userInfo_controller extends Controller
         $builder = $userInfos->addedCourses();
         $querySort = $sort->transform($builder, $request);
 
-        
         if($request->has('type_id')){
-            $querySort->whereHas('types', function($subQuery) use ($request){
-                $subQuery->where('type_id', $request->input('type_id'));
-            });
+            if(!($request->input('type_id')['eq'] == "")){
+                $querySort->whereHas('types', function($subQuery) use ($request){
+                    $subQuery->where('type_id', $request->input('type_id'));
+                });
+            }
         }
 
         if($request->has('category_id')){
-            $querySort->whereHas('categories', function($subQuery) use ($request){
-                $subQuery->where('category_id', $request->input('category_id'));
-            });
+            if(!($request->input('category_id')['eq'] == "")){
+                $querySort->whereHas('categories', function($subQuery) use ($request){
+                    $subQuery->where('category_id', $request->input('category_id'));
+                });
+            }
         }
 
         if($request->has('training_type')){
-            $querySort->where('training_type', $request->input('training_type'));
+            if(!($request->input('training_type')['eq'] == "")){
+                $querySort->where('training_type', $request->input('training_type'));
+            }
         }
 
         $courses = $querySort->with(['categories', 'types', 'training_modes'])->where('archived', '=', 'active')->paginate($perPage);
@@ -545,19 +556,25 @@ class userInfo_controller extends Controller
         $querySort = $sort->transform($builder, $request);
 
         if($request->has('type_id')){
-            $querySort->whereHas('types', function($subQuery) use ($request){
-                $subQuery->where('type_id', $request->input('type_id'));
-            });
+            if(!($request->input('type_id')['eq'] == "")){
+                $querySort->whereHas('types', function($subQuery) use ($request){
+                    $subQuery->where('type_id', $request->input('type_id'));
+                });
+            }
         }
 
         if($request->has('category_id')){
-            $querySort->whereHas('categories', function($subQuery) use ($request){
-                $subQuery->where('category_id', $request->input('category_id'));
-            });
+            if(!($request->input('category_id')['eq'] == "")){
+                $querySort->whereHas('categories', function($subQuery) use ($request){
+                    $subQuery->where('category_id', $request->input('category_id'));
+                });
+            }
         }
 
         if($request->has('training_type')){
-            $querySort->where('training_type', $request->input('training_type'));
+            if(!($request->input('training_type')['eq'] == "")){
+                $querySort->where('training_type', $request->input('training_type'));
+            }
         }
 
         $courses = $querySort->with(['categories', 'types', 'training_modes'])->where('archived', '=', 'active')->paginate($perPage);
