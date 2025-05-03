@@ -14,7 +14,7 @@ import React from "react"
 import EnrolledSuccessfullyModal from "../modalsandprops/EnrollmentSuccessfulyModal"
 import EnrollmentFailedModal from "../modalsandprops/EnrollmentFailedModal"
 import NoEmployeeSelectedModal from "../modalsandprops/NoEmployeeSelectedModal"
-import { set } from "date-fns"
+import { add, format, set } from "date-fns"
 import { ScrollArea } from "../components/ui/scroll-area"
 import {
     Sheet,
@@ -45,7 +45,7 @@ export default function BulkEnrollment() {
     const [enrollmentFailed, setEnrollmentFailed] = useState(false) //Enrollment failed state
     const [empty, setEmpty] = useState(false) //No selected user state
     const [enrolling, setEnrolling] = useState(false) //Enrolling state
-    const [openDuration, setOpenDuration] = useState(true)
+    const [openDuration, setOpenDuration] = useState(false)
 
     //Pagenation States
     const [pageState, setPagination] = useState({
@@ -91,6 +91,8 @@ export default function BulkEnrollment() {
         }
     }
 
+    //Calculate Course Duration
+
     //Handle Learner to be enroll
     const handleLearnerChange = (courseId) => {
         setLearnerLoading(true)
@@ -101,7 +103,6 @@ export default function BulkEnrollment() {
                     }
         }
         ).then(({data})=>{
-            console.log(data)
             setLearners(data.data)
             pageChangeState('totalUser', data.total)
             pageChangeState('lastPage', data.lastPage)
@@ -140,7 +141,19 @@ export default function BulkEnrollment() {
                     (entry) => !(entry.userId === User.id && entry.courseId === course.id )
                 )
             }else{
-                return [...prevUsers, {userId: User.id, courseId: course.id, enrollerId: user.user_infos.id, deadline: "2025-06-01" }]
+                const start = new Date()
+
+                const months = course?.months || 0;
+                const weeks = course?.weeks || 0;
+                const days = course?.days || 0;
+
+                const end = add(start, {
+                    months,
+                    weeks,
+                    days,
+                });
+
+                return [...prevUsers, {userId: User.id, courseId: course.id, enrollerId: user.user_infos.id,  start_date: format(start, 'yyyy-MM-dd'), end_date: format(end, 'yyyy-MM-dd')}]
             }
         })
         setResults((prevCourses) => {
@@ -225,20 +238,24 @@ export default function BulkEnrollment() {
             return
         }
 
-        axiosClient.post('enrollments/bulk', selected)
-        .then(({data}) => {
-            setEnrolling(false)
-            console.log(data);
-            setEnrolled(true);
-            setSelected([]);
-        })
-        .catch((err)=>console.log(err));
+        // axiosClient.post('enrollments/bulk', selected)
+        // .then(({data}) => {
+        //     setEnrolling(false)
+        //     console.log(data);
+        //     setEnrolled(true);
+        //     setSelected([]);
+        // })
+        // .catch((err)=>console.log(err));
+
+        setEnrolling(false)
+        setOpenDuration(true)
     }
 
-    // useEffect(()=>{
-    //     console.log(selected)
-    //     console.log(results)
-    // },[selected,results])
+    useEffect(()=>{
+        console.log(selected)
+        console.log(results)
+        console.log(course)
+    },[selected,results])
 
     // useEffect(() =>{
     //     setLoading(true)
@@ -316,7 +333,7 @@ export default function BulkEnrollment() {
 
     //reset the operation
     const reset = () => {
-        console.log("resseting")
+        console.log("reseting")
         handleCourseChange(assigned_courses[0]);
         setResults([])
     }
@@ -516,7 +533,7 @@ export default function BulkEnrollment() {
         {/* Successfully Enrolled */}
         <EnrolledSuccessfullyModal isOpen={enrolled} onClose={() => {setEnrolled(false); reset()}} result={results}/>
         {/* Training Duration */}
-        <BulkEnrollmentCourseDuration open={openDuration} close={()=>{setOpenDuration(false)}}/>
+        <BulkEnrollmentCourseDuration open={openDuration} close={()=>{setOpenDuration(false)}} result={results}/>
         {/* Error */}
         <EnrollmentFailedModal isOpen={enrollmentFailed} onClose={()=>setEnrollmentFailed(false)}/>
         {/* When no Selected Users */}
