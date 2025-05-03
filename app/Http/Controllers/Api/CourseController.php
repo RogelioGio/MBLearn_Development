@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Filters\CourseFilter;
 use App\Filters\CourseSort;
+use App\Filters\UserInfosFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BulkAssignCourseAdmins;
 use App\Http\Requests\BulkStoreCourseRequest;
@@ -34,22 +35,26 @@ class CourseController extends Controller
         // $page = $request->input('page',1); // default page
         // $perPage = $request->input('per_page', 3); // default per page
 
-
-
         if($request->has('type_id')){
-            $querySort->whereHas('types', function($subQuery) use ($request){
-                $subQuery->where('type_id', $request->input('type_id'));
-            });
+            if(!($request->input('type_id')['eq'] == "")){
+                $querySort->whereHas('types', function($subQuery) use ($request){
+                    $subQuery->where('type_id', $request->input('type_id'));
+                });
+            }
         }
 
         if($request->has('category_id')){
-            $querySort->whereHas('categories', function($subQuery) use ($request){
-                $subQuery->where('category_id', $request->input('category_id'));
-            });
+            if(!($request->input('category_id')['eq'] == "")){
+                $querySort->whereHas('categories', function($subQuery) use ($request){
+                    $subQuery->where('category_id', $request->input('category_id'));
+                });
+            }
         }
 
         if($request->has('training_type')){
-            $querySort->where('training_type', $request->input('training_type'));
+            if(!($request->input('training_type')['eq'] == "")){
+                $querySort->where('training_type', $request->input('training_type'));
+            }
         }
 
         $courses = $querySort->with(['categories', 'types', 'training_modes'])->where('archived', '=', 'active')->get();
@@ -179,7 +184,9 @@ class CourseController extends Controller
         $page = $request->input('page', 1); // default page
         $perPage = $request->input('per_page', 8); // default per page
 
-        $users = $course->enrolledUsers()->with(['division','department','section','city','branch'])->where('archived', '=', 'active')->paginate($perPage);
+        $filter = new UserInfosFilter();
+        $queryItems = $filter->transform($request);
+        $users = $course->enrolledUsers()->where($queryItems)->with(['division','department','section','city','branch'])->where('archived', '=', 'active')->paginate($perPage);
 
         return response() -> json([
             'data' => $users->items(),

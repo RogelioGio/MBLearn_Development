@@ -47,7 +47,10 @@ class BranchController extends Controller
     public function store(StoreBranchRequest $request)
     {
         $validated = $request->validated();
-        $branch = Branch::create($validated);
+        $city = City::find($validated['city_id']);
+        $branch = Branch::create(["branch_name" => $validated['branch_name']]);
+        $branch->city()->associate($city);
+        $branch->save();
         return $branch;
     }
 

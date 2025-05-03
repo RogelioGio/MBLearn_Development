@@ -24,8 +24,10 @@ use App\Models\UserInfos;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\UserCredentials;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon as SupportCarbon;
 use Illuminate\Support\Facades\Gate;
 
 class userInfo_controller extends Controller
@@ -114,7 +116,7 @@ class userInfo_controller extends Controller
     }
 
     public function bulkStoreUsers(BulkStoreUserRequest $bulkStoreUserRequest){
-        $output = ['Bulk Store Complete'];
+        $output = [];
         $count = 0;
         $bulk = collect($bulkStoreUserRequest->all())->map(function ($arr, $key){
             $messyArray = [];
@@ -178,37 +180,37 @@ class userInfo_controller extends Controller
             $status = $single['status'] ?? 'Active';
 
             if($existing){
-                $output[] = "Employee ID: ".$empID." is already taken";
+                $output[1][] = "Employee: ".$fullName." employee ID is already taken";
                 continue;
             }
 
             if(11 > strlen($empID)){
-                $output[] = "Employee ID: ".$empID." is invalid";
+                $output[1][] = "Employee: ".$fullName."'s employee ID is less than 11 characters";
                 continue;
             }
 
             if(!$title){
-                $output[] = "Employee ID ".$empID." has an invalid title";
+                $output[1][] = "Employee: ".$fullName." has an invalid title";
                 continue;
             }
             if(!$role){
-                $output[] = "Employee ID ".$empID." has an invalid role";
+                $output[1][] = "Employee: ".$fullName." has an invalid role";
                 continue;
             }
             if(!$branch){
-                $output[] = "Employee ID ".$empID." has an invalid branch";
+                $output[1][] = "Employee: ".$fullName." has an invalid branch";
                 continue;
             }
             if(!$department){
-                $output[] = "Employee ID ".$empID." has an invalid department";
+                $output[1][] = "Employee: ".$fullName." has an invalid department";
                 continue;
             }
             if(!$section){
-                $output[] = "Employee ID ".$empID." has an invalid section";
+                $output[1][] = "Employee: ".$fullName." has an invalid section";
                 continue;
             }
             if(!$division){
-                $output[] = "Employee ID ".$empID." has an invalid division";
+                $output[1][] = "Employee: ".$fullName." has an invalid division";
                 continue;
             }
             $userCredentials = UserCredentials::create([
@@ -237,9 +239,9 @@ class userInfo_controller extends Controller
             $userCredentials->userInfos()->save($userInfo);
         }
         $counts = $count."/".$bulk->count()." Successfully Added Users";
-        array_splice($output, 1, 0, $counts);
+        array_splice($output, 0, 0, $counts);
         return response()->json([
-            'Message' => $output
+            'data' => $output
         ]);
     }
     /**
@@ -334,22 +336,28 @@ class userInfo_controller extends Controller
         $builder = $userInfos->assignedCourses();
         $querySort = $sort->transform($builder, $request);
 
-        
         if($request->has('type_id')){
-            $querySort->whereHas('types', function($subQuery) use ($request){
-                $subQuery->where('type_id', $request->input('type_id'));
-            });
+            if(!($request->input('type_id')['eq'] == "")){
+                $querySort->whereHas('types', function($subQuery) use ($request){
+                    $subQuery->where('type_id', $request->input('type_id'));
+                });
+            }
         }
 
         if($request->has('category_id')){
-            $querySort->whereHas('categories', function($subQuery) use ($request){
-                $subQuery->where('category_id', $request->input('category_id'));
-            });
+            if(!($request->input('category_id')['eq'] == "")){
+                $querySort->whereHas('categories', function($subQuery) use ($request){
+                    $subQuery->where('category_id', $request->input('category_id'));
+                });
+            }
         }
 
         if($request->has('training_type')){
-            $querySort->where('training_type', $request->input('training_type'));
+            if(!($request->input('training_type')['eq'] == "")){
+                $querySort->where('training_type', $request->input('training_type'));
+            }
         }
+
 
         $courses = $querySort->with(['categories', 'types', 'training_modes'])->where('archived', '=', 'active')->paginate($perPage);
 
@@ -414,21 +422,26 @@ class userInfo_controller extends Controller
         $builder = $userInfos->addedCourses();
         $querySort = $sort->transform($builder, $request);
 
-        
         if($request->has('type_id')){
-            $querySort->whereHas('types', function($subQuery) use ($request){
-                $subQuery->where('type_id', $request->input('type_id'));
-            });
+            if(!($request->input('type_id')['eq'] == "")){
+                $querySort->whereHas('types', function($subQuery) use ($request){
+                    $subQuery->where('type_id', $request->input('type_id'));
+                });
+            }
         }
 
         if($request->has('category_id')){
-            $querySort->whereHas('categories', function($subQuery) use ($request){
-                $subQuery->where('category_id', $request->input('category_id'));
-            });
+            if(!($request->input('category_id')['eq'] == "")){
+                $querySort->whereHas('categories', function($subQuery) use ($request){
+                    $subQuery->where('category_id', $request->input('category_id'));
+                });
+            }
         }
 
         if($request->has('training_type')){
-            $querySort->where('training_type', $request->input('training_type'));
+            if(!($request->input('training_type')['eq'] == "")){
+                $querySort->where('training_type', $request->input('training_type'));
+            }
         }
 
         $courses = $querySort->with(['categories', 'types', 'training_modes'])->where('archived', '=', 'active')->paginate($perPage);
@@ -545,19 +558,25 @@ class userInfo_controller extends Controller
         $querySort = $sort->transform($builder, $request);
 
         if($request->has('type_id')){
-            $querySort->whereHas('types', function($subQuery) use ($request){
-                $subQuery->where('type_id', $request->input('type_id'));
-            });
+            if(!($request->input('type_id')['eq'] == "")){
+                $querySort->whereHas('types', function($subQuery) use ($request){
+                    $subQuery->where('type_id', $request->input('type_id'));
+                });
+            }
         }
 
         if($request->has('category_id')){
-            $querySort->whereHas('categories', function($subQuery) use ($request){
-                $subQuery->where('category_id', $request->input('category_id'));
-            });
+            if(!($request->input('category_id')['eq'] == "")){
+                $querySort->whereHas('categories', function($subQuery) use ($request){
+                    $subQuery->where('category_id', $request->input('category_id'));
+                });
+            }
         }
 
         if($request->has('training_type')){
-            $querySort->where('training_type', $request->input('training_type'));
+            if(!($request->input('training_type')['eq'] == "")){
+                $querySort->where('training_type', $request->input('training_type'));
+            }
         }
 
         $courses = $querySort->with(['categories', 'types', 'training_modes'])->where('archived', '=', 'active')->paginate($perPage);
@@ -719,19 +738,16 @@ class userInfo_controller extends Controller
     }
 
     public function test(Request $request){
-        $user = $request->user();
-        $arrays = $user->permissions->toArray();
-        $perm_names = [];
-        foreach($arrays as $array){
-            $perm_names[] = $array["permission_name"];
+        $array = [];
+        for($i = 0; $i<10; $i++){
+            $array[0][] = $i;
         }
-        if(in_array("AddUserInfo", $perm_names)){
-            return response()->json([
-                "hello" => "true"
-            ]);
-        }
+
+        $counts = " Successfully Added Users";
+        array_splice($array, 0, 0, $counts);
+
         return response()->json([
-            "hello" => $perm_names
+            'message' => $array
         ]);
     }
 }
