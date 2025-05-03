@@ -4,12 +4,47 @@ import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react"
 import * as React from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "../components/ui/popover";
 import { Calendar } from "../components/ui/calendar";
-import { format } from "date-fns";
+import { add, differenceInDays, format } from "date-fns";
 import { useEffect } from "react";
 import { useState } from "react";
+import { useFormik } from "formik";
 
-const BulkEnrollmentCourseDuration = ({open, close, result}) => {
+function normalizationDuration(values, setField) {
+    let months = parseInt(values.months) || 0;
+    let weeks = parseInt(values.weeks) || 0;
+    let days = parseInt(values.days) || 0;
+
+    if (weeks >= 4) {
+        const addMonths = Math.floor(weeks / 4);
+        months += addMonths;
+        weeks = weeks % 4;
+    }
+
+    if (days >= 7) {
+        const addWeeks = Math.floor(days / 7);
+        weeks += addWeeks;
+        days = days % 7;
+    }
+
+    if (weeks >= 4) {
+        const addMonths = Math.floor(weeks / 4);
+        months += addMonths;
+        weeks = weeks % 4;
+    }
+
+    setField('months', months > 0 ? months : '');
+    setField('weeks', weeks > 0 ? weeks : '');
+    setField('days', days > 0 ? days : '');
+}
+
+const BulkEnrollmentCourseDuration = ({open, close, result, selected, setSelected, setResults}) => {
     const [selectedCourse, setSelectedCourse] = useState();
+    const [course, setCourse] = useState();
+    const [duration, setDuration] = useState({
+            months: result[0]?.course.months,
+            weeks: result[0]?.course.weeks,
+            days: result[0]?.course.days,
+        })
 
     const [date, setDate] = React.useState({
         from: new Date(),
@@ -17,11 +52,123 @@ const BulkEnrollmentCourseDuration = ({open, close, result}) => {
     });
 
 
-    useEffect(()=> {console.log(result)},[result])
+    useEffect(()=> {
+        console.log(duration)
+        console.log(course)
+        console.log(date)
+        console.log(selected)
+    },[duration, course, open])
 
     useEffect(() => {
         setSelectedCourse(result[0]?.course.id)
-    },[result])
+        setCourse(result[0]?.course)
+
+        const course = result[0]?.course;
+
+        const from = new Date();
+        const months = result[0]?.course.months || 0;
+        const weeks = result[0]?.course.weeks || 0;
+        const days = result[0]?.course.days || 0;
+
+        const to = add(from, {
+            months,
+            weeks,
+            days,
+        });
+
+        formik.setFieldValue('months', course?.months);
+        formik.setFieldValue('weeks', course?.weeks);
+        formik.setFieldValue('days', course?.days);
+
+        setDate({ from, to });
+    },[open])
+
+    const formik = useFormik({
+        initialValues: {
+            months: 0,
+            weeks: 0,
+            days: 0,
+        },
+        enableReinitialize: true, // Ensures form values update when duration changes
+        onSubmit: values => {
+            console.log('Form values:', values);
+            console.log('Selected course:', selectedCourse);
+            console.log('Selected date:', date);
+            console.log('Selected entries:', selected);
+            console.log('Selected course object:', result);
+          // You can handle form submission logic here
+        },
+    });
+
+    const changeCourse = (courseId) => {
+        setSelectedCourse(courseId)
+        const selectedResult = result.find(r => r.course.id === courseId);
+        if (selectedResult && selectedResult.course) {
+            setCourse(selectedResult.course);
+
+            // Update Formik duration values directly
+            formik.setValues({
+                months: selectedResult.months || 0,
+                weeks: selectedResult.weeks || 0,
+                days: selectedResult.days || 0,
+            });
+        }
+        setDate({
+            from: selected.filter(r => r.courseId === courseId)[0]?.start_date,
+            to: selected.filter(r => r.courseId === courseId)[0]?.end_date,
+        })
+    }
+
+    const handleDateChange = (CourseId) => (range) =>{
+
+
+        const formattedFrom = format(new Date(range.from), 'yyyy-MM-dd');
+        const formattedTo = format(new Date(range.to), 'yyyy-MM-dd');
+
+        setDate(range)
+
+        // Update selected entries with new dates
+        const updatedSelected = selected.map((entry) => {
+            if (entry.courseId === CourseId) {
+            return {
+                ...entry,
+                start_date: formattedFrom,
+                end_date: formattedTo,
+            };
+            }
+            return entry;
+        });
+        setSelected(updatedSelected);
+
+        const totalDays = differenceInDays(new Date(range.to), new Date(range.from));
+
+        const months = Math.floor(totalDays / 30);
+        const weeks = Math.floor((totalDays % 30) / 7);
+        const days = (totalDays % 30) % 7;
+
+
+        const updated = result.map((entry) => {
+            if (entry?.course.id === CourseId) {
+                return {
+                    ...entry,
+                    months: months,
+                    weeks: weeks,
+                    days: days,
+                };
+            }
+            return entry;
+        });
+        setResults(updated);
+
+        formik.setValues({
+            months: months || 0,
+            weeks: weeks || 0,
+            days: days || 0,
+        });
+
+
+
+    }
 
     //Front-end Pagnination (experimental)
     //result is the data
@@ -117,21 +264,9 @@ const BulkEnrollmentCourseDuration = ({open, close, result}) => {
                                             {/* Months */}
                                             <div className="inline-flex flex-col row-start-2">
                                             <input type="text" name="months"
-                                                // value={formik.values.months}
-                                                // onChange={formik.handleChange}
-                                                // onBlur={(e) => {
-                                                //     formik.handleBlur(e);
-                                                //     normalizationDuration({
-                                                //         ...formik.values,
-                                                //         months: e.target.value,
-                                                //     }, formik.setFieldValue);
-
-                                                //     const updated = parseInt(e.target.value, 10) || 0
-                                                //     setDuration((d) => ({
-                                                //         ...d,
-                                                //         months: updated
-                                                //     }))
-                                                // }}
+                                                value={formik.values.months}
+                                                onChange={formik.handleChange}
+                                                onBlur={formik.handleBlur}
                                                 readOnly
                                                 className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
                                                 <label htmlFor="course_name" className="font-header text-xs flex flex-row justify-between">
@@ -142,21 +277,9 @@ const BulkEnrollmentCourseDuration = ({open, close, result}) => {
                                             {/* Weeks */}
                                             <div className="inline-flex flex-col row-start-2">
                                             <input type="text" name="weeks"
-                                                // value={formik.values.weeks}
-                                                // onChange={formik.handleChange}
-                                                // onBlur={(e) => {
-                                                //     formik.handleBlur(e);
-                                                //     normalizationDuration({
-                                                //         ...formik.values,
-                                                //         weeks: e.target.value,
-                                                //     }, formik.setFieldValue);
-
-                                                //     const updated = parseInt(e.target.value, 10) || 0
-                                                //     setDuration((d) => ({
-                                                //         ...d,
-                                                //         weeks: updated
-                                                //     }))
-                                                // }}
+                                                value={formik.values.weeks}
+                                                onChange={formik.handleChange}
+                                                onBlur={formik.handleBlur}
                                                 readOnly
                                                 className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
                                                 <label htmlFor="course_name" className="font-header text-xs flex flex-row justify-between">
@@ -167,21 +290,9 @@ const BulkEnrollmentCourseDuration = ({open, close, result}) => {
                                             {/* Days */}
                                             <div className="inline-flex flex-col row-start-2">
                                             <input type="text" name="days"
-                                                // value={formik.values.days}
-                                                // onChange={formik.handleChange}
-                                                // onBlur={(e) => {
-                                                //     formik.handleBlur(e);
-                                                //     normalizationDuration({
-                                                //         ...formik.values,
-                                                //         days: e.target.value,
-                                                //     }, formik.setFieldValue);
-
-                                                //     const updated = parseInt(e.target.value, 10) || 0
-                                                //     setDuration((d) => ({
-                                                //         ...d,
-                                                //         days: updated
-                                                //     }))
-                                                // }}
+                                                value={formik.values.days}
+                                                onChange={formik.handleChange}
+                                                onBlur={formik.handleBlur}
                                                 readOnly
                                                 className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
                                                 <label htmlFor="course_name" className="font-header text-xs flex flex-row justify-between pb-2">
@@ -218,7 +329,7 @@ const BulkEnrollmentCourseDuration = ({open, close, result}) => {
                                                 mode="range"
                                                 defaultMonth={date?.from}
                                                 selected={date}
-                                                //onSelect={handleDateChange}
+                                                onSelect={handleDateChange(selectedCourse)}
                                                 disabled={{ before: new Date() }}
                                                 numberOfMonths={2}
                                             />
@@ -229,7 +340,7 @@ const BulkEnrollmentCourseDuration = ({open, close, result}) => {
                                     <div className="col-start-1 row-start-2 row-span-2 border-r border-divider px-4 py-2 flex flex-col gap-2">
                                     {
                                         currentPaginated.map((course, index) => (
-                                            <div key={course.id} className={`text-primary w-full p-3 grid grid-cols-[auto_3.75rem] border border-divider rounded-md font-text shadow-md hover:cursor-pointer hover:scale-105 transition-all ease-in-out ${selectedCourse === course.course.id ? "bg-primary !text-white": null} `} onClick={() => setSelectedCourse(course.course.id)}>
+                                            <div key={course.id} className={`text-primary w-full p-3 grid grid-cols-[auto_3.75rem] border border-divider rounded-md font-text shadow-md hover:cursor-pointer hover:scale-105 transition-all ease-in-out ${selectedCourse === course.course.id ? "bg-primary !text-white": null} `} onClick={() => changeCourse(course.course.id)}>
                                                 <div className="pb-2 flex justify-between w-full col-span-2">
                                                     <span className="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-gray-500/10 ring-inset">
                                                         {course.course.training_type}
@@ -376,7 +487,8 @@ const BulkEnrollmentCourseDuration = ({open, close, result}) => {
                                     `}>
                                     Cancel</button>
                                 <button
-                                    //onClick={()=>enroll()}
+                                    onClick={formik.handleSubmit}
+                                    type="submit"
                                     className={`bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out w-full
                                     `}>
                                     Set Duration</button>

@@ -179,7 +179,10 @@ export default function BulkEnrollment() {
             } else {
                 updated.push({
                     course: course,
-                    enrollees: [User]
+                    enrollees: [User],
+                    months: course?.months,
+                    weeks: course?.weeks,
+                    days: course?.days,
                 });
             }
             return updated;
@@ -533,7 +536,7 @@ export default function BulkEnrollment() {
         {/* Successfully Enrolled */}
         <EnrolledSuccessfullyModal isOpen={enrolled} onClose={() => {setEnrolled(false); reset()}} result={results}/>
         {/* Training Duration */}
-        <BulkEnrollmentCourseDuration open={openDuration} close={()=>{setOpenDuration(false)}} result={results}/>
+        <BulkEnrollmentCourseDuration open={openDuration} close={()=>{setOpenDuration(false)}} result={results} selected={selected} setSelected={setSelected} setResults={setResults}/>
         {/* Error */}
         <EnrollmentFailedModal isOpen={enrollmentFailed} onClose={()=>setEnrollmentFailed(false)}/>
         {/* When no Selected Users */}
