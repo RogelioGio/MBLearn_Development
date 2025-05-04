@@ -13,10 +13,6 @@ const AddFormInputModal = ({ isOpen, onClose, formInput, category}) => {
     const {departments, cities} = useOption()
     const [adding, setAdding] = useState(false)
 
-    useEffect(()=>{
-        setAdding(false)
-    },[open])
-
     const formik = useFormik({
         initialValues: {
             [formInput] : '',
