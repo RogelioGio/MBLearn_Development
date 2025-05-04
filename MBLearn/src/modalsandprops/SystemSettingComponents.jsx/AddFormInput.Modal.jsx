@@ -2,13 +2,61 @@ import { faCircleXmark as regularXmark } from '@fortawesome/free-regular-svg-ico
 import { faListCheck, faCircleXmark as solidXmark } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react'
-import { useFormik } from 'formik';
+import axios from 'axios';
+import { useFormik, yupToFormErrors } from 'formik';
+import axiosClient from 'MBLearn/src/axios-client';
 import { useOption } from 'MBLearn/src/contexts/AddUserOptionProvider';
-import { useState } from 'react'
-const AddFormInputModal = ({ isOpen, onClose, formInput }) => {
+import { useEffect, useState } from 'react';
+import * as Yup from 'yup';
+
+const AddFormInputModal = ({ isOpen, onClose, formInput, category}) => {
     const {departments, cities} = useOption()
     const [adding, setAdding] = useState(false)
-    const formik = useFormik({})
+
+    useEffect(()=>{
+        setAdding(false)
+    },[open])
+
+    const formik = useFormik({
+        initialValues: {
+            [formInput] : '',
+        },
+        validationSchema: Yup.object({
+            [formInput]: Yup.string().required('This field is required')
+        }),
+        onSubmit: (value) => {
+            console.log(value[formInput])
+
+            setAdding(true)
+            function getEndPoint(formInput) {
+                switch (formInput) {
+                    case 'Division' :
+                        return 'divisions';
+                    case 'Department' :
+                        return 'departments';
+                    case 'Section' :
+                        return 'sections'
+                    case 'City' :
+                        return 'cities'
+                    default:
+                        return null
+                }
+            }
+
+            const endPoint = getEndPoint(formInput)
+            axiosClient.post(`/${endPoint}`, value[formInput])
+            .then((res) =>
+                {
+                    console.log(res)
+                    setAdding(false)
+                })
+            .catch((err) => {
+                setAdding(false)
+            })
+        }
+    })
+
+
     return (
         <>
         <Dialog open={isOpen} onClose={()=>{}}>
@@ -32,15 +80,16 @@ const AddFormInputModal = ({ isOpen, onClose, formInput }) => {
                             {
                                 formInput === 'Division' ? (
                                     <div className='px-5 py-2'>
+                                        <form onSubmit={formik.handleSubmit}>
                                         <div className='row-start-2 py-2'>
-                                            <label htmlFor="input" className="font-header text-xs flex flex-row justify-between pb-2">
+                                            <label htmlFor={formInput} className="font-header text-xs flex flex-row justify-between pb-2">
                                             <p className="font-text text-unactive">{formInput} Input Name:</p>
                                             </label>
-                                            <input type="input" name="input"
-                                                // value={formik.values.courseID}
-                                                // onChange={formik.handleChange}
-                                                // onBlur={formik.handleBlur}
-                                                // maxLength={11}
+                                            <input type="input" name={formInput}
+                                                value={formik.values[formInput]}
+                                                onChange={formik.handleChange}
+                                                onBlur={formik.handleBlur}
+                                                maxLength={11}
                                                 className="w-full font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
                                                 {/* Validation Errors */}
                                             </div>
@@ -50,22 +99,25 @@ const AddFormInputModal = ({ isOpen, onClose, formInput }) => {
                                                     Cancel
                                                 </button>
                                                 <input type="submit"
-                                                    value="Add Input"
+                                                    value={adding ? ("Adding...") : ("Add Form Input")}
+                                                    disabled = {adding}
                                                     className={`bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out w-full
                                                     `}/>
                                                 </div>
+                                        </form>
                                         </div>
                                 ) : formInput === 'Department' ? (
                                     <div className='px-5 py-2'>
+                                        <form onSubmit={formik.handleSubmit}>
                                         <div className='row-start-2 py-2'>
                                             <label htmlFor="input" className="font-header text-xs flex flex-row justify-between pb-2">
                                             <p className="font-text text-unactive">{formInput} Input Name:</p>
                                             </label>
-                                            <input type="input" name="input"
-                                                // value={formik.values.courseID}
-                                                // onChange={formik.handleChange}
-                                                // onBlur={formik.handleBlur}
-                                                // maxLength={11}
+                                            <input type="input" name={formInput}
+                                                value={formik.values[formInput]}
+                                                onChange={formik.handleChange}
+                                                onBlur={formik.handleBlur}
+                                                maxLength={11}
                                                 className="w-full font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
                                                 {/* Validation Errors */}
                                             </div>
@@ -75,10 +127,12 @@ const AddFormInputModal = ({ isOpen, onClose, formInput }) => {
                                                     Cancel
                                                 </button>
                                                 <input type="submit"
-                                                    value="Add Input"
+                                                    value={adding ? ("Adding...") : ("Add Form Input")}
+                                                    disabled = {adding}
                                                     className={`bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out w-full
                                                     `}/>
                                                 </div>
+                                        </form>
                                         </div>
                                 ) : formInput === 'Title' ? (
                                     <div className='px-5 py-2'>
@@ -118,22 +172,24 @@ const AddFormInputModal = ({ isOpen, onClose, formInput }) => {
                                                     Cancel
                                                 </button>
                                                 <input type="submit"
-                                                    value="Add Input"
+                                                    value = {adding ? ("Adding...") : ("Add Form Input")}
+                                                    disabled = {adding}
                                                     className={`bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out w-full
                                                     `}/>
                                                 </div>
                                         </div>
                                 ) : formInput === 'Section' ? (
                                     <div className='px-5 py-2'>
+                                        <form onSubmit={formik.handleSubmit}>
                                         <div className='row-start-2 py-2'>
                                             <label htmlFor="input" className="font-header text-xs flex flex-row justify-between pb-2">
                                             <p className="font-text text-unactive">{formInput} Input Name:</p>
                                             </label>
-                                            <input type="input" name="input"
-                                                // value={formik.values.courseID}
-                                                // onChange={formik.handleChange}
-                                                // onBlur={formik.handleBlur}
-                                                // maxLength={11}
+                                            <input type="input" name={formInput}
+                                                value={formik.values[formInput]}
+                                                onChange={formik.handleChange}
+                                                onBlur={formik.handleBlur}
+                                                maxLength={11}
                                                 className="w-full font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
                                                 {/* Validation Errors */}
                                             </div>
@@ -143,22 +199,25 @@ const AddFormInputModal = ({ isOpen, onClose, formInput }) => {
                                                     Cancel
                                                 </button>
                                                 <input type="submit"
-                                                    value="Add Input"
+                                                    value={adding ? ("Adding...") : ("Add Form Input")}
+                                                    disabled = {adding}
                                                     className={`bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out w-full
                                                     `}/>
                                                 </div>
+                                        </form>
                                         </div>
                                 ) : formInput === 'City' ? (
                                     <div className='px-5 py-2'>
+                                        <form onSubmit={formik.handleSubmit}>
                                         <div className='row-start-2 py-2'>
                                             <label htmlFor="input" className="font-header text-xs flex flex-row justify-between pb-2">
                                             <p className="font-text text-unactive">{formInput} Input Name:</p>
                                             </label>
-                                            <input type="input" name="input"
-                                                // value={formik.values.courseID}
-                                                // onChange={formik.handleChange}
-                                                // onBlur={formik.handleBlur}
-                                                // maxLength={11}
+                                            <input type="input" name={formInput}
+                                                value={formik.values[formInput]}
+                                                onChange={formik.handleChange}
+                                                onBlur={formik.handleBlur}
+                                                maxLength={11}
                                                 className="w-full font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
                                                 {/* Validation Errors */}
                                             </div>
@@ -168,10 +227,12 @@ const AddFormInputModal = ({ isOpen, onClose, formInput }) => {
                                                     Cancel
                                                 </button>
                                                 <input type="submit"
-                                                    value="Add Input"
+                                                    value={adding ? ("Adding...") : ("Add Form Input")}
+                                                    disabled = {adding}
                                                     className={`bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out w-full
                                                     `}/>
                                                 </div>
+                                        </form>
                                         </div>
                                 ) : formInput === 'Branch' ? (
                                     <div className='px-5 py-2'>

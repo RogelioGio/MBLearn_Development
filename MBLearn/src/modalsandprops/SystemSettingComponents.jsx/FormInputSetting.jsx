@@ -7,16 +7,59 @@ import React from "react";
 import { ScrollArea } from "MBLearn/src/components/ui/scroll-area";
 import AddFormInputModal from "./AddFormInput.Modal";
 
+//Front end Pagination
+const usePagination = (data, itemPerpage = 2) => {
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const indexFirstItem = (currentPage - 1) * itemPerpage;
+    const indexLastItem = Math.min(indexFirstItem + itemPerpage, data.length);
+    const currentPaginated = data.slice(indexFirstItem, indexLastItem)
+    const totalPage = Math.ceil(data.length / itemPerpage)
+    const totalitem = data.length
+
+    //Pagination Controll
+    const handlePageChange = (pageNum) => {
+        if (pageNum >= 1 && pageNum <= totalPage) setCurrentPage(pageNum);
+    }
+    const goToNextPage = () => {
+        // setCurrentPage((prev) => Math.min(prev + 1, totalPage));
+        if (currentPage < totalPage) setCurrentPage(currentPage + 1)
+    };
+
+    const goToPreviousPage = () => {
+        if (currentPage > 1) setCurrentPage(currentPage - 1);
+    };
+
+    return {
+        currentPaginated,
+        currentPage,
+        totalPage,
+        indexFirstItem,
+        indexLastItem,
+        totalitem,
+        goToNextPage,
+        goToPreviousPage,
+        handlePageChange
+    }
+}
+
 const FormInputSetting = () => {
     const {departments, titles, cities, location, division, section} = useOption();
     const [loading, setLoading] = useState()
     const [add, setAdd] = useState(false)
     const [formInput, setFormInput] = useState()
 
+    const { currentPaginated: currentDivs, indexFirstItem: fromDivs, indexLastItem: toDivs, totalitem: totalDivs, goToNextPage, goToPreviousPage, currentPage, totalPage, handlePageChange } = usePagination(division);
+
     const handleFormInput = (input) => {
         setFormInput(input)
         setAdd(true)
     }
+
+    //Front-end Pagnination (experimental)
+        //result is the data
+
+
 
     return(
         <>
@@ -60,7 +103,7 @@ const FormInputSetting = () => {
                             loading ? (
                                 "Loading..."
                             ):(
-                                division.map((division =>(
+                                currentDivs.map((division =>(
                                     <tr key={division.id} className={`font-text text-md text-primary hover:bg-gray-200 cursor-pointer`}>
                                         <td className={`font-text p-4 flex flex-row items-center gap-4 border-l-2 border-transparent transition-all ease-in-out`}>{division.division_name}</td>
                                         <td className={`font-text p-4 gap-4 transition-all ease-in-out`}>{format(new Date(division.created_at), "MMMM dd, yyyy")}</td>
@@ -79,6 +122,26 @@ const FormInputSetting = () => {
                         }
                     </tbody>
                     </table>
+                </div>
+                <div>
+                    <p>{fromDivs + 1} to {toDivs} of {totalDivs}</p>
+                    <div onClick={goToNextPage} className="p-3 border border-red-700">
+                        next
+                    </div>
+                    <div onClick={goToPreviousPage}>
+                        back
+                    </div>
+                    <div>
+                    {Array.from({ length: totalPage }, (_, i) => (
+                        <button
+                            key={i}
+                            onClick={() => handlePageChange(i + 1)}
+                            className={currentPage === i + 1 ? 'font-bold text-blue-500' : ''}
+                        >
+                            {i + 1}
+                        </button>
+                        ))}
+                    </div>
                 </div>
             </div>
             {/* Employee's Department */}
