@@ -18,51 +18,38 @@ const DeleteFormInputModal = ({open, close, formInput, formInputEntry}) => {
                 <div className='fixed inset-0 z-50 w-screen overflow-y-auto'>
                     <div className='flex min-h-full items-center justify-center p-4 text center'>
                         <DialogPanel transition className='w-[50vw] p-5 transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in'>
-                            <div className='grid grid-cols-[min-content_1fr_min-content] grid-rows-[min-content] mx-5 py-2 gap-x-10'>
-                                <div className='col-span-1 flex justify-end items-center'>
-                                    <div className='flex items-center justify-center w-24 aspect-square bg-primarybg rounded-full text-primary'>
-                                        <FontAwesomeIcon icon={faTrash} className='text-2xl'/>
-                                    </div>
-                                </div>
-
+                            <div className='grid grid-cols-[1fr_1fr_min-content] grid-rows-[min-content] mx-5 py-5 border-b border-divider gap-y-4'>
+                                {/* Header */}
                                 <div className='col-span-2 flex flex-col justify-center items-start'>
-                                    <div className='border-b border-divider py-5 w-full'>
-                                        <h1 className='text-primary font-header text-3xl'>Delete {formInput} Input</h1>
-                                        <p className='text-unactive font-text text-xs'>Confirm {formInput?.toLowerCase()} input in the system can will be used in form and options</p>
-                                    </div>
-
-                                    <div className='grid grid-cols-1 grid-rows-3 py-3 w-full gap-y-2'>
-                                        <div className='flex flex-col gap-2'>
-                                            <p className='font-text text-xs text-unactive'>Input Category:</p>
-                                            <p className='font-text'>{formInput}</p>
-                                        </div>
-                                        <div className='flex flex-col gap-2'>
-                                            <p className='font-text text-xs text-unactive'>Input Name:</p>
-                                            <p className='font-text'>{formInputEntry?.[Object.keys(formInputEntry).find(key => key.endsWith('_name'))]}</p>
-                                        </div>
-                                        <div className='flex flex-col gap-2'>
-                                            <p className='font-text text-xs text-unactive'>Input Created Date:</p>
-                                            <p className="font-text">
-                                                {formInputEntry?.created_at
-                                                    ? format(new Date(formInputEntry.created_at), "MMMM dd, yyyy")
-                                                    : "No date available"}
-                                                </p>
-                                        </div>
-                                    </div>
-
-                                </div>
-
-                                {/* Header
-                                <div className='col-span-2 flex flex-col justify-center items-start'>
-                                    <h1 className='text-primary font-header text-3xl'>Edit {formInput} Input</h1>
-                                    <p className='text-unactive font-text text-xs'>Edit {formInput?.toLowerCase()} input in the system can will be used in form and options</p>
+                                    <h1 className='text-primary font-header text-3xl'>Delete {formInput} Input</h1>
+                                    <p className='text-unactive font-text text-xs'>Confirm {formInput?.toLowerCase()} input in the system can will be used in form and options</p>
                                 </div>
                                 <div className='col-span-1 flex justify-end items-center'>
                                     <div className='flex items-center justify-center p-5 bg-primarybg rounded-full text-primary'>
-                                        <FontAwesomeIcon icon={faListCheck} className='text-lg'/>
+                                        <FontAwesomeIcon icon={faTrash} className='text-lg'/>
                                     </div>
-                                </div> */}
+                                </div>
                             </div>
+
+                            <div className='grid grid-cols-3 grid-rows-1 w-full gap-x-5 px-5 py-2'>
+                                <div className='flex flex-col gap-2'>
+                                    <p className='font-text text-xs text-unactive'>Input Category:</p>
+                                    <p className='font-text'>{formInput}</p>
+                                </div>
+                                <div className='flex flex-col gap-2'>
+                                    <p className='font-text text-xs text-unactive'>Input Name:</p>
+                                    <p className='font-text'>{formInputEntry?.[Object.keys(formInputEntry).find(key => key.endsWith('_name'))]}</p>
+                                </div>
+                                <div className='flex flex-col gap-2'>
+                                    <p className='font-text text-xs text-unactive'>Input Created Date:</p>
+                                    <p className="font-text">
+                                        {formInputEntry?.created_at
+                                            ? format(new Date(formInputEntry.created_at), "MMMM dd, yyyy")
+                                            : "No date available"}
+                                        </p>
+                                </div>
+                            </div>
+
                             <div className="flex flex-row gap-2 py-2">
                             <button onClick={close}
                             className={`bg-white border-2 border-primary p-4 rounded-md font-header uppercase text-primary text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 hover:text-white hover:border-primaryhover transition-all ease-in-out w-full`}>

@@ -238,10 +238,12 @@ const FormInputSetting = () => {
                                             <td className={`font-text p-4 flex flex-row items-center gap-4 border-l-2 border-transparent transition-all ease-in-out`}>{department.department_name}</td>
                                             <td className={`font-text p-4 gap-4 transition-all ease-in-out`}>{format(new Date(department.created_at), "MMMM dd, yyyy")}</td>
                                             <td className="flex flex-row gap-2 justify-end p-4">
-                                                <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all '>
+                                                <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all'
+                                                    onClick={() => handleEditFormInput({ input: "Department", entry: department })}>
                                                     <FontAwesomeIcon icon={faPenToSquare} className='text-sm'/>
                                                 </div>
-                                                <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all '>
+                                                <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all'
+                                                    onClick={()=>handleDeleteFormInput("Department", department)}>
                                                     <FontAwesomeIcon icon={faTrash} className='text-sm'/>
                                                 </div>
                                             </td>
@@ -405,10 +407,12 @@ const FormInputSetting = () => {
                                             <td className={`font-text p-4 flex flex-row items-center gap-4 border-l-2 border-transparent transition-all ease-in-out`}>{section.section_name}</td>
                                             <td className={`font-text p-4 gap-4 transition-all ease-in-out`}>{format(new Date(section.created_at), "MMMM dd, yyyy")}</td>
                                             <td className="flex flex-row gap-2 justify-end p-4">
-                                                <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all '>
+                                                <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all'
+                                                    onClick={() => handleEditFormInput({ input: "Section", entry: section })}>
                                                     <FontAwesomeIcon icon={faPenToSquare} className='text-sm'/>
                                                 </div>
-                                                <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all '>
+                                                <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all'
+                                                    onClick={()=>handleDeleteFormInput("Section", section)}>
                                                     <FontAwesomeIcon icon={faTrash} className='text-sm'/>
                                                 </div>
                                             </td>
@@ -499,10 +503,12 @@ const FormInputSetting = () => {
                                             <td className={`font-text p-4 flex flex-row items-center gap-4 border-l-2 border-transparent transition-all ease-in-out`}>{city.city_name}</td>
                                             <td className={`font-text p-4 gap-4 transition-all ease-in-out`}>{format(new Date(city.created_at), "MMMM dd, yyyy")}</td>
                                             <td className="flex flex-row gap-2 justify-end p-4">
-                                                <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all '>
+                                                <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all'
+                                                    onClick={() => handleEditFormInput({ input: "City", entry: city })}>
                                                     <FontAwesomeIcon icon={faPenToSquare} className='text-sm'/>
                                                 </div>
-                                                <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all '>
+                                                <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all'
+                                                    onClick={()=>handleDeleteFormInput("City", city)}>
                                                     <FontAwesomeIcon icon={faTrash} className='text-sm'/>
                                                 </div>
                                             </td>

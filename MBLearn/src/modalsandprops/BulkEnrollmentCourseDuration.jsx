@@ -122,8 +122,8 @@ const BulkEnrollmentCourseDuration = ({open, close, result, selected, setSelecte
     const handleDateChange = (CourseId) => (range) =>{
 
 
-        const formattedFrom = format(new Date(range.from), 'yyyy-MM-dd');
-        const formattedTo = format(new Date(range.to), 'yyyy-MM-dd');
+        const formattedFrom = format(new Date(range?.from), 'yyyy-MM-dd');
+        const formattedTo = format(new Date(range?.to), 'yyyy-MM-dd');
 
         setDate(range)
 
