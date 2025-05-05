@@ -37,7 +37,7 @@ function normalizationDuration(values, setField) {
     setField('days', days > 0 ? days : '');
 }
 
-const BulkEnrollmentCourseDuration = ({open, close, result, selected, setSelected, setResults}) => {
+const BulkEnrollmentCourseDuration = ({open, close, result, selected, setSelected, setResults, handleEnrollment}) => {
     const [selectedCourse, setSelectedCourse] = useState();
     const [course, setCourse] = useState();
     const [duration, setDuration] = useState({
@@ -490,7 +490,7 @@ const BulkEnrollmentCourseDuration = ({open, close, result, selected, setSelecte
                                     `}>
                                     Cancel</button>
                                 <button
-                                    onClick={formik.handleSubmit}
+                                    onClick={handleEnrollment}
                                     type="submit"
                                     className={`bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out w-full
                                     `}>

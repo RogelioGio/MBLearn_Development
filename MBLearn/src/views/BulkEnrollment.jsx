@@ -403,9 +403,21 @@ export default function BulkEnrollment() {
 
     //reset the operation
     const reset = () => {
-        console.log("reseting")
-        handleCourseChange(assigned_courses[0]);
-        setResults([])
+        setTimeout(() => {
+            handleCourseChange(assigned_courses[0]);
+            setResults([])
+            setSelected([]);
+        },250)
+        // handleCourseChange(assigned_courses[0]);
+        // setResults([])
+    }
+
+    //Handle Enrollment Submisstion
+    const handleEnrollment = () => {
+        setOpenDuration(false)
+        setEnrolled(true)
+        console.log("for the API", selected)
+        console.log("For the result",results)
     }
 
     return (
@@ -621,7 +633,7 @@ export default function BulkEnrollment() {
         {/* Successfully Enrolled */}
         <EnrolledSuccessfullyModal isOpen={enrolled} onClose={() => {setEnrolled(false); reset()}} result={results}/>
         {/* Training Duration */}
-        <BulkEnrollmentCourseDuration open={openDuration} close={()=>{setOpenDuration(false)}} result={results} selected={selected} setSelected={setSelected} setResults={setResults}/>
+        <BulkEnrollmentCourseDuration open={openDuration} close={()=>{setOpenDuration(false)}} result={results} selected={selected} setSelected={setSelected} setResults={setResults} handleEnrollment={handleEnrollment}/>
         {/* Error */}
         <EnrollmentFailedModal isOpen={enrollmentFailed} onClose={()=>setEnrollmentFailed(false)}/>
         {/* When no Selected Users */}
