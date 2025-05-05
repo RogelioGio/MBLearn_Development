@@ -17,6 +17,7 @@ const EditUserCredsModal = ({open, close, ID, editSuccess}) => {
     const [updating, setUpdating] = useState(false)
     const [role, setRoles] = useState([])
     const [selectedUser, setSelectedUser] = useState()
+    const [accountPerm, setAccountPerm] =useState([])
 
     useEffect(() => {
         setLoading(true)
@@ -45,37 +46,52 @@ const EditUserCredsModal = ({open, close, ID, editSuccess}) => {
         setUpdating(false)
     },[])
 
+    //Must Seperate the formik from the modal
 
     const formik = useFormik({
         enableReinitialize: true,
-        initialValues: {
+        initialValues:
+        tab === 1 ? {
             MBEmail: selectedUser?.MBemail || "Loading...",
             password: "",
+        }:{
             role: selectedUser?.user_infos.roles?.[0].id || "Loading",
         },
+
         onSubmit: (values) => {
             console.log(values);
 
-            const payload = {
-                MBemail: values.MBEmail,
-                password: values.password
-            }
-
             setUpdating(true);
-            axiosClient.put(`/update-user-creds/${ID}`, payload)
-            .then((res) => {
-                editSuccess()
-                close()
-                setUpdating(false)
-                console.log(res)
-            }).catch((err) => {
-                setErrorMessage({
-                    message: err.response.data.message,
-                    errors: err.response.data.errors
+
+            if (tab === 1) {
+                const payload = {
+                MBemail: values.MBEmail,
+                password: values.password,
+                };
+
+                axiosClient.put(`/update-user-creds/${ID}`, payload)
+                .then((res) => {
+                    editSuccess();
+                    close();
+                    setUpdating(false);
+                    console.log(res);
                 })
-                setError(true)
-                setLoading(false);
-            })
+                .catch((err) => {
+                    setErrorMessage({
+                    message: err.response?.data?.message,
+                    errors: err.response?.data?.errors,
+                    });
+                    setError(true);
+                    setUpdating(false); // You had setLoading(false); instead
+                });
+            } else {
+                const payload = {
+                    role: values,
+                    permissions: accountPerm
+                }
+                console.log("Tab 2 submitted:", payload);
+                setUpdating(false);
+            }
         }
     })
 
@@ -221,7 +237,7 @@ const EditUserCredsModal = ({open, close, ID, editSuccess}) => {
                                                     </div>
                                                     {
                                                         formik.values.role ? (<div className="col-span-3">
-                                                            <AccountPermissionProps refPermissions={permission} selectedRole={formik.values.role} role={role}/>
+                                                            <AccountPermissionProps refPermissions={permission} selectedRole={formik.values.role} role={role} setAccountPerm={setAccountPerm}/>
                                                         </div>):(null)
                                                     }
                                                     </>

@@ -22,23 +22,26 @@ const CourseOveriew = () => {
             {/* Sample content but needed to be changes as props to be dynamic */}
             {
                 !isLoading ? (
-                        <div className="w-auto h-auto grid grid-cols-2 grid-row-2">
-                            {/* Course Desription */}
-                            <div className="col-span-2 row-span-1 py-5">
-                                <p className="font-header text-primary text-2xl">Course Description:</p>
-                                <p className="font-text text-base">{
+                        <div className="w-full h-full py-4 grid grid-cols-2 grid-row-2 pl-1">
+                            <div className="col-span-2 row-span-1">
+                                <p className="font-header text-primary">Course Description:</p>
+                                <p className="font-text text-sm">{
                                     isLoading ? "Loading..." : course?.description || "No Course Description Found"
                                     }</p>
                             </div>
-                            {/* Course Objective */}
                             <div className="col-span-1 row-span-1 py-5">
-                                <p className="font-header text-primary text-2xl">Course Objective:</p>
-                                <p className="font-text text-base">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Numquam necessitatibus at doloremque atque veritatis? Commodi nihil vero omnis corporis pariatur unde totam, laboriosam aperiam. Perferendis illo nisi molestiae voluptates asperiores!</p>
+                                <p className="font-header text-primary">Course Objective:</p>
+                                <p className="font-text text-sm">To provide learners with a comprehensive understanding of direct and indirect taxes, their applications, and their implications for individuals and businesses. The course aims to build foundational knowledge in tax structures to improve financial decision-making and compliance.</p>
                             </div>
-                            {/* Course Content */}
                             <div className="col-span-1 row-span-1 py-5">
-                                <p className="font-header text-primary text-2xl">Course Outcome:</p>
-                                <p className="font-text text-base">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Numquam necessitatibus at doloremque atque veritatis? Commodi nihil vero omnis corporis pariatur unde totam, laboriosam aperiam. Perferendis illo nisi molestiae voluptates asperiores!</p>
+                                <p className="font-header text-primary">Course Outcomes:</p>
+                                <ol>
+                                    <li className="font-text text-sm"><strong>Differentiate</strong> between direct and indirect taxes with relevant examples.</li>
+                                    <li className="font-text text-sm"><strong>Explain</strong> the role of income tax, GST, VAT, and other tax types in business and personal finance.</li>
+                                    <li className="font-text text-sm"><strong>Identify</strong> who is responsible for paying each type of tax and how these taxes are collected.</li>
+                                    <li className="font-text text-sm"><strong>Analyze</strong> the impact of various tax types on pricing, income, and expenditures.</li>
+                                    <li className="font-text text-sm"><strong>Apply</strong> knowledge of tax concepts in realistic business and financial scenarios to ensure compliance.</li>
+                                </ol>
                             </div>
                         </div>
                     ) : (

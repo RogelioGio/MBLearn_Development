@@ -1,21 +1,97 @@
-import { faFilter, faPenToSquare, faPlus, faTrash, faUserLock, faUsers } from "@fortawesome/free-solid-svg-icons"
+import { faChevronLeft, faChevronRight, faFilter, faPenToSquare, faPlus, faTrash, faUserLock, faUsers } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useOption } from "MBLearn/src/contexts/AddUserOptionProvider"
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import React from "react";
 import { ScrollArea } from "MBLearn/src/components/ui/scroll-area";
 import AddFormInputModal from "./AddFormInput.Modal";
+import EditFormInputModal from "./EditFormInput.Modal";
+import DeleteFormInputModal from "./DeleteFormInputModal";
+
+//Front end Pagination
+const usePagination = (data, itemPerpage = 2) => {
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const indexFirstItem = (currentPage - 1) * itemPerpage;
+    const indexLastItem = Math.min(indexFirstItem + itemPerpage, data?.length);
+    const currentPaginated = data?.slice(indexFirstItem, indexLastItem)
+    const totalPage = Math.ceil(data?.length / itemPerpage)
+    const totalitem = data?.length
+
+    //Pagination Controll
+    const goto = (pageNum) => {
+        if (pageNum >= 1 && pageNum <= totalPage) setCurrentPage(pageNum);
+    }
+    const next = () => {
+        // setCurrentPage((prev) => Math.min(prev + 1, totalPage));
+        if (currentPage < totalPage) setCurrentPage(currentPage + 1)
+    };
+
+    const back = () => {
+        if (currentPage > 1) setCurrentPage(currentPage - 1);
+    };
+
+    return {
+        currentPaginated,
+        currentPage,
+        totalPage,
+        indexFirstItem,
+        indexLastItem,
+        totalitem,
+        goto,
+        next,
+        back
+    }
+}
 
 const FormInputSetting = () => {
     const {departments, titles, cities, location, division, section} = useOption();
     const [loading, setLoading] = useState()
     const [add, setAdd] = useState(false)
+    const [edit, setEdit] = useState(false)
+    const [_delete, setDelete] = useState(false)
+    const [entry, setEntry] = useState()
     const [formInput, setFormInput] = useState()
+    const [branches, setBranches] = useState()
+
+    const { currentPaginated: currentDivision, indexFirstItem: fromDivision, indexLastItem: toDivision, totalitem: totalDivision, next: nextDivision, back: backDivision ,goto: gotoDivision, currentPage: currentPageDivision, totalPage: TotalPageDivision } = usePagination(division, 5);
+    const { currentPaginated: currentDepartment, indexFirstItem: fromDepartment, indexLastItem: toDepartment, totalitem: totalDepartment, next: nextDepartment, back: backDepartment ,goto: gotoDepartment, currentPage: currentPageDepartment, totalPage: TotalPageDepartment } = usePagination(departments, 5);
+
+    const { currentPaginated: currentSection, indexFirstItem: fromSection, indexLastItem: toSection, totalitem: totalSection, next: nextSection, back: backSection ,goto: gotoSection, currentPage: currentPageSection, totalPage: TotalPageSection } = usePagination(section, 5);
+    const { currentPaginated: currentCity, indexFirstItem: fromCity, indexLastItem: toCity, totalitem: totalCity, next: nextCity, back: backCity ,goto: gotoCity, currentPage: currentPageCity, totalPage: TotalPageCity } = usePagination(cities, 5);
+    const { currentPaginated: currentBranch, indexFirstItem: fromBranch, indexLastItem: toBranch, totalitem: totalBranch, next: nextBranch, back: backBranch ,goto: gotoBranch, currentPage: currentPageBranch, totalPage: TotalPageBranch } = usePagination(branches, 5);
+
+    useEffect(() => {
+        handleRelatedCityAndBranch(''); // Load the entire location list on initial render
+    }, [location]);
+
+    const handleRelatedCityAndBranch = (cityId) => {
+        if(cityId == '') {
+            setBranches(location)
+            gotoBranch(1)
+        } else {
+            const selectedBranches = location.filter((l) => l.city_id == cityId)
+            setBranches(selectedBranches)
+            gotoBranch(1)
+        }
+    }
 
     const handleFormInput = (input) => {
         setFormInput(input)
         setAdd(true)
+    }
+
+    const handleEditFormInput = ({input, entry}) => {
+        setFormInput(input)
+        setEntry(entry)
+        setEdit(true)
+    }
+
+    const handleDeleteFormInput = (input, entry) => {
+        setFormInput(input)
+        setEntry(entry)
+        setDelete(true)
     }
 
     return(
@@ -60,15 +136,17 @@ const FormInputSetting = () => {
                             loading ? (
                                 "Loading..."
                             ):(
-                                division.map((division =>(
+                                currentDivision.map((division =>(
                                     <tr key={division.id} className={`font-text text-md text-primary hover:bg-gray-200 cursor-pointer`}>
                                         <td className={`font-text p-4 flex flex-row items-center gap-4 border-l-2 border-transparent transition-all ease-in-out`}>{division.division_name}</td>
                                         <td className={`font-text p-4 gap-4 transition-all ease-in-out`}>{format(new Date(division.created_at), "MMMM dd, yyyy")}</td>
                                         <td className="flex flex-row gap-2 justify-end p-4">
-                                            <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all '>
+                                            <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all'
+                                                onClick={() => handleEditFormInput({ input: "Division", entry: division })}>
                                                 <FontAwesomeIcon icon={faPenToSquare} className='text-sm'/>
                                             </div>
-                                            <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all '>
+                                            <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all'
+                                                onClick={()=>handleDeleteFormInput("Division",division)}>
                                                 <FontAwesomeIcon icon={faTrash} className='text-sm'/>
                                             </div>
                                         </td>
@@ -79,6 +157,50 @@ const FormInputSetting = () => {
                         }
                     </tbody>
                     </table>
+                </div>
+                <div className="flex flex-row justify-between items-center">
+
+                    <div>
+                        <p className='text-sm font-text text-unactive'>
+                            Showing <span className='font-header text-primary'>{fromDivision + 1}</span> to <span className='font-header text-primary'>{toDivision}</span> of <span className='font-header text-primary'>{totalDivision}</span> <span className='text-primary'>results</span>
+                        </p>
+                    </div>
+
+                    <div>
+                    <nav className='isolate inline-flex -space-x-px round-md shadow-xs'>
+                        {/* Previous */}
+                        <a
+                            onClick={backDivision}
+                            className='relative inline-flex items-center rounded-l-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
+                            <FontAwesomeIcon icon={faChevronLeft}/>
+                        </a>
+
+                        {/* Current Page & Dynamic Paging */}
+                        {
+                            Array.from({ length: TotalPageDivision }, (_, i) => (
+                                <a
+                                    key={i}
+                                    className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset
+                                        ${
+                                            currentPageDivision === i + 1
+                                            ? 'bg-primary text-white'
+                                            : 'bg-secondarybackground text-primary hover:bg-primary hover:text-white'
+                                        } transition-all ease-in-out`}
+                                    onClick={() => gotoDivision(i + 1)}
+                                >
+                                    {i + 1}
+                                </a>))
+                        }
+                        {/*
+                        */}
+                        <a
+                            onClick={nextDivision}
+                            className='relative inline-flex items-center rounded-r-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
+                            <FontAwesomeIcon icon={faChevronRight}/>
+                        </a>
+                    </nav>
+
+                </div>
                 </div>
             </div>
             {/* Employee's Department */}
@@ -111,15 +233,17 @@ const FormInputSetting = () => {
                                 loading ? (
                                     "Loading..."
                                 ):(
-                                    departments.map((department =>(
+                                    currentDepartment.map((department =>(
                                         <tr key={department.id} className={`font-text text-md text-primary hover:bg-gray-200 cursor-pointer`}>
                                             <td className={`font-text p-4 flex flex-row items-center gap-4 border-l-2 border-transparent transition-all ease-in-out`}>{department.department_name}</td>
                                             <td className={`font-text p-4 gap-4 transition-all ease-in-out`}>{format(new Date(department.created_at), "MMMM dd, yyyy")}</td>
                                             <td className="flex flex-row gap-2 justify-end p-4">
-                                                <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all '>
+                                                <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all'
+                                                    onClick={() => handleEditFormInput({ input: "Department", entry: department })}>
                                                     <FontAwesomeIcon icon={faPenToSquare} className='text-sm'/>
                                                 </div>
-                                                <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all '>
+                                                <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all'
+                                                    onClick={()=>handleDeleteFormInput("Department", department)}>
                                                     <FontAwesomeIcon icon={faTrash} className='text-sm'/>
                                                 </div>
                                             </td>
@@ -131,6 +255,50 @@ const FormInputSetting = () => {
                         </tbody>
                         </table>
                     </div>
+                <div className="flex flex-row justify-between items-center">
+                    <div>
+                        <p className='text-sm font-text text-unactive'>
+                            Showing <span className='font-header text-primary'>{fromDepartment + 1}</span> to <span className='font-header text-primary'>{toDepartment}</span> of <span className='font-header text-primary'>{totalDepartment}</span> <span className='text-primary'>results</span>
+                        </p>
+                    </div>
+
+                    <div>
+                    <nav className='isolate inline-flex -space-x-px round-md shadow-xs'>
+                        {/* Previous */}
+                        <a
+                            onClick={backDepartment}
+                            className='relative inline-flex items-center rounded-l-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
+                            <FontAwesomeIcon icon={faChevronLeft}/>
+                        </a>
+
+                        {/* Current Page & Dynamic Paging */}
+                        {
+                            Array.from({ length: TotalPageDepartment }, (_, i) => (
+                                <a
+                                    key={i}
+                                    className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset
+                                        ${
+                                            currentPageDepartment === i + 1
+                                            ? 'bg-primary text-white'
+                                            : 'bg-secondarybackground text-primary hover:bg-primary hover:text-white'
+                                        } transition-all ease-in-out`}
+                                    onClick={() => gotoDepartment(i + 1)}
+                                >
+                                    {i + 1}
+                                </a>))
+                        }
+                        {/*
+                        */}
+                        <a
+                            onClick={nextDepartment}
+                            className='relative inline-flex items-center rounded-r-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
+                            <FontAwesomeIcon icon={faChevronRight}/>
+                        </a>
+                    </nav>
+
+                    </div>
+
+                </div>
             </div>
             {/* Employee's Title */}
             <div className="row-span-1 col-span-2 flex flex-col gap-5">
@@ -234,15 +402,17 @@ const FormInputSetting = () => {
                                 loading ? (
                                     "Loading..."
                                 ):(
-                                    section.map((section =>(
+                                    currentSection.map((section =>(
                                         <tr key={section.id} className={`font-text text-md text-primary hover:bg-gray-200 cursor-pointer`}>
                                             <td className={`font-text p-4 flex flex-row items-center gap-4 border-l-2 border-transparent transition-all ease-in-out`}>{section.section_name}</td>
                                             <td className={`font-text p-4 gap-4 transition-all ease-in-out`}>{format(new Date(section.created_at), "MMMM dd, yyyy")}</td>
                                             <td className="flex flex-row gap-2 justify-end p-4">
-                                                <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all '>
+                                                <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all'
+                                                    onClick={() => handleEditFormInput({ input: "Section", entry: section })}>
                                                     <FontAwesomeIcon icon={faPenToSquare} className='text-sm'/>
                                                 </div>
-                                                <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all '>
+                                                <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all'
+                                                    onClick={()=>handleDeleteFormInput("Section", section)}>
                                                     <FontAwesomeIcon icon={faTrash} className='text-sm'/>
                                                 </div>
                                             </td>
@@ -254,13 +424,56 @@ const FormInputSetting = () => {
                         </tbody>
                         </table>
                 </div>
+                <div className="flex flex-row justify-between items-center">
+                    <div>
+                        <p className='text-sm font-text text-unactive'>
+                            Showing <span className='font-header text-primary'>{fromSection + 1}</span> to <span className='font-header text-primary'>{toSection}</span> of <span className='font-header text-primary'>{totalSection}</span> <span className='text-primary'>results</span>
+                        </p>
+                    </div>
+
+                    <div>
+                    <nav className='isolate inline-flex -space-x-px round-md shadow-xs'>
+                        {/* Previous */}
+                        <a
+                            onClick={backSection}
+                            className='relative inline-flex items-center rounded-l-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
+                            <FontAwesomeIcon icon={faChevronLeft}/>
+                        </a>
+
+                        {/* Current Page & Dynamic Paging */}
+                        {
+                            Array.from({ length: TotalPageSection }, (_, i) => (
+                                <a
+                                    key={i}
+                                    className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset
+                                        ${
+                                            currentPageSection === i + 1
+                                            ? 'bg-primary text-white'
+                                            : 'bg-secondarybackground text-primary hover:bg-primary hover:text-white'
+                                        } transition-all ease-in-out`}
+                                    onClick={() => gotoSection(i + 1)}
+                                >
+                                    {i + 1}
+                                </a>))
+                        }
+                        {/*
+                        */}
+                        <a
+                            onClick={nextSection}
+                            className='relative inline-flex items-center rounded-r-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
+                            <FontAwesomeIcon icon={faChevronRight}/>
+                        </a>
+                    </nav>
+                    </div>
+
+                </div>
             </div>
             {/* Employee's City */}
             <div className="row-span-1 col-span-2 flex flex-col gap-5">
                 {/* Header */}
                 <div className="flex flex-row justify-between">
                     <div>
-                        <h1 className="font-header text-primary text-base">Employee's Branch City</h1>
+                        <h1 className="font-header text-primary text-base">Employee's Branch City Option</h1>
                         <p className="font-text text-unactive text-xs">List of available city option for the system inputs and form</p>
                     </div>
                     <div>
@@ -285,15 +498,17 @@ const FormInputSetting = () => {
                                 loading ? (
                                     "Loading..."
                                 ):(
-                                    cities.map((city =>(
+                                    currentCity.map((city =>(
                                         <tr key={city.id} className={`font-text text-md text-primary hover:bg-gray-200 cursor-pointer`}>
                                             <td className={`font-text p-4 flex flex-row items-center gap-4 border-l-2 border-transparent transition-all ease-in-out`}>{city.city_name}</td>
                                             <td className={`font-text p-4 gap-4 transition-all ease-in-out`}>{format(new Date(city.created_at), "MMMM dd, yyyy")}</td>
                                             <td className="flex flex-row gap-2 justify-end p-4">
-                                                <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all '>
+                                                <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all'
+                                                    onClick={() => handleEditFormInput({ input: "City", entry: city })}>
                                                     <FontAwesomeIcon icon={faPenToSquare} className='text-sm'/>
                                                 </div>
-                                                <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all '>
+                                                <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all'
+                                                    onClick={()=>handleDeleteFormInput("City", city)}>
                                                     <FontAwesomeIcon icon={faTrash} className='text-sm'/>
                                                 </div>
                                             </td>
@@ -304,14 +519,58 @@ const FormInputSetting = () => {
                             }
                         </tbody>
                         </table>
+                </div>
+                <div className="flex flex-row justify-between items-center">
+                    <div>
+                        <p className='text-sm font-text text-unactive'>
+                            Showing <span className='font-header text-primary'>{fromCity + 1}</span> to <span className='font-header text-primary'>{toCity}</span> of <span className='font-header text-primary'>{totalCity}</span> <span className='text-primary'>results</span>
+                        </p>
                     </div>
+
+                    <div>
+                    <nav className='isolate inline-flex -space-x-px round-md shadow-xs'>
+                        {/* Previous */}
+                        <a
+                            onClick={backCity}
+                            className='relative inline-flex items-center rounded-l-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
+                            <FontAwesomeIcon icon={faChevronLeft}/>
+                        </a>
+
+                        {/* Current Page & Dynamic Paging */}
+                        {
+                            Array.from({ length: TotalPageCity }, (_, i) => (
+                                <a
+                                    key={i}
+                                    className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset
+                                        ${
+                                            currentPageCity === i + 1
+                                            ? 'bg-primary text-white'
+                                            : 'bg-secondarybackground text-primary hover:bg-primary hover:text-white'
+                                        } transition-all ease-in-out`}
+                                    onClick={() => gotoCity(i + 1)}
+                                >
+                                    {i + 1}
+                                </a>))
+                        }
+                        {/*
+                        */}
+                        <a
+                            onClick={nextCity}
+                            className='relative inline-flex items-center rounded-r-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
+                            <FontAwesomeIcon icon={faChevronRight}/>
+                        </a>
+                    </nav>
+
+                    </div>
+
+                </div>
             </div>
             {/* Employee's Branch */}
             <div className="row-span-1 col-span-2 flex flex-col gap-5">
                 {/* Header */}
                 <div className="flex flex-row justify-between">
                     <div>
-                        <h1 className="font-header text-primary text-base">Employee's Branch Location</h1>
+                        <h1 className="font-header text-primary text-base">Employee's Branch Location Option</h1>
                         <p className="font-text text-unactive text-xs">List of available employee title option for the system inputs and form</p>
                     </div>
                     <div>
@@ -326,11 +585,11 @@ const FormInputSetting = () => {
                     {/* Department Selector */}
                     <div className="grid grid-cols-1">
                         <select id="role" name="role" className="appearance-none font-text col-start-1 row-start-1 border border-primary rounded-md py-2 px-4 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                            // value={formik.values.role}
-                            // onChange={formik.handleChange}
+                            //value=''
+                            onChange={(e) => handleRelatedCityAndBranch(e.target.value)}
                             // onBlur={formik.handleBlur}\
                             >
-                            <option value=''>Select City</option>
+                                <option value=''>Select a city</option>
                             {
                                 cities.map((city) => (
                                     <option key={city.id} value={city.id}>{city.city_name}</option>
@@ -357,7 +616,7 @@ const FormInputSetting = () => {
                                 loading ? (
                                     "Loading..."
                                 ):(
-                                    location.map((location =>(
+                                    currentBranch?.map((location =>(
                                         <tr key={location.id} className={`font-text text-md text-primary hover:bg-gray-200 cursor-pointer`}>
                                             <td className={`font-text p-4 flex flex-row items-center gap-4 border-l-2 border-transparent transition-all ease-in-out`}>{location.branch_name}</td>
                                             <td className={`font-text p-4 gap-4 transition-all ease-in-out`}>{format(new Date(location.created_at), "MMMM dd, yyyy")}</td>
@@ -377,10 +636,56 @@ const FormInputSetting = () => {
                         </tbody>
                         </table>
                     </div>
+                <div className="flex flex-row justify-between items-center">
+                    <div>
+                        <p className='text-sm font-text text-unactive'>
+                            Showing <span className='font-header text-primary'>{fromBranch + 1}</span> to <span className='font-header text-primary'>{toBranch}</span> of <span className='font-header text-primary'>{totalBranch}</span> <span className='text-primary'>results</span>
+                        </p>
+                    </div>
+
+                    <div>
+                    <nav className='isolate inline-flex -space-x-px round-md shadow-xs'>
+                        {/* Previous */}
+                        <a
+                            onClick={backBranch}
+                            className='relative inline-flex items-center rounded-l-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
+                            <FontAwesomeIcon icon={faChevronLeft}/>
+                        </a>
+
+                        {/* Current Page & Dynamic Paging */}
+                        {
+                            Array.from({ length: TotalPageBranch }, (_, i) => (
+                                <a
+                                    key={i}
+                                    className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset
+                                        ${
+                                            currentPageDivision === i + 1
+                                            ? 'bg-primary text-white'
+                                            : 'bg-secondarybackground text-primary hover:bg-primary hover:text-white'
+                                        } transition-all ease-in-out`}
+                                    onClick={() => gotoBranch(i + 1)}
+                                >
+                                    {i + 1}
+                                </a>))
+                        }
+                        {/*
+                        */}
+                        <a
+                            onClick={nextBranch}
+                            className='relative inline-flex items-center rounded-r-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
+                            <FontAwesomeIcon icon={faChevronRight}/>
+                        </a>
+                    </nav>
+
+                    </div>
+                </div>
             </div>
+
         </div>
         </ScrollArea>
         <AddFormInputModal isOpen={add} onClose={()=>setAdd(false)} formInput={formInput}/>
+        <EditFormInputModal open={edit} close={()=>setEdit(false)} formInput={formInput} formInputEntry={entry}/>
+        <DeleteFormInputModal open={_delete} close={()=>setDelete(false)} formInput={formInput} formInputEntry={entry} />
         </>
     )
 }
