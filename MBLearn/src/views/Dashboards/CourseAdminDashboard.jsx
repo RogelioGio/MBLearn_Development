@@ -5,10 +5,12 @@ import axiosClient from "MBLearn/src/axios-client";
 import AnnouncmentCarousel from "MBLearn/src/modalsandprops/dashboardComponents/AnnouncementCarousel";
 import * as React from "react";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 const CourseAdminDashboard = ({name, user}) => {
     const [tab, setTab] = useState("myCourses")
     const [loading, setLoading] = useState(false)
     const [assignedCourse, setAssignedCourse] = useState([])
+    const navigate = useNavigate()
 
     const [pageState, setPagination] = useState({
             currentPage: 1,
@@ -157,7 +159,7 @@ const CourseAdminDashboard = ({name, user}) => {
                         ))
                     ):(
                         assignedCourse.map((course)=>(
-                            <div className="bg-white w-full h-full shadow-md rounded-md grid grid-cols-1 grid-rows-[min-content_1fr_1fr_min-content] hover:cursor-pointer hover:scale-105 transition-all ease-in-out">
+                            <div className="bg-white w-full h-full shadow-md rounded-md grid grid-cols-1 grid-rows-[min-content_1fr_1fr_min-content] hover:cursor-pointer hover:scale-105 transition-all ease-in-out" onClick={() => navigate(`/courseadmin/course/${course.id}`)}>
                                 <div className="bg-gradient-to-b from-[hsl(239,94%,19%)] via-[hsl(214,97%,27%)] to-[hsl(201,100%,36%)] w-full h-14 rounded-t-md p-3">
                                     <span className="inline-flex items-center rounded-md bg-primarybg px-2 py-1 text-xs font-medium text-primary font-text">
                                         {course.training_type}
