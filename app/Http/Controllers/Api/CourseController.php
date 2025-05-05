@@ -186,13 +186,23 @@ class CourseController extends Controller
 
         $filter = new UserInfosFilter();
         $queryItems = $filter->transform($request);
-        $users = $course->enrolledUsers()->where($queryItems)->with(['division','department','section','city','branch'])->where('archived', '=', 'active')->paginate($perPage);
+
+        $enrolls = $course->enrollments()->whereHas('enrolledUser', function($subQuery) use($queryItems){
+            $subQuery->where($queryItems)->where('status', '=', 'Active');
+        })->paginate($perPage);
+        
+        $users = $enrolls->getCollection()->map(function ($enrollment){
+            $user = $enrollment->enrolledUser->load(['division','department','section','city','branch']);
+            $user->enrollment_status = $enrollment->enrollment_status;
+            $user->due_soon = $enrollment->due_soon;
+            return $user;
+        });
 
         return response() -> json([
-            'data' => $users->items(),
-            'total' => $users->total(),
-            'lastPage' => $users->lastPage(),
-            'currentPage' => $users->currentPage(),
+            'data' => $users,
+            'total' => $enrolls->total(),
+            'lastPage' => $enrolls->lastPage(),
+            'currentPage' => $enrolls->currentPage(),
         ]);
     }
 

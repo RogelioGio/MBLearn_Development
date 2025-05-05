@@ -39,6 +39,15 @@ class Course extends Model
         return $this->hasManyThrough(UserInfos::class, Enrollment::class, 'course_id', 'id', 'id', 'user_id');
     }
 
+    public function statusEnrolledUsers(){
+        return $this->enrollments()->with('enrolledUser')->get()->map(function ($enrollment){
+            $user = $enrollment->enrolledUser;
+            $user->enrollment_status = $enrollment->enrollment_status;
+            $user->due_soon = $enrollment->due_soon;
+            return $user;
+        });
+    }
+
     //help with better name, basically system admin na nag add ng course
     public function adder(): BelongsTo{
         return $this->belongsTo(UserInfos::class, 'system_admin_id', 'id');

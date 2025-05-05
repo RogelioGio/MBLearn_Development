@@ -50,6 +50,15 @@ class UserInfos extends Model
         return $this->hasMany(Enrollment::class, 'enroller_id');
     }
 
+    public function statusEnrollings(){
+        return $this->enrollings()->with('course')->get()->map(function ($enrollment){
+            $courses = $enrollment->course;
+            $courses->enrollment_status = $enrollment->enrollment_status;
+            $courses->due_soon = $enrollment->due_soon;
+            return $courses;
+        });
+    }
+
     public function addedCourses(): HasMany{
         return $this->hasMany(Course::class, 'system_admin_id');
     }
@@ -57,7 +66,6 @@ class UserInfos extends Model
     public function assignedCourses(): BelongsToMany{
         return $this->belongsToMany(Course::class, 'course_userinfo_assignment', 'user_id', 'course_id');
     }
-
 
     public function roles(): BelongsToMany{
         return $this->belongsToMany(Role::class, 'role_userinfo', 'userinfo_id', 'role_id');
