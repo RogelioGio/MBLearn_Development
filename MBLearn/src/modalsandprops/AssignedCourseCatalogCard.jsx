@@ -1,33 +1,41 @@
 import { Card, Progress, Text, RingProgress} from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 
-const AssignedCourseCatalogCard = ({name, courseType, courseCategory, trainingType, trainingMode, id}) => {
+const AssignedCourseCatalogCard = ({name, courseType, courseCategory, trainingType, trainingMode, id, courseId, tab}) => {
     const navigate = useNavigate();
 
     return(
-        <div className="bg-white text-white h-full rounded-md shadow-md hover:scale-105 hover:cursor-pointer transition-all ease-in-out" onClick={() => navigate(`/courseadmin/course/${id}`)}>
+        <div className='bg-white text-white h-full rounded-md shadow-md hover:scale-105 hover:cursor-pointer transition-all ease-in-out grid grid-rows-[min-content_1fr_1fr_min-content]' onClick={() => navigate(`/courseadmin/course/${id}`)}>
             {/* Course Thumbnail */}
-            <div className="flex justify-end bg-gradient-to-b from-[hsl(239,94%,19%)] via-[hsl(214,97%,27%)] to-[hsl(201,100%,36%)] rounded-t-md h-1/3 p-4">
-                <div>
-                    {
-                        trainingType ? (<span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-blue-700/10 ring-inset">
-                            {trainingType}
-                        </span>)
-                        :(null)
-
-
-                    }
-                </div>
+            <div className="flex flex-row justify-end bg-gradient-to-b from-[hsl(239,94%,19%)] via-[hsl(214,97%,27%)] to-[hsl(201,100%,36%)] rounded-t-md p-4 gap-2">
+                <span className="inline-flex items-center rounded-md bg-primarybg px-2 py-1 text-xs font-medium text-primary font-text">Published</span>
+                <span className="inline-flex items-center rounded-md bg-primarybg px-2 py-1 text-xs font-medium text-primary font-text">{trainingType}</span>
             </div>
-            <div className="h-2/3 p-3 grid grid-rows-[min-content_1fr_1fr] gap-2">
-                <div>
-                    {/* Course Name */}
-                    <h1 className='font-header text-sm text-primary'>{name}</h1>
-                    <p className='font-text text-primary text-xs'>{courseType} - {courseCategory}</p>
-                </div>
-                {/* Progress */}
-                {/* Datas */}
+            <div className='px-4 py-2 flex flex-col justify-center row-span-2'>
+                <h1 className='font-header text-sm text-primary'>{name}</h1>
+                <p className='font-text text-primary text-xs'>{courseType} - {courseCategory}</p>
+                <p className='font-text text-xs text-unactive'>Course ID: {courseId}</p>
             </div>
+            {
+                tab === "allCourses" ? (null) : (
+                    <div className='grid grid-cols-[1fr_min-content_1fr_min-content_1fr] gap-2 p-4'>
+                    <div className="flex flex-row items-center font-text justify-between">
+                        <p className="text-xs text-unactive">Enrolled</p>
+                        <p className="font-header text-primary">10</p>
+                    </div>
+                    <div className="w-[1px] h-full bg-divider"/>
+                    <div className="flex flex-row items-center font-text justify-between">
+                        <p className="text-xs text-unactive">On-going</p>
+                        <p className="font-header text-primary">10</p>
+                    </div>
+                    <div className="w-[1px] h-full bg-divider"/>
+                    <div className="flex flex-row items-center font-text justify-between">
+                        <p className="text-xs text-unactive">Due Soon</p>
+                        <p className="font-header text-primary">10</p>
+                    </div>
+                </div>
+                )
+            }
         </div>
     )
 }

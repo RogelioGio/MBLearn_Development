@@ -1,7 +1,7 @@
 
 const Learner = ({profile_image, id, name, employeeID, department, title, branch, city, enrolled, selectedCourse,division, section ,handleCheckbox}) => {
 
-    const selectedEnrollee = enrolled.some(
+    const selectedEnrollee = enrolled?.some(
         (entry) => entry.userId == id.id && entry.courseId === selectedCourse.id
     )
     return(

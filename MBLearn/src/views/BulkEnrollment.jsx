@@ -1,4 +1,4 @@
-import { faBook, faBookBookmark, faChalkboardUser, faChevronLeft, faChevronRight, faFilter, faGraduationCap, faSearch, faUserPlus } from "@fortawesome/free-solid-svg-icons"
+import { faBook, faBookBookmark, faChalkboardUser, faChevronLeft, faChevronRight, faFilter, faGraduationCap, faSearch, faSwatchbook, faUserPlus } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Helmet } from "react-helmet"
 import axiosClient from "../axios-client"
@@ -35,10 +35,11 @@ export default function BulkEnrollment() {
     const [selected, setSelected] = useState([]); //Select learner to ernoll
     const [results, setResults] = useState([]); //Enrolled results
     const [course, selectCourse] = useState([]); //Select course to enroll name
+    const [_course, _selectCourse] = useState([])
     const [courseId, setCourseId] = useState([]); //Select course to enroll id
     const [isLoading, setLoading] = useState(true); //Loading state
     const [learnerLoading, setLearnerLoading] = useState(true); //Loading state
-    const selectAll = useRef(false) //select all learners
+    const selectAll = useRef(null) //select all learners
     const [tab, setTab] = useState(1)//Tabs
     const [enrolled, setEnrolled] = useState(false) //Modal for successfully Enrolled
     const [error, setError] = useState([]) //Error state
@@ -121,6 +122,7 @@ export default function BulkEnrollment() {
     const handleCourseChange = (Course) => {
         selectCourse(Course?.name);
         setCourseId(Course?.id);
+        _selectCourse(Course)
         //Fetch Learner
         handleLearnerChange(Course?.id);
 
@@ -163,16 +165,18 @@ export default function BulkEnrollment() {
             const existingCourse = updated.findIndex(
                 (c) => c.course.id === course.id
             );
-
             if(existingCourse !== -1){
                 const courseToUpdate = { ...updated[existingCourse] }
                 courseToUpdate.enrollees = courseToUpdate.enrollees || [];
-                const enrolled = existingCourse.enrollees?.some(
+
+                const enrolled = courseToUpdate.enrollees.some(
                     (u) => u.id === User.id
                 );
 
                 if(!enrolled){
                     courseToUpdate.enrollees.push(User);
+                } else {
+                    courseToUpdate.enrollees = courseToUpdate.enrollees.filter((u) => u.id !== User.id);
                 }
 
                 updated[existingCourse] = courseToUpdate;
@@ -191,44 +195,102 @@ export default function BulkEnrollment() {
 
     //Select All Learners
     const handleSelectAll = (Course) => {
-        if(selected[Course] && selected[Course].length === learners.length){
-            setSelected((prevUsers) => {
-                const newUsers = {... prevUsers};
-                newUsers[Course] = [];
-                return newUsers;
-            })
-        } else {
-            setSelected((prevUsers) => {
-                const newUsers = {... prevUsers};
-                newUsers[Course] = learners.map((user) => user.employeeID);
-                return newUsers;
+        //Handle all selected
+        const allSelected = selected.filter(s => s.courseId === Course.id).length === learners.length
+        if (allSelected) {
+            setSelected(prev =>
+                prev.filter(entry => entry.courseId !== Course.id)
+            );
+
+            console.log("unselect all")
+        }else{
+            const start = new Date()
+
+            const months = Course?.months || 0;
+            const weeks = Course?.weeks || 0;
+            const days = Course?.days || 0;
+
+            const end = add(start, {
+                months,
+                weeks,
+                days,
             });
+
+            const newSelections = learners.map(e => ({
+                userId: e.id,
+                courseId: Course.id,
+                enrollerId: user.user_infos.id,
+                start_date: format(start, 'yyyy-MM-dd'),
+                end_date: format(end, 'yyyy-MM-dd'),
+            }));
+
+            setSelected(prev =>
+                [...prev.filter(entry => entry.courseId !== Course.id), ...newSelections]
+            );
         }
+
+        // Set Results
+        setResults((prevCourses) => {
+            if(!Course) return prevCourses;
+
+            const updated = [...prevCourses];
+            const exist = updated.findIndex(
+                (c) => c.course.id === Course.id
+            );
+
+            const learnerIds = learners.map((learner) => learner.id);
+
+            if(exist !== -1){
+                const courseToUpdate = {...updated[exist] };
+                const currentEnrollees = (courseToUpdate.enrollees || []).map((u) => u.id);
+
+                const allSelected = learnerIds.every(id => currentEnrollees.includes(id))
+
+                if(allSelected){
+                    courseToUpdate.enrollees = []
+                } else {
+                    const newEnrollees = learners.filter((l) => !currentEnrollees.includes(l.id))
+                    courseToUpdate.enrollees = [...(courseToUpdate.enrollees || []), ...newEnrollees]
+                }
+
+                updated[exist] = courseToUpdate;
+            } else {
+                updated.push({
+                    course: Course,
+                    enrollees: [...learners],
+                    months: Course?.months,
+                    weeks: Course?.weeks,
+                    days: Course?.days,
+                })
+            }
+            return updated;
+        })
+
     }
+
 
     //handle indertiminate checkbox
     useEffect(() => {
-        if(!selectAll.current) return;
+        if (!selectAll.current) return;
 
-        const courseLearners = learners.map((user) => user.employeeID);
-        const selectedLearners = selected[course] || [];
+        const courseLearners = learners.map((user) => user.id);
+        const selectedLearners = selected.filter((entry) => entry.courseId === courseId).map((entry) => entry.userId);
 
-        if(courseLearners.length === selectedLearners.length && courseLearners.length > 0){
+        if (courseLearners.length === selectedLearners.length && courseLearners.length > 0) {
             selectAll.current.indeterminate = false;
             selectAll.current.checked = true;
-        } else if(selectedLearners.length > 0){
+        } else if (selectedLearners.length > 0) {
             selectAll.current.indeterminate = true;
         } else {
             selectAll.current.indeterminate = false;
             selectAll.current.checked = false;
-
         }
-    },[selected, learners, course]);
+    }, [selected, learners, courseId]);
 
     //Number of enrollees
     const numberOfEnrollees = (courseName) => {
-        return selected.filter((entry) => entry.courseId === courseName).length
-    }
+        return selected.filter((entry) => entry.courseId === courseName).length;
+    };
 
     //handle ernollment
     const enrollLearners = () => {
@@ -333,6 +395,11 @@ export default function BulkEnrollment() {
                 })
         }
     },[formik.values.filter])
+    useEffect(() => {
+        if (!Array.isArray(assigned_courses) || assigned_courses.length === 0) return;
+
+        handleCourseChange(assigned_courses[0]); // Automatically select the first entry
+    }, [assigned_courses]);
 
     //reset the operation
     const reset = () => {
@@ -362,35 +429,41 @@ export default function BulkEnrollment() {
                     {enrolling ? 'Enrolling...' : 'Enroll Trainee'}
                 </button>
             </div>
+            {/* Learner table */}
+            <div className='row-start-2 row-span-3 col-span-4 px-5 py-2 grid grid-rows-[min-content_1fr_min-content] grid-cols-4'>
 
-            {/* Course Header */}
-            <div className="flex flex-row items-center pl-5 pr-4 border-r border-divider w-full">
-                <div className="inline-flex flex-col gap-1 row-start-3 col-span-1 py-2 w-full">
-                    <label htmlFor="filter">
-                        <div>
-                            <p className="font-header text-lg text-primary">Courses</p>
-                            <p className="font-text text-xs text-unactive">Quickly choose a course a leaner can be enrolled</p>
+            <div className="col-start-1 row-start-1 py-2 flex flex-row gap-3 items-center">
+                <Sheet>
+                    <SheetTrigger>
+                        <div className="border-2 border-primary rounded-md bg-white shadow-md flex items-center justify-center p-3 text-primary hover:cursor-pointer hover:bg-primary hover:text-white hover:scale-105 transition-all ease-in-out">
+                            <FontAwesomeIcon icon={faSwatchbook}/>
                         </div>
-                    </label>
-                    <div className="grid grid-cols-1">
-                        <select id="filter" name="filter" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                            value={formik.values.filter}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            >
-                            <option value="myCourses"> My Courses</option>
-                            <option value="Assigned"> Assigned Courses</option>
-                        </select>
-                        <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                        <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
-                        {/* {formik.touched.department && formik.errors.department ? (<div className="text-red-500 text-xs font-text">{formik.errors.department}</div>):null} */}
-                </div>
-            </div>
-
-            {/* Assigned Courses */}
-            <div className="col-start-1 row-start-3 row-span-2 mb-5 border-r border-divider h-full pl-5 pr-4 flex flex-col items-center gap-2 pb-4">
+                    </SheetTrigger>
+                    <SheetOverlay className="bg-gray-500/75 backdrop-blur-sm transition-all" />
+                    <SheetContent className="h-full flex-col flex" side={"left"}>
+                        {/* Course Header */}
+                        <div className="inline-flex flex-col gap-1 row-start-3 col-span-1 py-2 w-full">
+                        <label htmlFor="filter">
+                            <div>
+                                <p className="font-header text-lg text-primary">Courses</p>
+                                <p className="font-text text-xs text-unactive">Quickly choose a course a leaner can be enrolled</p>
+                            </div>
+                        </label>
+                        <div className="grid grid-cols-1">
+                            <select id="filter" name="filter" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                value={formik.values.filter}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                >
+                                <option value="myCourses"> My Courses</option>
+                                <option value="Assigned"> Assigned Courses</option>
+                            </select>
+                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                            <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        </div>
+                        {/* Courses Available */}
                         {
                         isLoading ? (
                             <div className="flex flex-col gap-2 items-center justify-center text-center h-full pr-4">
@@ -399,11 +472,10 @@ export default function BulkEnrollment() {
                             </div>
                         )
                         : (
-                            <ScrollArea className="h-[calc(100vh-12.25rem)] w-full mr-1">
+                            <ScrollArea className="h-[calc(100vh-6rem)] w-full mr-1">
                                 <div className="gap-2 h-full flex flex-col snap-y snap-mandatory overflow-y-auto">
                                 {
                                         assigned_courses.map((Course) => (
-
                                             <AssignedCourseEnrollmentCard
                                                 id={Course.id}
                                                 name={Course.name}
@@ -421,13 +493,26 @@ export default function BulkEnrollment() {
                                 </div>
                             </ScrollArea>
                         )
-                    }
+                        }
+
+                    </SheetContent>
+                </Sheet>
+
+                <div>
+                    <p className="text-unactive font-text text-xs">Selected Course:</p>
+                    <p className="text-primary font-header">{_course?.name || "No Selected Course"}</p>
+                    <p className="text-unactive font-text text-xs">{_course && (<>Course ID: {_course.CourseID}</>)}</p>
+                </div>
             </div>
 
-            {/* Learner table */}
-            <div className='row-start-2 row-span-3 col-start-2 col-span-3 px-5 py-2 grid grid-rows-[min-content_1fr_min-content] grid-cols-3'>
+            <div className="col-start-2  py-2 flex flex-row gap-3">
+                <div>
+                    <p className="text-unactive font-text text-xs">Number of Enrolless:</p>
+                    <p className="text-primary font-text">{numberOfEnrollees(_course?.id)} Learner</p>
+                </div>
+            </div>
 
-            <div className="col-start-3 w-full py-2">
+            <div className="col-start-4 w-full py-2 items-center flex">
                 <div className=' inline-flex flex-row place-content-between border-2 border-primary rounded-md font-text shadow-md w-full'>
                     <input type="text" className='focus:outline-none text-sm px-4 w-full rounded-md bg-white' placeholder='Search...'/>
                     <div className='bg-primary py-2 px-4 text-white'>
@@ -436,7 +521,7 @@ export default function BulkEnrollment() {
                 </div>
             </div>
 
-            <div className="col-start-2 pr-2 row-start-1 flex flex-row items-center justify-end">
+            <div className="col-start-3 pr-2 row-start-1 flex flex-row items-center justify-end">
                 <Sheet>
                     <SheetTrigger>
                         <div className="h-fit p-2 flex justify-center items-center bg-primary aspect-square border-2 border-primary rounded-md shadow-md text-white hover:cursor-pointer hover:scale-105 hover:bg-primaryhover transition-all ease-in-out">
@@ -461,7 +546,7 @@ export default function BulkEnrollment() {
                 ):
                 (assigned_courses.map((Course) => (
                     course === Course.name ? (
-                    <EnrollmentTableProps selectAll={selectAll} onchange={handleSelectAll} course={Course.name} key={Course.name}>
+                    <EnrollmentTableProps selectAll={selectAll} onchange={handleSelectAll} course={Course} key={Course.name}>
                         {
                             learnerLoading ? (
                                 <LearnerLoadingProps/>
@@ -490,7 +575,7 @@ export default function BulkEnrollment() {
                 )))
             }
 
-            <div className='flex flex-row items-center justify-between col-span-3 border-t border-divider py-3'>
+            <div className='flex flex-row items-center justify-between col-span-4 border-t border-divider py-3'>
                 {/* Total number of entries and only be shown */}
                 <div>
                     <p className='text-sm font-text text-unactive'>
@@ -540,7 +625,7 @@ export default function BulkEnrollment() {
         {/* Error */}
         <EnrollmentFailedModal isOpen={enrollmentFailed} onClose={()=>setEnrollmentFailed(false)}/>
         {/* When no Selected Users */}
-        <NoEmployeeSelectedModal isOpen={empty} onClose={()=>setEmpty(false)} />
+        <NoEmployeeSelectedModal isOpen={empty} onClose={()=>{setEmpty(false);}} />
         </>
     )
 }

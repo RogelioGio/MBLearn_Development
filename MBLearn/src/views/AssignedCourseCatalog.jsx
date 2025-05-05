@@ -407,10 +407,12 @@ export default function AssignedCourseCatalog() {
                             <AssignedCourseCatalogCard key={index}
                                 id={course.id}
                                 name={course.name}
+                                courseId={course?.CourseID}
                                 courseType={course.types[0]?.type_name}
                                 courseCategory={course.categories[0]?.category_name}
                                 trainingMode={course.training_modes[0]?.modes_name}
-                                trainingType={course.training_type}/>
+                                trainingType={course.training_type}
+                                tab={tab}/>
                         )}) : (
                             <div className="col-span-4 row-span-2 flex flex-col gap-4 items-center justify-center text-center h-full">
                                 <img src={CourseLoading} alt="" className="w-80"/>
