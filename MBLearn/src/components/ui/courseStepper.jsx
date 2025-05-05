@@ -1,15 +1,26 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { createContext, useContext, useState, useImperativeHandle, forwardRef,} from "react";
+import React, { createContext, useContext, useState, useImperativeHandle, forwardRef, useEffect,} from "react";
 import { faCircleCheck as faCircleCheckRegular, faSquareCheck } from "@fortawesome/free-regular-svg-icons";
+import { ScrollArea } from "@mantine/core";
 
 const StepperContext = createContext();
 
 export const Stepper = forwardRef(
-({ children, initialStep = 0, enableStepClick = false}, ref) => {
+({ children, initialStep = 0, enableStepClick = false, onStepChange}, ref) => {
     const [active, setActive] = useState(initialStep);
+
     const steps = React.Children.toArray(children).filter(
         (child) => child.type === Step
     );
+
+    const stepsMeta = steps.map((step) => ({
+        title: step.props.stepTitle,
+        desc: step.props.stepDesc,
+    }));
+    useEffect(() => {
+        if(onStepChange) onStepChange(active, stepsMeta[active])
+    },[active])
+
     const completedStep = React.Children.toArray(children).find(
         (child) => child.type === StepperCompleted
     );
@@ -32,11 +43,11 @@ export const Stepper = forwardRef(
 
     return (
         <StepperContext.Provider
-            value={{ active, setActive, step: steps.length,}}
+            value={{ active, setActive, step: steps.length, stepsMeta}}
         >
-            <div className="w-full">
+            <div className="w-full grid grid-cols-[20rem_1fr] gap-x-2 h-full">
                 {/* Step Indicators */}
-                <div className="flex flex-col gap-y-2 transition-all ease-in-out">
+                <div className="flex flex-col gap-y-1 transition-all ease-in-out pr-2 border-r border-divider mb-2">
                     {steps.map((step, index) => {
                         const isDone = index < active;
                         const isActive = index === active;
@@ -44,7 +55,7 @@ export const Stepper = forwardRef(
                         return (
                             <div
                                 key={index}
-                                className={`group grid grid-cols-[auto_1fr] p-4 hover:cursor-pointer hover:bg-primarybg gap-2 transition-all ease-in-out rounded-md border-2 border-transparent ${isActive ? "border-2 !border-primary shadow-md scale-105":null}`}
+                                className={`group grid grid-cols-[auto_1fr] py-3 px-2 hover:cursor-pointer hover:bg-primarybg gap-2 transition-all ease-in-out rounded-md border-2 border-transparent ${isActive ? "border-2 !border-primary":null}`}
                                 onClick={()=>{if(enableStepClick){
                                     setActive(index)
                                     console.log(index)
@@ -62,13 +73,13 @@ export const Stepper = forwardRef(
                                             className="text-white p-2"
                                         />
                                     ) : (
-                                        <p className={`text-primary font-header text-xl ${!isDone && !isActive ? "text-unactive group-hover:text-primary": isActive ? "text-white" : null}`}>{index + 1}</p>
+                                        <p className={`text-primary font-header text-base ${!isDone && !isActive ? "text-unactive group-hover:text-primary": isActive ? "text-white" : null}`}>{index + 1}</p>
                                     )}
                                 </div>
                                 {/* Step Description */}
                                 <div className="font-text text-primary ">
-                                    <h1 className={`font-header text-xl ${!isDone && !isActive ? "text-unactive":null} group-hover:text-primary`}>{step.props.stepTitle}</h1>
-                                    <p className="text-sm text-unactive group-hover:text-primary">{step.props.stepDesc}</p>
+                                    <h1 className={`font-header text-sm ${!isDone && !isActive ? "text-unactive":null} group-hover:text-primary`}>{step.props.stepTitle}</h1>
+                                    <p className="text-xs text-unactive group-hover:text-primary">{step.props.stepDesc}</p>
                                 </div>
 
                                 {/* {index < steps.length - 1 && (
@@ -78,11 +89,12 @@ export const Stepper = forwardRef(
                         );
                     })}
                 </div>
-
                 {/* Step Content */}
-                {/* <div className="border rounded p-4 bg-white shadow-sm">
-                {isCompleted ? completedStep : steps[active]}
-                </div> */}
+                <ScrollArea className="h-[calc(100vh-11.5rem)] pr-5">
+                    <div>
+                        {isCompleted ? completedStep : steps[active]}
+                    </div>
+                </ScrollArea>
             </div>
         </StepperContext.Provider>
     );
@@ -99,3 +111,4 @@ export const StepperCompleted = ({ children }) => {
 export const useStepper = () => {
     return useContext(StepperContext);
 };
+

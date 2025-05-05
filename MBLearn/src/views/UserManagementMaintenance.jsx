@@ -37,6 +37,7 @@ export default function UserManagementMaintenance() {
     const {departments,cities,location, division, section} = useOption();
     const [checkedUsers, setCheckedUser] = useState([]);
     const selectAllRef = useRef(null);
+    const [selectAll, setSelectAll] = useState(false);
     const navigate = useNavigate();
     const {user} = useStateContext();
 
@@ -121,6 +122,7 @@ export default function UserManagementMaintenance() {
 
     // Handle Select All Checkbox
     const handleSelectAll = (e) => {
+        setSelectAll(e.target.checked);
         if (e.target.checked) {
             const allUserIds = users.map(user => ({ Selected_ID: user.id }));
             setCheckedUser(allUserIds);
@@ -312,6 +314,7 @@ export default function UserManagementMaintenance() {
             selectAllRef.current.indeterminate = checkedUsers.length > 0 && checkedUsers.length < users.length;
         }
     }, [checkedUsers, users]);
+
     return (
         <div className='grid grid-cols-4 grid-rows-[6.25rem_min-content_auto_auto_min-content] h-full w-full'>
             <Helmet>
@@ -352,7 +355,7 @@ export default function UserManagementMaintenance() {
 
 
             {/* User Filter */}
-            <div className='flex flex-row py-3 justify-start items-center px-5'>
+            <div className='flex flex-row py-3 justify-start items-center px-5 col-span-2 gap-5'>
                 <Sheet>
                     <SheetTrigger>
                         <div className= {`flex flex-row items-center justify-center bg-white text-primary gap-2 border-2 border-primary w-fit py-2 px-4 rounded-md hover:text-white hover:bg-primary transition-all ease-in-out hover:cursor-pointer ${isFiltered ? "!bg-primary text-white":null}`}>
@@ -498,8 +501,21 @@ export default function UserManagementMaintenance() {
 
                     </SheetContent>
                 </Sheet>
+
+                {
+                checkedUsers.length > 0 ? (
+                <div className='flex flex-row justify-between font-text text-sm text-unactive items-center gap-4'>
+                    <p><span className='font-header text-primary'>{countCheckedUsers()}</span> Users Selected</p>
+                    <div className='text-white bg-primary flex flex-row items-center gap-4 py-2 px-5 rounded-md hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out'>
+                        <FontAwesomeIcon icon={faTrashCan}/>
+                        <p>Delete Users</p>
+                    </div>
+                </div>
+                ) : (null)
+                }
             </div>
-            {/*  */}
+
+
 
 
             {/* Userlist Table */}
@@ -597,17 +613,6 @@ export default function UserManagementMaintenance() {
                     </tbody>
                 </table>
                 </div>
-                {
-                    checkedUsers.length > 0 ? (
-                    <div className='flex flex-row justify-between font-text text-sm text-unactive items-center'>
-                        <p><span className='font-header text-primary'>{countCheckedUsers()}</span> Users Selected</p>
-                        <div className='text-white bg-primary flex flex-row items-center gap-4 py-2 px-5 rounded-md hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out'>
-                            <FontAwesomeIcon icon={faTrashCan}/>
-                            <p>Delete Users</p>
-                        </div>
-                    </div>
-                    ) : (null)
-                }
             </div>
 
             {/* Sample Footer Pagenataion */}
