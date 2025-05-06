@@ -63,7 +63,7 @@ class BranchController extends Controller
         ]);
     }
 
-    public function addCity(Branch $branch, City $city){
+    public function addCity(City $city, Branch $branch){
         $branch->city()->associate($city);
         $branch->save();
         return response()->json([
