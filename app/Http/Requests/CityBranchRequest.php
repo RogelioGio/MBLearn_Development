@@ -25,7 +25,7 @@ class CityBranchRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'branch_id' => 'required|integer|exists:branches,id',
+            'branch_name' => 'required|integer|unique:branches,branch_name',
             'city_id' => 'required|integer|exists:cities,id'
         ];
     }
