@@ -66,7 +66,7 @@ class BranchController extends Controller
 
     public function addCity(CityBranchRequest $request){
         $validated = $request->validated();
-        $branch = Branch::find($validated['branch_id']);
+        $branch = Branch::create($validated['branch_name']);
         $city = City::find($validated['city_id']);
         $branch->city()->associate($city);
         $branch->save();
