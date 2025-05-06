@@ -23,6 +23,7 @@ import CourseLoading from "../assets/Course_Loading.svg"
 import CourseDetailsModal from "../modalsandprops/CourseDetailsModal"
 import CourseCourseAdminAssignmentProps from "../modalsandprops/CourseCourseAdminAssigmentProps"
 import AddAssignCourseAdmin from "../modalsandprops/AddAssignCourseAdmin"
+import CoursePublishingModal from "../modalsandprops/CoursePublishingModal"
 
 export default function Course() {
     const navigate = useNavigate();
@@ -33,6 +34,7 @@ export default function Course() {
     const [tab, setTab] = useState("module");
     const [open, setOpen] = useState(false);
     const [openDetails, setOpenDetails] = useState(false);
+    const [openPublish, setOpenPublish] = useState(false);
     const [assign, setAssign] = useState(false);
     const {selectCourse, selectedCourse, isFetching, resetSelectedCourse} = useCourse();
 
@@ -95,7 +97,7 @@ export default function Course() {
                             </div>
                             <div className="flex flex-row gap-1 pr-5">
                                 {/* Action Button */}
-                                <div className={`text-primary text-sm border-2 border-primary h-full py-2 px-4 rounded-md shadow-md flex flex-row gap-2 items-center transition-all ease-in-out hover:scale-105 hover:bg-primary hover:text-white`}>
+                                <div className={`text-primary text-sm border-2 border-primary h-full py-2 px-4 rounded-md shadow-md flex flex-row gap-2 items-center transition-all ease-in-out hover:scale-105 hover:bg-primary hover:text-white`} onClick={()=>setOpenPublish(true)}>
                                     <FontAwesomeIcon icon={faBookBookmark} />
                                     <p className="font-header">Publish</p>
                                 </div>
@@ -154,6 +156,8 @@ export default function Course() {
         <AddAssignCourseAdmin courseID={course?.id} open={assign}  close={()=>setAssign(false)} />
         {/* CourseDetail */}
         <CourseDetailsModal open={openDetails} close={()=>setOpenDetails(false)} selectedCourse={course}/>
+        {/* Course Publishing */}
+        <CoursePublishingModal open={openPublish} close={()=>setOpenPublish(false)} />
         </>
 
     )

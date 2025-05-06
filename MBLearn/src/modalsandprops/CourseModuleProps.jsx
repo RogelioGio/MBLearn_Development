@@ -22,7 +22,7 @@ const CourseModuleProps = () => {
             <p className="font-text text-unactive text-xs">List of the the available content for the course</p>
         </div>
         <div className="col-start-1 col-span-2 row-start-2">
-        <Stepper initialStep={1} enableStepClick={true} ref={stepperRef} onStepChange={(index,meta) => setActiveMeta(meta)}>
+        <Stepper initialStep={0} enableStepClick={true} ref={stepperRef} onStepChange={(index,meta) => setActiveMeta(meta)}>
             <Step stepTitle={"Course Overview"} stepDesc={"Quick Summary of the course"}>
                 <CourseOverview/>
             </Step>
