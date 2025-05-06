@@ -20,6 +20,7 @@ use App\Models\Role;
 use App\Models\Section;
 use App\Models\Subgroup;
 use App\Models\Title;
+use App\Models\Type;
 use App\Models\UserInfos;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -295,6 +296,7 @@ class userInfo_controller extends Controller
                 $query->where('courses.id', $course->id);
             })->where('status', 'Active')
             ->with('roles','division','section','department','title','branch','city')
+            ->orderBy('created_at', 'desc')
             ->paginate(5);
 
         return response()->json([
@@ -318,6 +320,7 @@ class userInfo_controller extends Controller
                 $query->where('courses.id', $course->id);
             })->where('status', 'Active')
             ->with('roles','division','section','department','title','branch','city')
+            ->orderBy('created_at', 'desc')
             ->paginate($perPage);
 
         return response()->json([
@@ -378,6 +381,7 @@ class userInfo_controller extends Controller
 
         $users =  UserInfos::query()->where($queryItems)
                 ->where('status', '=', 'Inactive')
+                ->orderBy('created_at', 'desc')
                 ->with('roles','division','section','department','title','branch','city')
                 ->paginate($perPage);
 
@@ -402,7 +406,7 @@ class userInfo_controller extends Controller
             $query->where('id', $user_id);
         })
         ->where('status', '=', 'Active')
-
+        ->orderBy('created_at', 'desc')
         ->with('roles','division','section','department','title','branch','city')
         ->paginate($perPage);
 
@@ -738,12 +742,6 @@ class userInfo_controller extends Controller
     }
 
     public function test(Request $request){
-        $course = Course::find(1);
-
-        return $course->enrollments()->with('enrolledUser')->get()->map(function ($enrollment){
-            $user = $enrollment->enrolledUser;
-            $user->enrollment_status = $enrollment->enrollment_status;
-            return $user;
-        });
+        return Role::withCount('users')->orderBy('created_at', 'desc')->with('permissions')->get();
     }
 }

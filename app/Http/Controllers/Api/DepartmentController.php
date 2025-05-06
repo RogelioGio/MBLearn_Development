@@ -17,7 +17,7 @@ class DepartmentController extends Controller
      */
     public function index()
     {
-        return Department::all();
+        return Department::query()->orderBy('created_at', 'desc')->get();
     }
 
     /**

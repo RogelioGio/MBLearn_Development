@@ -16,7 +16,7 @@ class TypeController extends Controller
      */
     public function index()
     {
-        return Type::all();
+        return Type::query()->orderBy('created_at', 'desc')->get();
     }
 
     /**

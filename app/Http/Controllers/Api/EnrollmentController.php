@@ -26,7 +26,7 @@ class EnrollmentController extends Controller
      */
     public function index()
     {
-        return EnrollmentResource::collection(Enrollment::all());
+        return EnrollmentResource::collection(Enrollment::query()->orderBy('created_at', 'desc')->get());
     }
 
     /**

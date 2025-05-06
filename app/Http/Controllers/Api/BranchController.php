@@ -24,9 +24,9 @@ class BranchController extends Controller
         $queryItems = $filter->transform($request);
 
         if(count($queryItems) > 0){
-            return Branch::where($queryItems)->get();
+            return Branch::where($queryItems)->orderBy('created_at', 'desc')->get();
         }
-        return Branch::all();
+        return Branch::query()->orderBy('created_at', 'desc')->get();
     }
 
     public function bulkStore(BulkFormInput $request){

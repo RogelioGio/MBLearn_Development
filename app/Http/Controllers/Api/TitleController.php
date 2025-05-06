@@ -16,7 +16,7 @@ class TitleController extends Controller
      */
     public function index()
     {
-        return Title::all();
+        return Title::query()->orderBy('created_at', 'desc')->get();
     }
 
     /**

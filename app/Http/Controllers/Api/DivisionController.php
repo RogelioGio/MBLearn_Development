@@ -16,7 +16,7 @@ class DivisionController extends Controller
      */
     public function index()
     {
-        return Division::all();
+        return Division::query()->orderBy('created_at', 'desc')->get();
     }
 
     /**

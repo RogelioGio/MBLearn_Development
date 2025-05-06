@@ -16,7 +16,7 @@ class SectionController extends Controller
      */
     public function index()
     {
-        return Section::all();
+        return Section::query()->orderBy('created_at', 'desc')->get();
     }
 
     /**

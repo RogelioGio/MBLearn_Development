@@ -79,6 +79,7 @@ class userCredentials_controller extends Controller
         $count = 0;
         $query = UserCredentials::with(['userInfos', 'userInfos.roles', 'userInfos.city', 'userInfos.branch',
         'userInfos.department', 'userInfos.section', 'userInfos.division', 'userInfos.title'])
+        ->orderBy('created_at', 'desc')
         ->whereHas('userInfos', function ($subQuery) use ($currentUserId) {
             $subQuery->where('status', 'Active');
         });
@@ -143,7 +144,8 @@ class userCredentials_controller extends Controller
 
         $query = UserCredentials::with(['userInfos', 'userInfos.roles']) ->whereHas('userInfos', function ($subQuery) {
             $subQuery->where('status', 'Inactive'); // Ensure only Active users are fetched
-        });
+        })
+        ->orderBy('created_at', 'desc');
 
         // Apply filters based on userInfos attributes
         if ($request->has('status')) {

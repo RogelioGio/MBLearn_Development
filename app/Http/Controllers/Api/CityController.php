@@ -16,7 +16,7 @@ class CityController extends Controller
      */
     public function index()
     {
-        return City::all();
+        return City::query()->orderBy('created_at', 'desc')->get();
     }
 
 

@@ -19,7 +19,7 @@ class RoleController extends Controller
     public function index()
     {
         return response()->json([
-            'roles' => Role::withCount('users')->with('permissions')->get(),
+            'roles' => Role::withCount('users')->orderBy('created_at', 'desc')->with('permissions')->get(),
             'permissions' => Permission::all()
         ]);
     }
