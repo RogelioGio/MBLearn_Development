@@ -80,8 +80,7 @@ class userCredentials_controller extends Controller
         $query = UserCredentials::with(['userInfos', 'userInfos.roles', 'userInfos.city', 'userInfos.branch',
         'userInfos.department', 'userInfos.section', 'userInfos.division', 'userInfos.title'])
         ->whereHas('userInfos', function ($subQuery) use ($currentUserId) {
-            $subQuery->where('status', 'Active')
-            ->where('id', '!=', $currentUserId); // Ensure only Active users are fetched
+            $subQuery->where('status', 'Active');
         });
 
         // Apply filters based on userInfos attributes
