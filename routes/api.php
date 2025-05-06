@@ -46,7 +46,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('removePermission/{userInfos}/{permission}', [userInfo_controller::class, 'removePermission']);
     Route::post('/add-users-department/{userInfos}/{department}', [userInfo_controller::class, 'addDepartment']);
     Route::post('/add-users-branch/{userInfos}/{branch}', [userInfo_controller::class, 'addBranch']);
-    Route::post('/add-branch-city/{city}/{branch}', [BranchController::class, 'addCity']);
+    Route::post('/add-branch-city', [BranchController::class, 'addCity']);
     Route::post('/addType/{course}/{type}', [CourseController::class, 'addType']);
     Route::post('/removeType/{course}/{type}', [CourseController::class, 'removeType']);
     Route::post('/addCategory/{course}/{category}', [CourseController::class, 'addCategory']);
