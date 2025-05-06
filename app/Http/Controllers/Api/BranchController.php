@@ -6,6 +6,7 @@ use App\Filters\BranchFilter;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BulkFormInput;
+use App\Http\Requests\CityBranchRequest;
 use App\Models\Branch;
 use App\Http\Requests\StoreBranchRequest;
 use App\Http\Requests\UpdateBranchRequest;
@@ -63,7 +64,10 @@ class BranchController extends Controller
         ]);
     }
 
-    public function addCity(City $city, Branch $branch){
+    public function addCity(CityBranchRequest $request){
+        $validated = $request->validated();
+        $branch = Branch::find($validated['branch_id']);
+        $city = City::find($validated['city_id']);
         $branch->city()->associate($city);
         $branch->save();
         return response()->json([
