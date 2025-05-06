@@ -22,7 +22,6 @@ use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\SectionController;
 use App\Http\Controllers\Api\SubgroupController;
 use App\Http\Controllers\Api\TitleController;
-use App\Http\Controllers\Api\Training_ModeController;
 use App\Http\Controllers\Api\TypeController;
 use App\Models\UserInfos;
 
@@ -32,7 +31,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function(){
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', function (Request $request) {
-        return $request->user()->load(['userInfos.permissions','userInfos.roles',]);
+        return $request->user()->load(['userInfos', 'userInfos.permissions','userInfos.roles',]);
     });
     //test purposes amd account implementation (postman testing)
     // Route::post('/add-test-user', [UserController::class, 'addTestUser']);
@@ -47,7 +46,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('removePermission/{userInfos}/{permission}', [userInfo_controller::class, 'removePermission']);
     Route::post('/add-users-department/{userInfos}/{department}', [userInfo_controller::class, 'addDepartment']);
     Route::post('/add-users-branch/{userInfos}/{branch}', [userInfo_controller::class, 'addBranch']);
-    Route::post('/add-branch-city/{branch}/{city} ', [BranchController::class, 'addCity']);
+    Route::post('/add-branch-city', [BranchController::class, 'addCity']);
     Route::post('/addType/{course}/{type}', [CourseController::class, 'addType']);
     Route::post('/removeType/{course}/{type}', [CourseController::class, 'removeType']);
     Route::post('/addCategory/{course}/{category}', [CourseController::class, 'addCategory']);
@@ -65,24 +64,27 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('/select-employeeid/{employeeID}',[userInfo_controller::class, 'findUser_EmployeeID']);
     Route::put('/update-user-info/{userInfos}',[userInfo_controller::class, 'updateUser']);
     Route::delete('/delete-user/{userInfos}',[userInfo_controller::class, 'deleteUser']);
+    Route::put('/restore-user/{userInfos}', [userInfo_controller::class, 'restoreUser']);
 
     Route::post('/addusercredentials', [userCredentials_controller::class, 'addUserCredentials']);
     Route::put('/update-user-creds/{userCredentials}',[userCredentials_controller::class, 'updateUserCredentials']);
     Route::get('/index-user-creds',[userCredentials_controller::class, 'userCredentialsList']);
     Route::get('/index-user-creds/inactive',[userCredentials_controller::class, 'UnuserCredentialsList']);
-    Route::get('/select-user-creds/{userCredentials}',[userCredentials_controller::class, 'findUser_EmployeeID']);
+    Route::get('/select-user-creds/{userCredentials}',[userCredentials_controller::class, 'findUser_Creds']);
     Route::delete('/delete-user-creds/{userCredentials}',[userCredentials_controller::class, 'deleteUser']);
     Route::get('/reset-user-creds',[userCredentials_controller::class, 'resetUsers']); //reset user table
     Route::get('get-profile-image',[userInfo_controller::class, 'getProfile']); //Get Profile Image for UserCredentials
     Route::put('/update-user-creds/{userCredentials}',[userCredentials_controller::class, 'updateUserCredentials']);
     Route::get('/index-user-creds',[userCredentials_controller::class, 'userCredentialsList']);
     Route::get('/select-user-creds/{employeeID}',[userCredentials_controller::class, 'findUser_EmployeeID']);
+    Route::put('/restore-user-creds/{userCredentials}', [userCredentials_controller::class, 'restoreUser']);
     Route::get('/reset-user',[userInfo_controller::class, 'resetUser']); //reset user table
 
     //User with course API
     Route::get('/select-user-courses/{userInfos}', [userInfo_controller::class, 'getUserCourses']);
     Route::get('/select-course-users/{course}', [CourseController::class, 'getCourseUsers']);
     Route::get('/select-user-assigned-courses/{userInfos}', [userInfo_controller::class, 'getAssignedCourses']);
+    Route::get('/select-user-added-courses/{userInfos}', [userInfo_controller::class, 'getAddedCourses']);
     Route::post('/courses/bulk', [CourseController::class, 'bulkStore']);
     Route::get('/assigned-course-admins/{course}', [CourseController::class, 'getAssignedCourseAdmin']);
 
@@ -91,28 +93,39 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('/enrollments/bulk', [EnrollmentController::class, 'bulkStore']);
     Route::apiResource('/enrollments', EnrollmentController::class);
     Route::get('/index-user/enrolees', [EnrollmentController:: class, 'enrolees']);
+    Route::get('/index-user-enrollments/{course}', [userInfo_controller::class, 'indexEnrollingUsers']);
 
     //Form Input API
     Route::apiResource('/courses', CourseController::class);
     Route::apiResource('/categories', CategoryController::class);
-    Route::apiResource('/modes', Training_ModeController::class);
+    Route::post('/categories/bulk', [CategoryController::class, 'bulkStore']);
+
     Route::apiResource('/types', TypeController::class);
-    Route::apiResource('/subgroups', SubgroupController::class);
+    Route::post('types/bulk', [TypeController::class, 'bulkStore']);
+
     Route::apiResource('/cities', CityController::class);
+    Route::post('/cities/bulk', [CityController::class, 'bulkStore']);
     Route::apiResource('/departments', DepartmentController::class);
+    Route::post('/departments/bulk', [DepartmentController::class, 'bulkStore']);
     Route::apiResource('/branches', BranchController::class);
+    Route::post('/branches/bulk', [BranchController::class, 'bulkStore']);
     Route::apiResource('/titles', TitleController::class);
+    Route::post('/titles/bulk', [TitleController::class, 'bulkStore']);
     Route::apiResource('/subgroups', SubgroupController::class);
     Route::apiResource('/divisions', DivisionController::class);
+    Route::post('/divisions/bulk', [DivisionController::class, 'bulkStore']);
     Route::apiResource('/sections', SectionController::class);
+    Route::post('/sections/bulk', [SectionController::class, 'bulkStore']);
     Route::apiResource('/permissions', PermissionController::class);
 
     //Assigning Course Admin to Course
     Route::post('/assign-course-admin/{course}', [CourseController::class, 'assignCourseAdmin']);
+    Route::get('/get-available-course-admins/{course}', [userInfo_controller::class, 'indexAvailableCourseAdmins']);
 
 
     //Role API (get and post with /roles, get, put, and delete with /roles/{roleid} every api resource is same as this)
     Route::apiResource('/roles', RoleController::class);
+    Route::post('/roles/bulk', [RoleController::class, 'bulkStore']);
     Route::get('/rolepermissions/{role}', [RoleController::class, 'showRolePermissions']);
 
     //Fetching All Option for dropdown
@@ -124,11 +137,13 @@ Route::middleware('auth:sanctum')->group(function(){
 
     //extra (permission)
     Route::post('/updateRolePermission/{role}', [RoleController::class, 'updateRolePermissions']);
-    Route::post('/updateUserPermission/{userCredentials}', [userCredentials_controller::class, 'changeUserPermissions']);
+    Route::put('/updateUserPermission/{userCredentials}', [userCredentials_controller::class, 'changeUserPermissions']);
+
+    Route::get('/test', [userInfo_controller::class, 'test']);
 
 });
 
-Route::post('/test', [userInfo_controller::class, 'test']);
+
 
 //Category API
 Route::get('category',[FilterCategoryController::class, 'index']);

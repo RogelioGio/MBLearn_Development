@@ -12,6 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('userInfo', function (Blueprint $table) {
+            $table->dropForeign(['department_id']);
+            $table->dropForeign(['branch_id']);
+            $table->dropForeign(['city_id']);
             $table->dropColumn('department_id');
             $table->foreignId('department_id')->nullable()->constrained('departments', 'id')->nullOnDelete()->change();
             $table->dropColumn('branch_id');

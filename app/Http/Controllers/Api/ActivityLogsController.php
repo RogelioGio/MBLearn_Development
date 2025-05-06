@@ -10,7 +10,7 @@ class ActivityLogsController extends Controller
 {
     public function index()
     {
-        $activityLogs = Activitylogs::all();
+        $activityLogs = Activitylogs::query()->orderBy('created_at', 'desc')->get();
         return response()->json($activityLogs);
     }
 }

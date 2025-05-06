@@ -43,10 +43,6 @@ class DatabaseSeeder extends Seeder
             'first_name' => 'Jericho',
             'last_name' => 'Ilanga',
             'middle_name'=> 'S.',
-            'department'=> 'IT Department',
-            'title'=> 'title',
-            'branch'=> 'Novaliches',
-            'city'=> 'Quezon City',
             'status'=> 'Active',
             'profile_image'=> 'https://ui-avatars.com/api/?name=System+Admin&color=ffffff&background=03045e&bold=true&size=400',
         ]);
@@ -55,7 +51,7 @@ class DatabaseSeeder extends Seeder
         $firstinfos->userCredentials()->associate($firstcreds);
         $firstinfos->save();
 
-        UserInfos::factory(10)->create();
-        Course::factory(10)->create();
+        // UserInfos::factory(10)->create();
+        // Course::factory(10)->create();
     }
 }

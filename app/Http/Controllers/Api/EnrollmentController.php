@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BulkStoreEnrollmentRequest;
+use App\Http\Requests\GetEndDatesRequest;
 use App\Http\Requests\StoreEnrollmentRequest;
 use App\Http\Requests\UpdateEnrollmentRequest;
+use App\Http\Resources\CourseResource;
 use App\Http\Resources\EnrollmentResource;
+use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\UserInfos;
 use Illuminate\Http\Request;
@@ -23,7 +26,7 @@ class EnrollmentController extends Controller
      */
     public function index()
     {
-        return EnrollmentResource::collection(Enrollment::all());
+        return EnrollmentResource::collection(Enrollment::query()->orderBy('created_at', 'desc')->get());
     }
 
     /**
@@ -31,21 +34,35 @@ class EnrollmentController extends Controller
      */
     public function store(StoreEnrollmentRequest $request)
     {
-        $enrollment = Enrollment::create($request->all());
+        $data = $request->validated();
+        $enrollment = Enrollment::firstOrCreate($data);
         return new EnrollmentResource($enrollment);
     }
 
     public function bulkStore(BulkStoreEnrollmentRequest $request){
-        $bulk = collect($request->all())->map(function($arr, $key){
-            return Arr::except($arr,['userId', 'courseId', 'enrollerId']);
-        });
+        $bulk = $request->validated();
+        $test = [];
 
-        Enrollment::insert($bulk->toArray());
+        foreach($bulk as $index => $dat){
+            $exists = Enrollment::query()->where([
+                ['user_id', '=', $dat['user_id']],
+                ['course_id', '=', $dat['course_id']],
+            ])->exists();
+
+            if(!$exists){
+                $test[] = Enrollment::firstOrCreate($dat);
+            } else{
+                $test[] = ["Message" => $dat['user_id']." is already enrolled in ".$dat['course_id']];
+            }
+        }
+ 
+        // Enrollment::insert($bulk->toArray());
         return response()->json([
             "Message" => "Bulk Store complete",
-            "Data" => $bulk
+            "Data" => $test
         ]);
     }
+
 
     //Fetch Learners
     //The role names are inside of 2D array []["role_name"] to get role name

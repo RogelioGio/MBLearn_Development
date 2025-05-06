@@ -3,11 +3,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useOption } from "../contexts/AddUserOptionProvider";
 import { useEffect } from "react";
 
-const UserSecEntyProps = ({user,name,employeeID,MBEmail,city,branch,department,title,role,image,status,edit}) => {
-    const {departments,cities,location,titles} = useOption();
+const UserSecEntyProps = ({user,name,employeeID,MBEmail,city,branch,division,section,department,role,image,status,lastLogin,edit}) => {
 
     return (
-        <tr className='font-text text-sm hover:bg-gray-200'>
+        <tr className='font-text text-sm hover:bg-gray-200 hover:cursor-pointer'
+        onClick={(e) => edit(e,user)} >
                         <td className='text-sm py-3 px-4'>
                             <div className='flex items-center gap-2'>
                                 {/* User Image */}
@@ -17,41 +17,45 @@ const UserSecEntyProps = ({user,name,employeeID,MBEmail,city,branch,department,t
                                 {/* Name */}
                                 <div>
                                     <p className='font-text'>{name}</p>
-                                    <p className='text-unactive'>{MBEmail}</p>
+                                    <p className='text-unactive'>ID: {employeeID}</p>
                                 </div>
                             </div>
                         </td>
+
                         <td className='py-3 px-4'>
-                            {/* <div className='flex flex-col'> */}
-                            {/* Metrobank Working Email */}
-                            {/* <p className='text-unactive'>{MBEmail}</p>
-                            </div> */}
+                            <p className="text-unactive">{MBEmail}</p>
+                        </td>
+
+                        {/* Divison */}
+                        {/* <td className='py-3 px-4'>
+                            <p className="text-unactive">{division}</p>
                         </td>
                         <td className='py-3 px-4'>
-                            {/* <div className='flex flex-col'> */}
-                            {/* Metrobank Working Email */}
-                            {/* <p className='text-unactive'>{MBEmail}</p>
-                            </div> */}
+                            <p className="text-unactive">{department}</p>
                         </td>
                         <td className='py-3 px-4'>
-                            <p className='text-unactive'>{role}</p>
+                            <p className="text-unactive">{section}</p>
+                        </td> */}
+
+                        <td className='py-3 px-4'>
+                            <p className="text-unactive">{role}</p>
                         </td>
 
                         {/* Last Login */}
-                        <td>
+                        <td className="py-3 px-4">
+                        <p className="text-unactive">{lastLogin != null ? lastLogin : "Not Logged Yet"}</p>
                         </td>
 
                         {/* Action */}
-                        <td className='py-3 px-4'>
+                        {/* <td className='py-3 px-4'>
                             <div className='flex gap-1 justify-end'>
                             <button
-                                    className='flex flex-row items-center justify-center gap-2 px-5 py-2 border border-primary rounded-md text-primary hover:bg-primary hover:text-white hover:scale-105 transition-all ease-in-out'
+                                    className='flex justify-center items-center aspect-square p-2 w-fit bg-white shadow-md border border-primary rounded-md text-primary hover:bg-primary cursor-pointer transition-all ease-in-out hover:text-white'
                                     onClick={(e) => edit(e,user)}>
                                 <FontAwesomeIcon icon={faUserPen}/>
-                                <p>Edit</p>
                             </button>
                             </div>
-                        </td>
+                        </td> */}
 
                 </tr>
     );

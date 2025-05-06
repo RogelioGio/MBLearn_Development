@@ -75,44 +75,50 @@ class userCredentials_controller extends Controller
 
         $page = $request->input('page', 1);//Default page
         $perPage = $request->input('perPage',5); //Number of entry per page
-        $currentUserId = $request->user()->id;
-
-        // $userCredentials = UserCredentials::with(['userInfos', 'userInfos.roles'])->paginate($perPage);
-
-        // return response()->json([
-        //     'total' => $userCredentials->total(),
-        //     'lastPage' => $userCredentials->lastPage(),
-        //     'currentPage' => $userCredentials->currentPage(),
-        //     'data' => $userCredentials->items()
-        // ]);
-
-        $query = UserCredentials::with(['userInfos', 'userInfos.roles'])
+        $currentUserId = $request->user()->userInfos->id;
+        $count = 0;
+        $query = UserCredentials::with(['userInfos', 'userInfos.roles', 'userInfos.city', 'userInfos.branch',
+        'userInfos.department', 'userInfos.section', 'userInfos.division', 'userInfos.title'])
+        ->orderBy('created_at', 'desc')
         ->whereHas('userInfos', function ($subQuery) use ($currentUserId) {
-            $subQuery->where('status', 'Active')
-            ->where('id', '!=', $currentUserId); // Ensure only Active users are fetched
+            $subQuery->where('status', 'Active');
         });
 
         // Apply filters based on userInfos attributes
         if ($request->has('status')) {
-            $query->whereHas('userInfos', function ($subQuery) use ($request) {
-                $subQuery->where('status', $request->input('status'));
-            });
+            if(!($request->input('status')['eq'] == "")){
+                $query->whereHas('userInfos', function ($subQuery) use ($request) {
+                    $subQuery->where('status', $request->input('status'));
+                });
+            }
         }
 
         if ($request->has('department_id')) {
-            $query->whereHas('userInfos', function ($subQuery) use ($request) {
-                $subQuery->where('department_id', $request->input('department_id'));
-            });
+            if(!($request->input('department_id')['eq'] == "")){
+                $query->whereHas('userInfos', function ($subQuery) use ($request) {
+                    $subQuery->where('department_id', $request->input('department_id'));
+                });
+            }
         }
 
         if ($request->has('branch_id')) {
-            $query->whereHas('userInfos', function ($subQuery) use ($request) {
-                $subQuery->where('branch_id', $request->input('branch_id'));
-            });
+            if(!($request->input('branch_id')['eq'] == "")){
+                $query->whereHas('userInfos', function ($subQuery) use ($request) {
+                    $subQuery->where('branch_id', $request->input('branch_id'));
+                });
+            }
+        }
+
+        if ($request->has('role_id')){
+            if(!($request->input('role_id')['eq'] == "")){
+                $query->whereHas('roles', function($subQuery) use ($request){
+                    $subQuery->where('role_id', $request->input('role_id'));
+                });
+            }
         }
 
         // Paginate the filtered results
-        $userCredentials = $query->paginate($perPage);
+        $userCredentials = $query->orderBy('created_at', 'desc')->paginate($perPage);
 
         return response()->json([
             'total' => $userCredentials->total(),
@@ -138,25 +144,40 @@ class userCredentials_controller extends Controller
 
         $query = UserCredentials::with(['userInfos', 'userInfos.roles']) ->whereHas('userInfos', function ($subQuery) {
             $subQuery->where('status', 'Inactive'); // Ensure only Active users are fetched
-        });
+        })
+        ->orderBy('created_at', 'desc');
 
         // Apply filters based on userInfos attributes
         if ($request->has('status')) {
-            $query->whereHas('userInfos', function ($subQuery) use ($request) {
-                $subQuery->where('status', $request->input('status'));
-            });
+            if(!($request->input('status')['eq'] == "")){
+                $query->whereHas('userInfos', function ($subQuery) use ($request) {
+                    $subQuery->where('status', $request->input('status'));
+                });
+            }
         }
 
         if ($request->has('department_id')) {
-            $query->whereHas('userInfos', function ($subQuery) use ($request) {
-                $subQuery->where('department_id', $request->input('department_id'));
-            });
+            if(!($request->input('department_id')['eq'] == "")){
+                $query->whereHas('userInfos', function ($subQuery) use ($request) {
+                    $subQuery->where('department_id', $request->input('department_id'));
+                });
+            }
         }
 
         if ($request->has('branch_id')) {
-            $query->whereHas('userInfos', function ($subQuery) use ($request) {
-                $subQuery->where('branch_id', $request->input('branch_id'));
-            });
+            if(!($request->input('branch_id')['eq'] == "")){
+                $query->whereHas('userInfos', function ($subQuery) use ($request) {
+                    $subQuery->where('branch_id', $request->input('branch_id'));
+                });
+            }
+        }
+
+        if ($request->has('role_id')){
+            if(!($request->input('role_id')['eq'] == "")){
+                $query->whereHas('roles', function($subQuery) use ($request){
+                    $subQuery->where('role_id', $request->input('role_id'));
+                });
+            }
         }
 
         // Paginate the filtered results
@@ -171,10 +192,9 @@ class userCredentials_controller extends Controller
 
     }
 
-
-
-    public function showEnrolledCourses(UserCredentials $userCredentials){
-        return CourseResource::collection($userCredentials->enrolledCourses);
+    public function findUser_Creds(UserCredentials $userCredentials){
+        return $userCredentials->load(['userInfos', 'userInfos.roles', 'userInfos.city', 'userInfos.branch',
+        'userInfos.department', 'userInfos.section', 'userInfos.division', 'userInfos.title']);
     }
 
     //find by employeeID in the user maintenance management
@@ -193,6 +213,18 @@ class userCredentials_controller extends Controller
             ],404);
         }
     }
+
+    public function restoreUser(UserCredentials $userCredentials)
+    {
+        if($userCredentials){
+            $userCredentials->userInfos->status = "Active";
+            $userCredentials->save();
+            return response()->json(['message' => 'User restored'], 200);
+        }else {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+    }
+
     public function resetUsers()
     {
         // Truncate the users table

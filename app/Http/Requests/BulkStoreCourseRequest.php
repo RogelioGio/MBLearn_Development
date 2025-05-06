@@ -24,12 +24,11 @@ class BulkStoreCourseRequest extends FormRequest
         // TODO be more specific
         return [
             '*.name' => 'required',
+            '*.CourseID' => 'required',
             '*.description' => 'required',
             '*.type_id' => 'required',
             '*.category_id'=> 'required',
-            '*.training_mode_id' => 'required',
-            '*.mandatory' => 'required',
-            '*.duration' => 'required',
+            '*.training_type' => 'required',
             '*.archived' => 'required',
         ];
     }

@@ -25,7 +25,7 @@ const UnsavedWarningModal = ({isOpen, close, onContinue}) => {
                                     <p className="font-text text-unactive text-sm">Unsaved changes detected! Don't forget to save <br /> to keep your updates in MBlearn.</p>
                                 </div>
                                 {/* Choices */}
-                                <div className="grid grid-cols-2 gap-2 py-2">
+                                <div className="grid grid-cols-2 gap-2">
                                     <div className="py-2 px-4 border-2 border-primary rounded-md shadow-md font-header text-primary text-center hover:bg-primary hover:cursor-pointer hover:scale-105 hover:text-white transition-all ease-in-out" onClick={close}>Cancel</div>
                                     <div className="py-2 px-4 border-2 border-primary bg-primary rounded-md shadow-md font-header text-white text-center hover:bg-primary hover:cursor-pointer hover:scale-105 hover:text-white transition-all ease-in-out" onClick= {() =>{onContinue(); close();}}>Continue</div>
                                 </div>

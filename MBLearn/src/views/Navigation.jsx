@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBell, faBook, faBookBookmark, faBookOpen, faBookOpenReader, faChartGantt, faChartPie, faGear, faGears, faGraduationCap, faHouse, faMedal, faPersonCirclePlus, faRightFromBracket, faUser, faUserGroup, faUserLock, faUserShield, faUsersRays, } from '@fortawesome/free-solid-svg-icons'
+import { faBell, faBook, faBookBookmark, faBookOpen, faBookOpenReader, faChalkboard, faChartGantt, faChartPie, faGear, faGears, faGraduationCap, faHouse, faMedal, faPersonCirclePlus, faRightFromBracket, faUser, faUserGroup, faUserLock, faUserShield, faUsersRays, } from '@fortawesome/free-solid-svg-icons'
 import Small_Logo from '../assets/Small_Logo.svg'
 import axiosClient from '../axios-client';
 import { useEffect, useState } from 'react';
@@ -36,21 +36,21 @@ const navItems = {
         {icon:faUserLock, text:"System Access Maintenance", to:"/systemadmin/useraccountsmaintenance"},
         {icon:faGears, text:"System Configuration Maintenance", to:"/systemadmin/systemconfigurationmaintenance"},
         {icon:faChartPie, text:"System-Level Reports", to:"/systemadmin/systemlevelreports"},
-        {icon:faChartGantt, text:"Activity Logs", to:"/systemadmin/activitylogs"},
+        //{icon:faChartGantt, text:"Activity Logs", to:"/systemadmin/activitylogs"},
     ],
     "Course Admin": [
         {icon:faHouse, text:"Home", to:"/courseadmin/dashboard"},
-        {icon:faBookBookmark, text:"Course Catalog", to:"/courseadmin/assignedcourses"},
-        {icon:faBook, text:"Course List Maintenance", to:"/courseadmin/courselistmaintenance"},
+        {icon:faChalkboard, text:"Course Manager", to:"/courseadmin/courses"},
+        // {icon:faBook, text:"My Course Maintenance", to:"/courseadmin/courselistmaintenance"},
         {icon:faPersonCirclePlus, text:"Enroll Trainee", to:"/courseadmin/bulkenrollment"},
         {icon:faChartPie, text:"Assigned Course Reports", to:"/courseadmin/coursereports"},
-        {icon:faUsersRays, text:"My Employees", to:"/courseadmin/myemployee"}
+        // {icon:faUsersRays, text:"My Employees", to:"/courseadmin/myemployee"}
     ],
     "Learner": [
-        {icon:faHouse, text:"Home"},
-        {icon:faBook, text:"My Courses"},
-        {icon:faMedal, text:"Certificates"},
-        {icon:faBookOpen, text:"Course Catalog"},
+        {icon:faHouse, text:"Home", to:"/learner/dashboard"},
+        {icon:faBook, text:"Courses Manager", to:"/learner/learnercoursemanager/#"},
+        {icon:faMedal, text:"Certificates" , to:"/learner/learnercertificates"},
+        {icon:faGraduationCap, text:"Self Enrollment", to:"/learner/learnerselfenrollment"},
     ]
 }
 

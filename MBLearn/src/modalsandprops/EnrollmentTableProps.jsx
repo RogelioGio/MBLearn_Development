@@ -1,11 +1,11 @@
 const EnrollmentTableProps = ({children, selectAll, onchange, course}) => {
     return (
-        <div className='row-start-3 row-span-2 col-start-2 col-span-3 px-5 py-2'>
+        <div className="row-start-2 col-span-4 py-3">
             <div className='w-full border-primary border rounded-md overflow-hidden shadow-md'>
             <table className='text-left min-w-full table-auto table-layout-fixed'>
                 <thead className='font-header text-xs text-primary bg-secondaryprimary'>
                     <tr>
-                        <th className='p-4 w-2/5'>
+                        <th className='p-4 w-2/7'>
                             <div className="flex items-center flex-row gap-4">
                             {/* Checkbox */}
                             <div className="group grid size-4 grid-cols-1">
@@ -37,8 +37,10 @@ const EnrollmentTableProps = ({children, selectAll, onchange, course}) => {
                             <p>EMPLOYEE NAME</p>
                             </div>
                         </th>
-                        <th className='p-4 w-1/5'>DEPARTMENT</th>
-                        <th className='p-4 w-2/5 '>BRANCH</th>
+                        <th className='p-4 w-1/7'>DIVISION</th>
+                        <th className='p-4 w-1/7'>DEPARTMENT</th>
+                        <th className='p-4 w-1/7'>SECTION</th>
+                        <th className='p-4 w-1/7'>LOCATION</th>
                     </tr>
                 </thead>
                 <tbody className='bg-white divide-y divide-divider'>

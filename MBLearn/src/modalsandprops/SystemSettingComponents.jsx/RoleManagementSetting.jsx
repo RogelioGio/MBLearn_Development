@@ -58,7 +58,7 @@ const RoleManagementSetting = () => {
     const isChecked = (permName) => {
         return permission.some(p => p.permission_name === permName);
     };
-    const permissionswitch = (permission_name ,checked) => {
+    const permissionswitch = (perm_id,permission_name ,checked) => {
             const perm = refPermission.find(p => p.permission_name === permission_name);
         setPermissions(prev => {
             const exists = prev.some(p => p.permission_name === permission_name);
@@ -84,10 +84,10 @@ const RoleManagementSetting = () => {
 
     useEffect(()=>{
         // console.log(permission)
-        // console.log(refPermission)
+        console.log(refPermission)
         // console.log(saved)
         console.log(saving)
-    },[saving])
+    },[refPermission,permissionswitch])
 
     // Save Changes
     const saveChanges = () => {
@@ -220,6 +220,7 @@ const RoleManagementSetting = () => {
                                                 <SystemAdminPermissionProps
                                                     isChecked={isChecked}
                                                     permissionswitch={permissionswitch}
+                                                    permissionRef={refPermission}
                                                 />
                                             );
                                         case 2:
@@ -227,6 +228,7 @@ const RoleManagementSetting = () => {
                                                 <CourseAdminPermissionProps
                                                     isChecked={isChecked}
                                                     permissionswitch={permissionswitch}
+                                                    permissionRef={refPermission}
                                                 />
                                             );
                                         default:
@@ -235,10 +237,12 @@ const RoleManagementSetting = () => {
                                                 <SystemAdminPermissionProps
                                                     isChecked={isChecked}
                                                     permissionswitch={permissionswitch}
+                                                    permissionRef={refPermission}
                                                     />
                                                 <CourseAdminPermissionProps
                                                     isChecked={isChecked}
                                                     permissionswitch={permissionswitch}
+                                                    permissionRef={refPermission}
                                                     />
                                                 </>
                                             );

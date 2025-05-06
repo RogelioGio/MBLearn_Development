@@ -29,12 +29,14 @@ class updateUserInfo extends FormRequest
             'employeeID' => ['required', 'string',  'min:11', Rule::unique('userInfo')->ignore($this->employeeID, 'employeeID')],
             'first_name' => 'required|string|max:30',
             'last_name' => 'required|string|max:30',
-            'middle_name' => 'nullable|string|max:30',
-            'name_suffix' => 'nullable|string|max:10',
+            'middle_name' => 'required|string|max:30',
+            'name_suffix' => 'required|string|max:10',
             'department_id' => 'required|integer|exists:departments,id',
             'title_id' => 'required|integer|exists:titles,id',
             'branch_id' => 'required|integer|exists:branches,id',
-            'status' => 'nullable|in:Active, Inactive',
+            "section_id" => "required|integer|exists:sections,id",
+            "division_id" => "required|integer|exists:divisions,id",
+            'status' => 'required|in:Active, Inactive',
         ];
     }
 }

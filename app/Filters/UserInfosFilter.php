@@ -9,6 +9,8 @@ class UserInfosFilter{
         'title_id' => ['eq'],
         'department_id' => ['eq'],
         'branch_id' => ['eq'],
+        'section_id' => ['eq'],
+        'division_id' => ['eq'],
     ];
 
     protected $operatorMap = [

@@ -18,14 +18,14 @@ import { ScrollArea } from "../components/ui/scroll-area"
 
 const AddUserModal = ({open, close, updateTable}) => {
     //Option Context
-    const {cities,departments,location,titles,roles,permission} = useOption();
+    const {cities,departments,location,titles,roles,permission,division,section} = useOption();
     const [selectedBranches, setSelectedBranches] = useState([])
     const [generatedEmail, setGeneratedEmail] = useState('')
     const [generatedPassword, setGeneratedPassword] = useState('')
     const [role, setRoles] = useState([])
     const [accountPerm, setAccountPerm] = useState([])
 
-    useEffect(()=>{console.log("Account Permissions",accountPerm)},[accountPerm])
+
 
     const handleBranchesOptions = (e) =>{
         const city = e.target.value;
@@ -94,6 +94,8 @@ const AddUserModal = ({open, close, updateTable}) => {
                 middle_name: values.middlename,
                 name_suffix: values.suffix,
                 department_id: values.department,
+                section_id: values.section,
+                division_id: values.division,
                 title_id: values.title,
                 branch_id: values.branch,
                 city_id: values.city,
@@ -120,6 +122,10 @@ const AddUserModal = ({open, close, updateTable}) => {
         }
 
     })
+
+//     useEffect(()=>{console.log("Account Permissions",accountPerm)
+//         console.log(formik.values.role)
+// },[accountPerm])
 
     //Field Checker per step
     const stepFieldsMap = {
@@ -182,10 +188,10 @@ const AddUserModal = ({open, close, updateTable}) => {
     return(
         <>
         <Dialog open={open} onClose={()=>{}}>
-            <DialogBackdrop transition className="fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in z-30"/>
+            <DialogBackdrop transition className="backdrop-blur-sm fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in z-30"/>
             <div className='fixed inset-0 z-30 w-screen overflow-y-auto'>
                 <div className='flex min-h-full items-center justify-center p-4'>
-                    <DialogPanel transition className='relative overflow-hidden transform rounded-md w-2/4 bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in'>
+                    <DialogPanel transition className='relative overflow-hidden transform rounded-md w-3/4 bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in'>
                         <div className='bg-white rounded-md h-full p-5 flex flex-col'>
                             {/* Header */}
                             <div className="pt-2 pb-4 mx-4 border-b border-divider flex flex-row justify-between item-center">
@@ -306,7 +312,7 @@ const AddUserModal = ({open, close, updateTable}) => {
                                                         <span className="font-text text-xs text-unactive">Specify the employee's department and branch location for accurate assignment and tracking.</span>
                                                     </div>
                                                     {/* EmployeeID */}
-                                                    <div className="inline-flex flex-col gap-1 row-start-2 col-start-1 py-2">
+                                                    <div className="inline-flex flex-col gap-1 row-start-2 col-start-1 py-2 col-span-2">
                                                         <label htmlFor="employeeID" className="font-text text-xs flex flex-row justify-between">
                                                             <p>Employee ID Number <span className="text-red-500">*</span></p>
                                                         </label>
@@ -317,27 +323,6 @@ const AddUserModal = ({open, close, updateTable}) => {
                                                                 maxLength={11}
                                                                 className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
                                                         {formik.touched.employeeID && formik.errors.employeeID ? (<div className="text-red-500 text-xs font-text">{formik.errors.employeeID}</div>):null}
-                                                    </div>
-                                                    {/*Department*/}
-                                                    <div className="inline-flex flex-col gap-1 row-start-2 col-span-1 py-2">
-                                                        <label htmlFor="department" className="font-text text-xs flex">Deparment <span className="text-red-500">*</span></label>
-                                                        <div className="grid grid-cols-1">
-                                                            <select id="department" name="department" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                                                                value={formik.values.department}
-                                                                onChange={formik.handleChange}
-                                                                onBlur={formik.handleBlur}>
-                                                                <option value="">Select Department</option>
-                                                                {
-                                                                    departments.map((department) => (
-                                                                        <option key={department.id} value={department.id}>{department.department_name}</option>
-                                                                    ))
-                                                                }
-                                                            </select>
-                                                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                                                            <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                                                            </svg>
-                                                        </div>
-                                                            {formik.touched.department && formik.errors.department ? (<div className="text-red-500 text-xs font-text">{formik.errors.department}</div>):null}
                                                     </div>
                                                     {/* Employee Posistion */}
                                                     <div className="inline-flex flex-col gap-1 row-start-2 col-span-1 py-2">
@@ -360,8 +345,8 @@ const AddUserModal = ({open, close, updateTable}) => {
                                                     </div>
                                                         {formik.touched.title && formik.errors.title ? (<div className="text-red-500 text-xs font-text">{formik.errors.title}</div>):null}
                                                     </div>
-                                                    {/*Division*/}
-                                                    <div className="inline-flex flex-col gap-1 row-start-3 col-span-1 py-2">
+                                                    {/*Department*/}
+                                                    <div className="inline-flex flex-col col-start-2 row-start-3 gap-1 py-2">
                                                         <label htmlFor="department" className="font-text text-xs flex">Deparment <span className="text-red-500">*</span></label>
                                                         <div className="grid grid-cols-1">
                                                             <select id="department" name="department" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
@@ -381,18 +366,18 @@ const AddUserModal = ({open, close, updateTable}) => {
                                                         </div>
                                                             {formik.touched.department && formik.errors.department ? (<div className="text-red-500 text-xs font-text">{formik.errors.department}</div>):null}
                                                     </div>
-                                                    {/*Section*/}
+                                                    {/*Division*/}
                                                     <div className="inline-flex flex-col gap-1 row-start-3 col-span-1 py-2">
-                                                        <label htmlFor="department" className="font-text text-xs flex">Deparment <span className="text-red-500">*</span></label>
+                                                        <label htmlFor="division" className="font-text text-xs flex">Division <span className="text-red-500">*</span></label>
                                                         <div className="grid grid-cols-1">
-                                                            <select id="department" name="department" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                                                                value={formik.values.department}
+                                                            <select id="division" name="division" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                                                value={formik.values.division}
                                                                 onChange={formik.handleChange}
                                                                 onBlur={formik.handleBlur}>
-                                                                <option value="">Select Department</option>
+                                                                <option value="">Select Division</option>
                                                                 {
-                                                                    departments.map((department) => (
-                                                                        <option key={department.id} value={department.id}>{department.department_name}</option>
+                                                                    division.map((division) => (
+                                                                        <option key={division.id} value={division.id}>{division.division_name}</option>
                                                                     ))
                                                                 }
                                                             </select>
@@ -400,7 +385,28 @@ const AddUserModal = ({open, close, updateTable}) => {
                                                             <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
                                                             </svg>
                                                         </div>
-                                                            {formik.touched.department && formik.errors.department ? (<div className="text-red-500 text-xs font-text">{formik.errors.department}</div>):null}
+                                                            {formik.touched.division && formik.errors.division ? (<div className="text-red-500 text-xs font-text">{formik.errors.division}</div>):null}
+                                                    </div>
+                                                    {/*Section*/}
+                                                    <div className="inline-flex flex-col gap-1 row-start-3 col-span-1 py-2">
+                                                        <label htmlFor="section" className="font-text text-xs flex">Section <span className="text-red-500">*</span></label>
+                                                        <div className="grid grid-cols-1">
+                                                            <select id="section" name="section" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                                                value={formik.values.section}
+                                                                onChange={formik.handleChange}
+                                                                onBlur={formik.handleBlur}>
+                                                                <option value="">Select Section</option>
+                                                                {
+                                                                    section.map((section) => (
+                                                                        <option key={section.id} value={section.id}>{section.section_name}</option>
+                                                                    ))
+                                                                }
+                                                            </select>
+                                                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                                            <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                                            </svg>
+                                                        </div>
+                                                            {formik.touched.section && formik.errors.section ? (<div className="text-red-500 text-xs font-text">{formik.errors.section}</div>):null}
                                                     </div>
                                                     {/* Branch City Location */}
                                                     <div className="inline-flex flex-col gap-1 row-start-4 col-span-1 py-2">
@@ -477,9 +483,11 @@ const AddUserModal = ({open, close, updateTable}) => {
                                                         {formik.touched.role && formik.errors.role ? (<div className="text-red-500 text-xs font-text">{formik.errors.role}</div>):null}
                                                     </div>
                                                     {
-                                                        formik.values.role  ? (<div className="col-span-3">
-                                                            <AccountPermissionProps refPermissions={permission} selectedRole={formik.values.role} role={role} setAccountPerm={setAccountPerm}/>
-                                                        </div>):(null)
+                                                        formik.values.role ? (
+                                                            <div className="col-span-3">
+                                                                <AccountPermissionProps refPermissions={permission} selectedRole={formik.values.role} role={role} setAccountPerm={setAccountPerm}/>
+                                                            </div>
+                                                        ) : (null)
                                                     }
 
 
@@ -511,17 +519,25 @@ const AddUserModal = ({open, close, updateTable}) => {
                                                             <p className="font-text">{formik.values.suffix}</p>
                                                         </div>
                                                     </div>
-                                                    <div className="flex flex-col gap-1">
+                                                    <div className="flex flex-col col-span-2 gap-1">
                                                         <p className="font-text text-xs text-unactive">Employee ID Number:</p>
                                                         <p className="font-text">{formik.values.employeeID}</p>
+                                                    </div>
+                                                    <div className="flex flex-col gap-1">
+                                                        <p className="font-text text-xs text-unactive">Posistion:</p>
+                                                        <p className="font-text">{titles.find(title => title.id === Number(formik.values.title))?.title_name || "Not selected"}</p>
+                                                    </div>
+                                                    <div className="flex flex-col gap-1">
+                                                        <p className="font-text text-xs text-unactive">Division:</p>
+                                                        <p className="font-text">{division.find(division => division.id === Number(formik.values.division))?.division_name || "Not selected"}</p>
                                                     </div>
                                                     <div className="flex flex-col gap-1">
                                                         <p className="font-text text-xs text-unactive">Department:</p>
                                                         <p className="font-text">{departments.find(department => department.id === Number(formik.values.department))?.department_name || "Not selected"}</p>
                                                     </div>
                                                     <div className="flex flex-col gap-1">
-                                                        <p className="font-text text-xs text-unactive">Posistion:</p>
-                                                        <p className="font-text">{titles.find(title => title.id === Number(formik.values.title))?.title_name || "Not selected"}</p>
+                                                        <p className="font-text text-xs text-unactive">Section:</p>
+                                                        <p className="font-text">{section.find(section => section.id === Number(formik.values.section))?.section_name || "Not selected"}</p>
                                                     </div>
                                                     <div className="flex flex-col gap-1">
                                                         <p className="font-text text-xs text-unactive">City:</p>

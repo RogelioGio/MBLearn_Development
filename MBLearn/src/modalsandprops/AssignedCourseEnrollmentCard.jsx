@@ -1,7 +1,7 @@
 const AssignedCourseEnrollmentCard = ({name, id, coursetype, coursecategory, duration, trainingmode, trainingtype, course, selected, onclick,numberOfEnrollees }) => {
     const enrollees = numberOfEnrollees(id)
     return(
-        <div className={`w-full p-3 grid grid-cols-[auto_3.75rem] border border-divider rounded-md font-text shadow-md hover:cursor-pointer hover:scale-105 transition-all ease-in-out ${course === name ? 'bg-primary text-white' : 'bg-white text-primary'}`}
+        <div className={`snap-end group w-full p-3 grid grid-cols-[auto_3.75rem] border border-divider rounded-md font-text shadow-md hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out ${course === name ? 'bg-primary text-white' : 'bg-white text-primary'}`}
             onClick={onclick}>
             {/* Badge */}
             <div className="flex flex-row items-center justify-between pb-2 col-span-2">

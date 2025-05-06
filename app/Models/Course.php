@@ -23,8 +23,10 @@ class Course extends Model
         'training_type',
         'type_id',
         'category_id',
-        'training_mode_id',
         'archived',
+        'months',
+        'weeks',
+        'days',
         'system_admin_id',
         'assigned_course_admin_id',
     ];
@@ -35,6 +37,15 @@ class Course extends Model
 
     public function enrolledUsers(): HasManyThrough{
         return $this->hasManyThrough(UserInfos::class, Enrollment::class, 'course_id', 'id', 'id', 'user_id');
+    }
+
+    public function statusEnrolledUsers(){
+        return $this->enrollments()->with('enrolledUser')->get()->map(function ($enrollment){
+            $user = $enrollment->enrolledUser;
+            $user->enrollment_status = $enrollment->enrollment_status;
+            $user->due_soon = $enrollment->due_soon;
+            return $user;
+        });
     }
 
     //help with better name, basically system admin na nag add ng course
@@ -58,5 +69,5 @@ class Course extends Model
     public function training_modes():BelongsToMany{
         return $this->belongsToMany(Training_Mode::class, 'traning__mode__course', 'course_id', 'training_mode_id');
     }
-    
+
 }

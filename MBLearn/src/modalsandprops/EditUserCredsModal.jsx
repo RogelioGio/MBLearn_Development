@@ -8,15 +8,27 @@ import { useFormik } from "formik";
 import axiosClient from "../axios-client";
 import EdituserErrorModal from "./EdituserErrorModal";
 import AccountPermissionProps from "./AccountPermissionsProps"
+import { DatabaseZap } from "lucide-react";
 
-const EditUserCredsModal = ({open, close,ID, editSuccess}) => {
-    const {selectedUser, selectUser, isFetching} = useUser();
+const EditUserCredsModal = ({open, close, ID, editSuccess}) => {
     const [isLoading, setLoading] = useState(true);
     const {cities=[], titles=[], location=[], roles=[], departments=[], permission=[]} = useOption();
     const [tab, setTab] = useState(1)
     const [updating, setUpdating] = useState(false)
     const [role, setRoles] = useState([])
+    const [selectedUser, setSelectedUser] = useState()
+    const [accountPerm, setAccountPerm] =useState([])
 
+    useEffect(() => {
+        setLoading(true)
+        axiosClient.get(`/select-user-creds/${ID}`)
+        .then(({data}) => {
+            setSelectedUser(data)
+            console.log(data)
+            setLoading(false)
+        })
+        .catch(error => console.error(error));
+    },[ID])
     //Handle Password
         const [showPassword, setShowPassword] = useState(false);
         const [password, setPassword] = useState('');
@@ -33,56 +45,53 @@ const EditUserCredsModal = ({open, close,ID, editSuccess}) => {
         formik.resetForm();
         setUpdating(false)
     },[])
-    useEffect(() => {
-        if (open && ID) {
-            if (selectedUser?.id === ID) {
-                setLoading(false);
-            } else {
-                setLoading(true);
-                selectUser(ID);
-            }
-        }
-    }, [ID, selectedUser, open]);
-    useEffect(() => {
-        if (selectedUser && !isFetching) {
-            setLoading(false);
-        }
-    }, [selectedUser, isFetching]);
 
-    useEffect(() => {
-        setLoading(isFetching);
-    }, [isFetching])
+    //Must Seperate the formik from the modal
 
     const formik = useFormik({
         enableReinitialize: true,
-        initialValues: {
-            MBEmail: selectedUser?.user_credentials?.MBemail || "Loading...",
+        initialValues:
+        tab === 1 ? {
+            MBEmail: selectedUser?.MBemail || "Loading...",
             password: "",
-            role: selectedUser?.roles?.[0].id || "Loading",
+        }:{
+            role: selectedUser?.user_infos.roles?.[0].id || "Loading",
         },
+
         onSubmit: (values) => {
             console.log(values);
 
-            const payload = {
-                MBemail: values.MBEmail,
-                password: values.password
-            }
-
             setUpdating(true);
-            axiosClient.put(`/update-user-creds/${ID}`, payload)
-            .then((res) => {
-                editSuccess()
-                close()
-                setUpdating(false)
-                console.log(res)
-            }).catch((err) => {
-                setErrorMessage({
-                    message: err.response.data.message,
-                    errors: err.response.data.errors
+
+            if (tab === 1) {
+                const payload = {
+                MBemail: values.MBEmail,
+                password: values.password,
+                };
+
+                axiosClient.put(`/update-user-creds/${ID}`, payload)
+                .then((res) => {
+                    editSuccess();
+                    close();
+                    setUpdating(false);
+                    console.log(res);
                 })
-                setError(true)
-                setLoading(false);
-            })
+                .catch((err) => {
+                    setErrorMessage({
+                    message: err.response?.data?.message,
+                    errors: err.response?.data?.errors,
+                    });
+                    setError(true);
+                    setUpdating(false); // You had setLoading(false); instead
+                });
+            } else {
+                const payload = {
+                    role: values,
+                    permissions: accountPerm
+                }
+                console.log("Tab 2 submitted:", payload);
+                setUpdating(false);
+            }
         }
     })
 
@@ -164,17 +173,17 @@ const EditUserCredsModal = ({open, close,ID, editSuccess}) => {
                                                         {/* Employee Information */}
                                                         <div className="py-4">
                                                             <p className="font-text text-xs text-unactive">Employee's Full Name:</p>
-                                                            <p className="font-text">{selectedUser?.first_name} {selectedUser?.middle_name} {selectedUser?.last_name}</p>
+                                                            <p className="font-text">{selectedUser?.user_infos.first_name} {selectedUser?.user_infos.middle_name} {selectedUser?.user_infos.last_name}</p>
                                                         </div>
                                                         <div className="py-4">
                                                             <p className="font-text text-xs text-unactive">Department & Branch:</p>
-                                                            <p className="font-text">{selectedUser?.department?.department_name}</p>
-                                                            <p className="font-text text-xs">{selectedUser?.title?.title_name}</p>
+                                                            <p className="font-text">{selectedUser?.user_infos.department?.department_name}</p>
+                                                            <p className="font-text text-xs">{selectedUser?.user_infos.title?.title_name}</p>
                                                         </div>
                                                         <div className="py-4">
                                                             <p className="font-text text-xs text-unactive">Metrobank Branch</p>
-                                                            <p className="font-text">{selectedUser?.branch.branch_name}</p>
-                                                            <p className="font-text text-xs">{selectedUser?.city?.city_name}</p>
+                                                            <p className="font-text">{selectedUser?.user_infos.branch.branch_name}</p>
+                                                            <p className="font-text text-xs">{selectedUser?.user_infos.city?.city_name}</p>
                                                         </div>
                                                     <div className="inline-flex flex-col gap-1 row-start-2 col-span-2 py-2">
                                                             <label htmlFor="MBEmail" className="font-text text-xs flex flex-row justify-between">
@@ -228,7 +237,7 @@ const EditUserCredsModal = ({open, close,ID, editSuccess}) => {
                                                     </div>
                                                     {
                                                         formik.values.role ? (<div className="col-span-3">
-                                                            <AccountPermissionProps refPermissions={permission} selectedRole={formik.values.role} role={role}/>
+                                                            <AccountPermissionProps refPermissions={permission} selectedRole={formik.values.role} role={role} setAccountPerm={setAccountPerm}/>
                                                         </div>):(null)
                                                     }
                                                     </>

@@ -64,7 +64,7 @@ export default function UserAccountSecurityMaintenance(){
         onSubmit: values => {
             setIsLoading(true)
             setIsFiltered(true)
-            axiosClient.get(`/index-user-creds?department_id[eq]=${values.department}&branch_id[eq]=${values.branch}`)
+            axiosClient.get(`/index-user-creds?department_id[eq]=${values.department}&branch_id[eq]=${values.branch}&role_id[eq]=${values.role}`)
             .then((res) => {
                 setUsers(res.data.data);
                 console.log(res)
@@ -141,6 +141,7 @@ export default function UserAccountSecurityMaintenance(){
         })
         .then((response) => {
             setUsers(response.data.data)
+            console.log(response)
             setIsLoading(false)
             pageChangeState("totalUsers", response.data.total)
             pageChangeState("lastPage", response.data.lastPage)
@@ -228,7 +229,7 @@ export default function UserAccountSecurityMaintenance(){
 
             {/* User Filter */}
             <form onSubmit={filterformik.handleSubmit} className='col-start-1 col-span-4 row-start-2 row-span-1 px-5 py-3 grid grid-cols-[auto_auto_auto_auto_auto_min-content] w-full gap-2'>
-                <div className="inline-flex flex-col gap-1">
+                {/* <div className="inline-flex flex-col gap-1">
                     <label htmlFor="department" className="font-header text-xs flex flex-row justify-between">
                         <p className="text-xs font-text text-unactive">Department </p>
                     </label>
@@ -295,7 +296,7 @@ export default function UserAccountSecurityMaintenance(){
                         <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
                         </svg>
                     </div>
-                </div>
+                </div> */}
 
                 <div className="inline-flex flex-col gap-1">
                     <label htmlFor="role" className="font-header text-xs flex flex-row justify-between">
@@ -346,12 +347,13 @@ export default function UserAccountSecurityMaintenance(){
                 <table className='text-left min-w-full table-layout-fixed'>
                     <thead className='font-header text-xs text-primary bg-secondaryprimary uppercase'>
                         <tr>
-                            <th className='p-4 w-2/7'>EMPLOYEE NAME</th>
-                            <th className='p-4 w-1/7'>Branch & Location</th>
-                            <th className='p-4 w-1/7'>Division & Section</th>
-                            <th className='p-4 w-1/7'>ROLE</th>
-                            <th className='p-4 w-1/7'>Last Login Timestamp</th>
-                            <th className='p-4 w-1/7'></th>
+                            <th className='p-4 w-2/8'>EMPLOYEE NAME</th>
+                            {/* <th className='p-4 w-1/8'>DIVISION</th>
+                            <th className='p-4 w-1/8'>DEPARTMENT</th>
+                            <th className='p-4 w-1/8'>SECTION</th> */}
+                            <th className='p-4 w-1/8'>Metrobank Email</th>
+                            <th className='p-4 w-1/8'>ROLE</th>
+                            <th className='p-4 w-1/8'>Last Login Timestamp</th>
                         </tr>
                     </thead>
                     <tbody className='bg-white divide-y divide-divider'>
@@ -366,13 +368,15 @@ export default function UserAccountSecurityMaintenance(){
                                         name={[user.user_infos?.first_name, user.user_infos?.middle_name, user.user_infos?.last_name].join(" ")}
                                         employeeID={user.user_infos?.employeeID}
                                         MBEmail={user.MBemail}
-                                        city={1}
-                                        branch={1}
-                                        department={1}
-                                        title={1}
+                                        city={user.user_infos?.city.city_name}
+                                        branch={user.user_infos?.branch.branch_name}
+                                        division = {user.user_infos?.division.division_name}
+                                        department={user.user_infos?.department.department_name}
+                                        section={user.user_infos?.section.section_name}
                                         role={user.user_infos?.roles?.[0]?.role_name}
                                         image={user.user_infos?.profile_image }
                                         status={user.user_infos?.status}
+                                        lastLogin={user?.last_logged_in}
                                         edit={OpenEdit}
                                         />
                                 ))
@@ -389,9 +393,15 @@ export default function UserAccountSecurityMaintenance(){
             <div className='row-start-5 row-span-1 col-start-1 col-span-4 border-t border-divider mx-5 py-3 flex flex-row items-center justify-between'>
                 {/* Total number of entries and only be shown */}
                 <div>
-                    <p className='text-sm font-text text-unactive'>
-                        Showing <span className='font-header text-primary'>{pageState.startNumber}</span> to <span className='font-header text-primary'>{pageState.endNumber}</span> of <span className='font-header text-primary'>{pageState.totalUsers}</span> <span className='text-primary'>results</span>
-                    </p>
+                    {
+                        isLoading ? (<p className='text-sm font-text text-unactive'>Retrieving users.....</p>):
+                        (
+                            <p className='text-sm font-text text-unactive'>
+                                Showing <span className='font-header text-primary'>{pageState.startNumber}</span> to <span className='font-header text-primary'>{pageState.endNumber}</span> of <span className='font-header text-primary'>{pageState.totalUsers}</span> <span className='text-primary'>results</span>
+                            </p>
+                        )
+                    }
+
                 </div>
                 {/* Paganation */}
                 <div>
@@ -404,18 +414,24 @@ export default function UserAccountSecurityMaintenance(){
                         </a>
 
                         {/* Current Page & Dynamic Paging */}
-                        {Pages.map((page)=>(
-                            <a href="#"
-                                key={page}
-                                className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset
-                                    ${
-                                        page === pageState.currentPage
-                                        ? 'bg-primary text-white'
-                                        : 'bg-secondarybackground text-primary hover:bg-primary hover:text-white'
-                                    } transition-all ease-in-out`}
-                                    onClick={() => pageChange(page)}>
-                                {page}</a>
-                        ))}
+                        {
+                            isLoading ? (
+                                <a href="#" className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset`}>...</a>
+                            ) : (
+                                Pages.map((page)=>(
+                                    <a href="#"
+                                        key={page}
+                                        className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset
+                                            ${
+                                                page === pageState.currentPage
+                                                ? 'bg-primary text-white'
+                                                : 'bg-secondarybackground text-primary hover:bg-primary hover:text-white'
+                                            } transition-all ease-in-out`}
+                                            onClick={() => pageChange(page)}>
+                                        {page}</a>
+                                ))
+                            )
+                        }
                         <a href="#"
                             onClick={next}
                             className='relative inline-flex items-center rounded-r-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>

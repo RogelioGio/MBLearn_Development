@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Filters\CourseSort;
 use App\Filters\UserInfosFilter;
 use App\helpers\LogActivityHelper;
 use App\Http\Controllers\Controller;
@@ -12,15 +13,22 @@ use App\Http\Requests\updateUserInfo;
 use App\Models\Branch;
 use App\Models\Course;
 use App\Models\Department;
+use App\Models\Division;
+use App\Models\Enrollment;
 use App\Models\Permission;
 use App\Models\Role;
+use App\Models\Section;
+use App\Models\Subgroup;
 use App\Models\Title;
+use App\Models\Type;
 use App\Models\UserInfos;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\UserCredentials;
-use Illuminate\Contracts\Database\Eloquent\Builder;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon as SupportCarbon;
 use Illuminate\Support\Facades\Gate;
 
 class userInfo_controller extends Controller
@@ -30,16 +38,19 @@ class userInfo_controller extends Controller
     //Change, only have 1 request that has information for both the userinfos and usercreds
     public function addUser(AddUsersRequest $addUsersRequest){
 
-        $validatedData = $addUsersRequest->validated();
-        $title = Title::query()->find($validatedData['title_id']);
-        $department = Department::query()->find($validatedData['department_id']);
-        $branch = Branch::query()->find($validatedData['branch_id']);
-        $role = Role::query()->find($validatedData['role_id']);
+        $existingatedData = $addUsersRequest->validated();
+        $title = Title::query()->find($existingatedData['title_id']);
+        $department = Department::query()->find($existingatedData['department_id']);
+        $branch = Branch::query()->find($existingatedData['branch_id']);
+        $role = Role::query()->find($existingatedData['role_id']);
+        $division = Division::query()->find($existingatedData['division_id']);
+        $section = Section::query()->find($existingatedData['section_id']);
         $permissions = [];
 
-        $profile_image = $this -> generateProfileImageurl($validatedData['first_name'].$validatedData['last_name']);
-        $status = $validatedData['status'] ?? 'Active';
-        $existingUser = UserInfos::where('employeeID', $validatedData['employeeID'])->first();
+        $profile_image = $this -> generateProfileImageurl($existingatedData['first_name'].$existingatedData['last_name']);
+        $status = $existingatedData['status'] ?? 'Active';
+        $existingUser = UserInfos::where('employeeID', $existingatedData['employeeID'])->first();
+        $existingEmail = UserCredentials::where('MBemail', $existingatedData['MBemail'])->first();
 
         if ($existingUser) {
             return response()->json([
@@ -49,38 +60,47 @@ class userInfo_controller extends Controller
         }
 
         // Combine first name, middle initial, last name, and suffix into a full name
-        $fullName = trim("{$validatedData['first_name']} " .
-                            ("{$validatedData['middle_name']}" ? "{$validatedData['middle_name']}. " : "") .
-                            "{$validatedData['last_name']} " .
-                            ("{$validatedData['name_suffix']}" ? $validatedData['name_suffix'] : ""));
+        $fullName = trim("{$existingatedData['first_name']} " .
+                            ("{$existingatedData['middle_name']}" ? "{$existingatedData['middle_name']}. " : "") .
+                            "{$existingatedData['last_name']} " .
+                            ("{$existingatedData['name_suffix']}" ? $existingatedData['name_suffix'] : ""));
 
         // Generate profile image URL (pass the correct name variable)
         $profile_image = $this->generateProfileImageUrl($fullName);
 
+        if($existingEmail){
+            
+        }
+
         $userCredentials = UserCredentials::create([
-            'MBemail' => $validatedData['MBemail'],
-            'password' => $validatedData['password'],
+            'MBemail' => $existingatedData['MBemail'],
+            'password' => $existingatedData['password'],
         ]);
 
         $userInfo = UserInfos::create([
-            'employeeID' => $validatedData['employeeID'],
-            'first_name' => $validatedData['first_name'],
-            'last_name' => $validatedData['last_name'],
-            'middle_name' => $validatedData['middle_name'],
-            'name_suffix' => $validatedData['name_suffix'],
+            'employeeID' => $existingatedData['employeeID'],
+            'first_name' => $existingatedData['first_name'],
+            'last_name' => $existingatedData['last_name'],
+            'middle_name' => $existingatedData['middle_name'],
+            'name_suffix' => $existingatedData['name_suffix'],
             'status' =>$status,
             'profile_image' =>$profile_image
         ]);
 
-        foreach($validatedData['permissions'] as $tests){
-            foreach($tests as $key => $value){
-                $permissions[] = $value;
+        if($existingatedData['permissions']){
+            foreach($existingatedData['permissions'] as $tests){
+                foreach($tests as $key => $value){
+                    $permissions[] = $value;
+                }
             }
         }
+
 
         $userInfo->branch()->associate($branch);
         $userInfo->title()->associate($title);
         $userInfo->department()->associate($department);
+        $userInfo->section()->associate($section);
+        $userInfo->division()->associate($division);
         $userInfo->roles()->sync($role->id);
         $userInfo->save();
         $userCredentials->userInfos()->save($userInfo);
@@ -97,7 +117,8 @@ class userInfo_controller extends Controller
     }
 
     public function bulkStoreUsers(BulkStoreUserRequest $bulkStoreUserRequest){
-
+        $output = [];
+        $count = 0;
         $bulk = collect($bulkStoreUserRequest->all())->map(function ($arr, $key){
             $messyArray = [];
             $oneDArray = [];
@@ -119,6 +140,14 @@ class userInfo_controller extends Controller
                         $branch = (Branch::query()->where('branch_name', '=', $value)->first());
                         $messyArray[] = [$key => $branch];
                         break;
+                    case 'division':
+                        $division = (Division::query()->where('division_name', '=', $value)->first());
+                        $messyArray[] = [$key => $division];
+                        break;
+                    case 'section':
+                        $section = (Section::query()->where('section_name', '=', $value)->first());
+                        $messyArray[] = [$key => $section];
+                        break;
                     default:
                         $messyArray[] = [$key => $value];
                 }
@@ -127,7 +156,18 @@ class userInfo_controller extends Controller
             return $oneDArray;
         });
         foreach($bulk as $single){
-
+            $existing = UserInfos::query()->where('employeeID', '=', $single['employeeID'])->first();
+            $email = strtolower(preg_replace('/\s+/', '', $single['first_name'])
+                        .preg_replace('/\s+/', '', $single['last_name'])
+                        ."@mbtc.com");
+            $password = preg_replace('/\s+/', '', $single['first_name'])."_".$single['employeeID'];
+            $empID = $single['employeeID'];
+            $role = $single['role'];
+            $title = $single['title'];
+            $branch = $single['branch'];
+            $department = $single['department'];
+            $division = $single['division'];
+            $section = $single['section'];
             // Combine first name, middle initial, last name, and suffix into a full name
             $fullName = trim("{$single['first_name']} " .
                                 ("{$single['middle_name']}" ? "{$single['middle_name']}. " : "") .
@@ -139,9 +179,44 @@ class userInfo_controller extends Controller
 
             // Default status to 'Active' if not provided
             $status = $single['status'] ?? 'Active';
+
+            if($existing){
+                $output[1][] = "Employee: ".$fullName." employee ID is already taken";
+                continue;
+            }
+
+            if(11 > strlen($empID)){
+                $output[1][] = "Employee: ".$fullName."'s employee ID is less than 11 characters";
+                continue;
+            }
+
+            if(!$title){
+                $output[1][] = "Employee: ".$fullName." has an invalid title";
+                continue;
+            }
+            if(!$role){
+                $output[1][] = "Employee: ".$fullName." has an invalid role";
+                continue;
+            }
+            if(!$branch){
+                $output[1][] = "Employee: ".$fullName." has an invalid branch";
+                continue;
+            }
+            if(!$department){
+                $output[1][] = "Employee: ".$fullName." has an invalid department";
+                continue;
+            }
+            if(!$section){
+                $output[1][] = "Employee: ".$fullName." has an invalid section";
+                continue;
+            }
+            if(!$division){
+                $output[1][] = "Employee: ".$fullName." has an invalid division";
+                continue;
+            }
             $userCredentials = UserCredentials::create([
-                "MBemail" => $single['MBemail'],
-                "password" => $single['password']
+                "MBemail" => $email,
+                "password" => $password
             ]);
 
             $userInfo = UserInfos::create([
@@ -154,15 +229,20 @@ class userInfo_controller extends Controller
                 'profile_image' =>$profile_image
             ]);
 
+            $count += 1;
             $userInfo->branch()->associate($single['branch']);
             $userInfo->title()->associate($single['title']);
             $userInfo->department()->associate($single['department']);
+            $userInfo->section()->associate($single['section']);
+            $userInfo->division()->associate($single['division']);
             $userInfo->roles()->sync($single['role']['id']);
             $userInfo->save();
             $userCredentials->userInfos()->save($userInfo);
         }
+        $counts = $count."/".$bulk->count()." Successfully Added Users";
+        array_splice($output, 0, 0, $counts);
         return response()->json([
-            'Message' => $bulkStoreUserRequest->all()
+            'data' => $output
         ]);
     }
     /**
@@ -182,7 +262,7 @@ class userInfo_controller extends Controller
         Gate::authorize('viewAny', UserInfos::class);
         $page = $request->input('page', 1);//Default page
         $perPage = $request->input('perPage',5); //Number of entry per page
-        $user_id = $request->user()->id;
+        $user_id = $request->user()->userInfos->id;
 
         $filter = new UserInfosFilter();
         $queryItems = $filter->transform($request);
@@ -192,20 +272,104 @@ class userInfo_controller extends Controller
         ->whereNot(function (Builder $query) use ($user_id){
             $query->where('id', $user_id);
         })
-        ->with('roles','department','title','branch','city')->paginate($perPage);
+        ->with('roles','division','section','department','title','branch','city')
+        ->orderBy('created_at', 'desc')
+        ->paginate($perPage);
 
         return response()->json([
             'data' => $users->items(),
             'total' => $users->total(),
             'lastPage' => $users->lastPage(),
-            'currentPage' => $users->currentPage()
+            'currentPage' => $users->currentPage(),
         ],200);
     }
 
-    public function getAssignedCourses(UserInfos $userInfos){
+    public function indexAvailableCourseAdmins(Request $request, Course $course){
+        $filter = new UserInfosFilter();
+        $queryItems = $filter->transform($request);
+        $users = UserInfos::query()
+            ->where($queryItems)
+            ->whereHas('roles', function(Builder $query){
+                $query->whereNot('role_name', 'Learner');
+            })
+            ->whereDoesntHave('assignedCourses', function ($query) use($course) {
+                $query->where('courses.id', $course->id);
+            })->where('status', 'Active')
+            ->with('roles','division','section','department','title','branch','city')
+            ->orderBy('created_at', 'desc')
+            ->paginate(5);
 
-        $courses = $userInfos->assignedCourses()->with(['categories', 'types', 'training_modes'])->paginate(5);
-        return $courses;
+        return response()->json([
+            'data' => $users->items(),
+            'total' => $users->total(),
+            'lastPage' => $users->lastPage(),
+            'currentPage' => $users->currentPage(),
+        ],200);
+    }
+
+    public function indexEnrollingUsers(Request $request, Course $course){
+
+        $page = $request->input('page', 1);//Default page
+        $perPage = $request->input('perPage',4); //Number of entry per page
+
+        $filter = new UserInfosFilter();
+        $queryItems = $filter->transform($request);
+        $users = UserInfos::query()
+            ->where($queryItems)
+            ->whereDoesntHave('enrolledCourses', function ($query) use($course) {
+                $query->where('courses.id', $course->id);
+            })->where('status', 'Active')
+            ->with('roles','division','section','department','title','branch','city')
+            ->orderBy('created_at', 'desc')
+            ->paginate($perPage);
+
+        return response()->json([
+            'data' => $users->items(),
+            'total' => $users->total(),
+            'lastPage' => $users->lastPage(),
+            'currentPage' => $users->currentPage(),
+        ],200);
+    }
+
+    public function getAssignedCourses(UserInfos $userInfos, Request $request){
+
+        $page = $request->input('page', 1);//Default page
+        $perPage = $request->input('perPage',6); //Number of entry per page
+        $sort = new CourseSort();
+        $builder = $userInfos->assignedCourses();
+        $querySort = $sort->transform($builder, $request);
+
+        if($request->has('type_id')){
+            if(!($request->input('type_id')['eq'] == "")){
+                $querySort->whereHas('types', function($subQuery) use ($request){
+                    $subQuery->where('type_id', $request->input('type_id'));
+                });
+            }
+        }
+
+        if($request->has('category_id')){
+            if(!($request->input('category_id')['eq'] == "")){
+                $querySort->whereHas('categories', function($subQuery) use ($request){
+                    $subQuery->where('category_id', $request->input('category_id'));
+                });
+            }
+        }
+
+        if($request->has('training_type')){
+            if(!($request->input('training_type')['eq'] == "")){
+                $querySort->where('training_type', $request->input('training_type'));
+            }
+        }
+
+
+        $courses = $querySort->with(['categories', 'types', 'training_modes'])->where('archived', '=', 'active')->paginate($perPage);
+
+        return response()->json([
+            'data' => $courses->items(),
+            'total' => $courses->total(),
+            'lastPage' => $courses->lastPage(),
+            'currentPage' => $courses->currentPage()
+        ],200);
     }
 
     public function indexArchivedUsers(Request $request){
@@ -215,7 +379,11 @@ class userInfo_controller extends Controller
         $filter = new UserInfosFilter();
         $queryItems = $filter->transform($request);
 
-        $users =  UserInfos::query()->where($queryItems)->where('status', '=', 'Inactive')->with('roles','department','title','branch','city')->paginate($perPage);
+        $users =  UserInfos::query()->where($queryItems)
+                ->where('status', '=', 'Inactive')
+                ->orderBy('created_at', 'desc')
+                ->with('roles','division','section','department','title','branch','city')
+                ->paginate($perPage);
 
         return response()->json([
             'data' => $users->items(),
@@ -226,14 +394,21 @@ class userInfo_controller extends Controller
     }
 
     public function indexNotLearnerUsers(Request $request){
+        $filter = new UserInfosFilter();
+        $queryItems = $filter->transform($request);
         $perPage = $request->input('perPage',5); //Number of entry per page
         $user_id = $request->user()->id;
-        $admins = UserInfos::query()->whereHas('roles',function($query){
-            $query->where('role_name', '!=', 'Learner');
+        $admins = UserInfos::query()
+        ->where($queryItems)
+        ->whereHas('roles',function($query){
+            $query->where('role_name', '=', 'Course Admin');
         })->whereNot(function (Builder $query) use ($user_id){
             $query->where('id', $user_id);
-        })->
-        with('roles','department','title','branch','city')->paginate($perPage);
+        })
+        ->where('status', '=', 'Active')
+        ->orderBy('created_at', 'desc')
+        ->with('roles','division','section','department','title','branch','city')
+        ->paginate($perPage);
 
         return response()->json([
             'data' => $admins->items(),
@@ -241,6 +416,47 @@ class userInfo_controller extends Controller
             'lastPage' => $admins->lastPage(),
             'currentPage' => $admins->currentPage()
         ]);
+    }
+
+    public function getAddedCourses(UserInfos $userInfos,Request $request){
+
+        $page = $request->input('page', 1);//Default page
+        $perPage = $request->input('perPage',5); //Number of entry per page
+        $sort = new CourseSort();
+        $builder = $userInfos->addedCourses();
+        $querySort = $sort->transform($builder, $request);
+
+        if($request->has('type_id')){
+            if(!($request->input('type_id')['eq'] == "")){
+                $querySort->whereHas('types', function($subQuery) use ($request){
+                    $subQuery->where('type_id', $request->input('type_id'));
+                });
+            }
+        }
+
+        if($request->has('category_id')){
+            if(!($request->input('category_id')['eq'] == "")){
+                $querySort->whereHas('categories', function($subQuery) use ($request){
+                    $subQuery->where('category_id', $request->input('category_id'));
+                });
+            }
+        }
+
+        if($request->has('training_type')){
+            if(!($request->input('training_type')['eq'] == "")){
+                $querySort->where('training_type', $request->input('training_type'));
+            }
+        }
+
+        $courses = $querySort->with(['categories', 'types', 'training_modes'])->where('archived', '=', 'active')->paginate($perPage);
+
+        return response()->json([
+            'data' => $courses->items(),
+            'total' => $courses->total(),
+            'lastPage' => $courses->lastPage(),
+            'currentPage' => $courses->currentPage(),
+            'per' => $courses->perPage()
+        ],200);
     }
 
     //You add user id then role id in url /addRole/{userInfos}/{role}
@@ -338,9 +554,58 @@ class userInfo_controller extends Controller
         ]);
     }
 
-    public function getUserCourses(UserInfos $userInfos){
-        $courses = $userInfos->enrolledCourses()->with(['categories', 'types', 'training_modes'])->paginate(4);
-        return $courses;
+    public function getUserCourses(UserInfos $userInfos, Request $request){
+        $page = $request->input('page', 1); // default page
+        $perPage = $request->input('per_page', 8); // default per page
+        $sort = new CourseSort();
+        $builder = $userInfos->enrolledCourses();
+        $querySort = $sort->transform($builder, $request);
+
+        if($request->has('type_id')){
+            if(!($request->input('type_id')['eq'] == "")){
+                $querySort->whereHas('types', function($subQuery) use ($request){
+                    $subQuery->where('type_id', $request->input('type_id'));
+                });
+            }
+        }
+
+        if($request->has('category_id')){
+            if(!($request->input('category_id')['eq'] == "")){
+                $querySort->whereHas('categories', function($subQuery) use ($request){
+                    $subQuery->where('category_id', $request->input('category_id'));
+                });
+            }
+        }
+
+        if($request->has('training_type')){
+            if(!($request->input('training_type')['eq'] == "")){
+                $querySort->where('training_type', $request->input('training_type'));
+            }
+        }
+
+        $courses = $querySort->with(['categories', 'types', 'training_modes'])->where('archived', '=', 'active')->paginate($perPage);
+        $deadline = [];
+
+        foreach($courses as $course){
+            $deadline[] = Enrollment::query()
+            ->where('user_id', '=', $userInfos->id)
+            ->where('course_id', '=', $course->id)
+            ->pluck('end_date');
+        }
+        
+        foreach($deadline as $line){
+            $courses->getCollection()->transform(function ($item) use($line){
+                $item->deadline = $line;
+                return $item;
+            });
+        }
+
+        return response() -> json([
+            'data' => $courses->items(),
+            'total' => $courses->total(),
+            'lastPage' => $courses->lastPage(),
+            'currentPage' => $courses->currentPage(),
+        ]);
     }
 
     /**
@@ -355,19 +620,19 @@ class userInfo_controller extends Controller
         $user = UserInfos::with(['city', 'branch', 'department', 'title', 'roles', 'userCredentials']) // Added 'roles'
         ->find($userInfos->id);
 
-    if (!$user) {
-        return response()->json(['message' => 'User not found'], 404);
-    }
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
 
-    return response()->json([
-        'data' => $user,
-        'city' => $user->city,
-        'branch' => $user->branch,
-        'department' => $user->department,
-        'title' => $user->title,
-        'credentials' => $user->userCredential,
-        'roles' => $user->roles, // Include roles in the response
-    ]);
+        return response()->json([
+            'data' => $user,
+            'city' => $user->city,
+            'branch' => $user->branch,
+            'department' => $user->department,
+            'title' => $user->title,
+            'credentials' => $user->userCredential,
+            'roles' => $user->roles, // Include roles in the response
+        ]);
     }
 
     //Find User using employeeID
@@ -395,20 +660,31 @@ class userInfo_controller extends Controller
     public function updateUser(UserInfos $userInfos, updateUserInfo $request){
 
         //Input Validation
-        $validatedData = $request->validated();
-        $title = Title::query()->find($validatedData['title_id']);
-        $department = Department::query()->find($validatedData['department_id']);
-        $branch = Branch::query()->find($validatedData['branch_id']);
+        $existingatedData = $request->validated();
+        $title = Title::query()->find($existingatedData['title_id']);
+        $department = Department::query()->find($existingatedData['department_id']);
+        $branch = Branch::query()->find($existingatedData['branch_id']);
+        $section = Section::query()->find($existingatedData['section_id']);
+        $division = Division::query()->find($existingatedData['division_id']);
 
         if(!$userInfos){
             return response()->json(['message' => 'User not found'], 404);
         }
         $userInfos->branch()->associate($branch);
         $userInfos->title()->associate($title);
+        $userInfos->section()->associate($section);
+        $userInfos->division()->associate($division);
         $userInfos->department()->associate($department);
         $userInfos->save();
 
-        $userInfos->update($validatedData);
+        $userInfos->update([
+            "employeeID" => $existingatedData['employeeID'],
+            "first_name" => $existingatedData['first_name'],
+            "last_name" => $existingatedData['last_name'],
+            "middle_name" => $existingatedData['middle_name'],
+            "name_suffix" => $existingatedData['name_suffix'],
+            "status" => $existingatedData['status']
+        ]);
         //Update UserInfo
         return response()->json([
             "Message" => 'Updated User',
@@ -465,19 +741,7 @@ class userInfo_controller extends Controller
         ],200);
     }
 
-    public function test(TestArrayRequest $test){
-        $validated = $test->validated();
-
-        $hi = [];
-        foreach($validated['data'] as $tests){
-            foreach($tests as $key => $value){
-                $hi[] = $value;
-            }
-        }
-
-        return response()->json([
-            "message" => $hi
-        ]);
+    public function test(Request $request){
+        return Role::withCount('users')->orderBy('created_at', 'desc')->with('permissions')->get();
     }
-
 }

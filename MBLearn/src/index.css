@@ -15,13 +15,14 @@
         @apply text-primary text-lg z-30;
     }
     .icon-name{
-        @apply absolute w-fit left-16 z-50 bg-tertiary text-white p-2 rounded-md text-xs scale-0 font-text  transition-all ease-in-out;
+        @apply absolute w-fit left-16 z-50 bg-tertiary text-white p-2 rounded-md text-xs scale-0 font-text transition-all ease-in-out;
     }
 
     /* Profile sub-menu */
     .profile-menu-item {
         @apply flex items-center place-content-between gap-4 font-text text-text_unhover min-w-max cursor-pointer hover:text-white transition-all ease-in-out;
     }
+
 }
 
 /* index.css or styles.css */

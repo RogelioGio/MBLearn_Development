@@ -15,10 +15,14 @@ class Enrollment extends Model
         'user_id',
         'course_id',
         'enroller_id',
+        'enrollment_status',
+        'due_soon',
+        'start_date',
+        'end_date',
     ];
 
     public function enrolledUser(): BelongsTo{
-        return $this->belongsTo(UserInfos::class);
+        return $this->belongsTo(UserInfos::class, 'user_id', 'id');
     }
 
     public function course(): BelongsTo{
@@ -26,6 +30,6 @@ class Enrollment extends Model
     }
 
     public function enroller(): BelongsTo{
-        return $this->belongsTo(UserInfos::class);
+        return $this->belongsTo(UserInfos::class, 'enroller_id', 'id');
     }
 }

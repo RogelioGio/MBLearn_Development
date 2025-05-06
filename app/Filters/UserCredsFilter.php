@@ -12,6 +12,7 @@ class UserCredsFilter{
         'department_id' => ['eq'],
         'branch_id' => ['eq'],
         'status' => ['eq'],
+        'role_id' => ['eq']
     ];
 
     protected $operatorMap = [
@@ -37,7 +38,13 @@ class UserCredsFilter{
                         $query->whereHas('user_infos', function ($subQuery) use ($param, $operator, $filterValue) {
                             $subQuery->where($param, $this->operatorMap[$operator], $filterValue[$operator]);
                         });
-                    } else {
+                    } 
+                    elseif (in_array($param,['role_id'])) {
+                        $query->whereHas('roles', function($subQuery) use($param, $operator, $filterValue){
+                            $subQuery->where('id', $this->operatorMap[$operator], $filterValue[$operator]);
+                        });
+                    }
+                    else {
                         // Filtering main table (user_credentials)
                         $query->where($param, $this->operatorMap[$operator], $filterValue[$operator]);
                     }

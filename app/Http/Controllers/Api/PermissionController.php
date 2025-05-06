@@ -15,7 +15,7 @@ class PermissionController extends Controller
      */
     public function index()
     {
-        return Permission::all();
+        return Permission::query()->orderBy('created_at', 'desc')->get();
     }
 
     /**

@@ -8,6 +8,7 @@ const SelectedUser = createContext()
 export const SelectedUserProvider = ({children}) => {
     const [selectedUser, setSelectedUser] = useState(null)
     const [userId, setUserId] = useState(null)
+    const [selectedUserCreds, setSelectedUserCreds] = useState(null)
     const [isFetching, setIsFetching] = useState(false);
 
     useEffect(() => {

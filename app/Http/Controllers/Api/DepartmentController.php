@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\BulkFormInput;
 use App\Models\Department;
 use App\Http\Requests\StoreDepartmentRequest;
 use App\Http\Requests\UpdateDepartmentRequest;
@@ -16,7 +17,7 @@ class DepartmentController extends Controller
      */
     public function index()
     {
-        return Department::all();
+        return Department::query()->orderBy('created_at', 'desc')->get();
     }
 
     /**
@@ -27,6 +28,17 @@ class DepartmentController extends Controller
         $validated = $request->validated();
         $department = Department::create($validated);
         return $department;
+    }
+
+    public function bulkStore(BulkFormInput $request){
+        $bulk = $request->validated();
+        $test = [];
+        foreach($bulk as $index => $output){
+            $test[] = Department::create(['department_name' => $output["forminputname"]]);
+        }
+        return response()->json([
+            "Departments" => $test
+        ]);
     }
 
     /**

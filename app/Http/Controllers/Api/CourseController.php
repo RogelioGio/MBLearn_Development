@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Filters\CourseFilter;
 use App\Filters\CourseSort;
+use App\Filters\UserInfosFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BulkAssignCourseAdmins;
 use App\Http\Requests\BulkStoreCourseRequest;
@@ -29,21 +30,42 @@ class CourseController extends Controller
         $filter = new CourseFilter();
         $sort = new CourseSort();
         $builder = Course::query();
-        $queryItems = $filter->transform($request);
         $querySort = $sort->transform($builder, $request);
 
-        $page = $request->input('page',1); // default page
-        $perPage = $request->input('per_page', 3); // default per page
+        // $page = $request->input('page',1); // default page
+        // $perPage = $request->input('per_page', 3); // default per page
 
-        $courses = $querySort->with(['categories', 'types', 'training_modes'])->where('archived', '=', 'active')->paginate($perPage);
+        if($request->has('type_id')){
+            if(!($request->input('type_id')['eq'] == "")){
+                $querySort->whereHas('types', function($subQuery) use ($request){
+                    $subQuery->where('type_id', $request->input('type_id'));
+                });
+            }
+        }
+
+        if($request->has('category_id')){
+            if(!($request->input('category_id')['eq'] == "")){
+                $querySort->whereHas('categories', function($subQuery) use ($request){
+                    $subQuery->where('category_id', $request->input('category_id'));
+                });
+            }
+        }
+
+        if($request->has('training_type')){
+            if(!($request->input('training_type')['eq'] == "")){
+                $querySort->where('training_type', $request->input('training_type'));
+            }
+        }
+
+        $courses = $querySort->with(['categories', 'types', 'training_modes'])->where('archived', '=', 'active')->get();
 
         return response() -> json([
-            'data' => $courses-> items(),
-            'total' => $courses->total(),
-            'lastPage' => $courses->lastPage(),
-            'currentPage' => $courses->currentPage(),
+            'data' => $courses,
+            'total' => $courses->count(),
+            // 'lastPage' => $courses->lastPage(),
+            // 'currentPage' => $courses->currentPage(),
         ],200);
- 
+
     }
 
     /**
@@ -54,26 +76,25 @@ class CourseController extends Controller
         $data = $request->all();
         $type = Type::query()->find($data['type_id']);
         $category = Category::query()->find($data['category_id']);
-        $training_mode = Training_Mode::query()->find($data['training_mode_id']);
         $current_user = Auth::user();
-
 
         $course = Course::create([
             "name" => $data['name'],
             "CourseID" => $data['CourseID'],
             "description" => $data['description'],
             "training_type" =>$data['training_type'],
-            "system_admin_id" => $current_user->id,
-            "archived" => $data['archived'],]
-            );
+            "system_admin_id" => $current_user->userInfos->id,
+            "archived" => $data['archived'],
+            "months" => $data['months'],
+            "weeks" => $data["weeks"],
+            "days" => $data['days']
+            ]);
 
-        $course->training_modes()->syncWithoutDetaching($training_mode->id);
         $course->types()->syncWithoutDetaching($type->id);
         $course->categories()->syncWithoutDetaching($category->id);
         $course->save();
         return response()->json([
             "course" => $course,
-            "training_modes" => $course->training_modes,
             "types" => $course->types,
             "categories" => $course->categories,
         ], 200);
@@ -94,21 +115,19 @@ class CourseController extends Controller
     public function assignCourseAdmin(BulkAssignCourseAdmins $bulkAssignCourseAdmins, Course $course){
         $bulk = collect($bulkAssignCourseAdmins->all())->map(function($arr, $key){
             $messyArray = [];
-            $oneDArray = [];
             foreach($arr as $key => $value){
                 $temp = UserInfos::find($value);
                 $roles = $temp->roles->toArray();
                 foreach($roles as $role)
                 if(in_array('Course Admin',$role) || in_array('System Admin', $role)){
-                    $messyArray[] = [$key => $value];
+                    $messyArray = $value;
                 }
             }
-            $oneDArray = array_reduce($messyArray, 'array_merge', []);
-            return $oneDArray;
+            return $messyArray;
         });
         $course->assignedCourseAdmins()->syncWithoutDetaching($bulk);
         return response()->json([
-            'message' => "Course Admins Assigned to $course->name"
+            'message' => "Course Admins assigned to ".$course->name
         ]);
     }
 
@@ -161,27 +180,67 @@ class CourseController extends Controller
         ]);
     }
 
-    public function getCourseUsers(Course $course){
-        $users = $course->enrolledUsers;
-        return $users;
+    public function getCourseUsers(Course $course, Request $request){
+        $page = $request->input('page', 1); // default page
+        $perPage = $request->input('per_page', 8); // default per page
+
+        $filter = new UserInfosFilter();
+        $queryItems = $filter->transform($request);
+
+        $enrolls = $course->enrollments()->whereHas('enrolledUser', function($subQuery) use($queryItems){
+            $subQuery->where($queryItems)->where('status', '=', 'Active');
+        })->paginate($perPage);
+        
+        $users = $enrolls->getCollection()->map(function ($enrollment){
+            $user = $enrollment->enrolledUser->load(['division','department','section','city','branch']);
+            $user->enrollment_status = $enrollment->enrollment_status;
+            $user->due_soon = $enrollment->due_soon;
+            return $user;
+        });
+
+        return response() -> json([
+            'data' => $users,
+            'total' => $enrolls->total(),
+            'lastPage' => $enrolls->lastPage(),
+            'currentPage' => $enrolls->currentPage(),
+        ]);
     }
 
-    public function getAssignedCourseAdmin(Course $course){
-        $perPage = 5;
-        $currentPage = request()->get('page', 1);
-        $admins = $course->assignedCourseAdmins->load(['branch', 'department', 'branch.city', 'title']);
-        $userCollection = collect($admins);
+    public function getAssignedCourseAdmin(Course $course, Request $request){
+        // $perPage = 5;
+        // $currentPage = request()->get('page', 1);
 
-        $paginatedAdmins = new LengthAwarePaginator(
-            $userCollection->forPage($currentPage, $perPage),
-            $userCollection->count(),
-            $perPage,
-            $currentPage,
-            ['path' => request()->url()]
-        );
+        // $admins = $course->assignedCourseAdmins->load(['branch', 'department', 'branch.city', 'title']);
+        // $userCollection = collect($admins);
+
+        // $paginatedAdmins = new LengthAwarePaginator(
+        //     $userCollection->forPage($currentPage, $perPage),
+        //     $userCollection->count(),
+        //     $perPage,
+        //     $currentPage,
+        //     ['path' => request()->url()]
+        // );
 
 
-        return $paginatedAdmins;
+        //return $paginatedAdmins;
+
+        $page = $request->input('page', 1); // default page
+        $perPage = $request->input('per_page', 5); // default per page
+
+        $admins = $course->assignedCourseAdmins()
+        ->with(['branch', 'department', 'branch.city', 'title',])
+        ->paginate($perPage);
+
+        $main = $course->adder()->with(['branch', 'department', 'branch.city', 'title'])->get();
+
+        return response()->json([
+            'data' => $admins->items(),
+            'main' => $main,
+            'total' => $admins->total(),
+            'lastPage' => $admins->lastPage(),
+            'currentPage' => $admins->currentPage(),
+        ], 200);
+
     }
 
     /**
