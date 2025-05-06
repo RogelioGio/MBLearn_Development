@@ -50,6 +50,7 @@ const SystemAdminPermissionProps = ({isChecked,permissionswitch,permissionRef}) 
                     </label>
                     <Switch id="editUserRole" checked={isChecked("EditUserRoles")} onCheckedChange={(checked) => permissionswitch(permissionRef.find(p => p.permission_name === "EditUserRoles").id,"EditUserRoles",checked)}/>
                 </div>
+                {/* TODO: Add EditUserPermission */}
                 <div className="w-full flex flex-row justify-between items-center">
                     <label htmlFor="accountReactivation">
                         <h1 className="font-header text-primary text-base">Account Reactivation</h1>

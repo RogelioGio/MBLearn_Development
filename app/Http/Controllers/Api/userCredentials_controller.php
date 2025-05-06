@@ -194,7 +194,7 @@ class userCredentials_controller extends Controller
 
     public function findUser_Creds(UserCredentials $userCredentials){
         return $userCredentials->load(['userInfos', 'userInfos.roles', 'userInfos.city', 'userInfos.branch',
-        'userInfos.department', 'userInfos.section', 'userInfos.division', 'userInfos.title']);
+        'userInfos.department', 'userInfos.section', 'userInfos.division', 'userInfos.title','userInfos.permissions']);
     }
 
     //find by employeeID in the user maintenance management

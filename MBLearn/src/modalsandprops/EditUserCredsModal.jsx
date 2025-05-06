@@ -9,8 +9,11 @@ import axiosClient from "../axios-client";
 import EdituserErrorModal from "./EdituserErrorModal";
 import AccountPermissionProps from "./AccountPermissionsProps"
 import { DatabaseZap } from "lucide-react";
+import { useStateContext } from "../contexts/ContextProvider";
+
 
 const EditUserCredsModal = ({open, close, ID, editSuccess}) => {
+    const {user} = useStateContext()
     const [isLoading, setLoading] = useState(true);
     const {cities=[], titles=[], location=[], roles=[], departments=[], permission=[]} = useOption();
     const [tab, setTab] = useState(1)
@@ -18,6 +21,13 @@ const EditUserCredsModal = ({open, close, ID, editSuccess}) => {
     const [role, setRoles] = useState([])
     const [selectedUser, setSelectedUser] = useState()
     const [accountPerm, setAccountPerm] =useState([])
+
+    //Permission Check
+    const hasPermission = (user, perms = []) => {
+        return user?.user_infos?.permissions?.some(permission =>
+            perms.includes(permission.permission_name)
+        );
+    };
 
     useEffect(() => {
         setLoading(true)
@@ -98,6 +108,7 @@ const EditUserCredsModal = ({open, close, ID, editSuccess}) => {
                     axiosClient.put(`/updateUserPermission/${selectedUser.id}`, accountPerm)
                     .then((res) => {
                         editSuccess();
+                        setTab(1)
                         close();
                         setUpdating(false);
                         console.log(res);
@@ -132,12 +143,12 @@ const EditUserCredsModal = ({open, close, ID, editSuccess}) => {
             setRoles(formik.values.role)
         },[])
 
-    useEffect(() => {
-        if (formik.values.role) {
-            console.log("Selected Role ID:", formik.values.role);
-            console.log("Permissions:", permission);
-        }
-    }, [formik.values.role, permission]);
+    // useEffect(() => {
+    //     if (formik.values.role) {
+    //         console.log("Selected Role ID:", formik.values.role);
+    //         console.log("Permissions:", permission);
+    //     }
+    // }, [formik.values.role, permission]);
 
     return(
         <>
@@ -180,7 +191,7 @@ const EditUserCredsModal = ({open, close, ID, editSuccess}) => {
                                         <div className="mx-4 flex flex-row gap-5">
                                             <form className="grid grid-cols-3 gap-2  pb-4 w-full" onSubmit={formik.handleSubmit}>
                                             {
-                                                tab === 1 ? (
+                                                tab === 1 && hasPermission(user, ["EditUserCredentials"])? (
                                                     <>
                                                         {/* Employee Information */}
                                                         <div className="py-4">
@@ -223,7 +234,11 @@ const EditUserCredsModal = ({open, close, ID, editSuccess}) => {
                                                             </div>
                                                     </div>
                                                     </>
-                                                ) : tab === 2 ? (
+                                                ) : tab === 1 ? (
+                                                    <div className="inline-flex flex-col gap-1 row-start-1 row-span-4 col-span-3 py-2 items-center justify-center">
+                                                        <p className="text-unactive font-text p-10">User is not unauthorized to this action</p>
+                                                    </div>
+                                                ) : tab === 2  && hasPermission(user, ["EditUserRoles"]) ? (
                                                     <>
                                                     <div className="inline-flex flex-col gap-1 row-start-1 col-span-3 py-2">
                                                         <label htmlFor="role" className="font-header text-xs flex flex-row justify-between">
@@ -250,17 +265,24 @@ const EditUserCredsModal = ({open, close, ID, editSuccess}) => {
                                                     {
                                                         formik.values.role ? (<div className="col-span-3">
                                                             {/* Bug to fix: not reliant to the user but instead relies on the role.permission */}
-                                                            <AccountPermissionProps refPermissions={permission} selectedRole={formik.values.role} role={role} setAccountPerm={setAccountPerm}/>
+                                                            <AccountPermissionProps refPermissions={permission} selectedRole={formik.values.role} role={role} setAccountPerm={setAccountPerm} currentPerm={selectedUser.user_infos.permissions}/>
                                                         </div>):(null)
                                                     }
                                                     </>
+                                                ) : tab === 2 ? (
+                                                    <div className="inline-flex flex-col gap-1 row-start-1 row-span-4 col-span-3 py-2 items-center justify-center">
+                                                        <p className="text-unactive font-text p-10">User is not unauthorized to this action</p>
+                                                    </div>
                                                 ) : (null)
                                             }
 
                                                 {/* Submit */}
                                             <div className="row-start-5 col-span-3 py-2 flex flex-row gap-2">
                                                 <button type="button" className="w-full inline-flex flex-col items-center gap-2 p-4 rounded-md font-header uppercase text-primary border-2 border-primary text-xs hover:text-white hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out"
-                                                    onClick={close}>
+                                                    onClick={() => {
+                                                        close();
+                                                        setTab(1);
+                                                    }}>
                                                     <p>Cancel</p>
                                                 </button>
                                                 <button type="submit" className="w-full inline-flex flex-col items-center gap-2 bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out">

@@ -2,12 +2,37 @@ import { useEffect, useState } from "react";
 import CourseAdminPermissionProps from "./SystemSettingComponents.jsx/CourseAdminPermissionProps";
 import SystemAdminPermissionProps from "./SystemSettingComponents.jsx/SystemAdminPermssionProps";
 import axiosClient from "../axios-client";
+import { useStateContext } from "../contexts/ContextProvider";
 
-const AccountPermissionProps = ({refPermissions, selectedRole, role, setAccountPerm, }) => {
+const AccountPermissionProps = ({refPermissions, selectedRole, role, setAccountPerm, currentPerm }) => {
+
+    const [OriginalRole, setOriginaltRole] = useState(selectedRole);
     useEffect(() => {
-        console.log("Selected Role:", selectedRole);
-        availablePermission();
-        // console.log("courseID: " + selectedRole);
+        // setCurrentRole(selectedRole);
+        // if(!currentPerm) {
+        //     console.log("Selected Role:", selectedRole);
+        //     availablePermission();
+        // } if(currentRole !== selectedRole) {
+        //     setCurrentRole(selectedRole);
+        //     console.log("Selected Role:", selectedRole);
+        //     availablePermission();
+        // }else {
+        //     console.log("Current Permission:", currentPerm);
+        //     setPermissions(currentPerm);
+        //     _setAccountPerm(currentPerm.map(p => ({
+        //         permission_Id: p.id
+        //     })))
+        // }
+        if (OriginalRole !== selectedRole || currentPerm?.length === 0) {
+            console.log("Selected Role Changed:", selectedRole);
+            availablePermission();
+        } else if (currentPerm) {
+            console.log("Current Permission:", currentPerm);
+            setPermissions(currentPerm);
+            setAccountPerm(currentPerm.map(p => ({
+                permission_Id: p.id
+            })));
+        }
     }, [selectedRole]);
 
     const [accountPerm, _setAccountPerm] = useState()
