@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "681a014ae8ca4c37bcbabf6275438924",
+    "content-hash": "533cd0b43c1ff7812190328c254f15c5",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -4130,16 +4130,16 @@
         },
         {
             "name": "staudenmeir/eloquent-has-many-deep",
-            "version": "v1.20.7",
+            "version": "v1.20",
             "source": {
                 "type": "git",
                 "url": "https://github.com/staudenmeir/eloquent-has-many-deep.git",
-                "reference": "52155a1ac051e0c451f329937e591f9b892f05e2"
+                "reference": "16731d91fc725823452b6ea6c001942739d0839b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/staudenmeir/eloquent-has-many-deep/zipball/52155a1ac051e0c451f329937e591f9b892f05e2",
-                "reference": "52155a1ac051e0c451f329937e591f9b892f05e2",
+                "url": "https://api.github.com/repos/staudenmeir/eloquent-has-many-deep/zipball/16731d91fc725823452b6ea6c001942739d0839b",
+                "reference": "16731d91fc725823452b6ea6c001942739d0839b",
                 "shasum": ""
             },
             "require": {
@@ -4150,12 +4150,12 @@
             "require-dev": {
                 "awobaz/compoships": "^2.3",
                 "barryvdh/laravel-ide-helper": "^3.0",
+                "illuminate/pagination": "^11.0",
                 "korridor/laravel-has-many-merged": "^1.1",
-                "larastan/larastan": "^3.0",
-                "laravel/framework": "^11.0",
                 "mockery/mockery": "^1.6",
-                "orchestra/testbench-core": "^9.5",
-                "phpunit/phpunit": "^11.0",
+                "orchestra/testbench": "^9.0",
+                "phpstan/phpstan": "^1.10",
+                "phpunit/phpunit": "^10.5",
                 "staudenmeir/eloquent-json-relations": "^1.11",
                 "staudenmeir/laravel-adjacency-list": "^1.21"
             },
@@ -4185,7 +4185,7 @@
             "description": "Laravel Eloquent HasManyThrough relationships with unlimited levels",
             "support": {
                 "issues": "https://github.com/staudenmeir/eloquent-has-many-deep/issues",
-                "source": "https://github.com/staudenmeir/eloquent-has-many-deep/tree/v1.20.7"
+                "source": "https://github.com/staudenmeir/eloquent-has-many-deep/tree/v1.20"
             },
             "funding": [
                 {
@@ -4193,7 +4193,7 @@
                     "type": "custom"
                 }
             ],
-            "time": "2025-02-16T14:39:47+00:00"
+            "time": "2024-03-09T09:59:19+00:00"
         },
         {
             "name": "staudenmeir/eloquent-has-many-deep-contracts",
