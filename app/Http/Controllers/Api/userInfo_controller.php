@@ -738,16 +738,12 @@ class userInfo_controller extends Controller
     }
 
     public function test(Request $request){
-        $array = [];
-        for($i = 0; $i<10; $i++){
-            $array[0][] = $i;
-        }
+        $course = Course::find(1);
 
-        $counts = " Successfully Added Users";
-        array_splice($array, 0, 0, $counts);
-
-        return response()->json([
-            'message' => $array
-        ]);
+        return $course->enrollments()->with('enrolledUser')->get()->map(function ($enrollment){
+            $user = $enrollment->enrolledUser;
+            $user->enrollment_status = $enrollment->enrollment_status;
+            return $user;
+        });
     }
 }

@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('enrollments', function(Blueprint $table){
-            // $table->dateTime('start_date')->nullable()->change();
-            // $table->dateTime('end_date')->nullable()->change();
+            $table->enum('enrollment_status', ['enrolled', 'ongoing', 'finished'])->default('enrolled');
+            $table->boolean('due_soon')->default(false);
         });
     }
 
@@ -22,6 +22,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::table('enrollments', function(Blueprint $table){
+            $table->dropColumn('enrollment_status');
+            $table->boolean('due_soon');
+        });
     }
 };
