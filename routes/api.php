@@ -137,7 +137,7 @@ Route::middleware('auth:sanctum')->group(function(){
 
     //extra (permission)
     Route::post('/updateRolePermission/{role}', [RoleController::class, 'updateRolePermissions']);
-    Route::post('/updateUserPermission/{userCredentials}', [userCredentials_controller::class, 'changeUserPermissions']);
+    Route::put('/updateUserPermission/{userCredentials}', [userCredentials_controller::class, 'changeUserPermissions']);
 
     Route::get('/test', [userInfo_controller::class, 'test']);
 
