@@ -14,13 +14,18 @@ const AddFormInputModal = ({ isOpen, onClose, formInput, category}) => {
     const [adding, setAdding] = useState(false)
 
     const formik = useFormik({
-        initialValues: {
-            [formInput] : '',
+        initialValues:
+        formInput === 'Branch' ? {
+            city: '',
+            [formInput]: ''
+        }:{
+            [formInput]: ''
         },
         validationSchema: Yup.object({
             [formInput]: Yup.string().required('This field is required')
         }),
         onSubmit: (value) => {
+            debugger
             console.log(value[formInput])
 
             setAdding(true)
@@ -34,21 +39,42 @@ const AddFormInputModal = ({ isOpen, onClose, formInput, category}) => {
                         return 'sections'
                     case 'City' :
                         return 'cities'
+                    case 'Branch' :
+                        return 'add-branch-city'
                     default:
                         return null
                 }
             }
 
+            const payload = {
+                ...(formInput === "Branch" && { city: value.city }),
+                [`${formInput.toLowerCase()}_name`]: value[formInput]
+            }
+
+            axiosClient.post(`/${getEndPoint(formInput)}`, payload)
             const endPoint = getEndPoint(formInput)
-            axiosClient.post(`/${endPoint}`, value[formInput])
-            .then((res) =>
-                {
-                    console.log(res)
+
+            if (formInput === 'Branch') {
+                axiosClient.post(`/${endPoint}`, payload)
+                .then((res) =>
+                    {
+                        console.log(res)
+                        setAdding(false)
+                    })
+                .catch((err) => {
                     setAdding(false)
                 })
-            .catch((err) => {
-                setAdding(false)
-            })
+            } else {
+                axiosClient.post(`/${endPoint}`, payload)
+                .then((res) =>
+                    {
+                        console.log(res)
+                        setAdding(false)
+                    })
+                .catch((err) => {
+                    setAdding(false)
+                })
+            }
         }
     })
 
@@ -85,7 +111,6 @@ const AddFormInputModal = ({ isOpen, onClose, formInput, category}) => {
                                                 value={formik.values[formInput]}
                                                 onChange={formik.handleChange}
                                                 onBlur={formik.handleBlur}
-                                                maxLength={11}
                                                 className="w-full font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
                                                 {/* Validation Errors */}
                                             </div>
@@ -113,7 +138,6 @@ const AddFormInputModal = ({ isOpen, onClose, formInput, category}) => {
                                                 value={formik.values[formInput]}
                                                 onChange={formik.handleChange}
                                                 onBlur={formik.handleBlur}
-                                                maxLength={11}
                                                 className="w-full font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
                                                 {/* Validation Errors */}
                                             </div>
@@ -213,7 +237,6 @@ const AddFormInputModal = ({ isOpen, onClose, formInput, category}) => {
                                                 value={formik.values[formInput]}
                                                 onChange={formik.handleChange}
                                                 onBlur={formik.handleBlur}
-                                                maxLength={11}
                                                 className="w-full font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
                                                 {/* Validation Errors */}
                                             </div>
@@ -232,12 +255,13 @@ const AddFormInputModal = ({ isOpen, onClose, formInput, category}) => {
                                         </div>
                                 ) : formInput === 'Branch' ? (
                                     <div className='px-5 py-2'>
-                                        {/* Department Selector */}
+                                        <form onSubmit={formik.handleSubmit}>
+                                        {/* City Selector */}
                                         <div className="grid grid-cols-1 py-2">
-                                            <select id="role" name="role" className="appearance-none font-text col-start-1 row-start-1 border border-primary rounded-md py-2 px-4 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                                                // value={formik.values.role}
-                                                // onChange={formik.handleChange}
-                                                // onBlur={formik.handleBlur}\
+                                            <select id="role" name="city" className="appearance-none font-text col-start-1 row-start-1 border border-primary rounded-md py-2 px-4 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                                value={formik.values.city}
+                                                onChange={formik.handleChange}
+                                                onBlur={formik.handleBlur}
                                                 >
                                                 <option value=''>Select City</option>
                                                 {
@@ -254,11 +278,10 @@ const AddFormInputModal = ({ isOpen, onClose, formInput, category}) => {
                                             <label htmlFor="input" className="font-header text-xs flex flex-row justify-between pb-2">
                                             <p className="font-text text-unactive">{formInput} Input Name:</p>
                                             </label>
-                                            <input type="input" name="input"
-                                                // value={formik.values.courseID}
-                                                // onChange={formik.handleChange}
-                                                // onBlur={formik.handleBlur}
-                                                // maxLength={11}
+                                            <input type="input" name={formInput}
+                                                value={formik.values[formInput]}
+                                                onChange={formik.handleChange}
+                                                onBlur={formik.handleBlur}
                                                 className="w-full font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
                                                 {/* Validation Errors */}
                                             </div>
@@ -268,11 +291,12 @@ const AddFormInputModal = ({ isOpen, onClose, formInput, category}) => {
                                                     Cancel
                                                 </button>
                                                 <input type="submit"
-                                                    value="Add Input"
+                                                    value={adding ? ("Adding...") : ("Add Form Input")}
                                                     className={`bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out w-full
                                                     `}/>
                                                 </div>
-                                        </div>
+                                        </form>
+                                    </div>
                                 ): (null)
                             }
 

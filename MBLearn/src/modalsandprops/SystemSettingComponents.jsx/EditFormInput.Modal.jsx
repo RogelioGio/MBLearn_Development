@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import * as Yup from 'yup';
 
 const EditFormInputModal = ({open, close, formInput, formInputEntry}) => {
+    const {departments, cities} = useOption()
     const [editing, setEditing] = useState(false)
     const formik = useFormik({
         enableReinitialize: true,

@@ -86,11 +86,23 @@ const EditUserCredsModal = ({open, close, ID, editSuccess}) => {
                 });
             } else {
                 const payload = {
-                    role: values,
+                    ...(selectedUser.user_infos.roles?.[0].id !== values.role && { role: values }),
                     permissions: accountPerm
                 }
                 console.log("Tab 2 submitted:", payload);
-                setUpdating(false);
+                setUpdating(false)
+
+                if(selectedUser.user_infos.roles?.[0].id !== values.role){
+                    null
+                } else {
+                    axiosClient.put(`/updateUserPermission/${selectedUser.id}`, accountPerm)
+                    .then((res) => {
+                        editSuccess();
+                        close();
+                        setUpdating(false);
+                        console.log(res);
+                    })
+                }
             }
         }
     })
@@ -237,6 +249,7 @@ const EditUserCredsModal = ({open, close, ID, editSuccess}) => {
                                                     </div>
                                                     {
                                                         formik.values.role ? (<div className="col-span-3">
+                                                            {/* Bug to fix: not reliant to the user but instead relies on the role.permission */}
                                                             <AccountPermissionProps refPermissions={permission} selectedRole={formik.values.role} role={role} setAccountPerm={setAccountPerm}/>
                                                         </div>):(null)
                                                     }
