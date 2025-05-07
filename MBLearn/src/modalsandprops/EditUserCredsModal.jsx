@@ -238,7 +238,7 @@ const EditUserCredsModal = ({open, close, ID, editSuccess}) => {
                                                     <div className="inline-flex flex-col gap-1 row-start-1 row-span-4 col-span-3 py-2 items-center justify-center">
                                                         <p className="text-unactive font-text p-10">User is not unauthorized to this action</p>
                                                     </div>
-                                                ) : tab === 2  && hasPermission(user, ["EditUserRoles"]) ? (
+                                                ) : tab === 2  && hasPermission(user, ["EditUserRoles"] ) ? (
                                                     <>
                                                     <div className="inline-flex flex-col gap-1 row-start-1 col-span-3 py-2">
                                                         <label htmlFor="role" className="font-header text-xs flex flex-row justify-between">
@@ -248,7 +248,9 @@ const EditUserCredsModal = ({open, close, ID, editSuccess}) => {
                                                             <select id="role" name="role" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
                                                                 value={formik.values.role}
                                                                 onChange={formik.handleChange}
-                                                                onBlur={formik.handleBlur}>
+                                                                onBlur={formik.handleBlur}
+                                                                disabled={!hasPermission(user, ["EditUserRoles"])}
+                                                                >
                                                                 <option value=''>Select Role</option>
                                                                 {
                                                                     roles.map((role) => (
@@ -263,10 +265,10 @@ const EditUserCredsModal = ({open, close, ID, editSuccess}) => {
                                                         {formik.touched.role && formik.errors.role ? (<div className="text-red-500 text-xs font-text">{formik.errors.role}</div>):null}
                                                     </div>
                                                     {
-                                                        formik.values.role ? (<div className="col-span-3">
-                                                            {/* Bug to fix: not reliant to the user but instead relies on the role.permission */}
-                                                            <AccountPermissionProps refPermissions={permission} selectedRole={formik.values.role} role={role} setAccountPerm={setAccountPerm} currentPerm={selectedUser.user_infos.permissions}/>
-                                                        </div>):(null)
+                                                        hasPermission(user, ["EditUserRoles"]) ? (<div className="col-span-3">
+                                                            <AccountPermissionProps refPermissions={permission} selectedRole={formik.values.role} role={role} setAccountPerm={setAccountPerm} currentPerm={selectedUser.user_infos.permissions} OriginalRole={selectedUser.user_infos.roles[0].id}/>
+                                                        </div>) : (null)
+
                                                     }
                                                     </>
                                                 ) : tab === 2 ? (

@@ -8,6 +8,7 @@ import { ScrollArea } from "MBLearn/src/components/ui/scroll-area";
 import AddFormInputModal from "./AddFormInput.Modal";
 import EditFormInputModal from "./EditFormInput.Modal";
 import DeleteFormInputModal from "./DeleteFormInputModal";
+import { useStateContext } from "MBLearn/src/contexts/ContextProvider";
 
 //Front end Pagination
 const usePagination = (data, itemPerpage = 2) => {
@@ -46,6 +47,7 @@ const usePagination = (data, itemPerpage = 2) => {
 }
 
 const FormInputSetting = () => {
+    const {user} = useStateContext()
     const {departments, titles, cities, location, division, section} = useOption();
     const [loading, setLoading] = useState()
     const [add, setAdd] = useState(false)
@@ -114,13 +116,16 @@ const FormInputSetting = () => {
                         <h1 className="font-header text-primary text-base">Employee's Division Options</h1>
                         <p className="font-text text-unactive text-xs">List of available employee division option for the system inputs and form</p>
                     </div>
-                    <div>
-                        <div className={`flex flex-row justify-center items-center border-2 border-primary py-2 px-8 font-header bg-secondarybackground rounded-md text-primary gap-5 w-full hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md`}
-                            onClick={() => handleFormInput("Division")}>
-                            <FontAwesomeIcon icon={faPlus}/>
-                            <p>Add Employee Division</p>
-                        </div>
-                    </div>
+                    {
+                        user.user_infos.permissions?.some((permission)=> permission.permission_name === "AddFormInput") ?
+                        <div>
+                            <div className={`flex flex-row justify-center items-center border-2 border-primary py-2 px-8 font-header bg-secondarybackground rounded-md text-primary gap-5 w-full hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md`}
+                                onClick={() => handleFormInput("Division")}>
+                                <FontAwesomeIcon icon={faPlus}/>
+                                <p>Add Employee Division</p>
+                            </div>
+                        </div> : null
+                    }
                 </div>
                 <div className="w-full border-primary border rounded-md overflow-hidden shadow-md">
                     <table className='text-left w-full overflow-y-scroll'>
@@ -141,14 +146,20 @@ const FormInputSetting = () => {
                                         <td className={`font-text p-4 flex flex-row items-center gap-4 border-l-2 border-transparent transition-all ease-in-out`}>{division.division_name}</td>
                                         <td className={`font-text p-4 gap-4 transition-all ease-in-out`}>{format(new Date(division.created_at), "MMMM dd, yyyy")}</td>
                                         <td className="flex flex-row gap-2 justify-end p-4">
-                                            <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all'
-                                                onClick={() => handleEditFormInput({ input: "Division", entry: division })}>
-                                                <FontAwesomeIcon icon={faPenToSquare} className='text-sm'/>
-                                            </div>
-                                            <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all'
-                                                onClick={()=>handleDeleteFormInput("Division",division)}>
-                                                <FontAwesomeIcon icon={faTrash} className='text-sm'/>
-                                            </div>
+                                            {
+                                                user.user_infos.permissions?.some((permission)=> permission.permission_name === "EditFormInput") ?
+                                                <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all'
+                                                    onClick={() => handleEditFormInput({ input: "Division", entry: division })}>
+                                                    <FontAwesomeIcon icon={faPenToSquare} className='text-sm'/>
+                                                </div> : null
+                                            }
+                                            {
+                                                user.user_infos.permissions?.some((permission)=> permission.permission_name === "DeleteFormInput") ?
+                                                <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all'
+                                                    onClick={()=>handleDeleteFormInput("Division",division)}>
+                                                    <FontAwesomeIcon icon={faTrash} className='text-sm'/>
+                                                </div> : null
+                                            }
                                         </td>
 
                                     </tr>
@@ -211,13 +222,16 @@ const FormInputSetting = () => {
                         <h1 className="font-header text-primary text-base">Employee's Department Options</h1>
                         <p className="font-text text-unactive text-xs">List of available department option for the system inputs and form</p>
                     </div>
-                    <div>
-                        <div className={`flex flex-row justify-center items-center border-2 border-primary py-2 px-8 font-header bg-secondarybackground rounded-md text-primary gap-5 w-full hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md`}
-                            onClick={() => handleFormInput("Department")}>
-                            <FontAwesomeIcon icon={faPlus}/>
-                            <p>Add Department</p>
-                        </div>
-                    </div>
+                    {
+                        user.user_infos.permissions?.some((permission)=> permission.permission_name === "AddFormInput") ?
+                        <div>
+                            <div className={`flex flex-row justify-center items-center border-2 border-primary py-2 px-8 font-header bg-secondarybackground rounded-md text-primary gap-5 w-full hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md`}
+                                onClick={() => handleFormInput("Department")}>
+                                <FontAwesomeIcon icon={faPlus}/>
+                                <p>Add Department</p>
+                            </div>
+                        </div> : null
+                    }
                 </div>
                 <div className="w-full border-primary border rounded-md overflow-hidden shadow-md">
                         <table className='text-left w-full overflow-y-scroll'>
@@ -238,14 +252,20 @@ const FormInputSetting = () => {
                                             <td className={`font-text p-4 flex flex-row items-center gap-4 border-l-2 border-transparent transition-all ease-in-out`}>{department.department_name}</td>
                                             <td className={`font-text p-4 gap-4 transition-all ease-in-out`}>{format(new Date(department.created_at), "MMMM dd, yyyy")}</td>
                                             <td className="flex flex-row gap-2 justify-end p-4">
-                                                <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all'
-                                                    onClick={() => handleEditFormInput({ input: "Department", entry: department })}>
-                                                    <FontAwesomeIcon icon={faPenToSquare} className='text-sm'/>
-                                                </div>
-                                                <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all'
-                                                    onClick={()=>handleDeleteFormInput("Department", department)}>
-                                                    <FontAwesomeIcon icon={faTrash} className='text-sm'/>
-                                                </div>
+                                                {
+                                                    user.user_infos.permissions?.some((permission)=> permission.permission_name === "EditFormInput") ?
+                                                    <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all'
+                                                        onClick={() => handleEditFormInput({ input: "Department", entry: department })}>
+                                                        <FontAwesomeIcon icon={faPenToSquare} className='text-sm'/>
+                                                    </div> : null
+                                                }
+                                                {
+                                                    user.user_infos.permissions?.some((permission)=> permission.permission_name === "DeleteFormInput") ?
+                                                    <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all'
+                                                        onClick={()=>handleDeleteFormInput("Department", department)}>
+                                                        <FontAwesomeIcon icon={faTrash} className='text-sm'/>
+                                                    </div> : null
+                                                }
                                             </td>
 
                                         </tr>
@@ -308,13 +328,16 @@ const FormInputSetting = () => {
                         <h1 className="font-header text-primary text-base">Employee's Title Options</h1>
                         <p className="font-text text-unactive text-xs">List of available employee title option for the system inputs and form</p>
                     </div>
-                    <div>
-                        <div className={`flex flex-row justify-center items-center border-2 border-primary py-2 px-8 font-header bg-secondarybackground rounded-md text-primary gap-5 w-full hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md`}
-                            onClick={() => handleFormInput("Title")}>
-                            <FontAwesomeIcon icon={faPlus}/>
-                            <p>Add Employee Title</p>
-                        </div>
-                    </div>
+                    {
+                        user.user_infos.permissions?.some((permission)=> permission.permission_name === "AddFormInput") ?
+                        <div>
+                            <div className={`flex flex-row justify-center items-center border-2 border-primary py-2 px-8 font-header bg-secondarybackground rounded-md text-primary gap-5 w-full hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md`}
+                                onClick={() => handleFormInput("Title")}>
+                                <FontAwesomeIcon icon={faPlus}/>
+                                <p>Add Employee Title</p>
+                            </div>
+                        </div> : null
+                    }
                 </div>
                 <div>
                     {/* Department Selector */}
@@ -356,12 +379,18 @@ const FormInputSetting = () => {
                                             <td className={`font-text p-4 flex flex-row items-center gap-4 border-l-2 border-transparent transition-all ease-in-out`}>{title.title_name}</td>
                                             <td className={`font-text p-4 gap-4 transition-all ease-in-out`}>{format(new Date(title.created_at), "MMMM dd, yyyy")}</td>
                                             <td className="flex flex-row gap-2 justify-end p-4">
-                                                <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all '>
-                                                    <FontAwesomeIcon icon={faPenToSquare} className='text-sm'/>
-                                                </div>
-                                                <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all '>
-                                                    <FontAwesomeIcon icon={faTrash} className='text-sm'/>
-                                                </div>
+                                                {
+                                                    user.user_infos.permissions?.some((permission)=> permission.permission_name === "EditFormInput") ?
+                                                    <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all '>
+                                                        <FontAwesomeIcon icon={faPenToSquare} className='text-sm'/>
+                                                    </div> : null
+                                                }
+                                                {
+                                                    user.user_infos.permissions?.some((permission)=> permission.permission_name === "DeleteFormInput") ?
+                                                    <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all '>
+                                                        <FontAwesomeIcon icon={faTrash} className='text-sm'/>
+                                                    </div> : null
+                                                }
                                             </td>
 
                                         </tr>
@@ -380,13 +409,16 @@ const FormInputSetting = () => {
                         <h1 className="font-header text-primary text-base">Employee's Sections Options</h1>
                         <p className="font-text text-unactive text-xs">List of available employee sections option for the system inputs and form</p>
                     </div>
-                    <div>
-                        <div className={`flex flex-row justify-center items-center border-2 border-primary py-2 px-8 font-header bg-secondarybackground rounded-md text-primary gap-5 w-full hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md`}
-                            onClick={()=>handleFormInput("Section")}>
-                            <FontAwesomeIcon icon={faPlus}/>
-                            <p>Add Employee Section</p>
-                        </div>
-                    </div>
+                    {
+                        user.user_infos.permissions?.some((permission)=> permission.permission_name === "AddFormInput") ?
+                        <div>
+                            <div className={`flex flex-row justify-center items-center border-2 border-primary py-2 px-8 font-header bg-secondarybackground rounded-md text-primary gap-5 w-full hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md`}
+                                onClick={()=>handleFormInput("Section")}>
+                                <FontAwesomeIcon icon={faPlus}/>
+                                <p>Add Employee Section</p>
+                            </div>
+                        </div> : null
+                    }
                 </div>
                 <div className="w-full border-primary border rounded-md overflow-hidden shadow-md">
                         <table className='text-left w-full overflow-y-scroll'>
@@ -407,14 +439,20 @@ const FormInputSetting = () => {
                                             <td className={`font-text p-4 flex flex-row items-center gap-4 border-l-2 border-transparent transition-all ease-in-out`}>{section.section_name}</td>
                                             <td className={`font-text p-4 gap-4 transition-all ease-in-out`}>{format(new Date(section.created_at), "MMMM dd, yyyy")}</td>
                                             <td className="flex flex-row gap-2 justify-end p-4">
-                                                <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all'
-                                                    onClick={() => handleEditFormInput({ input: "Section", entry: section })}>
-                                                    <FontAwesomeIcon icon={faPenToSquare} className='text-sm'/>
-                                                </div>
-                                                <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all'
-                                                    onClick={()=>handleDeleteFormInput("Section", section)}>
-                                                    <FontAwesomeIcon icon={faTrash} className='text-sm'/>
-                                                </div>
+                                                {
+                                                    user.user_infos.permissions?.some((permission)=> permission.permission_name === "EditFormInput") ?
+                                                    <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all'
+                                                        onClick={() => handleEditFormInput({ input: "Section", entry: section })}>
+                                                        <FontAwesomeIcon icon={faPenToSquare} className='text-sm'/>
+                                                    </div> : null
+                                                }
+                                                {
+                                                    user.user_infos.permissions?.some((permission)=> permission.permission_name === "DeleteFormInput") ?
+                                                    <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all'
+                                                        onClick={()=>handleDeleteFormInput("Section", section)}>
+                                                        <FontAwesomeIcon icon={faTrash} className='text-sm'/>
+                                                    </div> : null
+                                                }
                                             </td>
 
                                         </tr>
@@ -476,13 +514,16 @@ const FormInputSetting = () => {
                         <h1 className="font-header text-primary text-base">Employee's Branch City Option</h1>
                         <p className="font-text text-unactive text-xs">List of available city option for the system inputs and form</p>
                     </div>
-                    <div>
-                        <div className={`flex flex-row justify-center items-center border-2 border-primary py-2 px-8 font-header bg-secondarybackground rounded-md text-primary gap-5 w-full hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md`}
-                            onClick={()=>handleFormInput("City")}>
-                            <FontAwesomeIcon icon={faPlus}/>
-                            <p>Add City</p>
-                        </div>
-                    </div>
+                    {
+                        user.user_infos.permissions?.some((permission)=> permission.permission_name === "AddFormInput") ?
+                        <div>
+                            <div className={`flex flex-row justify-center items-center border-2 border-primary py-2 px-8 font-header bg-secondarybackground rounded-md text-primary gap-5 w-full hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md`}
+                                onClick={()=>handleFormInput("City")}>
+                                <FontAwesomeIcon icon={faPlus}/>
+                                <p>Add City</p>
+                            </div>
+                        </div> : null
+                    }
                 </div>
                 <div className="w-full border-primary border rounded-md overflow-hidden shadow-md">
                         <table className='text-left w-full overflow-y-scroll'>
@@ -503,14 +544,20 @@ const FormInputSetting = () => {
                                             <td className={`font-text p-4 flex flex-row items-center gap-4 border-l-2 border-transparent transition-all ease-in-out`}>{city.city_name}</td>
                                             <td className={`font-text p-4 gap-4 transition-all ease-in-out`}>{format(new Date(city.created_at), "MMMM dd, yyyy")}</td>
                                             <td className="flex flex-row gap-2 justify-end p-4">
-                                                <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all'
-                                                    onClick={() => handleEditFormInput({ input: "City", entry: city })}>
-                                                    <FontAwesomeIcon icon={faPenToSquare} className='text-sm'/>
-                                                </div>
-                                                <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all'
-                                                    onClick={()=>handleDeleteFormInput("City", city)}>
-                                                    <FontAwesomeIcon icon={faTrash} className='text-sm'/>
-                                                </div>
+                                                {
+                                                    user.user_infos.permissions?.some((permission)=> permission.permission_name === "EditFormInput") ?
+                                                    <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all'
+                                                        onClick={() => handleEditFormInput({ input: "City", entry: city })}>
+                                                        <FontAwesomeIcon icon={faPenToSquare} className='text-sm'/>
+                                                    </div> : null
+                                                }
+                                                {
+                                                    user.user_infos.permissions?.some((permission)=> permission.permission_name === "DeleteFormInput") ?
+                                                    <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all'
+                                                        onClick={()=>handleDeleteFormInput("City", city)}>
+                                                        <FontAwesomeIcon icon={faTrash} className='text-sm'/>
+                                                    </div>:null
+                                                }
                                             </td>
 
                                         </tr>
@@ -573,13 +620,16 @@ const FormInputSetting = () => {
                         <h1 className="font-header text-primary text-base">Employee's Branch Location Option</h1>
                         <p className="font-text text-unactive text-xs">List of available employee title option for the system inputs and form</p>
                     </div>
-                    <div>
-                        <div className={`flex flex-row justify-center items-center border-2 border-primary py-2 px-8 font-header bg-secondarybackground rounded-md text-primary gap-5 w-full hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md`}
-                            onClick={()=>handleFormInput("Branch")}>
-                            <FontAwesomeIcon icon={faPlus}/>
-                            <p>Add Branch Location</p>
-                        </div>
-                    </div>
+                    {
+                        user.user_infos.permissions?.some((permission)=> permission.permission_name === "AddFormInput") ?
+                        <div>
+                            <div className={`flex flex-row justify-center items-center border-2 border-primary py-2 px-8 font-header bg-secondarybackground rounded-md text-primary gap-5 w-full hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md`}
+                                onClick={()=>handleFormInput("Branch")}>
+                                <FontAwesomeIcon icon={faPlus}/>
+                                <p>Add Branch Location</p>
+                            </div>
+                        </div>:null
+                    }
                 </div>
                 <div>
                     {/* Department Selector */}
@@ -621,12 +671,18 @@ const FormInputSetting = () => {
                                             <td className={`font-text p-4 flex flex-row items-center gap-4 border-l-2 border-transparent transition-all ease-in-out`}>{location.branch_name}</td>
                                             <td className={`font-text p-4 gap-4 transition-all ease-in-out`}>{format(new Date(location.created_at), "MMMM dd, yyyy")}</td>
                                             <td className="flex flex-row gap-2 justify-end p-4">
-                                                <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all '>
-                                                    <FontAwesomeIcon icon={faPenToSquare} className='text-sm'/>
-                                                </div>
-                                                <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all '>
-                                                    <FontAwesomeIcon icon={faTrash} className='text-sm'/>
-                                                </div>
+                                                {
+                                                    user.user_infos.permissions?.some((permission)=> permission.permission_name === "EditFormInput") ?
+                                                    <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all '>
+                                                        <FontAwesomeIcon icon={faPenToSquare} className='text-sm'/>
+                                                    </div> : null
+                                                }
+                                                {
+                                                    user.user_infos.permissions?.some((permission)=> permission.permission_name === "DeleteFormInput") ?
+                                                    <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all '>
+                                                        <FontAwesomeIcon icon={faTrash} className='text-sm'/>
+                                                    </div> : null
+                                                }
                                             </td>
 
                                         </tr>

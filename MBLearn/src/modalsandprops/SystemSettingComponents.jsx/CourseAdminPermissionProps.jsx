@@ -1,5 +1,11 @@
 import { Switch } from "MBLearn/src/components/ui/switch"
+import { useState } from "react";
+import LearnerPermissionProps from "./LearnerPermissionProps";
+
 const CourseAdminPermissionProps = ({isChecked,permissionswitch,permissionRef}) => {
+
+    const [roleHopping, setRoleHopping] = useState();
+
     return(
         <>
             {/* Course Management Permission */}
@@ -29,6 +35,26 @@ const CourseAdminPermissionProps = ({isChecked,permissionswitch,permissionRef}) 
                 </div>
             </div>
         </div>
+        {/* Cascading Account Role Permission */}
+        <div>
+            <p className="font-text text-unactive text-sm py-2">Role Access Permission</p>
+            <div className="flex flex-col gap-2 border border-primary rounded-md p-5 bg-white shadow-md">
+                <div className="w-full flex flex-row justify-between items-center">
+                    <label htmlFor="exportReport">
+                        <h1 className="font-header text-primary text-base">Role Hopping</h1>
+                        <p className="font-text text-unactive text-sm">The user have the permission to login as different role <br /> whereas they can be a course admin or learner in the same account</p>
+                    </label>
+                    <Switch id="exportReport" checked={isChecked("RoleHopping")} onCheckedChange={(checked) => {permissionswitch(permissionRef.find(p => p.permission_name === "RoleHopping").id,"RoleHopping",checked),setRoleHopping(checked)}}/>
+                </div>
+            </div>
+        </div>
+        {
+            roleHopping && (
+                <>
+                    <LearnerPermissionProps isChecked={isChecked} permissionswitch={permissionswitch} permissionRef={permissionRef} />
+                </>
+            )
+        }
         </>
     )
 }
