@@ -5,17 +5,11 @@ import axiosClient from "../axios-client";
 import { useStateContext } from "../contexts/ContextProvider";
 import LearnerPermissionProps from "./SystemSettingComponents.jsx/LearnerPermissionProps";
 
-const AccountPermissionProps = ({refPermissions, selectedRole, role, setAccountPerm, currentPerm, OriginalRole }) => {
-
-    const [currentrole, setCurrentrole]= useState()
-    useEffect(()=>{
-        setCurrentrole(OriginalRole)
-        console.log("Original: ", currentrole)
-        console.log("Selected: ", selectedRole)
-    },[OriginalRole,selectedRole])
-
+const AccountPermissionProps = ({refPermissions, selectedRole, role, setAccountPerm, currentPerm, originalRole}) => {
+    const [OriginalRole, setOriginaltRole] = useState();
 
     useEffect(() => {
+        setOriginaltRole(originalRole)
         if (OriginalRole !== selectedRole || currentPerm?.length === 0) {
             console.log("Selected Role Changed:", selectedRole, "New Permission");
             availablePermission();

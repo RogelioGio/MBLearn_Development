@@ -266,7 +266,7 @@ const EditUserCredsModal = ({open, close, ID, editSuccess}) => {
                                                     </div>
                                                     {
                                                         hasPermission(user, ["EditUserRoles"]) ? (<div className="col-span-3">
-                                                            <AccountPermissionProps refPermissions={permission} selectedRole={formik.values.role} role={role} setAccountPerm={setAccountPerm} currentPerm={selectedUser.user_infos.permissions} OriginalRole={selectedUser.user_infos.roles[0].id}/>
+                                                            <AccountPermissionProps refPermissions={permission} selectedRole={formik.values.role} role={role} setAccountPerm={setAccountPerm} currentPerm={selectedUser.user_infos.permissions} originalRole={selectedUser.user_infos.roles[0].id}/>
                                                         </div>) : (null)
 
                                                     }
