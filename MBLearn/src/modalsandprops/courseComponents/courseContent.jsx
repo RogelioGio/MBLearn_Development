@@ -1,5 +1,3 @@
-import { render } from "vue";
-
 
 const course =
 {
@@ -64,7 +62,7 @@ const course =
         "textblockcontent": []
       },
       {
-        "type": "youtube",
+        "videoblock": "youtube",
         "attrs": {
           "src": "https://www.youtube.com/embed/sqEdkBYmqQE?rel=1",
           "start": 0,
@@ -73,8 +71,8 @@ const course =
         }
       },
       {
-        "textblock": "paragraph",
-        "textblockcontent": [
+        "referenceBlock": "paragraph",
+        "referenceBlockcontent": [
           {
             "type": "text",
             "marks": [
@@ -91,8 +89,72 @@ const course =
             "text": "https://www.wikipedia.org/"
           }
         ]
+      },
+      {
+        "bulletListBlock": "bulletList",
+        "bulletListcontent": [
+          {
+            "type": "listItem",
+            "content": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "asdasd"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "listItem",
+            "content": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "asdasd"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+
+      {
+        "type": "orderedList",
+        "attrs": {
+          "start": 1,
+          "type": null
+        },
+        "content": [
+          {
+            "type": "listItem",
+            "content": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "asdasd"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "paragraph"
+      },
+      {
+        "type": "paragraph"
       }
     ]
+
   }
 
 
@@ -131,7 +193,7 @@ const Content = () => {
         <>
             {course.content.map((content, index) => {
                 //text
-                if(content.textblock){
+                if(content.textblock) {
                     switch(content.textblock) {
                         case "paragraph":
                             return (
@@ -197,7 +259,7 @@ const Content = () => {
                             return null;
                     }
                 //Video
-                } else if(content.type) {
+                } else if(content.videoblock) {
                     return (
                     <iframe class="w-full aspect-video rounded-lg"
                         src={content.attrs?.src}
@@ -207,7 +269,53 @@ const Content = () => {
                         allowfullscreen>
                     </iframe>
                     )
-                } else {
+                } else if(content.referenceBlock){
+                    return (
+                        <>
+                        <div className="mx-5 py-5">
+                            <div className="border-divider border-b py-1">
+                                <p className="font-header text-sm text-primary">Reference Link</p>
+                            </div>
+                            <div className="py-1">
+                                {
+                                    content.referenceBlockcontent.map((reference, _)=>{
+                                        return (
+                                            <a
+                                            key={_}
+                                            href={reference.marks[0].attrs.href}
+                                            target={reference.marks[0].attrs.target}
+                                            rel={reference.marks[0].attrs.rel}
+                                            className="hover:cursor-pointer hover:text-primary"
+                                            >
+                                            <span className="font-text text-sm">
+                                                {reference.text}
+                                            </span>
+                                            </a>
+                                        )
+                                    })
+                                }
+                            </div>
+                        </div>
+                        </>
+                    )
+                } else if (content.bulletListBlock){
+                    return (
+                        <ul className="list-disc pl-5">
+                        {content.bulletListcontent.map((bulletItem, i) => (
+                            <li key={i} className="font-text text-sm">
+                            {bulletItem.content.map((item, j) =>
+                                item.content.map((c, k) => (
+                                    renderText(c, `${i}-${j}-${k}`)
+                                ))
+                            )}
+                            </li>
+                        ))}
+                        </ul>
+                    )
+
+
+                }
+                else {
                     return null;
                 }
 
