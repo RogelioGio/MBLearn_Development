@@ -10,7 +10,6 @@ const CourseAdminDashboard = ({name, user}) => {
     const [tab, setTab] = useState("myCourses")
     const [loading, setLoading] = useState(false)
     const [assignedCourse, setAssignedCourse] = useState([])
-    const navigate = useNavigate()
 
     const [pageState, setPagination] = useState({
             currentPage: 1,

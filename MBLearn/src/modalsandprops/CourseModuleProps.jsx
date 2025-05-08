@@ -8,6 +8,9 @@ import { faBackward, faBook, faCircleChevronLeft, faCircleChevronRight, faForwar
 import { Step, Stepper, StepperCompleted, useStepper } from "../components/ui/courseStepper";
 import { ScrollArea } from "../components/ui/scroll-area";
 import CourseAssesment from "./courseComponents/courseAssesment";
+import Content from "./courseComponents/courseContent";
+
+
 
 const CourseModuleProps = () => {
     const stepperRef = useRef();
@@ -28,9 +31,13 @@ const CourseModuleProps = () => {
             </Step>
             <Step stepTitle={"Sample Module Content 1"} stepDesc={"Sample Module with text content "}>
                 <CourseText/>
+                <CourseText/>
             </Step>
             <Step stepTitle={"Sample Module Content 2"} stepDesc={"Sample module with video content"}>
                 <CourseVideo/>
+            </Step>
+            <Step stepTitle={"Sample Module Content 2"} stepDesc={"Sample module with video content"}>
+                <Content/>
             </Step>
             <Step stepTitle={"Course Assesment"} stepDesc={"Sample module with course assessment"}>
                 <CourseAssesment/>

@@ -31,6 +31,11 @@ const CourseText = () => {
                     <li className="font-text text-sm">upport national defense and social welfare programs.</li>
                 </ul>
             </div>
+            {/* <h1 style={"text-align: center"}>
+                <span style={"font-family: 'Courier New', monospace;"}>
+                    <strong>This is the title</strong>
+                </span>
+            </h1> */}
             {/* Reference Links */}
             <div className="py-2 border-t border-divider">
                 <p className="font-header text-primary">Reference Links:</p>
