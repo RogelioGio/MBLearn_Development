@@ -66,6 +66,7 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation}) =>{
                 title_id: 'Loading...',
                 branch_id: 'Loading...',
                 city: 'Loading...',
+                name_suffix: 'Loading...',
                 status: 'Active',
             }
             : {
@@ -79,6 +80,7 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation}) =>{
                 title_id: selectedUser?.title_id || '',
                 branch_id: selectedUser?.branch_id || '',
                 city: selectedUser?.city?.id || '',
+                name_suffix: selectedUser?.name_suffix || '',
                 status: 'Active',
             },
         //validation

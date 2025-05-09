@@ -7,8 +7,10 @@ import RoleManagementSetting from "../modalsandprops/SystemSettingComponents.jsx
 import FormInputSetting from "../modalsandprops/SystemSettingComponents.jsx/FormInputSetting"
 import ReactivationAccountSetting from "../modalsandprops/SystemSettingComponents.jsx/ReactivationAccountSetting"
 import { ScrollArea } from "@mantine/core"
+import { useStateContext } from "../contexts/ContextProvider"
 
 export default function SystemConfiguration() {
+    const {user} = useStateContext();
     const [tab, setTab] = useState(1)
 
     return (
@@ -33,10 +35,14 @@ export default function SystemConfiguration() {
                     <FontAwesomeIcon icon={faFileSignature}/>
                     <h1 className="uppercase font-text">Form Input Setting</h1>
                 </div>
-                <div className= {`flex flex-row  items-center w-full px-3 py-3 gap-4 text-sm text-unactive hover:text-primary hover:bg-divider rounded-md cursor-pointer transition-all ease-in-out ${tab === 3 ? '!bg-divider !text-primary':null}`} onClick={() => setTab(3)}>
+                {
+                    user.user_infos.permissions?.some((permission)=> permission.permission_name === "AccountReactivation") ?
+                    <div className= {`flex flex-row  items-center w-full px-3 py-3 gap-4 text-sm text-unactive hover:text-primary hover:bg-divider rounded-md cursor-pointer transition-all ease-in-out ${tab === 3 ? '!bg-divider !text-primary':null}`} onClick={() => setTab(3)}>
                     <FontAwesomeIcon icon={faUserClock}/>
                     <h1 className="uppercase font-text">Re-Activation Account</h1>
-                </div>
+                    </div>:null
+                }
+
             </div>
             {/* Setting Content */}
 

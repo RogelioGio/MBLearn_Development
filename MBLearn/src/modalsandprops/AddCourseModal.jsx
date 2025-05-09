@@ -42,6 +42,8 @@ const AddCourseModal = ({open,onClose,tab}) => {
     const [hover, setHover] = useState(false);
     const [adding, setAdding] = useState(false);
 
+    const customCourseCategory = "Hello"
+
     useEffect(() => {
         if (!open) {
             formik.resetForm();
@@ -292,7 +294,7 @@ const AddCourseModal = ({open,onClose,tab}) => {
                                                         onChange={formik2.handleChange}
                                                         onBlur={formik2.handleBlur}
                                                     >
-                                                    <option value="">Select a course category</option>
+                                                    <option value={customCourseCategory}>{customCourseCategory}</option>
                                                     {coursecategories.map((category) => (
                                                         <option key={category.id} value={category.id}>{category.category_name}</option>
                                                     ))}

@@ -2,12 +2,24 @@ import { useEffect, useState } from "react";
 import CourseAdminPermissionProps from "./SystemSettingComponents.jsx/CourseAdminPermissionProps";
 import SystemAdminPermissionProps from "./SystemSettingComponents.jsx/SystemAdminPermssionProps";
 import axiosClient from "../axios-client";
+import { useStateContext } from "../contexts/ContextProvider";
+import LearnerPermissionProps from "./SystemSettingComponents.jsx/LearnerPermissionProps";
 
-const AccountPermissionProps = ({refPermissions, selectedRole, role, setAccountPerm, }) => {
+const AccountPermissionProps = ({refPermissions, selectedRole, role, setAccountPerm, currentPerm, originalRole}) => {
+    const [OriginalRole, setOriginaltRole] = useState();
+
     useEffect(() => {
-        console.log("Selected Role:", selectedRole);
-        availablePermission();
-        // console.log("courseID: " + selectedRole);
+        setOriginaltRole(originalRole)
+        if (OriginalRole !== selectedRole || currentPerm?.length === 0) {
+            console.log("Selected Role Changed:", selectedRole, "New Permission");
+            availablePermission();
+        } else if (currentPerm) {
+            console.log("Current Permission:", currentPerm, "Edit mode");
+            setPermissions(currentPerm);
+            _setAccountPerm(currentPerm.map(p => ({
+                permission_Id: p.id
+            })));
+        }
     }, [selectedRole]);
 
     const [accountPerm, _setAccountPerm] = useState()
@@ -16,7 +28,6 @@ const AccountPermissionProps = ({refPermissions, selectedRole, role, setAccountP
     const [permission, setPermissions] = useState([]);
     const availablePermission = () => {
         const selected = role?.find((r) => r.id === parseInt(selectedRole));
-        console.log("Selected Role Object:", selected);
         if (selected) {
             setPermissions(selected?.permissions)
             _setAccountPerm((selected?.permissions || []).map(p => ({
@@ -24,7 +35,6 @@ const AccountPermissionProps = ({refPermissions, selectedRole, role, setAccountP
             })))
         } else {
             setPermissions([]);
-            console.log("No permissions found for the selected role.");
         }
     };
 
@@ -36,6 +46,7 @@ const AccountPermissionProps = ({refPermissions, selectedRole, role, setAccountP
         }
         console.log("Permission to be Thrown: " ,accountPerm)
     },[permission])
+
 
     const isChecked = (permName) => {
         return permission.some(p => p.permission_name === permName);
@@ -81,7 +92,9 @@ const AccountPermissionProps = ({refPermissions, selectedRole, role, setAccountP
                 <SystemAdminPermissionProps isChecked={isChecked} permissionswitch={permissionswitch} permissionRef={refPermissions}/>
             ) : (selectedRole ===  "2"||selectedRole === 2) ? (
                 <CourseAdminPermissionProps isChecked={isChecked} permissionswitch={permissionswitch} permissionRef={refPermissions}/>
-            ) : (null)
+            ) : (selectedRole ===  "3"||selectedRole === 3) ? (
+                <LearnerPermissionProps isChecked={isChecked} permissionswitch={permissionswitch} permissionRef={refPermissions}/>
+            ): (null)
         }
         </>
     );

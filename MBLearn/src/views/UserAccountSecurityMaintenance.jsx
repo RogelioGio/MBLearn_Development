@@ -13,10 +13,11 @@ import { useFormik } from "formik"
 import * as Yup from "yup"
 import EditUserSuccessfully from '../modalsandprops/EditUserSuccesfuly';
 import { resolvePath } from "react-router-dom"
-
+import { useStateContext } from "../contexts/ContextProvider"
 
 
 export default function UserAccountSecurityMaintenance(){
+    const {user} = useStateContext();
     const {departments,cities,location,roles,titles} = useOption();
     const [isLoading, setIsLoading] = useState(true)
     const [isReady, setIsReady] = useState(false);
@@ -100,6 +101,14 @@ export default function UserAccountSecurityMaintenance(){
     useEffect(()=>{console.log(userID.isEdit)},[userID.isEdit])
     //Open and CLose Modals
     const OpenEdit = (e,ID) => {
+        const hasPermission = user.user_infos.permissions?.some(
+            (permission) =>
+                permission.permission_name === "EditUserRoles" ||
+                permission.permission_name === "EditUserCredentials"
+        );
+
+        if (!hasPermission) return;
+
         e.stopPropagation();
         toggleUserID("isEdit", ID);
         toggleModal("isEdit", true);
@@ -368,11 +377,11 @@ export default function UserAccountSecurityMaintenance(){
                                         name={[user.user_infos?.first_name, user.user_infos?.middle_name, user.user_infos?.last_name].join(" ")}
                                         employeeID={user.user_infos?.employeeID}
                                         MBEmail={user.MBemail}
-                                        city={user.user_infos?.city.city_name}
-                                        branch={user.user_infos?.branch.branch_name}
-                                        division = {user.user_infos?.division.division_name}
-                                        department={user.user_infos?.department.department_name}
-                                        section={user.user_infos?.section.section_name}
+                                        city={user.user_infos?.city?.city_name}
+                                        branch={user.user_infos?.branch?.branch_name}
+                                        division = {user.user_infos?.division?.division_name}
+                                        department={user.user_infos?.department?.department_name}
+                                        section={user.user_infos?.section?.section_name}
                                         role={user.user_infos?.roles?.[0]?.role_name}
                                         image={user.user_infos?.profile_image }
                                         status={user.user_infos?.status}

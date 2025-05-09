@@ -1,6 +1,11 @@
 import { Switch } from "MBLearn/src/components/ui/switch"
 import CourseAdminPermissionProps from "./CourseAdminPermissionProps"
+import { useState } from "react"
+import LearnerPermissionProps from "./LearnerPermissionProps";
 const SystemAdminPermissionProps = ({isChecked,permissionswitch,permissionRef}) => {
+
+    const [roleHopping, setRoleHopping] = useState();
+
     return(
         <>
         {/* User Management Permssion */}
@@ -51,6 +56,13 @@ const SystemAdminPermissionProps = ({isChecked,permissionswitch,permissionRef}) 
                     <Switch id="editUserRole" checked={isChecked("EditUserRoles")} onCheckedChange={(checked) => permissionswitch(permissionRef.find(p => p.permission_name === "EditUserRoles").id,"EditUserRoles",checked)}/>
                 </div>
                 <div className="w-full flex flex-row justify-between items-center">
+                    <label htmlFor="editUserRole">
+                        <h1 className="font-header text-primary text-base">Edit User Permission</h1>
+                        <p className="font-text text-unactive text-sm">Grants the ability to modify a user's access rights and assigned roles within the system.</p>
+                    </label>
+                    {/* <Switch id="editUserRole" checked={isChecked("EditUserRoles")} onCheckedChange={(checked) => permissionswitch(permissionRef.find(p => p.permission_name === "EditUserRoles").id,"EditUserRoles",checked)}/> */}
+                </div>
+                <div className="w-full flex flex-row justify-between items-center">
                     <label htmlFor="accountReactivation">
                         <h1 className="font-header text-primary text-base">Account Reactivation</h1>
                         <p className="font-text text-unactive text-sm">The user have the permission to have the ability to reactivate user in the system</p>
@@ -84,6 +96,13 @@ const SystemAdminPermissionProps = ({isChecked,permissionswitch,permissionRef}) 
                     </label>
                     <Switch id="deleteFormInputs" checked={isChecked("DeleteFormInput")} onCheckedChange={(checked) => permissionswitch(permissionRef.find(p => p.permission_name === "DeleteFormInput").id,"DeleteFormInput",checked)}/>
                 </div>
+                <div className="w-full flex flex-row justify-between items-center">
+                    <label htmlFor="deleteFormInputs">
+                        <h1 className="font-header text-primary text-base">Edit Default Permissions</h1>
+                        <p className="font-text text-unactive text-sm">Allows administrators to configure and update the default access settings assigned to new users based on their roles.</p>
+                    </label>
+                    {/* <Switch id="deleteFormInputs" checked={isChecked("DeleteFormInput")} onCheckedChange={(checked) => permissionswitch(permissionRef.find(p => p.permission_name === "DeleteFormInput").id,"DeleteFormInput",checked)}/> */}
+                </div>
             </div>
         </div>
         {/* Report Management Permissions */}
@@ -115,12 +134,19 @@ const SystemAdminPermissionProps = ({isChecked,permissionswitch,permissionRef}) 
                         <h1 className="font-header text-primary text-base">Role Hopping</h1>
                         <p className="font-text text-unactive text-sm">The user have the permission to login as different role <br /> whereas they can be a course admin or learner in the same account</p>
                     </label>
-                    {/* <Switch id="exportReport" checked={isChecked("ExportReports")} onCheckedChange={(checked) => permissionswitch(permissionRef.find(p => p.permission_name === "ExportReports").id,"ExportReports",checked)}/> */}
+                    <Switch id="exportReport" checked={isChecked("RoleHopping")} onCheckedChange={(checked) => {permissionswitch(permissionRef.find(p => p.permission_name === "RoleHopping").id,"RoleHopping",checked),setRoleHopping(checked)}}/>
                 </div>
             </div>
         </div>
+        {
+            roleHopping && (
+                <>
+                    <CourseAdminPermissionProps isChecked={isChecked} permissionswitch={permissionswitch} permissionRef={permissionRef} roleHopState={roleHopping}/>
+                    <LearnerPermissionProps isChecked={isChecked} permissionswitch={permissionswitch} permissionRef={permissionRef} />
+                </>
+            )
+        }
 
-        <CourseAdminPermissionProps isChecked={isChecked} permissionswitch={permissionswitch} permissionRef={permissionRef}/>
         </>
     )
 }
