@@ -258,7 +258,6 @@ const Content = () => {
                         default:
                             return null;
                     }
-                //Video
                 } else if(content.videoblock) {
                     return (
                     <iframe class="w-full aspect-video rounded-lg"

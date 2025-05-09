@@ -8,10 +8,15 @@ import {
     } from "../../components/ui/carousel";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faXmark } from "@fortawesome/free-solid-svg-icons";
-import React from "react";
+import React, { useState } from "react";
+import PhotoforCarouselModal from "../PhotoforCarouselModal";
 
 const AnnouncmentCarousel = () => {
+    const [openAdd, setOpenAdd] = useState(false)
+
+
     return(
+        <>
         <div className="h-full w-full flex flex-col">
             <div className="w-full h-full">
                 <Carousel className="w-full h-full grid grid-cols-[auto_1fr_auto] grid-rows-[auto_1fr]"
@@ -34,7 +39,8 @@ const AnnouncmentCarousel = () => {
                         </div>
                         <div className="flex flex-row gap-2 items-center justify-center">
                             {
-                                <div className='aspect-square flex flex-row justify-center items-center text-primary border-2 border-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 hover:bg-primary hover:text-white ease-in-out transition-all '>
+                                <div className='aspect-square flex flex-row justify-center items-center text-primary border-2 border-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 hover:bg-primary hover:text-white ease-in-out transition-all'
+                                    onClick={() => setOpenAdd(true)}>
                                     <FontAwesomeIcon icon={faPenToSquare} className='text-sm p-2'/>
                                 </div>
                             }
@@ -61,8 +67,10 @@ const AnnouncmentCarousel = () => {
                     </div>
                 </Carousel>
             </div>
-            </div>
+        </div>
 
+        <PhotoforCarouselModal open={openAdd} close={() => setOpenAdd(false)}/>
+        </>
     )
 }
 export default AnnouncmentCarousel;
