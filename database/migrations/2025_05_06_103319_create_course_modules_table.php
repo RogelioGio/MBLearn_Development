@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('course_modules', function (Blueprint $table) {
             $table->id();
+            $table->string('module_name');
+            $table->foreignId('course_id')->constrained('courses', 'id')->cascadeOnDelete();
             $table->timestamps();
         });
     }

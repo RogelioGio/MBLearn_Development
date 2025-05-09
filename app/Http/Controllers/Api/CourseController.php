@@ -140,6 +140,7 @@ class CourseController extends Controller
         ]);
     }
 
+
     public function removeTrainingMode(Course $course, Training_Mode $training_Mode){
         $course->training_modes()->detach($training_Mode->id);
         return response()->json([
@@ -183,13 +184,22 @@ class CourseController extends Controller
     public function getCourseUsers(Course $course, Request $request){
         $page = $request->input('page', 1); // default page
         $perPage = $request->input('per_page', 8); // default per page
+        $acceptedEnrollmentFilter = ['enrolled', 'ongoing', 'finished'];
 
         $filter = new UserInfosFilter();
         $queryItems = $filter->transform($request);
 
-        $enrolls = $course->enrollments()->whereHas('enrolledUser', function($subQuery) use($queryItems){
+        $query = $course->enrollments()->whereHas('enrolledUser', function($subQuery) use($queryItems){
             $subQuery->where($queryItems)->where('status', '=', 'Active');
-        })->paginate($perPage);
+        });
+
+
+        if($request->has('enrollment_status')){
+            if(in_array($request->input('enrollment_status')['eq'],$acceptedEnrollmentFilter)){
+                $query->where('enrollment_status', $request->input('enrollment_status')['eq']);
+            }
+        }
+        $enrolls = $query->paginate($perPage);
         
         $users = $enrolls->getCollection()->map(function ($enrollment){
             $user = $enrollment->enrolledUser->load(['division','department','section','city','branch']);
@@ -203,6 +213,18 @@ class CourseController extends Controller
             'total' => $enrolls->total(),
             'lastPage' => $enrolls->lastPage(),
             'currentPage' => $enrolls->currentPage(),
+        ]);
+    }
+
+    public function countCourseStatus(Course $course){
+        $enrolled = $course->enrollments()->where('enrollment_status', 'enrolled')->count();
+        $ongoing = $course->enrollments()->where('enrollment_status', 'ongoing')->count();
+        $finished = $course->enrollments()->where('enrollment_status', 'finished')->count();
+
+        return response()->json([
+            'Enrolled' => $enrolled,
+            'Ongoing' => $ongoing,
+            'Finished' => $finished
         ]);
     }
 
