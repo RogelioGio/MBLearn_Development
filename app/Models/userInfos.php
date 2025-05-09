@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Znck\Eloquent\Relations\BelongsToThrough;
 
 #[ObservedBy([UserInfosObserver::class])]
@@ -111,5 +112,9 @@ class UserInfos extends Model
 
     public function section():BelongsTo{
         return $this->belongsTo(Section::class);
+    }
+
+    public function profileImage(): HasOne{
+        return $this->hasOne(ProfileImage::class, 'user_id', 'id');
     }
 }

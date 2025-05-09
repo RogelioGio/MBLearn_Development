@@ -4,12 +4,13 @@ import { Axios } from "axios";
 import axiosClient from "MBLearn/src/axios-client";
 import AnnouncmentCarousel from "MBLearn/src/modalsandprops/dashboardComponents/AnnouncementCarousel";
 import * as React from "react";
+import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
 const CourseAdminDashboard = ({name, user}) => {
     const [tab, setTab] = useState("myCourses")
     const [loading, setLoading] = useState(false)
     const [assignedCourse, setAssignedCourse] = useState([])
+    const navigate = useNavigate()
 
     const [pageState, setPagination] = useState({
             currentPage: 1,

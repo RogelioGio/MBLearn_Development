@@ -69,7 +69,7 @@ class userInfo_controller extends Controller
         $profile_image = $this->generateProfileImageUrl($fullName);
 
         if($existingEmail){
-            
+
         }
 
         $userCredentials = UserCredentials::create([
@@ -505,7 +505,7 @@ class userInfo_controller extends Controller
     }
 
     public function removeDepartment(UserInfos $userInfos, Department $department){
-        $userInfos->department()->dissociate($department);
+        $userInfos->department()->diassociate();
         $userInfos->save();
         return response()->json([
             "Message" => "Department removed",
@@ -525,7 +525,7 @@ class userInfo_controller extends Controller
     }
 
     public function removeBranch(UserInfos $userInfos, Branch $branch){
-        $userInfos->branch()->disassociate($branch);
+        $userInfos->branch()->disassociate();
         $userInfos->save();
         return response()->json([
             "Message" => "Branch removed",
@@ -545,7 +545,7 @@ class userInfo_controller extends Controller
     }
 
     public function removeTitle(UserInfos $userInfos, Title $title){
-        $userInfos->title()->disassociate($title);
+        $userInfos->title()->disassociate();
         $userInfos->save();
         return response()->json([
             "Message" => "Title removed",
@@ -592,7 +592,7 @@ class userInfo_controller extends Controller
             ->where('course_id', '=', $course->id)
             ->pluck('end_date');
         }
-        
+
         foreach($deadline as $line){
             $courses->getCollection()->transform(function ($item) use($line){
                 $item->deadline = $line;

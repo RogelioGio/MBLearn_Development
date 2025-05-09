@@ -87,12 +87,27 @@ const course =
               }
             ],
             "text": "https://www.wikipedia.org/"
+          },
+          {
+            "type": "text",
+            "marks": [
+              {
+                "type": "link",
+                "attrs": {
+                  "href": "https://www.wikipedia.org/",
+                  "target": "_blank",
+                  "rel": "noopener noreferrer nofollow",
+                  "class": null
+                }
+              }
+            ],
+            "text": "https://www.wikipedia.org/"
           }
         ]
       },
       {
         "bulletListBlock": "bulletList",
-        "bulletListcontent": [
+        "content": [
           {
             "type": "listItem",
             "content": [
@@ -205,6 +220,7 @@ const Content = () => {
                 if(content.textblock) {
                     switch(content.textblock) {
                         case "paragraph":
+                            //
                             return (
                                 <p key={index} className="text-sm font-text py-1">
                                     {content.textblockcontent?.map((text, index) =>
@@ -309,7 +325,7 @@ const Content = () => {
                 } else if (content.bulletListBlock){
                     return (
                         <ul className="list-disc pl-5">
-                        {content.bulletListcontent.map((bulletItem, i) => (
+                        {content.content.map((bulletItem, i) => (
                             <li key={i} className="font-text text-sm">
                             {bulletItem.content.map((item, j) =>
                                 item.content.map((c, k) => (
