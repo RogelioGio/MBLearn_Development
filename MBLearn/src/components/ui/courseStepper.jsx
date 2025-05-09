@@ -55,7 +55,7 @@ export const Stepper = forwardRef(
                         return (
                             <div
                                 key={index}
-                                className={`group grid grid-cols-[auto_1fr] py-3 px-2 hover:cursor-pointer hover:bg-primarybg gap-2 transition-all ease-in-out rounded-md border-2 border-transparent ${isActive ? "border-2 !border-primary":null}`}
+                                className={`group grid grid-cols-[min-content_1fr] py-3 px-2 hover:cursor-pointer hover:bg-primarybg gap-2 transition-all ease-in-out rounded-md border-2 border-transparent ${isActive ? "border-2 !border-primary":null}`}
                                 onClick={()=>{if(enableStepClick){
                                     setActive(index)
                                     console.log(index)
@@ -63,7 +63,7 @@ export const Stepper = forwardRef(
                             >
                                 {/* Indicator */}
                                 <div
-                                    className={`aspect-square flex flex-col justify-center items-center rounded-full hover:!border-primary
+                                    className={`w-10 aspect-square flex flex-col justify-center items-center rounded-full hover:!border-primary
                                     ${isDone ? "border-primary bg-primary border-2" :
                                     isActive ? "border-2 border-primary bg-primary" : "border-2 border-unactive group-hover:border-primary"}`}
                                 >

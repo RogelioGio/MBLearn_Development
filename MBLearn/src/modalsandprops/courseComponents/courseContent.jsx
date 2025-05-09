@@ -125,7 +125,7 @@ const course =
       },
 
       {
-        "type": "orderedList",
+        "orderListBlock": "orderedList",
         "attrs": {
           "start": 1,
           "type": null
@@ -144,15 +144,23 @@ const course =
                 ]
               }
             ]
+          },
+          {
+            "type": "listItem",
+            "content": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "asdasd"
+                  }
+                ]
+              }
+            ]
           }
         ]
       },
-      {
-        "type": "paragraph"
-      },
-      {
-        "type": "paragraph"
-      }
     ]
 
   }
@@ -161,6 +169,7 @@ const course =
 
 
 const Content = () => {
+
     //Rendering text with stytles
     const renderText = (textObject, index) => {
         let element = <span key={index}>{textObject.text}</span>;
@@ -313,14 +322,24 @@ const Content = () => {
                     )
 
 
+                } else if (content.orderListBlock) {
+                    return (
+                        <ol className="list-decimal pl-5">
+                        {content.content.map((orderedItem, i) => (
+                            <li key={i} className="font-text text-sm">
+                            {orderedItem.content.map((item, j) =>
+                                item.content.map((c, k) => (
+                                    renderText(c, `${i}-${j}-${k}`)
+                                ))
+                            )}
+                            </li>
+                        ))}
+                        </ol>
+                    )
                 }
                 else {
                     return null;
                 }
-
-
-
-
             })}
         </>
     )

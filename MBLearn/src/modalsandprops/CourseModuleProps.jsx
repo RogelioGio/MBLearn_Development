@@ -9,17 +9,21 @@ import { Step, Stepper, StepperCompleted, useStepper } from "../components/ui/co
 import { ScrollArea } from "../components/ui/scroll-area";
 import CourseAssesment from "./courseComponents/courseAssesment";
 import Content from "./courseComponents/courseContent";
+import courseCompleted from ".././assets/Course Completed.svg"
 
 
 
 const CourseModuleProps = () => {
     const stepperRef = useRef();
     const [activeStepMeta, setActiveMeta] = useState({title: "", desc: ""})
+
+    //Course Must be thrown here so that the content will be loop in the stepper
+
     return (
         <>
     <div className="grid grid-cols-[20rem_1fr] grid-rows-[min-content_auto] h-full ">
 
-        {/* Left Sidebar */}
+        {/* Course Content */}
         <div className="flex flex-col justify-center py-3 pr-2 border-r border-divider">
             <h1 className="font-header text-primary text-lg">Module Contents</h1>
             <p className="font-text text-unactive text-xs">List of the the available content for the course</p>
@@ -29,23 +33,22 @@ const CourseModuleProps = () => {
             <Step stepTitle={"Course Overview"} stepDesc={"Quick Summary of the course"}>
                 <CourseOverview/>
             </Step>
-            <Step stepTitle={"Sample Module Content 1"} stepDesc={"Sample Module with text content "}>
-                <CourseText/>
-                <CourseText/>
-            </Step>
-            <Step stepTitle={"Sample Module Content 2"} stepDesc={"Sample module with video content"}>
-                <CourseVideo/>
-            </Step>
-            <Step stepTitle={"Sample Module Content 2"} stepDesc={"Sample module with video content"}>
+            <Step stepTitle={"Sample Course Content 1"} stepDesc={"Course Content that is created from Comp-e-Learn Canvas"}>
                 <Content/>
             </Step>
-            <Step stepTitle={"Course Assesment"} stepDesc={"Sample module with course assessment"}>
-                <CourseAssesment/>
+            <Step stepTitle={"Sample Course Content 2"} stepDesc={"Course Content that is created from Comp-e-Learn File Import (docx, and pdf)"}>
+                <CourseText/>
+            </Step>
+            <Step stepTitle={"Sample Course Content 3"} stepDesc={"Course Content that is created from Comp-e-Learn MP4 import"}>
+                <CourseVideo/>
             </Step>
             <StepperCompleted>
-                <div className="text-center mt-10">
-                <h1 className="text-xl font-bold text-primary">Congratualtions!</h1>
-                <p className="text-unactive mt-2">You have Completed the Course</p>
+                <div className="w-full h-[calc(100vh-11.5rem)] flex flex-col items-center justify-center gap-y-3">
+                        <img src={courseCompleted} alt="" className="w-40"/>
+                    <div className="text-center">
+                        <p className="font-header text-primary text-4xl">Congratulations</p>
+                        <p className="font-text text-primary text-sm">"You have completed the given course"</p>
+                    </div>
                 </div>
             </StepperCompleted>
         </Stepper>
