@@ -26,7 +26,7 @@ class updateUserInfo extends FormRequest
     public function rules(): array
     {
         return [
-            'employeeID' => ['required', 'string',  'min:11', Rule::unique('userInfo')->ignore($this->employeeID, 'employeeID')],
+            'employeeID' => ['required', 'string', Rule::unique('userInfo')->ignore($this->employeeID, 'employeeID')],
             'first_name' => 'required|string|max:30',
             'last_name' => 'required|string|max:30',
             'middle_name' => 'nullable|string|max:30',
@@ -36,6 +36,7 @@ class updateUserInfo extends FormRequest
             'branch_id' => 'required|integer|exists:branches,id',
             "section_id" => "required|integer|exists:sections,id",
             "division_id" => "required|integer|exists:divisions,id",
+            'image' => "nullable|image|mimes:jpg,jpeg,png|max:2048",
             'status' => 'nullable|in:Active, Inactive',
         ];
     }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Api\Controllers\CarouselImageController;
 use App\Http\Controllers\Api\ActivityLogsController;
 use App\Http\Controllers\Api\CourseContextController;
 use App\Http\Controllers\Api\FilterOptionController;
@@ -74,8 +75,6 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::delete('/delete-user-creds/{userCredentials}',[userCredentials_controller::class, 'deleteUser']);
     Route::get('/reset-user-creds',[userCredentials_controller::class, 'resetUsers']); //reset user table
     Route::get('get-profile-image',[userInfo_controller::class, 'getProfile']); //Get Profile Image for UserCredentials
-    Route::put('/update-user-creds/{userCredentials}',[userCredentials_controller::class, 'updateUserCredentials']);
-    Route::get('/index-user-creds',[userCredentials_controller::class, 'userCredentialsList']);
     Route::get('/select-user-creds/{employeeID}',[userCredentials_controller::class, 'findUser_EmployeeID']);
     Route::put('/restore-user-creds/{userCredentials}', [userCredentials_controller::class, 'restoreUser']);
     Route::get('/reset-user',[userInfo_controller::class, 'resetUser']); //reset user table
@@ -100,6 +99,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::apiResource('/courses', CourseController::class);
     Route::apiResource('/categories', CategoryController::class);
     Route::post('/categories/bulk', [CategoryController::class, 'bulkStore']);
+    Route::apiResource('/carousels', CarouselImageController::class);
 
     Route::apiResource('/types', TypeController::class);
     Route::post('types/bulk', [TypeController::class, 'bulkStore']);

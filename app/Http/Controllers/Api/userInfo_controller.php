@@ -677,14 +677,7 @@ class userInfo_controller extends Controller
         $userInfos->department()->associate($department);
         $userInfos->save();
 
-        $userInfos->update([
-            "employeeID" => $existingatedData['employeeID'],
-            "first_name" => $existingatedData['first_name'],
-            "last_name" => $existingatedData['last_name'],
-            "middle_name" => $existingatedData['middle_name'],
-            "name_suffix" => $existingatedData['name_suffix'],
-            "status" => $existingatedData['status']
-        ]);
+        $userInfos->update($existingatedData);
         //Update UserInfo
         return response()->json([
             "Message" => 'Updated User',

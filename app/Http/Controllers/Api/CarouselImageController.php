@@ -50,10 +50,12 @@ class CarouselImageController extends Controller
     public function update(UpdateCarouselImageRequest $request, CarouselImage $carouselImage)
     {
         $validated = $request->validated();
+        $file = $request->file('image');
+        $path = $file->store('images', 'public');   
 
         $carouselImage->update([
             'image_name' => $validated['image_name'],
-            'image_path' => $validated['image_path'],
+            'image_path' => $path
         ]);
         return response()->json([
             'message' => 'Carousel image updated successfully.',
