@@ -74,13 +74,15 @@ class CourseController extends Controller
     public function store(StoreCourseRequest $request)
     {
         $data = $request->all();
-        $type = Type::query()->find($data['type_id']);
-        $category = Category::query()->find($data['category_id']);
+        $type = Type::query()->firstOrCreate([$data['type_name']]);
+        $category = Category::query()->firstOrCreate([$data['category_name']]);
         $current_user = Auth::user();
 
         $course = Course::create([
             "name" => $data['name'],
             "CourseID" => $data['CourseID'],
+            "course_outcomes" => $data['course_outcomes'],
+            "course_objectives" => $data['course_objectives'],
             "description" => $data['description'],
             "training_type" =>$data['training_type'],
             "system_admin_id" => $current_user->userInfos->id,
