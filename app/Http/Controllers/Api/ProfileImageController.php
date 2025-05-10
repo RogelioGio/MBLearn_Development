@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ProfileImage;
 use App\Http\Requests\StoreProfileImageRequest;
 use App\Http\Requests\UpdateProfileImageRequest;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileImageController extends Controller
 {
@@ -46,6 +47,10 @@ class ProfileImageController extends Controller
      */
     public function destroy(ProfileImage $profileImage)
     {
-
+        $profileImage->delete();
+        Storage::disk('public')->delete($profileImage->image_path);
+        return response()->json([
+            'message' => "Profile Images deleted"
+        ]);
     }
 }

@@ -114,7 +114,7 @@ class UserInfos extends Model
         return $this->belongsTo(Section::class);
     }
 
-    public function profileImage(): HasOne{
-        return $this->hasOne(ProfileImage::class, 'user_id', 'id');
+    public function profileImages(): HasMany{
+        return $this->hasMany(ProfileImage::class, 'user_id', 'id');
     }
 }

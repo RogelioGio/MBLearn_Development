@@ -24,7 +24,7 @@ class CarouselImageController extends Controller
     {
         $validated = $request->validated();
         $file = $request->file('image');
-        $path = $file->store('images', 'public');
+        $path = $file->store('images', 'public/carouselimages');
 
         $carouselImage = CarouselImage::create([
             'image_name' => $validated['image_name'],
@@ -51,7 +51,7 @@ class CarouselImageController extends Controller
     {
         $validated = $request->validated();
         $file = $request->file('image');
-        $path = $file->store('images', 'public');   
+        $path = $file->store('images', 'public/carouselimages');   
 
         $carouselImage->update([
             'image_name' => $validated['image_name'],

@@ -505,7 +505,7 @@ class userInfo_controller extends Controller
     }
 
     public function removeDepartment(UserInfos $userInfos, Department $department){
-        $userInfos->department()->diassociate();
+        $userInfos->department()->disassociate();
         $userInfos->save();
         return response()->json([
             "Message" => "Department removed",
@@ -661,6 +661,8 @@ class userInfo_controller extends Controller
 
         //Input Validation
         $existingatedData = $request->validated();
+        $file = $request->file('image');
+        $path = $file->store('images', 'public/profiles/'.$userInfos->id);
         $title = Title::query()->find($existingatedData['title_id']);
         $department = Department::query()->find($existingatedData['department_id']);
         $branch = Branch::query()->find($existingatedData['branch_id']);
@@ -678,6 +680,7 @@ class userInfo_controller extends Controller
         $userInfos->save();
 
         $userInfos->update($existingatedData);
+        $userInfos->update(["profile_image" => $path]);
         //Update UserInfo
         return response()->json([
             "Message" => 'Updated User',
