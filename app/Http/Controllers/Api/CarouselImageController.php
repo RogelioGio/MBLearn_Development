@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Api\Controllers;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\CarouselImage;
@@ -24,7 +24,7 @@ class CarouselImageController extends Controller
     {
         $validated = $request->validated();
         $file = $request->file('image');
-        $path = $file->store('images', 'public/carouselimages');
+        $path = $file->store('images', 'public');
 
         $carouselImage = CarouselImage::create([
             'image_name' => $validated['image_name'],
@@ -51,7 +51,7 @@ class CarouselImageController extends Controller
     {
         $validated = $request->validated();
         $file = $request->file('image');
-        $path = $file->store('images', 'public/carouselimages');   
+        $path = $file->store('images', 'public');
 
         $carouselImage->update([
             'image_name' => $validated['image_name'],

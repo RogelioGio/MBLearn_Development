@@ -1,7 +1,8 @@
 <?php
 
-use App\Http\Api\Controllers\CarouselImageController;
+
 use App\Http\Controllers\Api\ActivityLogsController;
+use App\Http\Controllers\Api\CarouselImageController;
 use App\Http\Controllers\Api\CourseContextController;
 use App\Http\Controllers\Api\FilterOptionController;
 use App\Http\Controllers\Api\OptionController;

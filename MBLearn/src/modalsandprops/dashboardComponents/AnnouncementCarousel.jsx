@@ -8,11 +8,23 @@ import {
     } from "../../components/ui/carousel";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faXmark } from "@fortawesome/free-solid-svg-icons";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PhotoforCarouselModal from "../PhotoforCarouselModal";
+import axiosClient from "MBLearn/src/axios-client";
 
 const AnnouncmentCarousel = () => {
     const [openAdd, setOpenAdd] = useState(false)
+    const [carouselData, setCarouselData] = useState([]) // Carousel data
+
+    useEffect(() => {
+        axiosClient.get('/carousels')
+        .then(({data}) => {
+            console.log("Response", data);
+            setCarouselData(data)
+        }).catch((error) => {
+            console.log("Error", error);
+        })
+    }, [])
 
 
     return(
@@ -51,14 +63,10 @@ const AnnouncmentCarousel = () => {
                     <div className="flex items-center w-full h-full justify-center row-start-2 col-start-2">
                         <CarouselContent className="h-full">
                             {
-                                Array.from({length: 5}).map((_, index) => (
+                                carouselData.map((img, index) => (
                                     <CarouselItem key={index} w-full h-full>
-                                        <div className="border-2 border-primary h-full p-2 rounded-md shadow-sm bg-white">
-                                            <div className="flex flex-col items-center justify-center h-full">
-                                                <p className="text-primary font-header text-2xl">
-                                                    Panel {index + 1}
-                                                </p>
-                                            </div>
+                                        <div className="border border-primary h-full rounded-md shadow-sm bg-white">
+                                            <img src={`${import.meta.env.VITE_API_BASE_URL}/storage/${img.image_path}`} alt="" className="w-full h-full rounded-md object-contain"/>
                                         </div>
                                     </CarouselItem>
                                 ))

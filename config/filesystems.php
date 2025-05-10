@@ -45,6 +45,14 @@ return [
             'throw' => false,
         ],
 
+        'public/carouselimages' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/carouselimages'),
+            'url' => env('APP_URL').'/storage/carouselimages',
+            'visibility' => 'public',
+            'throw' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

@@ -4,10 +4,21 @@ import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import * as React from "react";
 import UploadPhotoModal from "./UploadPhotoModal";
 import { useState } from "react";
+import { useEffect } from "react";
+import axiosClient from "../axios-client";
+
 
 const PhotoforCarouselModal = ({open, close}) => {
     const [openUpload, setOpenUpload] = useState(false)
 
+    useEffect(() => {
+        axiosClient.get('/carousels')
+        .then((response) => {
+            console.log("Response", response);
+        }).catch((error) => {
+            console.log("Error", error);
+        })
+    },[openUpload])
     return(
         <>
         <Dialog open={open} onClose={()=>{}}>
