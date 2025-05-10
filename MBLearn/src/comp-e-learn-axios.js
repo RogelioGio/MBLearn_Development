@@ -1,12 +1,12 @@
 import axios from 'axios';
 import { Navigate } from 'react-router-dom';
 
-const axiosClient = axios.create({
-    baseURL: `${import.meta.env.VITE_API_BASE_URL}/api`
+const compELearnAxios = axios.create({
+    baseURL: `${import.meta.env.VITE_API_BASE_URL2}/api`
 });
 
 
-axiosClient.interceptors.request.use(
+compELearnAxios.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('ACCESS_TOKEN');
 
@@ -30,7 +30,7 @@ axiosClient.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
-axiosClient.interceptors.response.use(
+compELearnAxios.interceptors.response.use(
     (response) => {
         // Do something with response data
         return response;
@@ -44,4 +44,4 @@ axiosClient.interceptors.response.use(
 
 
 
-export default axiosClient;
+export default compELearnAxios;

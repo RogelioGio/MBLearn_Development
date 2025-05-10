@@ -65,9 +65,14 @@ const AnnouncmentCarousel = () => {
                             {
                                 carouselData.map((img, index) => (
                                     <CarouselItem key={index} w-full h-full>
-                                        <div className="border border-primary h-full rounded-md shadow-sm bg-white">
-                                            <img src={`${import.meta.env.VITE_API_BASE_URL}/storage/${img.image_path}`} alt="" className="w-full h-full rounded-md object-contain"/>
-                                        </div>
+                                    <div
+                                        className="border border-primary h-full rounded-md shadow-sm bg-white bg-center bg-cover"
+                                        style={{
+                                            backgroundImage: `url(${import.meta.env.VITE_API_BASE_URL}/storage/${img.image_path})`,
+                                        }}
+                                        >
+                                        {/* Optional: Overlay or content here */}
+                                    </div>
                                     </CarouselItem>
                                 ))
                             }

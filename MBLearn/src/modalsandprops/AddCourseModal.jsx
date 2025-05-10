@@ -149,7 +149,7 @@ const AddCourseModal = ({open,onClose,tab}) => {
     };
 
     // Fetch using ID
-    // const fetchWIthIDs = async () => {
+    // const fetchWIthIDs = () => {
     //     try{
     //         const[coursetype, coursecategory] = await Promise.all([
     //             axiosClient.get(`/types/${formik2.values.course_type}`),
@@ -222,9 +222,9 @@ const AddCourseModal = ({open,onClose,tab}) => {
                                     completedIcon={<FontAwesomeIcon icon={faCircleCheckRegular} className="!text-white"/>}>
                                 <Stepper.Step icon={<FontAwesomeIcon icon={faSearch} className="!text-primary"/>}>
                                     <form onSubmit={formik.handleSubmit}>
-                                        <div className='grid grid-cols-[auto_min-content] grid-rows-[min-content_auto] gap-x-2 gap-y-2'>
+                                        <div className='grid grid-cols-[1fr_min-content_1fr] grid-rows-[min-content_auto_auto] gap-x-2 gap-y-2'>
                                             {/* Header */}
-                                            <div className='col-span-2 border-b border-divider pb-2'>
+                                            <div className='col-span-3 border-b border-divider pb-2'>
                                                 <h1 className='text-primary font-header'>Step 1</h1>
                                                 <p className='text-unactive font-text'>Please input an valid Course ID to be added in the course catalog of MBLearn</p>
                                             </div>
@@ -242,19 +242,20 @@ const AddCourseModal = ({open,onClose,tab}) => {
                                                 {/* Validation Errors */}
                                             </div>
                                             {formik.touched.courseID && formik.errors.courseID ? (<div className="text-red-500 text-xs font-text">{formik.errors.courseID}</div>):null}
-                                            <div className='row-start-2 flex flex-col justify-end pb-2'>
+                                            <div className='row-start-3 w-full flex'>
                                             <button
                                                 type="submit"
                                                 disabled={formik.values.courseID.length < 11}
-                                                className={`h-fit border-2 border-primary rounded-md shadow-md text-center bg-primary text-white flex items-center py-2 px-20 font-header transition-all ease-in-out focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary ${
+                                                className={`h-fit border-2 w-full border-primary rounded-md shadow-md bg-primary text-white justify-center flex items-center py-2 px-20 font-header transition-all ease-in-out focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary ${
                                                     formik.values.courseID.length < 11
                                                     ? 'opacity-50 cursor-not-allowed'
                                                     : 'hover:scale-105 hover:bg-primaryhover hover:text-white hover:border-primaryhover cursor-pointer'
                                                 }`}
                                             >
-                                                Confirm
+                                                <p>Confirm</p>
                                             </button>
                                             </div>
+                                            <div className="w-[1px] mx-2 col-start-2 row-start-2 row-span-2 bg-black"/>
                                         </div>
                                     </form>
                                 </Stepper.Step>
