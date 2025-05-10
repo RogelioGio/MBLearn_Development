@@ -25,9 +25,9 @@ class StoreCourseRequest extends FormRequest
         return [
             "name" => "required|unique:courses,name",
             "CourseID" => "required|unique:courses,CourseID",
-            "course_outcomes" => "required|string",
-            "course_objectives" => "required|string",
-            "description" => "required",
+            "course_outcomes" => "nullable|string",
+            "course_objectives" => "nullable|string",
+            "description" => "nullable",
             "type_name" => "required|string",
             "category_name"=> "required|string",
             "training_type" => "required",
