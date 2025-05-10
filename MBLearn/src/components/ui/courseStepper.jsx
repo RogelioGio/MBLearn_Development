@@ -2,6 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { createContext, useContext, useState, useImperativeHandle, forwardRef, useEffect,} from "react";
 import { faCircleCheck as faCircleCheckRegular, faSquareCheck } from "@fortawesome/free-regular-svg-icons";
 import { ScrollArea } from "@mantine/core";
+import { useStateContext } from "MBLearn/src/contexts/ContextProvider";
 
 const StepperContext = createContext();
 
@@ -41,11 +42,15 @@ export const Stepper = forwardRef(
         reset: () => setActive(initialStep),
     }));
 
+    const {user} = useStateContext()
     return (
         <StepperContext.Provider
             value={{ active, setActive, step: steps.length, stepsMeta}}
         >
-            <div className="w-full grid grid-cols-[20rem_1fr] gap-x-2 h-full">
+            {
+                user.user_infos.roles?.[0].role_name === "System Admin" ?
+                <>
+                    <div className="w-full grid grid-cols-[20rem_1fr] gap-x-2 h-full">
                 {/* Step Indicators */}
                 <div className="flex flex-col gap-y-1 transition-all ease-in-out pr-2 border-r border-divider mb-2">
                     {steps.map((step, index) => {
@@ -95,7 +100,63 @@ export const Stepper = forwardRef(
                         {isCompleted ? completedStep : steps[active]}
                     </div>
                 </ScrollArea>
-            </div>
+
+                </div>
+                </>:<>
+                <div className="w-full grid grid-cols-[1fr_20rem] gap-x-2 h-full">
+                {/* Step Content */}
+                <ScrollArea className="h-[calc(100vh-11.5rem)] pr-5 pl-4">
+                    <div>
+                        {isCompleted ? completedStep : steps[active]}
+                    </div>
+                </ScrollArea>
+                {/* Step Indicators */}
+                <div className="flex flex-col gap-y-1 transition-all ease-in-out pr-3 pl-2 border-l border-divider mb-2">
+                    {steps.map((step, index) => {
+                        const isDone = index < active;
+                        const isActive = index === active;
+
+                        return (
+                            <div
+                                key={index}
+                                className={`group grid grid-cols-[min-content_1fr] py-3 px-2 hover:cursor-pointer hover:bg-primarybg gap-2 transition-all ease-in-out rounded-md border-2 border-transparent ${isActive ? "border-2 !border-primary":null}`}
+                                onClick={()=>{if(enableStepClick){
+                                    setActive(index)
+                                    console.log(index)
+                                }}}
+                            >
+                                {/* Indicator */}
+                                <div
+                                    className={`w-10 aspect-square flex flex-col justify-center items-center rounded-full hover:!border-primary
+                                    ${isDone ? "border-primary bg-primary border-2" :
+                                    isActive ? "border-2 border-primary bg-primary" : "border-2 border-unactive group-hover:border-primary"}`}
+                                >
+                                    {isDone ? (
+                                        <FontAwesomeIcon
+                                            icon={faCircleCheckRegular}
+                                            className="text-white p-2"
+                                        />
+                                    ) : (
+                                        <p className={`text-primary font-header text-base ${!isDone && !isActive ? "text-unactive group-hover:text-primary": isActive ? "text-white" : null}`}>{index + 1}</p>
+                                    )}
+                                </div>
+                                {/* Step Description */}
+                                <div className="font-text text-primary ">
+                                    <h1 className={`font-header text-sm ${!isDone && !isActive ? "text-unactive":null} group-hover:text-primary`}>{step.props.stepTitle}</h1>
+                                    <p className="text-xs text-unactive group-hover:text-primary">{step.props.stepDesc}</p>
+                                </div>
+
+                                {/* {index < steps.length - 1 && (
+                                <div className="flex-1 h-1 bg-gray-300 mx-2" />
+                                )} */}
+                            </div>
+                        );
+                    })}
+                </div>
+                </div>
+                </>
+            }
+
         </StepperContext.Provider>
     );
 });

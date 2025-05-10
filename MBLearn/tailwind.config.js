@@ -32,7 +32,7 @@ export default {
   			]
   		},
   		colors: {
-
+            darkerPrimary: 'var(--DarkBackgroundPrimary)',
   			primary: 'var(--Primary-Color)',
   			primarybg: 'var(--Primay-BG-pastel)',
   			primaryhover: 'var(--Primary-Color-Hover)',

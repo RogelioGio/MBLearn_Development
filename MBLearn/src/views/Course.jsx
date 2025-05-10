@@ -68,14 +68,15 @@ export default function Course() {
 
     return(
         <>
-        <div className='grid grid-cols-4 grid-rows-[4rem_3rem_auto] h-full w-full overflow-hidden h-'>
+        <div className={`grid ${user.user_infos.roles?.[0].role_name === "System Admin" ? "grid-cols-4 grid-rows-[4rem_3rem_auto]":"grid-cols-[1fr_20rem] grid-rows-[min-content_4rem_auto]"} grid-rows-[4rem_3rem_auto] h-full w-full overflow-hidden`}>
             <Helmet>
                 {/* Title of the mark-up */}
                 <title>MBLearn | {isLoading ? "Loading..." : course?.name || "No Course Found"}</title>
             </Helmet>
 
+
             {
-                !isLoading ? (
+                !isLoading && user.user_infos.roles?.[0].role_name === "System Admin" ? (
                     <>
                         {/* Header */}
                         <div className="flex flex-row col-span-4 items-center justify-between gap-4">
@@ -136,7 +137,36 @@ export default function Course() {
                             {tabComponents[tab] || null}
                         </div>
                     </>
-                ) : (
+                ) : !isLoading && user.user_infos.roles?.[0].role_name === "Learner" ? (
+                    <>
+                        <CourseModuleProps headers={<>
+                            <div className="flex flex-row col-span-4 items-center gap-4 pl-5">
+                                {/* Back Button */}
+                                <div className="w-10 h-10 group aspect-square rounded-full border-primary border-2 flex flex-row justify-center items-center hover:bg-primary transition-all ease-in-out" onClick={() => navigate(-1)}>
+                                    <FontAwesomeIcon icon={faArrowLeft} className="text-primary text-2xl cursor-pointer group-hover:text-white"/>
+                                </div>
+                                {/* Course Name */}
+                                <div >
+                                    <h1 className="font-header text-2xl font-bold text-primary">{course?.name} </h1>
+                                    <p className="font-text text-xs text-unactive">Course ID: 12345678910 </p>
+                                </div>
+                                {/* Course Status */}
+                                <span className="inline-flex items-center rounded-md bg-secondaryprimary px-4 py-2 text-xs font-medium text-primary font-text ring-1 ring-primary gap-1">
+                                    <FontAwesomeIcon icon={faPencil} className="text-primary text-xs mr-1"/>
+                                    Unpublished
+                                </span>
+                            </div>
+                            <div className="flex flex-row gap-1 pr-5">
+                                {/* Action Button */}
+                                <div className={`text-primary text-sm border-2 border-primary h-full py-2 px-4 rounded-md shadow-md flex flex-row gap-2 items-center transition-all ease-in-out hover:scale-105 hover:bg-primary hover:text-white hover:cursor-pointer`} onClick={()=>setOpenDetails(true)}>
+                                    <FontAwesomeIcon icon={faCircleInfo} />
+                                    <p className="font-header">Detail</p>
+                                </div>
+                            </div>
+                        </>}/>
+                    </>
+                ) :
+                (
                     <div className="col-span-4 row-span-3 flex flex-col justify-center items-center">
                         <img src={CourseLoading} alt="" className="w-80"/>
                         <p className="text-4xl font-header text-primary">Loading...</p>
