@@ -36,7 +36,7 @@ class CourseController extends Controller
         // $perPage = $request->input('per_page', 3); // default per page
 
         if($request->has('type_id')){
-            if(!($request->input('type_id')['eq'] == "")){
+            if(!($request->input('type_id')['eq'] === "")){
                 $querySort->whereHas('types', function($subQuery) use ($request){
                     $subQuery->where('type_id', $request->input('type_id'));
                 });
@@ -44,7 +44,7 @@ class CourseController extends Controller
         }
 
         if($request->has('category_id')){
-            if(!($request->input('category_id')['eq'] == "")){
+            if(!($request->input('category_id')['eq'] === "")){
                 $querySort->whereHas('categories', function($subQuery) use ($request){
                     $subQuery->where('category_id', $request->input('category_id'));
                 });
@@ -52,7 +52,7 @@ class CourseController extends Controller
         }
 
         if($request->has('training_type')){
-            if(!($request->input('training_type')['eq'] == "")){
+            if(!($request->input('training_type')['eq'] === "")){
                 $querySort->where('training_type', $request->input('training_type'));
             }
         }
@@ -74,15 +74,13 @@ class CourseController extends Controller
     public function store(StoreCourseRequest $request)
     {
         $data = $request->all();
-        $type = Type::query()->firstOrCreate([$data['type_name']]);
-        $category = Category::query()->firstOrCreate([$data['category_name']]);
+        $type = Type::query()->firstOrCreate(["type_name" => $data['type_name']]);
+        $category = Category::query()->firstOrCreate(["category_name" => $data['category_name']]);
         $current_user = Auth::user();
 
         $course = Course::create([
             "name" => $data['name'],
             "CourseID" => $data['CourseID'],
-            "course_outcomes" => $data['course_outcomes'],
-            "course_objectives" => $data['course_objectives'],
             "description" => $data['description'],
             "training_type" =>$data['training_type'],
             "system_admin_id" => $current_user->userInfos->id,
