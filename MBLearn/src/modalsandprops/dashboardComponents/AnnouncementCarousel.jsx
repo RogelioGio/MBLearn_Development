@@ -11,11 +11,14 @@ import { faPenToSquare, faXmark } from "@fortawesome/free-solid-svg-icons";
 import React, { useEffect, useState } from "react";
 import PhotoforCarouselModal from "../PhotoforCarouselModal";
 import axiosClient from "MBLearn/src/axios-client";
+import { useStateContext } from "MBLearn/src/contexts/ContextProvider";
 
 const AnnouncmentCarousel = () => {
     const [openAdd, setOpenAdd] = useState(false)
     const [carouselData, setCarouselData] = useState([])
     const [isLoading, setIsLoading] = useState(true)
+    const {user} = useStateContext()
+
 
     useEffect(() => {
         fetchPanels()
@@ -58,6 +61,7 @@ const AnnouncmentCarousel = () => {
                         </div>
                         <div className="flex flex-row gap-2 items-center justify-center">
                             {
+                                user?.user_infos.roles[0].role_name === 'System Admin' &&
                                 <div className='aspect-square flex flex-row justify-center items-center text-primary border-2 border-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 hover:bg-primary hover:text-white ease-in-out transition-all'
                                     onClick={() => setOpenAdd(true)}>
                                     <FontAwesomeIcon icon={faPenToSquare} className='text-sm p-2'/>
@@ -108,7 +112,7 @@ const AnnouncmentCarousel = () => {
             </div>
         </div>
 
-        <PhotoforCarouselModal open={openAdd} close={() => setOpenAdd(false)}/>
+        <PhotoforCarouselModal open={openAdd} close={() => setOpenAdd(false)} refresh={fetchPanels}/>
         </>
     )
 }

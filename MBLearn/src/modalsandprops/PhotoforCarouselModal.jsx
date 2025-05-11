@@ -1,4 +1,4 @@
-import { faAdd, faBullhorn, faChevronLeft, faChevronRight, faClock, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faAdd, faBullhorn, faChevronLeft, faChevronRight, faClock, faTrash, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import * as React from "react";
@@ -7,6 +7,7 @@ import { useState } from "react";
 import { useEffect } from "react";
 import axiosClient from "../axios-client";
 import { format } from "date-fns";
+import DeletePanelModal from "./DeletePanelModal";
 
 
 // Front-end Pagination
@@ -46,10 +47,11 @@ const usePagination = (data, itemPerpage = 2) => {
     }
 }
 
-const PhotoforCarouselModal = ({open, close}) => {
+const PhotoforCarouselModal = ({open, close, refresh}) => {
     const [openUpload, setOpenUpload] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
     const [panels, setPanels] = useState()
+    const [destroy, setDestroy] = useState(false)
 
     const {currentPaginated,
         currentPage,
@@ -93,11 +95,9 @@ const PhotoforCarouselModal = ({open, close}) => {
                                         <h1 className="text-primary font-header text-3xl">Customize Announcment Panels</h1>
                                         <p className="text-unactive font-text text-xs">Upload and manage announcement panel to be used in the system</p>
                                     </div>
-                                    <div className="flex items-center justify-center">
-                                        <div className="h-fit bg-primarybg p-5 rounded-full flex items-center justify-center">
-                                            <div className="h-full w-fit aspect-square flex items-center justify-center">
-                                                <FontAwesomeIcon icon={faBullhorn} className="text-primary text-lg"/>
-                                            </div>
+                                    <div className="flex items-start justify-start">
+                                        <div className="flex items-center justify-center w-8 aspect-square border-2 border-primary rounded-full text-primary hover:text-white hover:bg-primary hover:cursor-pointer transition-all ease-in-out" onClick={close}>
+                                            <FontAwesomeIcon icon={faXmark}/>
                                         </div>
                                     </div>
                                 </div>
@@ -133,10 +133,12 @@ const PhotoforCarouselModal = ({open, close}) => {
                                                     ) : (
                                                         currentPaginated?.map((panel, index) => (
                                                             <tr key={panel.id} className={`font-text text-md text-unactive hover:bg-gray-200 cursor-pointer`}>
-                                                                <td className={`font-text text-xs p-4 flex flex-row items-center gap-4 border-l-2 border-transparent transition-all ease-in-out`}>{panel.image_name}</td>
-                                                                <td className={`font-text text-xs p-4 gap-4 transition-all ease-in-out`}>{format(new Date(panel.created_at), "MMMM dd, yyyy")}</td>
-                                                                <td className="flex flex-row gap-2 justify-end p-4">
-                                                                    <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all '>
+                                                                <td className={`font-text text-xs px-4  py-2 flex flex-row items-center gap-4 border-l-2 border-transparent transition-all ease-in-out`}>{panel.image_name}</td>
+                                                                <td className={`font-text text-xs px-4 py-2 gap-4 transition-all ease-in-out`}>{format(new Date(panel.created_at), "MMMM dd, yyyy")}</td>
+                                                                <td className="flex flex-row gap-2 justify-end px-4 py-2">
+                                                                    <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all'
+                                                                        onClick={()=>setDestroy(true)}
+                                                                    >
                                                                         <FontAwesomeIcon icon={faTrash} className='text-sm'/>
                                                                     </div>
                                                                 </td>
@@ -192,27 +194,13 @@ const PhotoforCarouselModal = ({open, close}) => {
                                     </div>
 
                                 </div>
-
-
-                                <div className="col-span-3 grid grid-cols-2 px-4 gap-x-2">
-                                    <button
-                                        onClick={close}
-                                        className={`bg-white border-2 border-primary p-4 rounded-md font-header uppercase text-primary text-xs hover:cursor-pointer hover:bg-primaryhover hover:text-white hover:border-primaryhover transition-all ease-in-out w-full
-                                        `}>
-                                        Cancel</button>
-                                    <button
-                                        //onClick={()=>enroll()}
-                                        className={`bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover transition-all ease-in-out w-full
-                                        `}>
-                                        Set Duration
-                                    </button>
-                                </div>
                             </div>
                         </DialogPanel>
                     </div>
                 </div>
         </Dialog>
-        <UploadPhotoModal open={openUpload} close={() => setOpenUpload(false)}/>
+        <UploadPhotoModal open={openUpload} close={() => setOpenUpload(false)} refreshlist={fetchPanels} refreshpanel={refresh}/>
+        <DeletePanelModal open={destroy} close={()=> setDestroy(false)} referesh={fetchPanels} refereshPanel={refresh}/>
         </>
     )
 }
