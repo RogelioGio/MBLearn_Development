@@ -81,6 +81,8 @@ class CourseController extends Controller
         $course = Course::create([
             "name" => $data['name'],
             "CourseID" => $data['CourseID'],
+            "course_outcomes" => $data['course_outcomes'],
+            "course_objectives" => $data['course_objectives'],
             "description" => $data['description'],
             "training_type" =>$data['training_type'],
             "system_admin_id" => $current_user->userInfos->id,
