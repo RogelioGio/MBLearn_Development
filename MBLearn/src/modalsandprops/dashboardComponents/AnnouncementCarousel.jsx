@@ -14,17 +14,24 @@ import axiosClient from "MBLearn/src/axios-client";
 
 const AnnouncmentCarousel = () => {
     const [openAdd, setOpenAdd] = useState(false)
-    const [carouselData, setCarouselData] = useState([]) // Carousel data
+    const [carouselData, setCarouselData] = useState([])
+    const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
+        fetchPanels()
+    }, [])
+
+    const fetchPanels = () => {
+        setIsLoading(true)
         axiosClient.get('/carousels')
         .then(({data}) => {
-            console.log("Response", data);
             setCarouselData(data)
+            setIsLoading(false)
         }).catch((error) => {
-            console.log("Error", error);
+            console.log("Error", error)
+            setIsLoading(false)
         })
-    }, [])
+    }
 
 
     return(
@@ -63,10 +70,26 @@ const AnnouncmentCarousel = () => {
                     <div className="flex items-center w-full h-full justify-center row-start-2 col-start-2">
                         <CarouselContent className="h-full">
                             {
-                                carouselData.map((img, index) => (
+                                isLoading ? (
+                                    <CarouselItem w-full h-full>
+                                    <div className="border-2 border-primary h-full rounded-md shadow-sm bg-white flex flex-col items-center justify-center">
+                                        <h1 className='font-header text-xl text-primary'>"Loading your learning journey..."</h1>
+                                        <p className='font-text text-unactive text-xs'>Empowering you with the knowledge to achieve your goals</p>
+                                    </div>
+
+                                    </CarouselItem>
+                                ) : carouselData.length === 0 ? (
+                                    <CarouselItem w-full h-full>
+                                    <div className="border-2 border-primary h-full rounded-md shadow-sm bg-white bg-center bg-cover flex items-center justify-center">
+                                        <p className='font-text text-unactive text-sm'>No panel to display</p>
+                                    </div>
+
+                                    </CarouselItem>
+                                ) : (
+                                    carouselData.map((img, index) => (
                                     <CarouselItem key={index} w-full h-full>
                                     <div
-                                        className="border border-primary h-full rounded-md shadow-sm bg-white bg-center bg-cover"
+                                        className="border-2 border-primary h-full rounded-md shadow-sm bg-white bg-center bg-cover"
                                         style={{
                                             backgroundImage: `url(${import.meta.env.VITE_API_BASE_URL}/storage/${img.image_path})`,
                                         }}
@@ -75,6 +98,9 @@ const AnnouncmentCarousel = () => {
                                     </div>
                                     </CarouselItem>
                                 ))
+                                )
+
+
                             }
                         </CarouselContent>
                     </div>

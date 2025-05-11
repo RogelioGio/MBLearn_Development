@@ -1,242 +1,242 @@
 import { useState } from "react";
 
-const course =
-{
-    "type": "doc",
-    "content": [
-      {
-        "headerBlock": "heading",
-        "attrs": {
-          "textAlign": "center",
-          "level": 1
-        },
-        "content": [
-          {
-            "type": "text",
-            "marks": [
-              {
-                "type": "textStyle",
-                "attrs": {
-                  "fontFamily": "Georgia, serif"
-                }
-              }
-            ],
-            "text": "Benefits of Exercising Regularly"
-          }
-        ]
-      },
-      {
-        "textBlock": "paragraph",
-        "content": [
-          {
-            "marks": [
-                { "type": "bold" },
-                { "type": "italic" },
-                { "type": "strike" }
-              ],
-            "type": "text",
-            "text": "Exercising regularly offers a wide range of benefits that contribute to both physical and"
-          },
-          {
-            "marks": [
-                { "type": "italic" },
-              ],
-            "type": "text",
-            "text": " to both physical and mental well-being. From improving cardiovascular health and building stronger muscles to enhancing mood and reducing stress, consistent physical activity plays a vital role in maintaining a healthy lifestyle. It not only helps in managing weight but also boosts energy levels, strengthens the immune system, and lowers the risk of chronic diseases such as diabetes and hypertension. With these advantages, incorporating exercise into daily routines becomes an essential step toward a longer, healthier, and more fulfilling life."
-          }
-        ]
-      },
-      {
-        "bulletListBlock": "bulletList",
-        "content": [
-          {
-            "type": "listItem",
-            "content": [
-              {
-                "textType": "paragraph",
-                "attrs": {
-                  "textAlign": null
-                },
-                "content": [
-                  {
-                    "type": "text",
-                    "marks": [
-                      {
-                        "type": "textStyle",
-                        "attrs": {
-                          "fontFamily": "Arial, sans-serif"
-                        }
-                      }
-                    ],
-                    "text": "Increases physical strength and endurance"
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "type": "listItem",
-            "content": [
-              {
-                "textType": "paragraph",
-                "attrs": {
-                  "textAlign": null
-                },
-                "content": [
-                  {
-                    "type": "text",
-                    "marks": [
-                      {
-                        "type": "textStyle",
-                        "attrs": {
-                          "fontFamily": "Arial, sans-serif"
-                        }
-                      }
-                    ],
-                    "text": "Improves mental health and reduces stress"
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "type": "listItem",
-            "content": [
-              {
-                "textType": "paragraph",
-                "attrs": {
-                  "textAlign": null
-                },
-                "content": [
-                  {
-                    "type": "text",
-                    "marks": [
-                      {
-                        "type": "textStyle",
-                        "attrs": {
-                          "fontFamily": "Arial, sans-serif"
-                        }
-                      }
-                    ],
-                    "text": "Boosts overall longevity and reduces the risk of chronic diseases"
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "textType": "paragraph",
-        "attrs": {
-          "textAlign": null
-        }
-      },
-      {
-        "textType": "paragraph",
-        "attrs": {
-          "textAlign": null
-        },
-        "content": [
-          {
-            "type": "text",
-            "text": "Regular exercise plays a crucial role in maintaining a healthy lifestyle. It not only helps in building physical strength but also boosts mental well-being. Engaging in consistent physical activity has been shown to increase endurance and overall energy levels, making daily tasks feel less taxing. Moreover, exercise promotes the release of endorphins, which can help reduce feelings of anxiety and stress, leading to a more positive outlook on life. Over time, maintaining an active routine can also reduce the risk of developing serious health conditions such as heart disease, diabetes, and obesity, thereby increasing the chances of living a longer, healthier life."
-          }
-        ]
-      },
-      {
-        "textType": "paragraph",
-        "attrs": {
-          "textAlign": null
-        }
-      },
-      {
-        "blockQuoteBlock": "blockquote",
-        "content": [
-          {
-            "textType": "paragraph",
-            "attrs": {
-              "textAlign": null
-            },
-            "content": [
-              {
-                "type": "text",
-                "text": "\"Exercise is the most potent medicine available for preventing and treating chronic disease.\""
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "textType": "paragraph",
-        "attrs": {
-          "textAlign": null
-        }
-      },
-      {
-        "videoBlock": "youtube",
-        "attrs": {
-          "src": "https://www.youtube.com/embed/AdqrTg_hpEQ?rel=1",
-          "start": 0,
-          "width": 640,
-          "height": 480
-        }
-      },
-      {
-        "textType": "paragraph",
-        "attrs": {
-          "textAlign": null
-        }
-      },
-      {
-        "textType": "paragraph",
-        "attrs": {
-          "textAlign": null
-        },
-        "content": [
-          {
-            "type": "text",
-            "text": "In order to Learn the Fundamentals of Exercising, visit the link below:"
-          }
-        ]
-      },
-      {
-        "linkType": "link",
-        "attrs": {
-          "textAlign": null
-        },
-        "content": [
-          {
-            "type": "text",
-            "marks": [
-              {
-                "type": "link",
-                "attrs": {
-                  "href": "https://en.wikipedia.org/wiki/Exercise",
-                  "target": "_blank",
-                  "rel": "noopener noreferrer nofollow",
-                  "class": null
-                }
-              }
-            ],
-            "text": "https://en.wikipedia.org/wiki/Exercise"
-          }
-        ]
-      },
-      {
-        "textType": "paragraph",
-        "attrs": {
-          "textAlign": null
-        },
-        "content": [
-          {
-            "type": "text",
-            "text": "A Very Good Reference To Visit"
-          }
-        ]
-      }
-    ]
-  }
+// const course =
+// {
+//     "type": "doc",
+//     "content": [
+//       {
+//         "headerBlock": "heading",
+//         "attrs": {
+//           "textAlign": "center",
+//           "level": 1
+//         },
+//         "content": [
+//           {
+//             "type": "text",
+//             "marks": [
+//               {
+//                 "type": "textStyle",
+//                 "attrs": {
+//                   "fontFamily": "Georgia, serif"
+//                 }
+//               }
+//             ],
+//             "text": "Benefits of Exercising Regularly"
+//           }
+//         ]
+//       },
+//       {
+//         "textBlock": "paragraph",
+//         "content": [
+//           {
+//             "marks": [
+//                 { "type": "bold" },
+//                 { "type": "italic" },
+//                 { "type": "strike" }
+//               ],
+//             "type": "text",
+//             "text": "Exercising regularly offers a wide range of benefits that contribute to both physical and"
+//           },
+//           {
+//             "marks": [
+//                 { "type": "italic" },
+//               ],
+//             "type": "text",
+//             "text": " to both physical and mental well-being. From improving cardiovascular health and building stronger muscles to enhancing mood and reducing stress, consistent physical activity plays a vital role in maintaining a healthy lifestyle. It not only helps in managing weight but also boosts energy levels, strengthens the immune system, and lowers the risk of chronic diseases such as diabetes and hypertension. With these advantages, incorporating exercise into daily routines becomes an essential step toward a longer, healthier, and more fulfilling life."
+//           }
+//         ]
+//       },
+//       {
+//         "bulletListBlock": "bulletList",
+//         "content": [
+//           {
+//             "type": "listItem",
+//             "content": [
+//               {
+//                 "textType": "paragraph",
+//                 "attrs": {
+//                   "textAlign": null
+//                 },
+//                 "content": [
+//                   {
+//                     "type": "text",
+//                     "marks": [
+//                       {
+//                         "type": "textStyle",
+//                         "attrs": {
+//                           "fontFamily": "Arial, sans-serif"
+//                         }
+//                       }
+//                     ],
+//                     "text": "Increases physical strength and endurance"
+//                   }
+//                 ]
+//               }
+//             ]
+//           },
+//           {
+//             "type": "listItem",
+//             "content": [
+//               {
+//                 "textType": "paragraph",
+//                 "attrs": {
+//                   "textAlign": null
+//                 },
+//                 "content": [
+//                   {
+//                     "type": "text",
+//                     "marks": [
+//                       {
+//                         "type": "textStyle",
+//                         "attrs": {
+//                           "fontFamily": "Arial, sans-serif"
+//                         }
+//                       }
+//                     ],
+//                     "text": "Improves mental health and reduces stress"
+//                   }
+//                 ]
+//               }
+//             ]
+//           },
+//           {
+//             "type": "listItem",
+//             "content": [
+//               {
+//                 "textType": "paragraph",
+//                 "attrs": {
+//                   "textAlign": null
+//                 },
+//                 "content": [
+//                   {
+//                     "type": "text",
+//                     "marks": [
+//                       {
+//                         "type": "textStyle",
+//                         "attrs": {
+//                           "fontFamily": "Arial, sans-serif"
+//                         }
+//                       }
+//                     ],
+//                     "text": "Boosts overall longevity and reduces the risk of chronic diseases"
+//                   }
+//                 ]
+//               }
+//             ]
+//           }
+//         ]
+//       },
+//       {
+//         "textType": "paragraph",
+//         "attrs": {
+//           "textAlign": null
+//         }
+//       },
+//       {
+//         "textType": "paragraph",
+//         "attrs": {
+//           "textAlign": null
+//         },
+//         "content": [
+//           {
+//             "type": "text",
+//             "text": "Regular exercise plays a crucial role in maintaining a healthy lifestyle. It not only helps in building physical strength but also boosts mental well-being. Engaging in consistent physical activity has been shown to increase endurance and overall energy levels, making daily tasks feel less taxing. Moreover, exercise promotes the release of endorphins, which can help reduce feelings of anxiety and stress, leading to a more positive outlook on life. Over time, maintaining an active routine can also reduce the risk of developing serious health conditions such as heart disease, diabetes, and obesity, thereby increasing the chances of living a longer, healthier life."
+//           }
+//         ]
+//       },
+//       {
+//         "textType": "paragraph",
+//         "attrs": {
+//           "textAlign": null
+//         }
+//       },
+//       {
+//         "blockQuoteBlock": "blockquote",
+//         "content": [
+//           {
+//             "textType": "paragraph",
+//             "attrs": {
+//               "textAlign": null
+//             },
+//             "content": [
+//               {
+//                 "type": "text",
+//                 "text": "\"Exercise is the most potent medicine available for preventing and treating chronic disease.\""
+//               }
+//             ]
+//           }
+//         ]
+//       },
+//       {
+//         "textType": "paragraph",
+//         "attrs": {
+//           "textAlign": null
+//         }
+//       },
+//       {
+//         "videoBlock": "youtube",
+//         "attrs": {
+//           "src": "https://www.youtube.com/embed/AdqrTg_hpEQ?rel=1",
+//           "start": 0,
+//           "width": 640,
+//           "height": 480
+//         }
+//       },
+//       {
+//         "textType": "paragraph",
+//         "attrs": {
+//           "textAlign": null
+//         }
+//       },
+//       {
+//         "textType": "paragraph",
+//         "attrs": {
+//           "textAlign": null
+//         },
+//         "content": [
+//           {
+//             "type": "text",
+//             "text": "In order to Learn the Fundamentals of Exercising, visit the link below:"
+//           }
+//         ]
+//       },
+//       {
+//         "linkType": "link",
+//         "attrs": {
+//           "textAlign": null
+//         },
+//         "content": [
+//           {
+//             "type": "text",
+//             "marks": [
+//               {
+//                 "type": "link",
+//                 "attrs": {
+//                   "href": "https://en.wikipedia.org/wiki/Exercise",
+//                   "target": "_blank",
+//                   "rel": "noopener noreferrer nofollow",
+//                   "class": null
+//                 }
+//               }
+//             ],
+//             "text": "https://en.wikipedia.org/wiki/Exercise"
+//           }
+//         ]
+//       },
+//       {
+//         "textType": "paragraph",
+//         "attrs": {
+//           "textAlign": null
+//         },
+//         "content": [
+//           {
+//             "type": "text",
+//             "text": "A Very Good Reference To Visit"
+//           }
+//         ]
+//       }
+//     ]
+//   }
 // {
 //     "type": "doc",
 //     "content": [
@@ -513,7 +513,7 @@ const course =
 
 
 
-const Content = () => {
+const Content = ({course}) => {
 
     //Rendering text with stytles
     const renderText = (textObject, index) => {
@@ -553,7 +553,7 @@ const Content = () => {
                     let perBlockRef = []
                     let perBlockQuote = []
 
-                    course.content.forEach((content, index)=>{
+                    course?.content.forEach((content, index)=>{
 
                         if(content.blockQuoteBlock) {
                             perBlockQuote.push(
