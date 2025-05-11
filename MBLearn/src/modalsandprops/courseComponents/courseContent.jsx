@@ -553,7 +553,7 @@ const Content = ({course}) => {
                     let perBlockRef = []
                     let perBlockQuote = []
 
-                    course?.content.forEach((content, index)=>{
+                    course?.content?.forEach((content, index)=>{
 
                         if(content.blockQuoteBlock) {
                             perBlockQuote.push(

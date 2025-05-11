@@ -30,6 +30,7 @@ import AccountSettings from "./views/AccountSetting";
 import LearnerCourseManager from "./views/LearnerCourseManager";
 import LearnerCertficates from "./views/LearnerCertificates";
 import LearnerSelfEnrollment from "./views/LearnerSelfEnrollment";
+import CompeLearnExtension from "./views/CompeLearnExtension";
 
 const router = createBrowserRouter([
 
@@ -135,7 +136,12 @@ const router = createBrowserRouter([
                     {
                         path: "myemployee",
                         element:<MyEmployee/>
-                    }
+                    },
+                    // {
+                    //     path: "courses/comp_e_learn",
+                    //     element: <CompeLearnExtension/>
+                    // }
+
                 ]
             },
             {
@@ -204,8 +210,16 @@ const router = createBrowserRouter([
     {
         path: "/unauthorized",
         element: <Unauthorized/>
-    }
+    },
 
+    // COMP-E-LEARN EXTENSION
+    {
+        path: "/comp_e_learn",
+        element: <CompeLearnExtension/>
+        // <ProtectedRoutes allowed={["System Admin","Course Admin"]}>
+        //             <CompeLearnExtension/>
+        //         </ProtectedRoutes>
+    }
 
 
 ]);

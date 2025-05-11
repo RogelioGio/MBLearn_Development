@@ -9,6 +9,8 @@ import { useEffect, useState } from 'react';
 import axiosClient from "../axios-client";
 import { useCourseContext } from "../contexts/CourseListProvider";
 import Course from "../views/Course";
+import CompeLearn from "./Compe-E-Learn.svg"
+import { useNavigate } from "react-router-dom";
 
 function normalizationDuration(values, setField) {
     let months = parseInt(values.months) || 0;
@@ -42,6 +44,7 @@ const AddCourseModal = ({open,onClose,tab}) => {
     const {coursetypes, coursecategories, traingmodes} = useCourseContext();
     const [hover, setHover] = useState(false);
     const [adding, setAdding] = useState(false);
+    const navigate = useNavigate();
 
     const customCourse = {
         id: 1,
@@ -243,7 +246,7 @@ const AddCourseModal = ({open,onClose,tab}) => {
                                     completedIcon={<FontAwesomeIcon icon={faCircleCheckRegular} className="!text-white"/>}>
                                 <Stepper.Step icon={<FontAwesomeIcon icon={faSearch} className="!text-primary"/>}>
                                     <form onSubmit={formik.handleSubmit}>
-                                        <div className='grid grid-cols-[1fr_min-content_1fr] grid-rows-[min-content_auto_auto] gap-x-2 gap-y-2'>
+                                        <div className='grid grid-cols-[1fr_min-content_1fr] grid-rows-[min-content_min-content_auto] gap-x-2 gap-y-2'>
                                             {/* Header */}
                                             <div className='col-span-3 border-b border-divider pb-2'>
                                                 <h1 className='text-primary font-header'>Step 1</h1>
@@ -261,8 +264,8 @@ const AddCourseModal = ({open,onClose,tab}) => {
                                                 maxLength={11}
                                                 className="w-full font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
                                                 {/* Validation Errors */}
+                                                {formik.touched.courseID && formik.errors.courseID ? (<div className="text-red-500 text-xs font-text">{formik.errors.courseID}</div>):null}
                                             </div>
-                                            {formik.touched.courseID && formik.errors.courseID ? (<div className="text-red-500 text-xs font-text">{formik.errors.courseID}</div>):null}
                                             <div className='row-start-3 w-full flex'>
                                             <button
                                                 type="submit"
@@ -280,6 +283,20 @@ const AddCourseModal = ({open,onClose,tab}) => {
                                                 <div className="h-full w-[1px] bg-divider"/>
                                                 <p className="font-text text-unactive">or</p>
                                                 <div className="h-full w-[1px] bg-divider"/>
+                                            </div>
+                                            <div className="col-start-3 row-start-2 flex flex-row items-center justify-center">
+                                                <div className="py-2 flex flex-row items-center justify-center gap-2">
+                                                    <img src={CompeLearn} alt="" className="w-12"/>
+                                                    <div>
+                                                        <p className="font-text text-primary text-2xl"><span className="font-header">Comp-E-Learn</span> Extension</p>
+                                                        <p className="font-text text-unactive text-xs">Create an course using Comp-E-Learn Extension </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className={`row-start-3 h-fit border-2 w-full border-primary rounded-md shadow-md bg-primary text-white justify-center flex items-center py-2 px-20 font-header transition-all ease-in-out focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary hover:cursor-pointer hover:bg-primaryhover`}
+                                                onClick={()=>navigate("/comp_e_learn")}
+                                            >
+                                                <p>Create a Course</p>
                                             </div>
                                         </div>
                                     </form>
