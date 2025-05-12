@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\CarouselImage;
 use App\Http\Requests\StoreCarouselImageRequest;
 use App\Http\Requests\UpdateCarouselImageRequest;
+use Illuminate\Support\Facades\Storage;
 
 class CarouselImageController extends Controller
 {
@@ -68,6 +69,7 @@ class CarouselImageController extends Controller
      */
     public function destroy(CarouselImage $carouselImage)
     {
+        Storage::disk('public')->delete($carouselImage->image_path);
         $carouselImage->delete();
         return response()->json(['message' => 'Carousel image deleted successfully.'], 200);
     }
