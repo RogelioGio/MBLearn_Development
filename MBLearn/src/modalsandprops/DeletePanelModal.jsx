@@ -1,16 +1,35 @@
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
-import { useState } from "react";
 
-const DeletePanelModal = ({open, close, referesh, refereshPanel}) => {
+import { useEffect, useState } from "react";
+import axiosClient from "../axios-client";
+
+const DeletePanelModal = ({open, close, referesh, refereshPanel, id}) => {
 
     const [deleting, setDeleting] = useState()
+    const [panelId, setPanelId] = useState(id)
+
+    useEffect(() => {
+        setPanelId(id)
+    }, [id])
+
+    console.log("Panel ID:", panelId)
 
     const handleDelete = () => {
-        referesh()
-        refereshPanel()
-        close()
+        setDeleting(true)
+        axiosClient.delete(`carousels/${panelId}`)
+        .then(
+            refereshPanel(),
+            setTimeout(() => {
+                close(),
+                setDeleting(false),
+                referesh()
+            }
+            , 500),
+        ).catch((error) => {
+            setDeleting(false)
+            console.log("Error:", error)})
     }
 
 
@@ -40,7 +59,7 @@ const DeletePanelModal = ({open, close, referesh, refereshPanel}) => {
                                         </div>
                                         <div className="font-header bg-primary text-white p-2 border-2 border-primary rounded-md flex items-center justify-center hover:cursor-pointer hover:bg-primaryhover transition-all ease-in-out"
                                             onClick={()=> handleDelete()}>
-                                            Delete
+                                            {deleting ? "Deleting..." : "Delete"}
                                         </div>
                                     </div>
                                 </div>

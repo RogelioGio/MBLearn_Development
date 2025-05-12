@@ -52,6 +52,7 @@ const PhotoforCarouselModal = ({open, close, refresh}) => {
     const [isLoading, setIsLoading] = useState(true)
     const [panels, setPanels] = useState()
     const [destroy, setDestroy] = useState(false)
+    const [deletingID, setDeletingID] = useState()
 
     const {currentPaginated,
         currentPage,
@@ -77,6 +78,15 @@ const PhotoforCarouselModal = ({open, close, refresh}) => {
         }).catch((err)=> {
             setIsLoading(false)
         })
+    }
+
+    const openDelete = (id) => {
+        setDestroy(true)
+        setDeletingID(id)
+    }
+
+    const closeDelete = () => {
+        setDestroy(false)
     }
 
 
@@ -137,8 +147,7 @@ const PhotoforCarouselModal = ({open, close, refresh}) => {
                                                                 <td className={`font-text text-xs px-4 py-2 gap-4 transition-all ease-in-out`}>{format(new Date(panel.created_at), "MMMM dd, yyyy")}</td>
                                                                 <td className="flex flex-row gap-2 justify-end px-4 py-2">
                                                                     <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all'
-                                                                        onClick={()=>setDestroy(true)}
-                                                                    >
+                                                                        onClick={()=> openDelete(panel.id)}>
                                                                         <FontAwesomeIcon icon={faTrash} className='text-sm'/>
                                                                     </div>
                                                                 </td>
@@ -200,7 +209,7 @@ const PhotoforCarouselModal = ({open, close, refresh}) => {
                 </div>
         </Dialog>
         <UploadPhotoModal open={openUpload} close={() => setOpenUpload(false)} refreshlist={fetchPanels} refreshpanel={refresh}/>
-        <DeletePanelModal open={destroy} close={()=> setDestroy(false)} referesh={fetchPanels} refereshPanel={refresh}/>
+        <DeletePanelModal open={destroy} close={closeDelete} referesh={fetchPanels} refereshPanel={refresh} id={deletingID}/>
         </>
     )
 }

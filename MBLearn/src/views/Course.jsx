@@ -27,7 +27,7 @@ import CoursePublishingModal from "../modalsandprops/CoursePublishingModal"
 
 export default function Course() {
     const navigate = useNavigate();
-    const {user} = useStateContext();
+    const {role} = useStateContext();
     const {id} = useParams();
     const [course, setCourse] = useState([]);
     const [isLoading ,setLoading] = useState(true);
@@ -63,7 +63,7 @@ export default function Course() {
 
     return(
         <>
-        <div className={`grid ${user.user_infos.roles?.[0].role_name === "System Admin" ? "grid-cols-4 grid-rows-[4rem_3rem_auto]":"grid-cols-[1fr_20rem] grid-rows-[min-content_4rem_auto]"} grid-rows-[4rem_3rem_auto] h-full w-full overflow-hidden`}>
+        <div className={`grid ${role === "Course Admin" ? "grid-cols-4 grid-rows-[4rem_3rem_auto]":"grid-cols-[1fr_20rem] grid-rows-[min-content_4rem_auto]"} grid-rows-[4rem_3rem_auto] h-full w-full overflow-hidden`}>
             <Helmet>
                 {/* Title of the mark-up */}
                 <title>MBLearn | {isLoading ? "Loading..." : course?.name || "No Course Found"}</title>
@@ -71,7 +71,7 @@ export default function Course() {
 
 
             {
-                !isLoading && user.user_infos.roles?.[0].role_name === "System Admin" ? (
+                !isLoading && role === "Course Admin" ? (
                     <>
                         {/* Header */}
                         <div className="flex flex-row col-span-4 items-center justify-between gap-4">
@@ -132,7 +132,7 @@ export default function Course() {
                             {tabComponents[tab] || null}
                         </div>
                     </>
-                ) : !isLoading && user.user_infos.roles?.[0].role_name === "Learner" ? (
+                ) : !isLoading && role === "Learner" ? (
                     <>
                         <CourseModuleProps headers={<>
                             <div className="flex flex-row col-span-4 items-center gap-4 pl-5">

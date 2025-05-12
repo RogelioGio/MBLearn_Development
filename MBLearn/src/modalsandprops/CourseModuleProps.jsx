@@ -18,7 +18,7 @@ import Course from "../views/Course";
 const CourseModuleProps = ({headers}) => {
     const stepperRef = useRef();
     const [activeStepMeta, setActiveMeta] = useState({title: "", desc: "", stepID:""})
-    const {user} = useStateContext()
+    const {role} = useStateContext()
 
     //Course Must be thrown here so that the content will be loop in the stepper
     const Lesson = [
@@ -1210,7 +1210,7 @@ const CourseModuleProps = ({headers}) => {
     return (
         <>
         {
-            user.user_infos.roles?.[0].role_name === "System Admin" ?
+            role === "Course Admin" ?
             <div className="grid grid-cols-[20rem_1fr] grid-rows-[min-content_auto] h-full ">
 
                 {/* Course Content */}

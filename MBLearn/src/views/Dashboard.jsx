@@ -10,7 +10,6 @@ import { CarouselPrevious, CarouselNext } from '../components/ui/carousel';
 import CourseAdminDashboard from './Dashboards/CourseAdminDashboard';
 
 
-
 //One Dashboard Component for 3 different roles
 const DashboardLayout = ({role,name,user}) => {
     switch(role){

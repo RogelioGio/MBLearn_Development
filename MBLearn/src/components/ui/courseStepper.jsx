@@ -44,13 +44,13 @@ export const Stepper = forwardRef(
         reset: () => setActive(initialStep),
     }));
 
-    const {user} = useStateContext()
+    const {role} = useStateContext()
     return (
         <StepperContext.Provider
             value={{ active, setActive, step: steps.length, stepsMeta}}
         >
             {
-                user.user_infos.roles?.[0].role_name === "System Admin" ?
+                role === "Course Admin" ?
                 <>
                     <div className="w-full grid grid-cols-[20rem_1fr] gap-x-2 h-full">
                 {/* Step Indicators */}

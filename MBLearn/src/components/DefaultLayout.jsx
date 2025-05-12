@@ -91,6 +91,7 @@ export default function DefaultLayout() {
 
         }).catch((e)=>{
             setLoading(false)
+            navigate('/login')
             localStorage.removeItem('ACCESS_TOKEN');
         })
     },[])
