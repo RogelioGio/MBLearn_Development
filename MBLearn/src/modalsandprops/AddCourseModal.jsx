@@ -272,12 +272,8 @@ const AddCourseModal = ({open,onClose,tab}) => {
                                             <div className='row-start-3 w-full flex'>
                                             <button
                                                 type="submit"
-                                                disabled={formik.values.courseID.length < 11}
-                                                className={`h-fit border-2 w-full border-primary rounded-md shadow-md bg-primary text-white justify-center flex items-center py-2 px-20 font-header transition-all ease-in-out focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary ${
-                                                    formik.values.courseID.length < 11
-                                                    ? 'opacity-50 cursor-not-allowed'
-                                                    : 'hover:scale-105 hover:bg-primaryhover hover:text-white hover:border-primaryhover cursor-pointer'
-                                                }`}
+                                                //disabled={formik.values.courseID.length < 11}
+                                                className={`h-fit border-2 w-full border-primary rounded-md shadow-md bg-primary text-white justify-center flex items-center py-2 px-20 font-header transition-all ease-in-out focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary`}
                                             >
                                                 <p>Confirm</p>
                                             </button>

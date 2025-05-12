@@ -24,7 +24,7 @@ class StoreCourseRequest extends FormRequest
         // TODO be more specific
         return [
             "name" => "required|unique:courses,name",
-            "CourseID" => "required|unique:courses,CourseID",
+            "CourseID" => "unique:courses,CourseID",
             "course_outcomes" => "nullable|string",
             "course_objectives" => "nullable|string",
             "description" => "nullable",
