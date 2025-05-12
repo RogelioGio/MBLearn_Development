@@ -6,6 +6,9 @@ import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { Calendar } from "MBLearn/src/components/ui/calendar"
 import * as React from "react"
+import { format } from "date-fns"
+import { Progress } from "MBLearn/src/components/ui/progress"
+import { ArrowLeft, ArrowRight } from "lucide-react"
 
 const LearnerDashboard = ({name,user}) => {
     const [enrolled, setEnrolled] = useState([])
@@ -82,9 +85,19 @@ const LearnerDashboard = ({name,user}) => {
         {/* Enrolled */}
         <div className='col-span-3 row-start-3 ml-5 pr-5 pt-2 pb-5'>
             <div className="flex flex-col w-full h-full gap-2">
-                <div>
-                    <h1 className="font-header text-primary text-base">Enrolled Courses</h1>
-                    <p className="font-text text-unactive text-xs">View all your enrolled courses in one place and stay on top of your learning journey.</p>
+                <div className="flex flex-row justify-between">
+                    <div>
+                        <h1 className="font-header text-primary text-base">Enrolled Courses</h1>
+                        <p className="font-text text-unactive text-xs">View all your enrolled courses in one place and stay on top of your learning journey.</p>
+                    </div>
+                    <div className="flex flex-row gap-x-2">
+                        <div className="text-primary border-2 border-primary hover:bg-primary hover:text-white flex items-center justify-center h-9 w-9 rounded-md hover:cursor-pointer transition-all ease-in-out">
+                            <ArrowLeft className="h-4 w-4"/>
+                        </div>
+                        <div className="text-primary border-2 border-primary hover:bg-primary hover:text-white flex items-center justify-center h-9 w-9 rounded-md hover:cursor-pointer transition-all ease-in-out">
+                            <ArrowRight className="h-4 w-4"/>
+                        </div>
+                    </div>
                 </div>
                 {
                     Loading ? (
@@ -129,10 +142,17 @@ const LearnerDashboard = ({name,user}) => {
                                             <div className="border w-full h-full p-3 grid grid-cols-1 grid-rows-[min-content_1fr_1fr]">
                                                 <div className="flex flex-col justify-center">
                                                     <p className="font-header text-sm text-primary">{course.name}</p>
-                                                    <p className="font-text text-unactive text-xs">{course.types[0]?.type_name} - {course.categories[0]?.category_name}</p>
+                                                    <p className="font-text text-unactive text-xs">Course ID: {course?.CourseID}</p>
                                                 </div>
                                                 <div className="flex flex-col justify-center">
-                                                    <p className="font-text text-unactive text-xs">Deadline: MMMM/DD/YYYY </p>
+                                                    <p className="font-text text-unactive text-xs">Deadline: {format(new Date(course.deadline[0]), 'MMMM d, yyyy')}</p>
+                                                </div>
+                                                <div className="flex flex-col justify-center">
+                                                    <div className="flex flex-row justify-between items-end font-text text-unactive text-xs py-2">
+                                                        <p>Progress: </p>
+                                                        <p className="text-xl">50%</p>
+                                                    </div>
+                                                    <Progress value={50}/>
                                                 </div>
                                                 {/* Prgress */}
                                             </div>

@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState, useImperativeHandle, forwar
 import { faCircleCheck as faCircleCheckRegular, faSquareCheck } from "@fortawesome/free-regular-svg-icons";
 import { ScrollArea } from "@mantine/core";
 import { useStateContext } from "MBLearn/src/contexts/ContextProvider";
+import { Progress } from "./progress";
 
 const StepperContext = createContext();
 
@@ -17,6 +18,7 @@ export const Stepper = forwardRef(
     const stepsMeta = steps.map((step) => ({
         title: step.props.stepTitle,
         desc: step.props.stepDesc,
+        stepID: step.props.stepID
     }));
     useEffect(() => {
         if(onStepChange) onStepChange(active, stepsMeta[active])
@@ -102,7 +104,9 @@ export const Stepper = forwardRef(
                 </ScrollArea>
 
                 </div>
-                </>:<>
+                </>
+                :
+                <>
                 <div className="w-full grid grid-cols-[1fr_20rem] gap-x-2 h-full">
                 {/* Step Content */}
                 <ScrollArea className="h-[calc(100vh-11.5rem)] pr-5 pl-4">
@@ -110,12 +114,12 @@ export const Stepper = forwardRef(
                         {isCompleted ? completedStep : steps[active]}
                     </div>
                 </ScrollArea>
+
                 {/* Step Indicators */}
                 <div className="flex flex-col gap-y-1 transition-all ease-in-out pr-3 pl-2 border-l border-divider mb-2">
                     {steps.map((step, index) => {
                         const isDone = index < active;
                         const isActive = index === active;
-
                         return (
                             <div
                                 key={index}
@@ -145,10 +149,6 @@ export const Stepper = forwardRef(
                                     <h1 className={`font-header text-sm ${!isDone && !isActive ? "text-unactive":null} group-hover:text-primary`}>{step.props.stepTitle}</h1>
                                     <p className="text-xs text-unactive group-hover:text-primary">{step.props.stepDesc}</p>
                                 </div>
-
-                                {/* {index < steps.length - 1 && (
-                                <div className="flex-1 h-1 bg-gray-300 mx-2" />
-                                )} */}
                             </div>
                         );
                     })}
