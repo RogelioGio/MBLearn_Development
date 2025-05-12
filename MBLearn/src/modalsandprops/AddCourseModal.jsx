@@ -8,6 +8,9 @@ import { Stepper } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import axiosClient from "../axios-client";
 import { useCourseContext } from "../contexts/CourseListProvider";
+import Course from "../views/Course";
+import CompeLearn from "./Compe-E-Learn.svg"
+import { useNavigate } from "react-router-dom";
 
 function normalizationDuration(values, setField) {
     let months = parseInt(values.months) || 0;
@@ -41,8 +44,28 @@ const AddCourseModal = ({open,onClose,tab}) => {
     const {coursetypes, coursecategories, traingmodes} = useCourseContext();
     const [hover, setHover] = useState(false);
     const [adding, setAdding] = useState(false);
+    const navigate = useNavigate();
 
-    const customCourseCategory = "Hello"
+    const customCourse = {
+        id: 1,
+        CourseID: 10000000000,
+        Status: false,
+        CourseName: "DRR Course",
+        CourseType: "Soft Skill Training",
+        TrainingType: "Mandatory",
+        CourseDescription: "An example of an overview is . . .",
+        ImagePath: "courses/DrEjduzF61mmv3ROb4B0Gqs6AU5Uu77Si6G1lHVN.png",
+        created_at: "2025-05-09T09:28:15.000000Z",
+        updated_at: "2025-05-10T10:36:48.000000Z",
+        CategoryID: 1,
+        category: {
+        id: 1,
+        CategoryName: "Programming Metrobank",
+        created_at: "2025-05-09T09:27:25.000000Z",
+        updated_at: "2025-05-09T09:27:25.000000Z"
+        },
+
+    }
 
     useEffect(() => {
         if (!open) {
@@ -65,13 +88,11 @@ const AddCourseModal = ({open,onClose,tab}) => {
         }),
         //submission
         onSubmit: (values, {setFieldError}) => {
-            // const validCourseID = "1a2b3c4d5e6";
-
-            // // Check if input is valid before allowing step progression
-            // if (values.courseID !== validCourseID) {
-            //     setFieldError("courseID", "Invalid Course ID. Please enter the correct Course ID.");
-            //     return;
-            // }
+            // Check if input is valid before allowing step progression
+            if (parseInt(values.courseID, 10) !== customCourse.CourseID) {
+                setFieldError("courseID", "Invalid Course ID. Please enter the correct Course ID.");
+                return;
+            }
             // Proceed to the next step
             toggleState("steps", (current) => current + 1);
 
@@ -83,14 +104,14 @@ const AddCourseModal = ({open,onClose,tab}) => {
         //reference
         initialValues:{
             course_id: formik.values.courseID,
-            course_name:'',
-            course_type:'',
-            course_category:'',
-            training_type:'',
+            course_name: customCourse.CourseName || '',
+            course_type: customCourse.CourseType || '',
+            course_category: customCourse.category.CategoryName || '',
+            training_type: customCourse.TrainingType || '',
             months:'',
             weeks:'',
             days:'',
-            short_desc:'',
+            short_desc: customCourse.CourseDescription || '',
         },
         //validation
         validationSchema: Yup.object({
@@ -168,14 +189,17 @@ const AddCourseModal = ({open,onClose,tab}) => {
         name: formik2.values.course_name,
         CourseID: formik.values.courseID,
         description: formik2.values.short_desc,
-        type_id: formik2.values.course_type,
-        category_id: formik2.values.course_category,
+        course_objectives: '',
+        course_oustcomes: '',
+        type_name: formik2.values.course_type,
+        category_name: formik2.values.course_category,
         training_type: formik2.values.training_type,
         months: formik2.values.months,
         weeks: formik2.values.weeks,
         days: formik2.values.days,
         archived: "active",
         assignedCourseAdminId:"",
+
     }
 
     const submitCourse = () => {
@@ -222,11 +246,11 @@ const AddCourseModal = ({open,onClose,tab}) => {
                                     completedIcon={<FontAwesomeIcon icon={faCircleCheckRegular} className="!text-white"/>}>
                                 <Stepper.Step icon={<FontAwesomeIcon icon={faSearch} className="!text-primary"/>}>
                                     <form onSubmit={formik.handleSubmit}>
-                                        <div className='grid grid-cols-[1fr_min-content_1fr] grid-rows-[min-content_auto_auto] gap-x-2 gap-y-2'>
+                                        <div className='grid grid-cols-[1fr_min-content_1fr] grid-rows-[min-content_min-content_auto] gap-x-2 gap-y-2'>
                                             {/* Header */}
                                             <div className='col-span-3 border-b border-divider pb-2'>
                                                 <h1 className='text-primary font-header'>Step 1</h1>
-                                                <p className='text-unactive font-text'>Please input an valid Course ID to be added in the course catalog of MBLearn</p>
+                                                <p className='text-unactive font-text'>Please input an valid Course ID to be added in the course catalog of MBLearn or Create an Course from Comp-E-Learn</p>
                                             </div>
                                             {/* Input */}
                                             <div className='row-start-2 py-2'>
@@ -240,8 +264,8 @@ const AddCourseModal = ({open,onClose,tab}) => {
                                                 maxLength={11}
                                                 className="w-full font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
                                                 {/* Validation Errors */}
+                                                {formik.touched.courseID && formik.errors.courseID ? (<div className="text-red-500 text-xs font-text">{formik.errors.courseID}</div>):null}
                                             </div>
-                                            {formik.touched.courseID && formik.errors.courseID ? (<div className="text-red-500 text-xs font-text">{formik.errors.courseID}</div>):null}
                                             <div className='row-start-3 w-full flex'>
                                             <button
                                                 type="submit"
@@ -255,7 +279,25 @@ const AddCourseModal = ({open,onClose,tab}) => {
                                                 <p>Confirm</p>
                                             </button>
                                             </div>
-                                            <div className="w-[1px] mx-2 col-start-2 row-start-2 row-span-2 bg-black"/>
+                                            <div className="grid grid-rows-[1fr_min-content_1fr] mx-2 col-start-2 row-start-2 row-span-2 items-center place-items-center">
+                                                <div className="h-full w-[1px] bg-divider"/>
+                                                <p className="font-text text-unactive">or</p>
+                                                <div className="h-full w-[1px] bg-divider"/>
+                                            </div>
+                                            <div className="col-start-3 row-start-2 flex flex-row items-center justify-center">
+                                                <div className="py-2 flex flex-row items-center justify-center gap-2">
+                                                    <img src={CompeLearn} alt="" className="w-12"/>
+                                                    <div>
+                                                        <p className="font-text text-primary text-2xl"><span className="font-header">Comp-E-Learn</span> Extension</p>
+                                                        <p className="font-text text-unactive text-xs">Create an course using Comp-E-Learn Extension </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className={`row-start-3 h-fit border-2 w-full border-primary rounded-md shadow-md bg-primary text-white justify-center flex items-center py-2 px-20 font-header transition-all ease-in-out focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary hover:cursor-pointer hover:bg-primaryhover`}
+                                                onClick={()=>navigate("/comp_e_learn")}
+                                            >
+                                                <p>Create a Course</p>
+                                            </div>
                                         </div>
                                     </form>
                                 </Stepper.Step>
@@ -294,8 +336,9 @@ const AddCourseModal = ({open,onClose,tab}) => {
                                                         value={formik2.values.course_category}
                                                         onChange={formik2.handleChange}
                                                         onBlur={formik2.handleBlur}
+                                                        disabled = {customCourse.category.CategoryName}
                                                     >
-                                                    <option value={customCourseCategory}>{customCourseCategory}</option>
+                                                    <option value={customCourse.category?.CategoryName || ""}>{customCourse.category?.CategoryName || "Select an option"}</option>
                                                     {coursecategories.map((category) => (
                                                         <option key={category.id} value={category.id}>{category.category_name}</option>
                                                     ))}
@@ -317,8 +360,9 @@ const AddCourseModal = ({open,onClose,tab}) => {
                                                         value={formik2.values.course_type}
                                                         onChange={formik2.handleChange}
                                                         onBlur={formik2.handleBlur}
+                                                        disabled = {customCourse.CourseType}
                                                     >
-                                                    <option value="">Select a course type</option>
+                                                    <option value="">{customCourse.CourseType || "Select an Option"}</option>
                                                     {coursetypes.map((type) => (
                                                         <option key={type.id} value={type.id}>{type.type_name}</option>
                                                     ))}
@@ -339,8 +383,9 @@ const AddCourseModal = ({open,onClose,tab}) => {
                                                         value={formik2.values.training_type}
                                                         onChange={formik2.handleChange}
                                                         onBlur={formik2.handleBlur}
+                                                        disabled = {customCourse.TrainingType}
                                                     >
-                                                    <option value="">Select a Training type</option>
+                                                    <option value="">{customCourse?.TrainingType|| "Select Option"}</option>
                                                     <option value="Mandatory">Mandatory</option>
                                                     <option value="Unmandatory">Non-mandatory</option>
 
@@ -419,6 +464,7 @@ const AddCourseModal = ({open,onClose,tab}) => {
                                                     value={formik2.values.short_desc}
                                                     onChange={formik2.handleChange}
                                                     onBlur={formik2.handleBlur}
+                                                    disabled = {customCourse.CourseDescription}
                                                     className='h-32 font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary resize-none'></textarea>
                                                     {formik2.touched.short_desc && formik2.errors.short_desc ? (<div className="text-red-500 text-xs font-text">{formik2.errors.short_desc}</div>):null}
                                             </div>
@@ -465,14 +511,14 @@ const AddCourseModal = ({open,onClose,tab}) => {
                                                         <label htmlFor="course_type" className="font-text text-xs flex flex-row justify-between text-unactive">
                                                             <p>Course Type:</p>
                                                         </label>
-                                                        <p className="font-text">{coursetypes.find(coursetype => coursetype.id === Number(formik2.values.course_type))?.type_name || "Not selected"}</p>
+                                                        <p className="font-text">{formik2.values.course_type || "Not selected"}</p>
                                                     </div>
                                                     {/* Course Category */}
                                                     <div className="inline-flex flex-col gap-2 row-start-4 col-span-1">
                                                         <label htmlFor="course_category" className="font-text text-unactive text-xs flex flex-row justify-between ">
                                                             <p>Course Category:</p>
                                                         </label>
-                                                        <p className="font-text">{coursecategories.find(coursecategory => coursecategory.id === Number(formik2.values.course_category))?.category_name || "Not selected"}</p>
+                                                        <p className="font-text">{formik2.values.course_category || "Not selected"}</p>
                                                     </div>
                                                     {/* Training Type */}
                                                     <div className="inline-flex flex-col gap-2 row-start-4 col-span-1">

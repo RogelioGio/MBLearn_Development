@@ -11,20 +11,29 @@ import { faPenToSquare, faXmark } from "@fortawesome/free-solid-svg-icons";
 import React, { useEffect, useState } from "react";
 import PhotoforCarouselModal from "../PhotoforCarouselModal";
 import axiosClient from "MBLearn/src/axios-client";
-
+import { useStateContext } from "MBLearn/src/contexts/ContextProvider";
 const AnnouncmentCarousel = () => {
     const [openAdd, setOpenAdd] = useState(false)
-    const [carouselData, setCarouselData] = useState([]) // Carousel data
+    const [carouselData, setCarouselData] = useState([])
+    const [isLoading, setIsLoading] = useState(true)
+    const {user} = useStateContext()
+
 
     useEffect(() => {
+        fetchPanels()
+    }, [])
+
+    const fetchPanels = () => {
+        setIsLoading(true)
         axiosClient.get('/carousels')
         .then(({data}) => {
-            console.log("Response", data);
             setCarouselData(data)
+            setIsLoading(false)
         }).catch((error) => {
-            console.log("Error", error);
+            console.log("Error", error)
+            setIsLoading(false)
         })
-    }, [])
+    }
 
 
     return(
@@ -51,6 +60,7 @@ const AnnouncmentCarousel = () => {
                         </div>
                         <div className="flex flex-row gap-2 items-center justify-center">
                             {
+                                user?.user_infos.roles[0].role_name === 'System Admin' &&
                                 <div className='aspect-square flex flex-row justify-center items-center text-primary border-2 border-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 hover:bg-primary hover:text-white ease-in-out transition-all'
                                     onClick={() => setOpenAdd(true)}>
                                     <FontAwesomeIcon icon={faPenToSquare} className='text-sm p-2'/>
@@ -63,10 +73,26 @@ const AnnouncmentCarousel = () => {
                     <div className="flex items-center w-full h-full justify-center row-start-2 col-start-2">
                         <CarouselContent className="h-full">
                             {
-                                carouselData.map((img, index) => (
+                                isLoading ? (
+                                    <CarouselItem w-full h-full>
+                                    <div className="border-2 border-primary h-full rounded-md shadow-sm bg-white flex flex-col items-center justify-center">
+                                        <h1 className='font-header text-xl text-primary'>"Loading your learning journey..."</h1>
+                                        <p className='font-text text-unactive text-xs'>Empowering you with the knowledge to achieve your goals</p>
+                                    </div>
+
+                                    </CarouselItem>
+                                ) : carouselData.length === 0 ? (
+                                    <CarouselItem w-full h-full>
+                                    <div className="border-2 border-primary h-full rounded-md shadow-sm bg-white bg-center bg-cover flex items-center justify-center">
+                                        <p className='font-text text-unactive text-sm'>No panel to display</p>
+                                    </div>
+
+                                    </CarouselItem>
+                                ) : (
+                                    carouselData.map((img, index) => (
                                     <CarouselItem key={index} w-full h-full>
                                     <div
-                                        className="border border-primary h-full rounded-md shadow-sm bg-white bg-center bg-cover"
+                                        className="border-2 border-primary h-full rounded-md shadow-sm bg-white bg-center bg-cover"
                                         style={{
                                             backgroundImage: `url(${import.meta.env.VITE_API_BASE_URL}/storage/${img.image_path})`,
                                         }}
@@ -75,6 +101,9 @@ const AnnouncmentCarousel = () => {
                                     </div>
                                     </CarouselItem>
                                 ))
+                                )
+
+
                             }
                         </CarouselContent>
                     </div>
@@ -82,7 +111,7 @@ const AnnouncmentCarousel = () => {
             </div>
         </div>
 
-        <PhotoforCarouselModal open={openAdd} close={() => setOpenAdd(false)}/>
+        <PhotoforCarouselModal open={openAdd} close={() => setOpenAdd(false)} refresh={fetchPanels}/>
         </>
     )
 }

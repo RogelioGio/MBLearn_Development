@@ -6,7 +6,9 @@ import router from './router.jsx'
 import { ContextProvider } from './contexts/ContextProvider'
 import '@mantine/core/styles.css';
 import { MantineProvider } from '@mantine/core';
-import { Toaster } from './components/ui/sonner'
+import { Toaster } from './components/ui/sonner';
+import { BrowserRouter } from "react-router-dom";
+
 
 
 createRoot(document.getElementById("root")).render(

@@ -53,7 +53,6 @@ const AddAssignCourseAdmin = ({courseID ,open, close,}) => {
             section: '',
             branch: '',
             city: '',
-            section:''
         },
         onSubmit: (values) => {
             setLoading(true)
