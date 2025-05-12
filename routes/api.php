@@ -35,7 +35,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('/user', function (Request $request) {
         return $request->user()->load(['userInfos', 'userInfos.permissions','userInfos.roles',]);
     });
-    Route::get('/status', function (Request $request) {
+    Route::get('/status/{userId}/{courseId}', function (Request $request) {
         return response()->json(['status' => 'complete']);
     });
     //test purposes amd account implementation (postman testing)
