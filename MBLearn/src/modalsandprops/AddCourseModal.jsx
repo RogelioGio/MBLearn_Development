@@ -11,6 +11,7 @@ import { useCourseContext } from "../contexts/CourseListProvider";
 import Course from "../views/Course";
 import CompeLearn from "./Compe-E-Learn.svg"
 import { useNavigate } from "react-router-dom";
+import compELearnAxios from "../comp-e-learn-axios";
 
 function normalizationDuration(values, setField) {
     let months = parseInt(values.months) || 0;
@@ -84,17 +85,19 @@ const AddCourseModal = ({open,onClose,tab}) => {
         validationSchema: Yup.object({
             courseID: Yup.string()
                 .required('Input CourseID first')
-                .length(11, 'Course ID must be exactly 11 characters')
+                //.length(11, 'Course ID must be exactly 11 characters')
         }),
         //submission
         onSubmit: (values, {setFieldError}) => {
             // Check if input is valid before allowing step progression
-            if (parseInt(values.courseID, 10) !== customCourse.CourseID) {
-                setFieldError("courseID", "Invalid Course ID. Please enter the correct Course ID.");
-                return;
-            }
+            // if (parseInt(values.courseID, 10) !== customCourse.CourseID) {
+            //     setFieldError("courseID", "Invalid Course ID. Please enter the correct Course ID.");
+            //     return;
+            // }
+
+            compELearnAxios.get(`courses/${values.courseID}`).then((res) => {console.log(res.data)}).catch((err) => {console.log(err)})
             // Proceed to the next step
-            toggleState("steps", (current) => current + 1);
+            //toggleState("steps", (current) => current + 1);
 
         }
     })
@@ -301,8 +304,8 @@ const AddCourseModal = ({open,onClose,tab}) => {
                                         </div>
                                     </form>
                                 </Stepper.Step>
-                                <Stepper.Step  icon={<FontAwesomeIcon icon={faBookOpen} className="!text-primary"/>}>
-                                    <form onSubmit={formik2.handleSubmit}>
+                                <form onSubmit={formik2.handleSubmit}>
+                                    <Stepper.Step  icon={<FontAwesomeIcon icon={faBookOpen} className="!text-primary"/>}>
                                         <div className="grid grid-cols-[1fr_1fr_1fr] grid-rows-[min-content_auto] gap-x-3 gap-y-2">
                                             {/* Header */}
                                             <div className='col-span-3 border-b border-divider pb-2'>
@@ -480,8 +483,8 @@ const AddCourseModal = ({open,onClose,tab}) => {
                                                     `}/>
                                                 </div>
                                         </div>
-                                    </form>
-                                </Stepper.Step>
+                                    </Stepper.Step>
+                                </form>
                                 <Stepper.Step icon={<FontAwesomeIcon icon={faBook} className="!text-primary"/>}>
                                 <div className="grid grid-cols-3 grid-rows-[min-content_auto] gap-x-3 gap-y-2">
                                     {/* Header */}
