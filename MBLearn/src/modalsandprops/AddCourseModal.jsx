@@ -46,27 +46,31 @@ const AddCourseModal = ({open,onClose,tab}) => {
     const [hover, setHover] = useState(false);
     const [adding, setAdding] = useState(false);
     const navigate = useNavigate();
+    const [courseLesson, setCourseLesson] = useState([])
+    const [customCourse, setCustomCourse] = useState()
 
-    const customCourse = {
-        id: 1,
-        CourseID: 10000000000,
-        Status: false,
-        CourseName: "DRR Course",
-        CourseType: "Soft Skill Training",
-        TrainingType: "Mandatory",
-        CourseDescription: "An example of an overview is . . .",
-        ImagePath: "courses/DrEjduzF61mmv3ROb4B0Gqs6AU5Uu77Si6G1lHVN.png",
-        created_at: "2025-05-09T09:28:15.000000Z",
-        updated_at: "2025-05-10T10:36:48.000000Z",
-        CategoryID: 1,
-        category: {
-        id: 1,
-        CategoryName: "Programming Metrobank",
-        created_at: "2025-05-09T09:27:25.000000Z",
-        updated_at: "2025-05-09T09:27:25.000000Z"
-        },
+    useEffect(() => {formik.resetForm,formik2.resetForm},[open])
 
-    }
+    // const customCourse = {
+    //     id: 1,
+    //     CourseID: 10000000000,
+    //     Status: false,
+    //     CourseName: "DRR Course",
+    //     CourseType: "Soft Skill Training",
+    //     TrainingType: "Mandatory",
+    //     CourseDescription: "An example of an overview is . . .",
+    //     ImagePath: "courses/DrEjduzF61mmv3ROb4B0Gqs6AU5Uu77Si6G1lHVN.png",
+    //     created_at: "2025-05-09T09:28:15.000000Z",
+    //     updated_at: "2025-05-10T10:36:48.000000Z",
+    //     CategoryID: 1,
+    //     category: {
+    //     id: 1,
+    //     CategoryName: "Programming Metrobank",
+    //     created_at: "2025-05-09T09:27:25.000000Z",
+    //     updated_at: "2025-05-09T09:27:25.000000Z"
+    //     },
+
+    // }
 
     useEffect(() => {
         if (!open) {
@@ -94,8 +98,15 @@ const AddCourseModal = ({open,onClose,tab}) => {
             //     setFieldError("courseID", "Invalid Course ID. Please enter the correct Course ID.");
             //     return;
             // }
-
-            compELearnAxios.get(`courses/${values.courseID}`).then((res) => {toggleState("steps", (current) => current + 1)}).catch((err) => { setFieldError("courseID", "Invalid Course ID. Please enter the correct Course ID.")})
+            
+            compELearnAxios.get(`courses/${values.courseID}`)
+            .then((res) => {
+                console.log(res)
+                setCustomCourse(res.data)
+                toggleState("steps", (current) => current + 1)
+                setCourseLesson(res.data.lessons)
+            })
+            .catch((err) => { setFieldError("courseID", "Invalid Course ID. Please enter the correct Course ID.")})
             // Proceed to the next step
             //toggleState("steps", (current) => current + 1);
 
@@ -107,14 +118,14 @@ const AddCourseModal = ({open,onClose,tab}) => {
         //reference
         initialValues:{
             course_id: formik.values.courseID,
-            course_name: customCourse.CourseName || '',
-            course_type: customCourse.CourseType || '',
-            course_category: customCourse.category.CategoryName || '',
-            training_type: customCourse.TrainingType || '',
+            course_name: customCourse?.CourseName || '',
+            course_type: customCourse?.CourseType || '',
+            course_category: customCourse?.category.CategoryName || '',
+            training_type: customCourse?.TrainingType || '',
             months:'',
             weeks:'',
             days:'',
-            short_desc: customCourse.CourseDescription || '',
+            short_desc: customCourse?.CourseDescription || '',
         },
         //validation
         validationSchema: Yup.object({
@@ -147,11 +158,12 @@ const AddCourseModal = ({open,onClose,tab}) => {
         }),
         //on-submit
         onSubmit: (values) => {
+            console.log("Final Values: ", values);
             const finalValues = {
                 ...values,
                 course_id: formik.values.courseID, // Overrides the course_id field
             };
-            console.log("Final Values: ", finalValues);
+
 
             toggleState("steps", (current) => current + 1);
         }
@@ -193,7 +205,7 @@ const AddCourseModal = ({open,onClose,tab}) => {
         CourseID: formik.values.courseID,
         description: formik2.values.short_desc,
         course_objectives: '',
-        course_oustcomes: '',
+        course_outcomes: '',
         type_name: formik2.values.course_type,
         category_name: formik2.values.course_category,
         training_type: formik2.values.training_type,
@@ -202,7 +214,7 @@ const AddCourseModal = ({open,onClose,tab}) => {
         days: formik2.values.days,
         archived: "active",
         assignedCourseAdminId:"",
-
+        lessons:courseLesson,
     }
 
     const submitCourse = () => {
@@ -300,8 +312,8 @@ const AddCourseModal = ({open,onClose,tab}) => {
                                         </div>
                                     </form>
                                 </Stepper.Step>
+                                <Stepper.Step  icon={<FontAwesomeIcon icon={faBookOpen} className="!text-primary"/>}>
                                 <form onSubmit={formik2.handleSubmit}>
-                                    <Stepper.Step  icon={<FontAwesomeIcon icon={faBookOpen} className="!text-primary"/>}>
                                         <div className="grid grid-cols-[1fr_1fr_1fr] grid-rows-[min-content_auto] gap-x-3 gap-y-2">
                                             {/* Header */}
                                             <div className='col-span-3 border-b border-divider pb-2'>
@@ -335,9 +347,9 @@ const AddCourseModal = ({open,onClose,tab}) => {
                                                         value={formik2.values.course_category}
                                                         onChange={formik2.handleChange}
                                                         onBlur={formik2.handleBlur}
-                                                        disabled = {customCourse.category.CategoryName}
+                                                        disabled = {customCourse?.category?.CategoryName}
                                                     >
-                                                    <option value={customCourse.category?.CategoryName || ""}>{customCourse.category?.CategoryName || "Select an option"}</option>
+                                                    <option value={customCourse?.category?.CategoryName || ""}>{customCourse?.category?.CategoryName || "Select an option"}</option>
                                                     {coursecategories.map((category) => (
                                                         <option key={category.id} value={category.id}>{category.category_name}</option>
                                                     ))}
@@ -359,9 +371,9 @@ const AddCourseModal = ({open,onClose,tab}) => {
                                                         value={formik2.values.course_type}
                                                         onChange={formik2.handleChange}
                                                         onBlur={formik2.handleBlur}
-                                                        disabled = {customCourse.CourseType}
+                                                        disabled = {customCourse?.CourseType}
                                                     >
-                                                    <option value="">{customCourse.CourseType || "Select an Option"}</option>
+                                                    <option value="">{customCourse?.CourseType || "Select an Option"}</option>
                                                     {coursetypes.map((type) => (
                                                         <option key={type.id} value={type.id}>{type.type_name}</option>
                                                     ))}
@@ -382,7 +394,7 @@ const AddCourseModal = ({open,onClose,tab}) => {
                                                         value={formik2.values.training_type}
                                                         onChange={formik2.handleChange}
                                                         onBlur={formik2.handleBlur}
-                                                        disabled = {customCourse.TrainingType}
+                                                        disabled = {customCourse?.TrainingType}
                                                     >
                                                     <option value="">{customCourse?.TrainingType|| "Select Option"}</option>
                                                     <option value="Mandatory">Mandatory</option>
@@ -463,7 +475,7 @@ const AddCourseModal = ({open,onClose,tab}) => {
                                                     value={formik2.values.short_desc}
                                                     onChange={formik2.handleChange}
                                                     onBlur={formik2.handleBlur}
-                                                    disabled = {customCourse.CourseDescription}
+                                                    disabled = {customCourse?.CourseDescription}
                                                     className='h-32 font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary resize-none'></textarea>
                                                     {formik2.touched.short_desc && formik2.errors.short_desc ? (<div className="text-red-500 text-xs font-text">{formik2.errors.short_desc}</div>):null}
                                             </div>
@@ -475,12 +487,13 @@ const AddCourseModal = ({open,onClose,tab}) => {
                                                 Back</button>
                                                 <input type="submit"
                                                     value="Add Course"
+                                                    onClick={()=>toggleState("steps", (current) => current + 1)}
                                                     className={`bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out w-full
                                                     `}/>
                                                 </div>
                                         </div>
-                                    </Stepper.Step>
                                 </form>
+                                    </Stepper.Step>
                                 <Stepper.Step icon={<FontAwesomeIcon icon={faBook} className="!text-primary"/>}>
                                 <div className="grid grid-cols-3 grid-rows-[min-content_auto] gap-x-3 gap-y-2">
                                     {/* Header */}

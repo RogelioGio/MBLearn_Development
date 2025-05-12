@@ -33,7 +33,7 @@ class CourseContextController extends Controller
     }
 
     public function getSelectedCourse($id){
-        $course = Course::with('adder', 'assignedCourseAdmins','categories','types','training_modes')->find($id);
+        $course = Course::with('adder', 'assignedCourseAdmins','categories','types','training_modes', 'lessons')->find($id);
         $course->adder->load(['branch', 'department', 'branch.city', 'title']);
         $course->assignedCourseAdmins->load(['branch', 'department', 'branch.city', 'title']);
         //$main = $course->adder()->with(['branch', 'department', 'branch.city', 'title'])->get();
