@@ -12,6 +12,8 @@ use App\Http\Requests\StoreCourseRequest;
 use App\Http\Resources\CourseResource;
 use App\Models\Category;
 use App\Models\Course;
+use App\Models\Lesson;
+use App\Models\LessonFile;
 use App\Models\Training_Mode;
 use App\Models\Type;
 use App\Models\UserInfos;
@@ -73,7 +75,7 @@ class CourseController extends Controller
      */
     public function store(StoreCourseRequest $request)
     {
-        $data = $request->all();
+        $data = $request->validated();
         $type = Type::query()->firstOrCreate(["type_name" => $data['type_name']]);
         $category = Category::query()->firstOrCreate(["category_name" => $data['category_name']]);
         $current_user = Auth::user();
@@ -91,6 +93,17 @@ class CourseController extends Controller
             "weeks" => $data["weeks"],
             "days" => $data['days']
             ]);
+
+        foreach($data['lessons'] as $lessons){
+            $lesson = Lesson::create($lessons);
+            $course->lessons()->syncWithoutDetaching($lesson->id);
+            foreach($lessons['files'] as $files){
+                $file = LessonFile::create($files);
+                $file = $request->file('lessons.*.files.*.file');
+                $path = $file->store('images', 'public');
+                $file->lesson()->associate($lesson);
+            }
+        }
 
         $course->types()->syncWithoutDetaching($type->id);
         $course->categories()->syncWithoutDetaching($category->id);
