@@ -68,17 +68,6 @@ const LearnerDashboard = ({name,user}) => {
                 <p className="font-text text-unactive text-xs">Stay organized by tracking schedule and activities</p>
             </div>
             <div className="bg-white w-full h-full rounded-md shadow-md border-2 border-primary flex">
-                <Calendar
-                    initialFocus
-                    mode="single"
-                    defaultMonth={new Date()}
-                    disabled={{ before: new Date() }}
-                    className="w-full"
-                    classNames={{
-                        row: "flex w-full mt-2 justify-between",
-                        head_row: "flex items-center justify-between",
-                    }}
-                />
             </div>
         </div>
 

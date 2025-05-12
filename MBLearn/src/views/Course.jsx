@@ -39,7 +39,7 @@ export default function Course() {
     const {selectCourse, selectedCourse, isFetching, resetSelectedCourse} = useCourse();
 
     const tabComponents = {
-        module: <CourseModuleProps />,
+        module: <CourseModuleProps/>,
         learner: <CourseLearenerProps course={course}/>,
         courseAdmin: <CourseCourseAdminAssignmentProps courseID={course}/>,
         enrollment: <CourseEnrollmentProps course={course}/>,
@@ -55,11 +55,6 @@ export default function Course() {
         setLoading(isFetching);
         setCourse(selectedCourse);
     }, [selectedCourse,id, isFetching]);
-
-    useEffect(() => {
-        console.log(`Fetching: ${isFetching} Loading: ${isLoading}`);
-        console.log(course)
-    },[isFetching, isLoading])
 
     // useEffect(() => {
     //     console.log("Active Tab:", tab);
@@ -82,7 +77,7 @@ export default function Course() {
                         <div className="flex flex-row col-span-4 items-center justify-between gap-4">
                             <div className="flex flex-row col-span-4 items-center gap-4 pl-5">
                                 {/* Back Button */}
-                                <div className="group aspect-square rounded-full border-primary border-2 flex flex-row justify-center items-center hover:bg-primary transition-all ease-in-out" onClick={() => navigate(-1)}>
+                                <div className="group aspect-square rounded-full border-primary border-2 flex flex-row justify-center items-center hover:bg-primary transition-all ease-in-out" onClick={()=>navigate(-1)}>
                                     <FontAwesomeIcon icon={faArrowLeft} className="text-primary text-2xl cursor-pointer p-2 group-hover:text-white"/>
                                 </div>
                                 {/* Course Name */}
@@ -142,7 +137,7 @@ export default function Course() {
                         <CourseModuleProps headers={<>
                             <div className="flex flex-row col-span-4 items-center gap-4 pl-5">
                                 {/* Back Button */}
-                                <div className="w-10 h-10 group aspect-square rounded-full border-primary border-2 flex flex-row justify-center items-center hover:bg-primary transition-all ease-in-out" onClick={() => navigate(-1)}>
+                                <div className="w-10 h-10 group aspect-square rounded-full border-primary border-2 flex flex-row justify-center items-center hover:bg-primary transition-all ease-in-out" onClick={()=>navigate(-1)}>
                                     <FontAwesomeIcon icon={faArrowLeft} className="text-primary text-2xl cursor-pointer group-hover:text-white"/>
                                 </div>
                                 {/* Course Name */}

@@ -1183,16 +1183,8 @@ const CourseModuleProps = ({headers}) => {
         }
     ]
 
-    const [modules, setModules] = useState([]);
     const [learnerProgress, setLearnerProgress] = useState([])
     const [progress, setProgress] = useState()
-
-
-    //Set Modules
-    useEffect(()=>{
-        const moduleIds = Lesson.map(l => l.id)
-        setModules(moduleIds)
-    },[Lesson])
 
     //New handleNext
     const completeModule = (moduleId) => {
@@ -1204,14 +1196,13 @@ const CourseModuleProps = ({headers}) => {
     }
 
     const calculateProgress = () => {
-        const p = (learnerProgress.length / modules.length) * 100;
+        const p = (learnerProgress.length / Lesson.length) * 100;
         setProgress(Math.round(p))
         console.log("Total Progress",progress)
     }
 
     useEffect(()=> {
         console.log("Learner Progress: ", learnerProgress)
-        console.log("Module to be completed: ", modules)
         calculateProgress()
     },[learnerProgress])
 
