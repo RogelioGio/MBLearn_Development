@@ -67,10 +67,11 @@ class CarouselImageController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(CarouselImage $carouselImage)
+    public function destroy($carouselImage)
     {
-        Storage::disk('public')->delete($carouselImage->image_path);
+        $img = CarouselImage::find($carouselImage);
+        Storage::disk('public')->delete($img->image_path);
         $carouselImage->delete();
-        return response()->json(['message' => 'Carousel image deleted successfully.'], 200);
+        return response()->json(["message" =>"Carousel Image Deleted"]);
     }
 }
