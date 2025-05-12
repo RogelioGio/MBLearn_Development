@@ -662,7 +662,7 @@ class userInfo_controller extends Controller
         //Input Validation
         $existingatedData = $request->validated();
         $file = $request->file('image');
-        $path = $file->store('images', 'public/profiles/'.$userInfos->id);
+        $path = $file->store('/'.$userInfos->id, 'profiles');
         $title = Title::query()->find($existingatedData['title_id']);
         $department = Department::query()->find($existingatedData['department_id']);
         $branch = Branch::query()->find($existingatedData['branch_id']);
