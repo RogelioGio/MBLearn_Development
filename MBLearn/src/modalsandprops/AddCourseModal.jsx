@@ -95,7 +95,7 @@ const AddCourseModal = ({open,onClose,tab}) => {
             //     return;
             // }
 
-            compELearnAxios.get(`courses/${values.courseID}`).then((res) => {console.log(res.data)}).catch((err) => {console.log(err)})
+            compELearnAxios.get(`courses/${values.courseID}`).then((res) => {toggleState("steps", (current) => current + 1)}).catch((err) => { setFieldError("courseID", "Invalid Course ID. Please enter the correct Course ID.")})
             // Proceed to the next step
             //toggleState("steps", (current) => current + 1);
 
