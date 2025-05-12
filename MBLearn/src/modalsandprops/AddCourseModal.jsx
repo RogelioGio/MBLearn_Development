@@ -2,7 +2,7 @@ import { useFormik } from "formik"
 import * as Yup from 'yup';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Menu, MenuButton, MenuItem, MenuItems, Disclosure, DisclosureButton, DisclosurePanel, Dialog, DialogBackdrop, DialogPanel, DialogTitle} from '@headlessui/react';
-import { faBook, faBookOpen, faMagnifyingGlass, faSearch, faCircleXmark as solidXmark } from "@fortawesome/free-solid-svg-icons";
+import { faBook, faBookBookmark, faBookOpen, faMagnifyingGlass, faSearch, faCircleXmark as solidXmark } from "@fortawesome/free-solid-svg-icons";
 import { faCircleCheck as faCircleCheckRegular, faCircleXmark as regularXmark } from "@fortawesome/free-regular-svg-icons";
 import { Stepper } from '@mantine/core';
 import { useEffect, useState } from 'react';
@@ -128,7 +128,6 @@ const AddCourseModal = ({open,onClose,tab}) => {
             months:'',
             weeks:'',
             days:'',
-            short_desc: customCourse?.CourseDescription || '',
         },
         //validation
         validationSchema: Yup.object({
@@ -213,6 +212,7 @@ const AddCourseModal = ({open,onClose,tab}) => {
             console.log(res)
         }).catch((err) => {
             console.log(err)
+            setAdding(false)
         })
     }
 
@@ -452,20 +452,6 @@ const AddCourseModal = ({open,onClose,tab}) => {
                                                 </label>
                                                 {formik2.touched.days && formik2.errors.days ? (<div className="text-red-500 text-xs font-text">{formik2.errors.days}</div>):null}
                                             </div>
-
-                                            {/* Short Description */}
-                                            <div className="inline-flex flex-col gap-2 row-start-7 col-span-3">
-                                                <label htmlFor="short_desc" className="font-text text-unactive text-xs flex flex-row justify-between">Short Description:</label>
-                                                <textarea
-                                                    name="short_desc"
-                                                    id=""
-                                                    value={formik2.values.short_desc}
-                                                    onChange={formik2.handleChange}
-                                                    onBlur={formik2.handleBlur}
-                                                    disabled = {customCourse?.CourseDescription}
-                                                    className='h-32 font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary resize-none'></textarea>
-                                                    {formik2.touched.short_desc && formik2.errors.short_desc ? (<div className="text-red-500 text-xs font-text">{formik2.errors.short_desc}</div>):null}
-                                            </div>
                                             <div className="col-span-3 flex flex-row gap-2">
                                                 <button
                                                 onClick={()=>toggleState("steps", (current) => current - 1)}
@@ -473,14 +459,77 @@ const AddCourseModal = ({open,onClose,tab}) => {
                                                 `}>
                                                 Back</button>
                                                 <input type="submit"
-                                                    value="Add Course"
+                                                    value="Continue"
                                                     onClick={()=>toggleState("steps", (current) => current + 1)}
                                                     className={`bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out w-full
                                                     `}/>
                                                 </div>
                                         </div>
                                 </form>
-                                    </Stepper.Step>
+                                </Stepper.Step>
+                                <Stepper.Step icon={<FontAwesomeIcon icon={faBookBookmark} className="!text-primary"/>}>
+                                    <form
+                                        //</Stepper.Step>onSubmit={formik2.handleSubmit}
+                                    >
+                                        <div className="grid grid-cols-[1fr_1fr_1fr_1fr] grid-rows-[min-content_auto] gap-x-3 gap-y-2">
+                                            {/* Header */}
+                                            <div className='col-span-4 border-b border-divider pb-2'>
+                                                <h1 className='text-primary font-header'>Step 3</h1>
+                                                <p className='text-unactive font-text'>Please complete the following field for additional information about the course</p>
+                                            </div>
+                                            {/* Short Description */}
+                                            <div className="inline-flex flex-col gap-2 row-start-2 col-span-4">
+                                                <label htmlFor="short_desc" className="font-text text-unactive text-xs flex flex-row justify-between">Short Description:</label>
+                                                <textarea
+                                                    name="short_desc"
+                                                    id=""
+                                                    // value={formik2.values.short_desc}
+                                                    // onChange={formik2.handleChange}
+                                                    // onBlur={formik2.handleBlur}
+                                                    disabled = {customCourse?.CourseDescription}
+                                                    className='h-32 font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary resize-none'></textarea>
+                                                    {/* {formik2.touched.short_desc && formik2.errors.short_desc ? (<div className="text-red-500 text-xs font-text">{formik2.errors.short_desc}</div>):null} */}
+                                            </div>
+                                            <div className="inline-flex flex-col gap-2 row-start-3 col-span-2">
+                                                <label htmlFor="course_objectives" className="font-text text-unactive text-xs flex flex-row justify-between">Course Objective:</label>
+                                                <textarea
+                                                    name="course_objective"
+                                                    id=""
+                                                    // value={formik2.values.short_desc}
+                                                    // onChange={formik2.handleChange}
+                                                    // onBlur={formik2.handleBlur}
+                                                    //disabled = {customCourse?.CourseDescription}
+                                                    className='h-32 font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary resize-none'></textarea>
+                                                    {/* {formik2.touched.short_desc && formik2.errors.short_desc ? (<div className="text-red-500 text-xs font-text">{formik2.errors.short_desc}</div>):null} */}
+                                            </div>
+                                            <div className="inline-flex flex-col gap-2 row-start-3 col-span-2">
+                                                <label htmlFor="course_outcome" className="font-text text-unactive text-xs flex flex-row justify-between">Course Outcome:</label>
+                                                <textarea
+                                                    name="course_outcome"
+                                                    id=""
+                                                    // value={formik2.values.short_desc}
+                                                    // onChange={formik2.handleChange}
+                                                    // onBlur={formik2.handleBlur}
+                                                    //disabled = {customCourse?.CourseDescription}
+                                                    className='h-32 font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary resize-none'></textarea>
+                                                    {/* {formik2.touched.short_desc && formik2.errors.short_desc ? (<div className="text-red-500 text-xs font-text">{formik2.errors.short_desc}</div>):null} */}
+                                            </div>
+                                            <div className="row-start-4 col-span-4 flex flex-row gap-2">
+                                                <button
+                                                onClick={()=>toggleState("steps", (current) => current - 1)}
+                                                className={`bg-white border-2 border-primary p-4 rounded-md font-header uppercase text-primary text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 hover:text-white hover:border-primaryhover transition-all ease-in-out w-full
+                                                `}>
+                                                Back</button>
+                                                <input type="submit"
+                                                    value="Continue"
+                                                    onClick={()=>toggleState("steps", (current) => current + 1)}
+                                                    className={`bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out w-full
+                                                    `}/>
+                                            </div>
+                                        </div>
+
+                                    </form>
+                                </Stepper.Step>
                                 <Stepper.Step icon={<FontAwesomeIcon icon={faBook} className="!text-primary"/>}>
                                 <div className="grid grid-cols-3 grid-rows-[min-content_auto] gap-x-3 gap-y-2">
                                     {/* Header */}
@@ -566,7 +615,7 @@ const AddCourseModal = ({open,onClose,tab}) => {
                                                         onClick={()=>submitCourse()}
                                                         className={`bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out w-full
                                                         `}>
-                                                        {adding ? "Adding course..." : "Confirm"}</button>
+                                                        {adding ? "Adding course..." : "Add Course"}</button>
                                                     </div>
                                                 </>
                                             )

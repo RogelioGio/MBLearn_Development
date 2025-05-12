@@ -8,7 +8,6 @@ const Content = ({ course }) => {
 
     useEffect(() => {
         if (course) {
-            console.log("Course data:", course);
             const courseData = JSON.parse(course);
             console.log(typeof courseData) // Debugging log
             setLesson(courseData); // Ensure course is valid before setting
