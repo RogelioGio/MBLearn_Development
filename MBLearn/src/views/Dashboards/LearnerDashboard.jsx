@@ -116,34 +116,25 @@ const LearnerDashboard = ({name,user}) => {
                             {
                                 enrolled.map((course) => {
                                     return (
-                                        <div className="bg-white w-full h-full shadow-md rounded-md hover:scale-105 hover:cursor-pointer flex flex-col transition-all ease-in-out" onClick={() => navigate(`/learner/course/${course.id}`)}>
-                                            <div className="flex justify-start bg-gradient-to-b from-[hsl(239,94%,19%)] via-[hsl(214,97%,27%)] to-[hsl(201,100%,36%)] w-full h-2/5 rounded-t-md p-2">
-                                                {/* Thumbnail */}
-                                                <div>
-                                            {
-                                                course.training_type ? (<span className="inline-flex items-center rounded-md bg-white px-2 py-1 text-xs font-medium text-primary font-text">
+                                        <div className="bg-white w-full h-full shadow-md rounded-md grid grid-cols-1 grid-rows-[min-content_1fr_1fr_min-content_min-content] hover:cursor-pointer hover:scale-105 transition-all ease-in-out" onClick={() => navigate(`/learner/course/${course.id}`)}>
+                                            <div className="bg-gradient-to-b from-[hsl(239,94%,19%)] via-[hsl(214,97%,27%)] to-[hsl(201,100%,36%)] w-full h-14 rounded-t-md p-3">
+                                                <span className="inline-flex items-center rounded-md bg-primarybg px-2 py-1 text-xs font-medium text-primary font-text">
                                                     {course.training_type}
-                                                </span>)
-                                                :(null)
-                                            }
-                                                </div>
+                                                </span>
                                             </div>
-                                            <div className="border w-full h-full p-3 grid grid-cols-1 grid-rows-[min-content_1fr_1fr]">
-                                                <div className="flex flex-col justify-center">
-                                                    <p className="font-header text-sm text-primary">{course.name}</p>
-                                                    <p className="font-text text-unactive text-xs">Course ID: {course?.CourseID}</p>
+                                            <div className="flex flex-col justify-center row-span-2 px-3">
+                                                <p className="font-header text-sm text-primary">{course.name}</p>
+                                                <p className="font-text text-unactive text-xs">Course ID: {course?.CourseID}</p>
+                                            </div>
+                                            <div className="flex flex-col justify-center px-3">
+                                                <p className="font-text text-unactive text-xs">Deadline: {format(new Date(course.deadline[0]), 'MMMM d, yyyy')}</p>
+                                            </div>
+                                            <div className="flex flex-col justify-center p-3">
+                                                <div className="flex flex-row justify-between items-end font-text text-unactive text-xs py-2">
+                                                    <p>Progress: </p>
+                                                    <p className="text-xl">50%</p>
                                                 </div>
-                                                <div className="flex flex-col justify-center">
-                                                    <p className="font-text text-unactive text-xs">Deadline: {format(new Date(course.deadline[0]), 'MMMM d, yyyy')}</p>
-                                                </div>
-                                                <div className="flex flex-col justify-center">
-                                                    <div className="flex flex-row justify-between items-end font-text text-unactive text-xs py-2">
-                                                        <p>Progress: </p>
-                                                        <p className="text-xl">50%</p>
-                                                    </div>
-                                                    <Progress value={50}/>
-                                                </div>
-                                                {/* Prgress */}
+                                                <Progress value={50}/>
                                             </div>
                                         </div>
                                     )
