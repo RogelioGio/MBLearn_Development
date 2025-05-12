@@ -99,7 +99,7 @@ class CourseController extends Controller
             $course->lessons()->syncWithoutDetaching($lesson->id);
             foreach($lessons['files'] as $files){
                 $file = $request->file('lessons.*.files.*.file');
-                $path = $file->store('images', 'public');
+                $path = $file->store('/'.$course->name.'/'.$lesson->lesson_name, 'lessonfiles');
                 $file = LessonFile::create(['file_name' => $files['file_name'], 'file_type' => $files['file_type'], 'file_path' => $path]);
                 $file->lesson()->associate($lesson);
             }
