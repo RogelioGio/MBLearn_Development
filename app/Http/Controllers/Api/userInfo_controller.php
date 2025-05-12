@@ -738,6 +738,13 @@ class userInfo_controller extends Controller
     }
 
     public function test(Request $request){
-        return Role::withCount('users')->orderBy('created_at', 'desc')->with('permissions')->get();
+        $array = [];
+        foreach($request['lessons'] as $req){
+            $array[] = $req['lesson_name'];
+            foreach($req['files'] as $file){
+                $array[] = [$file];
+            }
+        }
+        return $array;
     }
 }

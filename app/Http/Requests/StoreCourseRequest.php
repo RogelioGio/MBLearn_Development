@@ -35,12 +35,13 @@ class StoreCourseRequest extends FormRequest
             "weeks" => "nullable|integer",
             "days" => "nullable|integer",
             "archived" => "required",
+            "lessons.*.lesson_name" => "nullable|string",
+            "lessons.*.lesson_content_as_json" => "nullable|string",
+            "lessons.*.lesson_type" => "nullable|string",
+            "lessons.*.files.*.file_name" => "nullable|string",
+            "lessons.*.files.*.file_type" => "nullable|string",
+            "lessons.*.files.*.file" => "required|file|mimes:mp4,doc,docx,pdf|max:51200"
         ];
     }
 
-    public function prepareforValidation(){
-        $this->merge([
-            "assigned_course_admin_id"=>$this->assignedCourseAdminId,
-        ]);
-    }
 }
