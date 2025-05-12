@@ -39,7 +39,6 @@ class StoreCourseRequest extends FormRequest
             "lessons.*.lesson_content_as_json" => "nullable|string",
             "lessons.*.lesson_type" => "nullable|string",
             "lessons.*.files.*.file_name" => "nullable|string",
-            "lessons.*.files.*.file_path" => "nullable|string",
             "lessons.*.files.*.file_type" => "nullable|string",
             "lessons.*.files.*.file" => "required|file|mimes:mp4,doc,docx,pdf|max:51200"
         ];
