@@ -47,6 +47,10 @@ const AddCourseModal = ({open,onClose,tab}) => {
     const [adding, setAdding] = useState(false);
     const [fetching, setFetching] = useState(false);
     const navigate = useNavigate();
+    const [courseLesson, setCourseLesson] = useState([])
+    const [customCourse, setCustomCourse] = useState()
+
+    useEffect(() => {formik.resetForm,formik2.resetForm},[open])
 
     // const customCourse = {
     //     id: 1,
@@ -117,14 +121,14 @@ const AddCourseModal = ({open,onClose,tab}) => {
         //reference
         initialValues:{
             course_id: formik.values.courseID,
-            course_name: customCourse.CourseName || '',
-            course_type: customCourse.CourseType || '',
-            course_category: customCourse.category.CategoryName || '',
-            training_type: customCourse.TrainingType || '',
+            course_name: customCourse?.CourseName || '',
+            course_type: customCourse?.CourseType || '',
+            course_category: customCourse?.category.CategoryName || '',
+            training_type: customCourse?.TrainingType || '',
             months:'',
             weeks:'',
             days:'',
-            short_desc: customCourse.CourseDescription || '',
+            short_desc: customCourse?.CourseDescription || '',
         },
         //validation
         validationSchema: Yup.object({
@@ -157,11 +161,12 @@ const AddCourseModal = ({open,onClose,tab}) => {
         }),
         //on-submit
         onSubmit: (values) => {
+            console.log("Final Values: ", values);
             const finalValues = {
                 ...values,
                 course_id: formik.values.courseID, // Overrides the course_id field
             };
-            console.log("Final Values: ", finalValues);
+
 
             toggleState("steps", (current) => current + 1);
         }
@@ -187,7 +192,7 @@ const AddCourseModal = ({open,onClose,tab}) => {
         CourseID: formik.values.courseID,
         description: formik2.values.short_desc,
         course_objectives: '',
-        course_oustcomes: '',
+        course_outcomes: '',
         type_name: formik2.values.course_type,
         category_name: formik2.values.course_category,
         training_type: formik2.values.training_type,
@@ -196,7 +201,7 @@ const AddCourseModal = ({open,onClose,tab}) => {
         days: formik2.values.days,
         archived: "active",
         assignedCourseAdminId:"",
-
+        lessons:courseLesson,
     }
 
     const submitCourse = () => {
@@ -296,91 +301,91 @@ const AddCourseModal = ({open,onClose,tab}) => {
                                 </Stepper.Step>
                                 <Stepper.Step  icon={<FontAwesomeIcon icon={faBookOpen} className="!text-primary"/>}>
                                 <form onSubmit={formik2.handleSubmit}>
-                                    <div className="grid grid-cols-[1fr_1fr_1fr] grid-rows-[min-content_auto] gap-x-3 gap-y-2">
-                                        {/* Header */}
-                                        <div className='col-span-3 border-b border-divider pb-2'>
-                                            <h1 className='text-primary font-header'>Step 2</h1>
-                                            <p className='text-unactive font-text'>Change neccessary information within the given fields below </p>
-                                        </div>
-                                        {/* Inputed course ID */}
-                                        <div className="col-span-3 flex flex-row items-center justify-between">
-                                            <h1 className="py-2 font-header text-primary">Course ID:</h1>
-                                            <p className="font-text">{formik.values.courseID}</p>
-                                        </div>
-                                        {/* Course Name */}
-                                        <div className="inline-flex flex-col gap-2 row-start-3 col-span-3">
-                                            <label htmlFor="course_name" className="font-header text-xs flex flex-row justify-between">
-                                                <p className="font-text text-unactive">Course Name:</p>
-                                            </label>
-                                            <input type="text" name="course_name"
-                                                value={formik2.values.course_name}
-                                                onChange={formik2.handleChange}
-                                                onBlur={formik2.handleBlur}
-                                                className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
-                                                {formik2.touched.course_name && formik2.errors.course_name ? (<div className="text-red-500 text-xs font-text">{formik2.errors.course_name}</div>):null}
-                                        </div>
-                                        {/* Course Category */}
-                                        <div className="inline-flex flex-col gap-2 row-start-4 col-span-1">
-                                            <label htmlFor="course_category" className="font-header text-xs flex flex-row justify-between">
-                                                <p className="font-text text-unactive">Course Category:</p>
-                                            </label>
-                                            <div class="grid grid-cols-1">
-                                                <select id="course_category" name="course_category" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
-                                                    value={formik2.values.course_category}
+                                        <div className="grid grid-cols-[1fr_1fr_1fr] grid-rows-[min-content_auto] gap-x-3 gap-y-2">
+                                            {/* Header */}
+                                            <div className='col-span-3 border-b border-divider pb-2'>
+                                                <h1 className='text-primary font-header'>Step 2</h1>
+                                                <p className='text-unactive font-text'>Change neccessary information within the given fields below </p>
+                                            </div>
+                                            {/* Inputed course ID */}
+                                            <div className="col-span-3 flex flex-row items-center justify-between">
+                                                <h1 className="py-2 font-header text-primary">Course ID:</h1>
+                                                <p className="font-text">{formik.values.courseID}</p>
+                                            </div>
+                                            {/* Course Name */}
+                                            <div className="inline-flex flex-col gap-2 row-start-3 col-span-3">
+                                                <label htmlFor="course_name" className="font-header text-xs flex flex-row justify-between">
+                                                    <p className="font-text text-unactive">Course Name:</p>
+                                                </label>
+                                                <input type="text" name="course_name"
+                                                    value={formik2.values.course_name}
                                                     onChange={formik2.handleChange}
                                                     onBlur={formik2.handleBlur}
-                                                    disabled = {customCourse.category.CategoryName}
-                                                >
-                                                <option value={customCourse.category?.CategoryName || ""}>{customCourse.category?.CategoryName || "Select an option"}</option>
-                                                {coursecategories.map((category) => (
-                                                    <option key={category.id} value={category.id}>{category.category_name}</option>
-                                                ))}
-                                                </select>
-                                                <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                                                <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                                                </svg>
+                                                    className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
+                                                    {formik2.touched.course_name && formik2.errors.course_name ? (<div className="text-red-500 text-xs font-text">{formik2.errors.course_name}</div>):null}
                                             </div>
-                                            {formik2.touched.course_category && formik2.errors.course_category ? (<div className="text-red-500 text-xs font-text">{formik2.errors.course_category}</div>):null}
+                                            {/* Course Category */}
+                                            <div className="inline-flex flex-col gap-2 row-start-4 col-span-1">
+                                                <label htmlFor="course_category" className="font-header text-xs flex flex-row justify-between">
+                                                    <p className="font-text text-unactive">Course Category:</p>
+                                                </label>
+                                                <div class="grid grid-cols-1">
+                                                    <select id="course_category" name="course_category" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
+                                                        value={formik2.values.course_category}
+                                                        onChange={formik2.handleChange}
+                                                        onBlur={formik2.handleBlur}
+                                                        disabled = {customCourse?.category?.CategoryName}
+                                                    >
+                                                    <option value={customCourse?.category?.CategoryName || ""}>{customCourse?.category?.CategoryName || "Select an option"}</option>
+                                                    {coursecategories.map((category) => (
+                                                        <option key={category.id} value={category.id}>{category.category_name}</option>
+                                                    ))}
+                                                    </select>
+                                                    <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                                    <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                                    </svg>
+                                                </div>
+                                                {formik2.touched.course_category && formik2.errors.course_category ? (<div className="text-red-500 text-xs font-text">{formik2.errors.course_category}</div>):null}
 
-                                        </div>
-                                        {/* Course Type */}
-                                        <div className="inline-flex flex-col gap-2 row-start-4 col-span-1">
-                                            <label htmlFor="course_type" className="font-header text-xs flex flex-row justify-between">
-                                                <p className="font-text text-unactive">Course Type:</p>
-                                            </label>
-                                            <div class="grid grid-cols-1">
-                                                <select id="course_type" name="course_type" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
-                                                    value={formik2.values.course_type}
-                                                    onChange={formik2.handleChange}
-                                                    onBlur={formik2.handleBlur}
-                                                    disabled = {customCourse.CourseType}
-                                                >
-                                                <option value="">{customCourse.CourseType || "Select an Option"}</option>
-                                                {coursetypes.map((type) => (
-                                                    <option key={type.id} value={type.id}>{type.type_name}</option>
-                                                ))}
-                                                </select>
-                                                <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                                                <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                                                </svg>
                                             </div>
-                                                {formik2.touched.course_type && formik2.errors.course_type ? (<div className="text-red-500 text-xs font-text">{formik2.errors.course_type}</div>):null}
-                                        </div>
-                                        {/* Training Type */}
-                                        <div className="inline-flex flex-col gap-2 row-start-4 col-span-1">
-                                            <label htmlFor="course_type" className="font-header text-xs flex flex-row justify-between">
-                                                <p className="font-text text-unactive">Training Type:</p>
-                                            </label>
-                                            <div class="grid grid-cols-1">
-                                                <select id="training_type" name="training_type" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
-                                                    value={formik2.values.training_type}
-                                                    onChange={formik2.handleChange}
-                                                    onBlur={formik2.handleBlur}
-                                                    disabled = {customCourse.TrainingType}
-                                                >
-                                                <option value="">{customCourse?.TrainingType|| "Select Option"}</option>
-                                                <option value="Mandatory">Mandatory</option>
-                                                <option value="Unmandatory">Non-mandatory</option>
+                                            {/* Course Type */}
+                                            <div className="inline-flex flex-col gap-2 row-start-4 col-span-1">
+                                                <label htmlFor="course_type" className="font-header text-xs flex flex-row justify-between">
+                                                    <p className="font-text text-unactive">Course Type:</p>
+                                                </label>
+                                                <div class="grid grid-cols-1">
+                                                    <select id="course_type" name="course_type" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
+                                                        value={formik2.values.course_type}
+                                                        onChange={formik2.handleChange}
+                                                        onBlur={formik2.handleBlur}
+                                                        disabled = {customCourse?.CourseType}
+                                                    >
+                                                    <option value="">{customCourse?.CourseType || "Select an Option"}</option>
+                                                    {coursetypes.map((type) => (
+                                                        <option key={type.id} value={type.id}>{type.type_name}</option>
+                                                    ))}
+                                                    </select>
+                                                    <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                                    <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                                    </svg>
+                                                </div>
+                                                    {formik2.touched.course_type && formik2.errors.course_type ? (<div className="text-red-500 text-xs font-text">{formik2.errors.course_type}</div>):null}
+                                            </div>
+                                            {/* Training Type */}
+                                            <div className="inline-flex flex-col gap-2 row-start-4 col-span-1">
+                                                <label htmlFor="course_type" className="font-header text-xs flex flex-row justify-between">
+                                                    <p className="font-text text-unactive">Training Type:</p>
+                                                </label>
+                                                <div class="grid grid-cols-1">
+                                                    <select id="training_type" name="training_type" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
+                                                        value={formik2.values.training_type}
+                                                        onChange={formik2.handleChange}
+                                                        onBlur={formik2.handleBlur}
+                                                        disabled = {customCourse?.TrainingType}
+                                                    >
+                                                    <option value="">{customCourse?.TrainingType|| "Select Option"}</option>
+                                                    <option value="Mandatory">Mandatory</option>
+                                                    <option value="Unmandatory">Non-mandatory</option>
 
                                                 </select>
                                                 <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
@@ -448,36 +453,34 @@ const AddCourseModal = ({open,onClose,tab}) => {
                                                 {formik2.touched.days && formik2.errors.days ? (<div className="text-red-500 text-xs font-text">{formik2.errors.days}</div>):null}
                                             </div>
 
-                                        {/* Short Description */}
-                                        <div className="inline-flex flex-col gap-2 row-start-7 col-span-3">
-                                            <label htmlFor="short_desc" className="font-text text-unactive text-xs flex flex-row justify-between">Short Description:</label>
-                                            <textarea
-                                                name="short_desc"
-                                                id=""
-                                                value={formik2.values.short_desc}
-                                                onChange={formik2.handleChange}
-                                                onBlur={formik2.handleBlur}
-                                                disabled = {customCourse.CourseDescription}
-                                                className='h-32 font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary resize-none'></textarea>
-                                                {formik2.touched.short_desc && formik2.errors.short_desc ? (<div className="text-red-500 text-xs font-text">{formik2.errors.short_desc}</div>):null}
-                                        </div>
-                                        <div className="col-span-3 flex flex-row gap-2">
-                                            <button
-                                            onClick={()=>toggleState("steps", (current) => currsent - 1)}
-                                            className={`bg-white border-2 border-primary p-4 rounded-md font-header uppercase text-primary text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 hover:text-white hover:border-primaryhover transition-all ease-in-out w-full
-                                            `}>
-                                            Back</button>
-                                            <input type="submit"
-                                                value="Add Course"
-                                                className={`bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out w-full
-                                                `}/>
+                                            {/* Short Description */}
+                                            <div className="inline-flex flex-col gap-2 row-start-7 col-span-3">
+                                                <label htmlFor="short_desc" className="font-text text-unactive text-xs flex flex-row justify-between">Short Description:</label>
+                                                <textarea
+                                                    name="short_desc"
+                                                    id=""
+                                                    value={formik2.values.short_desc}
+                                                    onChange={formik2.handleChange}
+                                                    onBlur={formik2.handleBlur}
+                                                    disabled = {customCourse?.CourseDescription}
+                                                    className='h-32 font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary resize-none'></textarea>
+                                                    {formik2.touched.short_desc && formik2.errors.short_desc ? (<div className="text-red-500 text-xs font-text">{formik2.errors.short_desc}</div>):null}
                                             </div>
-                                    </div>
+                                            <div className="col-span-3 flex flex-row gap-2">
+                                                <button
+                                                onClick={()=>toggleState("steps", (current) => current - 1)}
+                                                className={`bg-white border-2 border-primary p-4 rounded-md font-header uppercase text-primary text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 hover:text-white hover:border-primaryhover transition-all ease-in-out w-full
+                                                `}>
+                                                Back</button>
+                                                <input type="submit"
+                                                    value="Add Course"
+                                                    onClick={()=>toggleState("steps", (current) => current + 1)}
+                                                    className={`bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out w-full
+                                                    `}/>
+                                                </div>
+                                        </div>
                                 </form>
-                                </Stepper.Step>
-                                <Stepper.step>
-
-                                </Stepper.step>
+                                    </Stepper.Step>
                                 <Stepper.Step icon={<FontAwesomeIcon icon={faBook} className="!text-primary"/>}>
                                 <div className="grid grid-cols-3 grid-rows-[min-content_auto] gap-x-3 gap-y-2">
                                     {/* Header */}

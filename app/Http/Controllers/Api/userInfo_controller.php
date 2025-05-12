@@ -738,13 +738,8 @@ class userInfo_controller extends Controller
     }
 
     public function test(Request $request){
-        $array = [];
-        foreach($request['lessons'] as $req){
-            $array[] = $req['lesson_name'];
-            foreach($req['files'] as $file){
-                $array[] = [$file];
-            }
-        }
-        return $array;
+        $course = Course::find(60);
+
+        return $course->load(['lessons']);
     }
 }

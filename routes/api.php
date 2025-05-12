@@ -35,6 +35,9 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('/user', function (Request $request) {
         return $request->user()->load(['userInfos', 'userInfos.permissions','userInfos.roles',]);
     });
+    Route::get('/status/{userId}/{lessonId}', function (Request $request) {
+        return response()->json(['status' => 'complete']);
+    });
     //test purposes amd account implementation (postman testing)
     // Route::post('/add-test-user', [UserController::class, 'addTestUser']);
     // Route::get('/users', [UserController::class, 'index']);

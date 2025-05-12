@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('file_name');
             $table->string('file_path');
             $table->string('file_type');
-            $table->foreignId('lesson_id')->constrained('lessons', 'id')->cascadeOnDelete();
+            $table->foreignId('lesson_id')->nullable()->constrained('lessons', 'id')->cascadeOnDelete();
             $table->timestamps();
         });
     }

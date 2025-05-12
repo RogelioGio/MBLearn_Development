@@ -75,7 +75,7 @@ class CourseController extends Controller
      */
     public function store(StoreCourseRequest $request)
     {
-        $data = $request->validated();
+        $data = $request->all();
         $type = Type::query()->firstOrCreate(["type_name" => $data['type_name']]);
         $category = Category::query()->firstOrCreate(["category_name" => $data['category_name']]);
         $current_user = Auth::user();
@@ -95,8 +95,9 @@ class CourseController extends Controller
             ]);
 
         foreach($data['lessons'] as $lessons){
-            $lesson = Lesson::create($lessons);
-            $course->lessons()->syncWithoutDetaching($lesson->id);
+            $lesson = Lesson::create(['lesson_name' => $lessons['LessonName'],
+                        'lesson_content_as_json' => $lessons['LessonContentAsJSON']]);
+            $course->lessons()->save($lesson);
             foreach($lessons['files'] as $files){
                 $file = $request->file('lessons.*.files.*.file');
                 $path = $file->store('/'.$course->name.'/'.$lesson->lesson_name, 'lessonfiles');
@@ -109,7 +110,7 @@ class CourseController extends Controller
         $course->categories()->syncWithoutDetaching($category->id);
         $course->save();
         return response()->json([
-            "course" => $course,
+            "course" => $course->load(['lessons']),
             "types" => $course->types,
             "categories" => $course->categories,
         ], 200);
@@ -285,8 +286,8 @@ class CourseController extends Controller
      */
     public function show(Course $course)
     {
-        $course->load(['categories', 'types', 'training_modes']);
-        return new CourseResource($course);
+        $course->load(['categories', 'types', 'training_modes', 'lessons']);
+        return $course;
     }
 
 

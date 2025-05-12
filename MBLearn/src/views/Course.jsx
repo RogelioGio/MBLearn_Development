@@ -38,28 +38,27 @@ export default function Course() {
     const [assign, setAssign] = useState(false);
     const {selectCourse, selectedCourse, isFetching, resetSelectedCourse} = useCourse();
 
-    const tabComponents = {
-        module: <CourseModuleProps/>,
-        learner: <CourseLearenerProps course={course}/>,
-        courseAdmin: <CourseCourseAdminAssignmentProps courseID={course}/>,
-        enrollment: <CourseEnrollmentProps course={course}/>,
-    };
-
+    
     useEffect(() => {
         setLoading(true)
     },[])
-
+    
     useEffect(() => {
         resetSelectedCourse(id);
         selectCourse(id);
         setLoading(isFetching);
         setCourse(selectedCourse);
     }, [selectedCourse,id, isFetching]);
-
+    
     // useEffect(() => {
-    //     console.log("Active Tab:", tab);
-    // }, [tab]);
-
+        //     console.log("Active Tab:", tab);
+        // }, [tab]);
+        const tabComponents = {
+            module: <CourseModuleProps course={course}/>,
+            learner: <CourseLearenerProps course={course}/>,
+            courseAdmin: <CourseCourseAdminAssignmentProps courseID={course}/>,
+            enrollment: <CourseEnrollmentProps course={course}/>,
+        };
 
     return(
         <>
