@@ -78,7 +78,6 @@ const AddCourseModal = ({open,onClose,tab}) => {
         //submission
         onSubmit: (values, {setFieldError}) => {
             setFetching(true)
-            toggleState("steps", (current) => current + 1)
             compELearnAxios.get(`courses/${values.courseID}`)
             .then((res) => {
                 setFetching(false);
@@ -149,7 +148,7 @@ const AddCourseModal = ({open,onClose,tab}) => {
 
     const formik3 = useFormik({
         initialValues: {
-            course_description: customCourse?.course_description || '',
+            course_description: customCourse?.CourseDescription || '',
             course_objectives: customCourse?.course_objectives || '',
             course_outcomes: customCourse?.course_outcomes || '',
         },
