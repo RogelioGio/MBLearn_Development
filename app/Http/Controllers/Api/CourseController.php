@@ -244,24 +244,19 @@ class CourseController extends Controller
         ]);
     }
 
+    public function checkIfExist($courseId){
+        $exists = Course::where('CourseID', $courseId)->exists();
+        if($exists){
+            return response()->json([
+                'Error' => 'Course already exists.'
+            ],409);
+        }
+        return response()->json([
+            'message' => 'Course ID is available.'
+        ], 200);
+    }
+
     public function getAssignedCourseAdmin(Course $course, Request $request){
-        // $perPage = 5;
-        // $currentPage = request()->get('page', 1);
-
-        // $admins = $course->assignedCourseAdmins->load(['branch', 'department', 'branch.city', 'title']);
-        // $userCollection = collect($admins);
-
-        // $paginatedAdmins = new LengthAwarePaginator(
-        //     $userCollection->forPage($currentPage, $perPage),
-        //     $userCollection->count(),
-        //     $perPage,
-        //     $currentPage,
-        //     ['path' => request()->url()]
-        // );
-
-
-        //return $paginatedAdmins;
-
         $page = $request->input('page', 1); // default page
         $perPage = $request->input('per_page', 5); // default per page
 
@@ -289,14 +284,6 @@ class CourseController extends Controller
         $course->load(['categories', 'types', 'training_modes', 'lessons']);
         return $course;
     }
-
-
-    //TODO FIX
-    // public function showEnrolledUsers(Course $course){
-    //     return UserCredentialsResource::collection($course->enrolledUsers);
-    // }
-
-
 
     /**
      * Update the specified resource in storage.

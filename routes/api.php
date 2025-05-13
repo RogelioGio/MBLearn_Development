@@ -41,11 +41,7 @@ Route::middleware('auth:sanctum')->group(function(){
         $userId->unsetRelation('lessons');
         return $userId->lessons()->wherePivot('lesson_id', $lessonId->id)->first();
     });
-    //test purposes amd account implementation (postman testing)
-    // Route::post('/add-test-user', [UserController::class, 'addTestUser']);
-    // Route::get('/users', [UserController::class, 'index']);
-    // Route::delete('/users/{id}', [UserController::class, 'deleteUser']);
-    // Route::get('/reset-users', [UserController::class, 'resetUsers']);
+    Route::get('/exists/{courseId}', [CourseController::class, 'checkIfExist']);
 
     //Relationships API
     Route::post('/addRole/{userInfos}/{role}', [userInfo_controller::class, 'addRole']);
