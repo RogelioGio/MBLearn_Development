@@ -56,6 +56,7 @@ export default function AssignedCourseCatalog() {
             setLoading(true)
             axiosClient.get(`/courses?${key}[${order}]=true`)
             .then(({ data }) => {
+                console.log(data)
                 setAssignedCourse(data.data)
                 pageChangeState("totalCourses", data.total)
                 pageChangeState("lastPage", data.lastPage)
@@ -102,9 +103,14 @@ export default function AssignedCourseCatalog() {
                     console.log(err);
                 })
         } else if(typeOfCourse === "allCourses"){
-            axiosClient.get('/courses')
+            axiosClient.get('/courses', {
+                params: {
+                    page: pageState.currentPage,
+                    perPage: pageState.perPage,
+                }
+            })
             .then(({ data }) => {
-                setAssignedCourse(data.data)
+                setAssignedCourse(data.data.data)
                 pageChangeState("totalCourses", data.total)
                 pageChangeState("lastPage", data.lastPage)
                 setLoading(false)
@@ -263,19 +269,19 @@ export default function AssignedCourseCatalog() {
             <div className="px-5 col-span-4 w-full py-2 flex flex-row justify-between items-center gap-2">
                 <div className= {`w-full border-2 border-primary px-4 py-2 rounded-md shadow-md text-primary font-header ${tab === "myCourses" ? "bg-primary text-white":"bg-white"} hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out`} onClick={() => {setTab("myCourses")}}>
                         <p className="flex gap-2"><span><FontAwesomeIcon icon={faBookBookmark}/></span> My Courses</p>
-                        <p className="text-xs font-text">Manage and view all your inputted courses</p>
+                        {/* <p className="text-xs font-text">Manage and view all your inputted courses</p> */}
                     </div>
                     <div className={`w-full border-2 border-primary px-4 py-2 rounded-md shadow-md text-primary font-header ${tab === "assignedCourses" ? "bg-primary text-white":"bg-white"} hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out`} onClick={() => {setTab("assignedCourses")}}>
                         <p className="flex gap-2"><span><FontAwesomeIcon icon={faBook}/></span>Assigned Courses</p>
-                        <p className="text-xs font-text">Manage and view all your assigned courses</p>
+                        {/* <p className="text-xs font-text">Manage and view all your assigned courses</p> */}
                     </div>
                     <div className={`w-full border-2 border-primary px-4 py-2 rounded-md shadow-md text-primary font-header ${tab === "allCourses" ? "bg-primary text-white":"bg-white"} hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out`} onClick={() => {setTab("allCourses")}}>
                         <p className="flex gap-2"><span><FontAwesomeIcon icon={faSwatchbook}/></span>All Courses Catalog</p>
-                        <p className="text-xs font-text">View all availbale courses in MBLearn</p>
+                        {/* <p className="text-xs font-text">View all availbale courses in MBLearn</p> */}
                     </div>
                     <div className={`w-full border-2 border-primary px-4 py-2 rounded-md shadow-md text-primary font-header ${tab === "archivedCourses" ? "bg-primary text-white":"bg-white"} hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out`} onClick={() => {setTab("archivedCourses")}}>
                         <p className="flex gap-2"><span><FontAwesomeIcon icon={faBookmark}/></span>Archived Courses</p>
-                        <p className="text-xs font-text">View all archived courses</p>
+                        {/* <p className="text-xs font-text">View all archived courses</p> */}
                     </div>
             </div>
 
@@ -402,7 +408,7 @@ export default function AssignedCourseCatalog() {
             {/* Course Catalog */}
             <div className="mx-5 col-span-4 row-start-4 row-span-1 grid grid-cols-4 grid-rows-2 gap-2 py-2">
                 {
-                    assigned_course && !loading ? assigned_course.map((course, index) => {
+                    assigned_course && !loading ? assigned_course?.map((course, index) => {
                         return(
                             <AssignedCourseCatalogCard key={index}
                                 id={course.id}

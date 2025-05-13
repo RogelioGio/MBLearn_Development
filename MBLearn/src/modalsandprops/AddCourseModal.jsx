@@ -52,8 +52,6 @@ const AddCourseModal = ({open,onClose,tab,refresh}) => {
     const [fetchedCourse, setFetchedCourse] = useState({})
 
     //Final na toh
-    //const [fetchedCourse, setFetchedCourse] = useState({})
-
     // const fetchedCourse = {
     //     id: 1,
     //     Status: "false",
@@ -81,7 +79,7 @@ const AddCourseModal = ({open,onClose,tab,refresh}) => {
     const testfetchedCourse = {
         id: 1,
         Status: "false",
-        CourseID: 10000000000,
+        CourseID: 8,
         CourseName: "Course Name",
         CourseDescription: "This course empowers participants with the skills to perform complex financial analyses using Microsoft Excel. Learners will master advanced formulas, pivot tables, data visualization, and financial modeling techniques. Ideal for finance professionals seeking to enhance decision-making and reporting efficiency.",
         CourseObjective: "Course Description",
@@ -130,9 +128,18 @@ const AddCourseModal = ({open,onClose,tab,refresh}) => {
 
             //Test Case
             if(parseInt(values.courseID, 10) === testfetchedCourse.CourseID){
-                setFetching(false);
-                setFetchedCourse(testfetchedCourse);
-                toggleState("steps", (current) => current + 1)
+                axiosClient.get(`exists/${values.courseID}`)
+                .then((res) =>
+                    {
+                        setFetching(false);
+                        setFetchedCourse(testfetchedCourse);
+                        toggleState("steps", (current) => current + 1)
+                    }
+                ).catch((err) => {
+                    setFetching(false);
+                    setFieldError("courseID", "The course is already in the system")
+
+                })
                 return
             } else {
                 setFetching(false)
@@ -141,10 +148,18 @@ const AddCourseModal = ({open,onClose,tab,refresh}) => {
 
             // compELearnAxios.get(`courses/${values.courseID}`)
             // .then((res) => {
-            //     setFetching(false);
-            //     toggleState("steps", (current) => current + 1)
-            //     setCustomCourse(res.data);
-            //     setCourseLesson(res.data.lessons)
+                // axiosClient.get(`exist/${values.courseID}`)
+                //     .then((res) =>
+                //         {
+                //             setFetching(false);
+                //             setFetchedCourse(testfetchedCourse);
+                //             toggleState("steps", (current) => current + 1)
+                //         }
+                //     ).catch((err) => {
+                //         setFetching(false);
+                //         setFieldError("courseID", "The course is already in the system")
+
+                //     })
             // })
             // .catch((err) => {
             //     setFetching(false);
