@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Lesson extends Model
@@ -20,5 +21,11 @@ class Lesson extends Model
 
     public function files(): HasMany{
         return $this->hasMany(LessonFile::class, 'lesson_id');
+    }
+
+    public function learners(): BelongsToMany{
+        return $this->belongsToMany(UserInfos::class, 'learner_progress', 'lesson_id', 'userInfo_id')
+            ->withPivotValue('is_completed', false)
+            ->withTimestamps();
     }
 }

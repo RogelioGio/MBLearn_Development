@@ -51,6 +51,12 @@ class UserInfos extends Model
         return $this->hasMany(Enrollment::class, 'enroller_id');
     }
 
+    public function lessons(): BelongsToMany{
+        return $this->belongsToMany(Lesson::class, 'learner_progress', 'userInfo_id', 'lesson_id')
+            ->withPivotValue('is_completed', false)
+            ->withTimestamps();
+    }
+
     public function statusEnrollings(){
         return $this->enrollings()->with('course')->get()->map(function ($enrollment){
             $courses = $enrollment->course;

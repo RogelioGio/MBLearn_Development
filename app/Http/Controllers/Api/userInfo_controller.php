@@ -11,6 +11,7 @@ use App\Http\Requests\BulkStoreUserRequest;
 use App\Http\Requests\TestArrayRequest;
 use App\Http\Requests\updateUserInfo;
 use App\Models\Branch;
+use App\Models\CarouselImage;
 use App\Models\Course;
 use App\Models\Department;
 use App\Models\Division;
@@ -30,6 +31,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon as SupportCarbon;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 
 class userInfo_controller extends Controller
 {
@@ -738,8 +740,16 @@ class userInfo_controller extends Controller
     }
 
     public function test(Request $request){
-        $course = Course::find(60);
-
-        return $course->load(['lessons']);
+        $carousel = CarouselImage::find(15);
+        if (Storage::disk('carouselimages')->exists($carousel->image_path)) {
+            return response()->json([
+                'message' => 'File exists',
+                'path' => $carousel->image_path,
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'File does not exist',
+            ]);
+        }
     }
 }
