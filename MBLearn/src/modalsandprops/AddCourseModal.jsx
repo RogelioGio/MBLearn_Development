@@ -52,30 +52,13 @@ const AddCourseModal = ({open,onClose,tab}) => {
 
     useEffect(() => {formik.resetForm,formik2.resetForm},[open])
 
-    // const customCourse = {
-    //     id: 1,
-    //     CourseID: 10000000000,
-    //     Status: false,
-    //     CourseName: "DRR Course",
-    //     CourseType: "Soft Skill Training",
-    //     TrainingType: "Mandatory",
-    //     CourseDescription: "An example of an overview is . . .",
-    //     ImagePath: "courses/DrEjduzF61mmv3ROb4B0Gqs6AU5Uu77Si6G1lHVN.png",
-    //     created_at: "2025-05-09T09:28:15.000000Z",
-    //     updated_at: "2025-05-10T10:36:48.000000Z",
-    //     CategoryID: 1,
-    //     category: {
-    //     id: 1,
-    //     CategoryName: "Programming Metrobank",
-    //     created_at: "2025-05-09T09:27:25.000000Z",
-    //     updated_at: "2025-05-09T09:27:25.000000Z"
-    //     },
-
-    // }
-
     useEffect(() => {
         if (!open) {
             formik.resetForm();
+            formik.resetForm();
+            formik2.resetForm();
+            formik3.resetForm();
+
             toggleState("steps", 0)
         }
     }, [open]);
@@ -94,25 +77,18 @@ const AddCourseModal = ({open,onClose,tab}) => {
         }),
         //submission
         onSubmit: (values, {setFieldError}) => {
-            // Check if input is valid before allowing step progression
-            // if (parseInt(values.courseID, 10) !== customCourse.CourseID) {
-            //     setFieldError("courseID", "Invalid Course ID. Please enter the correct Course ID.");
-            //     return;
-            // }
             setFetching(true)
             toggleState("steps", (current) => current + 1)
             compELearnAxios.get(`courses/${values.courseID}`)
             .then((res) => {
                 setFetching(false);
                 toggleState("steps", (current) => current + 1)
+                setCustomCourse(res.data);
             })
             .catch((err) => {
                 setFetching(false);
                 setFieldError("courseID", "Invalid Course ID. Please enter the correct Course ID.")
             })
-            // Proceed to the next step
-            //toggleState("steps", (current) => current + 1);
-
         }
     })
 
@@ -171,6 +147,29 @@ const AddCourseModal = ({open,onClose,tab}) => {
         }
     })
 
+    const formik3 = useFormik({
+        initialValues: {
+            course_description: customCourse?.course_description || '',
+            course_objectives: customCourse?.course_objectives || '',
+            course_outcomes: customCourse?.course_outcomes || '',
+        },
+        validationSchema: Yup.object({
+            course_description: Yup.string()
+                .required('Course description should not be empty')
+                .max(500, 'Course description should not exceed 500 characters'),
+            course_objectives: Yup.string()
+                .required('Course objectives should not be empty')
+                .max(500, 'Course objectives should not exceed 500 characters'),
+            course_outcomes: Yup.string()
+                .required('Course outcomes should not be empty')
+                .max(500, 'Course outcomes should not exceed 500 characters'),
+        }),
+        onSubmit: (values) => {
+            console.log("Course Additional Details: ", values);
+            toggleState("steps", (current) => current + 1);
+        },
+    });
+
     //UseState
     const [state, setState] = useState({
         steps: 0,
@@ -189,9 +188,9 @@ const AddCourseModal = ({open,onClose,tab}) => {
     const payload = {
         name: formik2.values.course_name,
         CourseID: formik.values.courseID,
-        description: formik2.values.short_desc,
-        course_objectives: '',
-        course_outcomes: '',
+        description: formik3.values.course_description,
+        course_objectives: formik3.values.course_objectives,
+        course_outcomes: formik3.values.course_outcomes,
         type_name: formik2.values.course_type,
         category_name: formik2.values.course_category,
         training_type: formik2.values.training_type,
@@ -205,15 +204,7 @@ const AddCourseModal = ({open,onClose,tab}) => {
 
     const submitCourse = () => {
         setAdding(true)
-        axiosClient.post('/courses', payload)
-        .then((res) => {
-            toggleState("steps", (current) => current + 1)
-            setAdding(false)
-            console.log(res)
-        }).catch((err) => {
-            console.log(err)
-            setAdding(false)
-        })
+        console.log("Final Values: ", payload);
     }
 
     return(
@@ -271,7 +262,6 @@ const AddCourseModal = ({open,onClose,tab}) => {
                                             <div className='row-start-3 w-full flex'>
                                             <button
                                                 type="submit"
-                                                //disabled={formik.values.courseID.length < 11}
                                                 className={`h-fit border-2 w-full border-primary rounded-md shadow-md bg-primary text-white justify-center flex items-center py-2 px-20 font-header transition-all ease-in-out focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary`}
                                             >
                                                 <p>{fetching ? "Checking..." : "Check Avaliable Course"}</p>
@@ -468,9 +458,7 @@ const AddCourseModal = ({open,onClose,tab}) => {
                                 </form>
                                 </Stepper.Step>
                                 <Stepper.Step icon={<FontAwesomeIcon icon={faBookBookmark} className="!text-primary"/>}>
-                                    <form
-                                        //</Stepper.Step>onSubmit={formik2.handleSubmit}
-                                    >
+                                    <form onSubmit={formik3.handleSubmit}>
                                         <div className="grid grid-cols-[1fr_1fr_1fr_1fr] grid-rows-[min-content_auto] gap-x-3 gap-y-2">
                                             {/* Header */}
                                             <div className='col-span-4 border-b border-divider pb-2'>
@@ -479,40 +467,37 @@ const AddCourseModal = ({open,onClose,tab}) => {
                                             </div>
                                             {/* Short Description */}
                                             <div className="inline-flex flex-col gap-2 row-start-2 col-span-4">
-                                                <label htmlFor="short_desc" className="font-text text-unactive text-xs flex flex-row justify-between">Short Description:</label>
+                                                <label htmlFor="course_description" className="font-text text-unactive text-xs flex flex-row justify-between">Short Description:</label>
                                                 <textarea
-                                                    name="short_desc"
-                                                    id=""
-                                                    // value={formik2.values.short_desc}
-                                                    // onChange={formik2.handleChange}
-                                                    // onBlur={formik2.handleBlur}
-                                                    disabled = {customCourse?.CourseDescription}
+                                                    name="course_description"
+                                                    id="course_description"
+                                                    value={formik3.values.course_description}
+                                                    onChange={formik3.handleChange}
+                                                    onBlur={formik3.handleBlur}
                                                     className='h-32 font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary resize-none'></textarea>
-                                                    {/* {formik2.touched.short_desc && formik2.errors.short_desc ? (<div className="text-red-500 text-xs font-text">{formik2.errors.short_desc}</div>):null} */}
+                                                    {formik3.touched.course_description && formik3.errors.course_description ? (<div className="text-red-500 text-xs font-text">{formik3.errors.course_description}</div>):null}
                                             </div>
                                             <div className="inline-flex flex-col gap-2 row-start-3 col-span-2">
                                                 <label htmlFor="course_objectives" className="font-text text-unactive text-xs flex flex-row justify-between">Course Objective:</label>
                                                 <textarea
-                                                    name="course_objective"
-                                                    id=""
-                                                    // value={formik2.values.short_desc}
-                                                    // onChange={formik2.handleChange}
-                                                    // onBlur={formik2.handleBlur}
-                                                    //disabled = {customCourse?.CourseDescription}
+                                                    name="course_objectives"
+                                                    id="course_objectives"
+                                                    value={formik3.values.course_objectives}
+                                                    onChange={formik3.handleChange}
+                                                    onBlur={formik3.handleBlur}
                                                     className='h-32 font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary resize-none'></textarea>
-                                                    {/* {formik2.touched.short_desc && formik2.errors.short_desc ? (<div className="text-red-500 text-xs font-text">{formik2.errors.short_desc}</div>):null} */}
+                                                    {formik3.touched.course_objectives && formik3.errors.course_objectives ? (<div className="text-red-500 text-xs font-text">{formik3.errors.course_objectives}</div>):null}
                                             </div>
                                             <div className="inline-flex flex-col gap-2 row-start-3 col-span-2">
-                                                <label htmlFor="course_outcome" className="font-text text-unactive text-xs flex flex-row justify-between">Course Outcome:</label>
+                                                <label htmlFor="course_outcomes" className="font-text text-unactive text-xs flex flex-row justify-between">Course Outcome:</label>
                                                 <textarea
-                                                    name="course_outcome"
-                                                    id=""
-                                                    // value={formik2.values.short_desc}
-                                                    // onChange={formik2.handleChange}
-                                                    // onBlur={formik2.handleBlur}
-                                                    //disabled = {customCourse?.CourseDescription}
+                                                    name="course_outcomes"
+                                                    id="course_outcomes"
+                                                    value={formik3.values.course_outcomes}
+                                                    onChange={formik3.handleChange}
+                                                    onBlur={formik3.handleBlur}
                                                     className='h-32 font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary resize-none'></textarea>
-                                                    {/* {formik2.touched.short_desc && formik2.errors.short_desc ? (<div className="text-red-500 text-xs font-text">{formik2.errors.short_desc}</div>):null} */}
+                                                    {formik3.touched.course_outcomes && formik3.errors.course_outcomes ? (<div className="text-red-500 text-xs font-text">{formik3.errors.course_outcomes}</div>):null}
                                             </div>
                                             <div className="row-start-4 col-span-4 flex flex-row gap-2">
                                                 <button
@@ -522,7 +507,6 @@ const AddCourseModal = ({open,onClose,tab}) => {
                                                 Back</button>
                                                 <input type="submit"
                                                     value="Continue"
-                                                    onClick={()=>toggleState("steps", (current) => current + 1)}
                                                     className={`bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out w-full
                                                     `}/>
                                             </div>
@@ -534,7 +518,7 @@ const AddCourseModal = ({open,onClose,tab}) => {
                                 <div className="grid grid-cols-3 grid-rows-[min-content_auto] gap-x-3 gap-y-2">
                                     {/* Header */}
                                     <div className='col-span-3 border-b border-divider pb-2'>
-                                        <h1 className='text-primary font-header'>Step 3</h1>
+                                        <h1 className='text-primary font-header'>Step 4</h1>
                                         <p className='text-unactive font-text'>Review the course information and details</p>
                                     </div>
 
