@@ -12,6 +12,7 @@ import Course from "../views/Course";
 import CompeLearn from "./Compe-E-Learn.svg"
 import { useNavigate } from "react-router-dom";
 import compELearnAxios from "../comp-e-learn-axios";
+import axios from "axios";
 
 function normalizationDuration(values, setField) {
     let months = parseInt(values.months) || 0;
@@ -41,7 +42,7 @@ function normalizationDuration(values, setField) {
     setField('days', days > 0 ? days : '');
 }
 
-const AddCourseModal = ({open,onClose,tab}) => {
+const AddCourseModal = ({open,onClose,tab,refresh}) => {
     const {coursetypes, coursecategories, traingmodes} = useCourseContext();
     const [hover, setHover] = useState(false);
     const [adding, setAdding] = useState(false);
@@ -83,6 +84,7 @@ const AddCourseModal = ({open,onClose,tab}) => {
                 setFetching(false);
                 toggleState("steps", (current) => current + 1)
                 setCustomCourse(res.data);
+                setCourseLesson(res.data.lessons)
             })
             .catch((err) => {
                 setFetching(false);
@@ -147,6 +149,7 @@ const AddCourseModal = ({open,onClose,tab}) => {
     })
 
     const formik3 = useFormik({
+        enableReinitialize: true,
         initialValues: {
             course_description: customCourse?.CourseDescription || '',
             course_objectives: customCourse?.course_objectives || '',
@@ -154,14 +157,11 @@ const AddCourseModal = ({open,onClose,tab}) => {
         },
         validationSchema: Yup.object({
             course_description: Yup.string()
-                .required('Course description should not be empty')
-                .max(500, 'Course description should not exceed 500 characters'),
+                .required('Course description should not be empty'),
             course_objectives: Yup.string()
-                .required('Course objectives should not be empty')
-                .max(500, 'Course objectives should not exceed 500 characters'),
+                .required('Course objectives should not be empty'),
             course_outcomes: Yup.string()
-                .required('Course outcomes should not be empty')
-                .max(500, 'Course outcomes should not exceed 500 characters'),
+                .required('Course outcomes should not be empty'),
         }),
         onSubmit: (values) => {
             console.log("Course Additional Details: ", values);
@@ -204,6 +204,17 @@ const AddCourseModal = ({open,onClose,tab}) => {
     const submitCourse = () => {
         setAdding(true)
         console.log("Final Values: ", payload);
+        axiosClient.post("/courses", payload)
+        .then((res) => {
+            setAdding(false)
+            console.log(res.data);
+            refresh();
+            onClose();
+        })
+        .catch((err) => {
+            setAdding(false)
+            console.log(err);
+        })
     }
 
     return(

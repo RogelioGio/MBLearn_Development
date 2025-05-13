@@ -664,7 +664,10 @@ class userInfo_controller extends Controller
         //Input Validation
         $existingatedData = $request->validated();
         $file = $request->file('image');
-        $path = $file->store('/'.$userInfos->id, 'profiles');
+        $path = "";
+        if($file){
+            $path = $file->store('/'.$userInfos->id, 'profiles');
+        }
         $title = Title::query()->find($existingatedData['title_id']);
         $department = Department::query()->find($existingatedData['department_id']);
         $branch = Branch::query()->find($existingatedData['branch_id']);
@@ -682,7 +685,10 @@ class userInfo_controller extends Controller
         $userInfos->save();
 
         $userInfos->update($existingatedData);
-        $userInfos->update(["profile_image" => $path]);
+        if(!$path === ""){
+            $userInfos->update(["profile_image" => $path]);
+        }
+
         //Update UserInfo
         return response()->json([
             "Message" => 'Updated User',
@@ -740,16 +746,15 @@ class userInfo_controller extends Controller
     }
 
     public function test(Request $request){
-        $carousel = CarouselImage::find(15);
-        if (Storage::disk('carouselimages')->exists($carousel->image_path)) {
-            return response()->json([
-                'message' => 'File exists',
-                'path' => $carousel->image_path,
-            ]);
-        } else {
-            return response()->json([
-                'message' => 'File does not exist',
+
+        $user = UserInfos::query()->where('id', $request['user_id'])->first();
+        $course = Course::query()->where('id', $request['course_id'])->first();
+        $lessons = $course->lessons()->get();
+        foreach($lessons as $lesson){
+            $user->lessons()->attach($lesson->id, [
+                'is_completed' => false,
             ]);
         }
+        return $user->lessons;
     }
 }

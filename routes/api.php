@@ -36,8 +36,10 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('/user', function (Request $request) {
         return $request->user()->load(['userInfos', 'userInfos.permissions','userInfos.roles',]);
     });
-    Route::get('/status/{userId}/{lessonId}', function (Request $request, UserInfos $userId, $lessonId) {
-        return response()->json(['status' => 'complete']);
+    Route::get('/status/{userId}/{lessonId}', function (Request $request, UserInfos $userId, Lesson $lessonId) {
+        $userId->lessons()->updateExistingPivot($lessonId->id, ['is_completed' => true]);
+        $userId->unsetRelation('lessons');
+        return $userId->lessons()->wherePivot('lesson_id', $lessonId->id)->first();
     });
     //test purposes amd account implementation (postman testing)
     // Route::post('/add-test-user', [UserController::class, 'addTestUser']);
