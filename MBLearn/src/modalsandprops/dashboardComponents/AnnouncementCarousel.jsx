@@ -96,7 +96,7 @@ const AnnouncmentCarousel = () => {
                                     <div
                                         className="border-2 border-primary h-full rounded-md shadow-sm bg-white bg-center bg-cover"
                                         style={{
-                                            backgroundImage: `url(${import.meta.env.VITE_API_BASE_URL}/storage/${img.image_path})`,
+                                            backgroundImage: `url(${import.meta.env.VITE_API_BASE_URL}/storage/carouselimages/${img.image_path})`,
                                         }}
                                         >
                                         {/* Optional: Overlay or content here */}
