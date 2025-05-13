@@ -48,11 +48,19 @@ class EnrollmentController extends Controller
                 ['user_id', '=', $dat['user_id']],
                 ['course_id', '=', $dat['course_id']],
             ])->exists();
-
             if(!$exists){
                 $test[] = Enrollment::firstOrCreate($dat);
             } else{
                 $test[] = ["Message" => $dat['user_id']." is already enrolled in ".$dat['course_id']];
+            }
+
+            $user = UserInfos::query()->where('id', $dat['user_id'])->first();
+            $course = Course::query()->where('id', $dat['course_id'])->first();
+            $lessons = $course->lessons()->get();
+            foreach($lessons as $lesson){
+                $user->lessons()->syncWithoutDetaching($lesson->id, [
+                    'is_completed' => false,
+                ]);
             }
         }
  

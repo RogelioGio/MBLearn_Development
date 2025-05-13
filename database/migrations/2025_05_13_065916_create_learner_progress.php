@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('learner_progress', function (Blueprint $table) {
             $table->id();
             $table->foreignId('userInfo_id')->constrained('userInfo', 'id')->cascadeOnDelete();
-            $table->foreignId('course_id')->constrained('courses', 'id')->cascadeOnDelete();
+            $table->foreignId('lesson_id')->constrained('lessons', 'id')->cascadeOnDelete();
             $table->boolean('is_completed')->default(false);
             $table->timestamps();
         });
