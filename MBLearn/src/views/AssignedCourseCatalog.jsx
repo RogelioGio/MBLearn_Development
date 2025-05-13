@@ -474,7 +474,7 @@ export default function AssignedCourseCatalog() {
         </div>
 
         {/* Add Course */}
-        <AddCourseModal open={openAddCourse} onClose={()=>setOpenAddCourse(false)} tab={tab}/>
+        <AddCourseModal open={openAddCourse} onClose={()=>setOpenAddCourse(false)} tab={tab} refresh={()=>fetchCourses("myCourses")}/>
         </>
     )
 }
