@@ -127,6 +127,7 @@ const AddCourseModal = ({open,onClose,tab,refresh}) => {
         //submission
         onSubmit: (values, {setFieldError}) => {
             setFetching(true)
+
             //Test Case
             if(parseInt(values.courseID, 10) === testfetchedCourse.CourseID){
                 setFetching(false);
@@ -193,7 +194,6 @@ const AddCourseModal = ({open,onClose,tab,refresh}) => {
         }),
         //on-submit
         onSubmit: (values) => {
-            console.log("Final Values: ", values);
             toggleState("steps", (current) => current + 1);
         }
     })
@@ -214,7 +214,6 @@ const AddCourseModal = ({open,onClose,tab,refresh}) => {
                 .required('Course outcomes should not be empty'),
         }),
         onSubmit: (values) => {
-            console.log("Course Additional Details: ", values);
             toggleState("steps", (current) => current + 1);
         },
     });

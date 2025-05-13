@@ -38,18 +38,18 @@ export default function Course() {
     const [assign, setAssign] = useState(false);
     const {selectCourse, selectedCourse, isFetching, resetSelectedCourse} = useCourse();
 
-    
+
     useEffect(() => {
         setLoading(true)
     },[])
-    
+
     useEffect(() => {
         resetSelectedCourse(id);
         selectCourse(id);
         setLoading(isFetching);
         setCourse(selectedCourse);
     }, [selectedCourse,id, isFetching]);
-    
+
     // useEffect(() => {
         //     console.log("Active Tab:", tab);
         // }, [tab]);
@@ -157,7 +157,7 @@ export default function Course() {
                                     <p className="font-header">Detail</p>
                                 </div>
                             </div>
-                        </>}/>
+                        </>} course={course}/>
                     </>
                 ) :
                 (
