@@ -25,6 +25,7 @@ use App\Http\Controllers\Api\SectionController;
 use App\Http\Controllers\Api\SubgroupController;
 use App\Http\Controllers\Api\TitleController;
 use App\Http\Controllers\Api\TypeController;
+use App\Models\Lesson;
 use App\Models\UserInfos;
 
 //New Login routing
@@ -35,7 +36,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('/user', function (Request $request) {
         return $request->user()->load(['userInfos', 'userInfos.permissions','userInfos.roles',]);
     });
-    Route::get('/status/{userId}/{lessonId}', function (Request $request) {
+    Route::get('/status/{userId}/{lessonId}', function (Request $request, UserInfos $userId, Lesson $lessonId) {
         return response()->json(['status' => 'complete']);
     });
     //test purposes amd account implementation (postman testing)
