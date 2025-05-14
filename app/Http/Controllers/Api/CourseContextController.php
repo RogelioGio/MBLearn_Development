@@ -46,4 +46,16 @@ class CourseContextController extends Controller
             return response()->json(['message' => 'Course not found'], 404);
         }
     }
+
+        public function adminGetSelectedCourse($id){
+        $course = Course::with('adder', 'assignedCourseAdmins','categories','types','training_modes', 'lessons')->find($id);
+        $course->adder->load(['branch', 'department', 'branch.city', 'title']);
+        $course->assignedCourseAdmins->load(['branch', 'department', 'branch.city', 'title']);
+        //$main = $course->adder()->with(['branch', 'department', 'branch.city', 'title'])->get();
+        if ($course) {
+            return response()->json($course);
+        } else {
+            return response()->json(['message' => 'Course not found'], 404);
+        }
+    }
 }
