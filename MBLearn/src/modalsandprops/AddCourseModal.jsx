@@ -148,7 +148,7 @@ const AddCourseModal = ({open,onClose,tab,refresh}) => {
 
             compELearnAxios.get(`courses/${values.courseID}`)
             .then((res) => {
-                axiosClient.get(`exist/${values.courseID}`)
+                axiosClient.get(`exists/${values.courseID}`)
                     .then((res) =>
                         {
                             setFetching(false);
