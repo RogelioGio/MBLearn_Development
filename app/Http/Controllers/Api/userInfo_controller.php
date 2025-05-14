@@ -585,6 +585,14 @@ class userInfo_controller extends Controller
             }
         }
 
+        if($request->has('enrollment_status')){
+            if(!($request->input('enrollment_status')['eq'] == "")){
+                $querySort->whereHas('enrollments', function($subQuery) use ($request){
+                    $subQuery->where('enrollment_status', $request->input('enrollment_status'));
+                });
+            }
+        }
+
         $courses = $querySort->with(['categories', 'types', 'training_modes'])->withCount('lessons')->where('archived', '=', 'active')->paginate($perPage);
         $deadline = [];
 
