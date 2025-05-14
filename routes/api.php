@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\EnrollmentController;
 use App\Http\Controllers\Api\userInfo_controller;
 use App\Http\Controllers\Api\userCredentials_controller;
 use App\Http\Controllers\Api\FilterCategoryController;
+use App\Http\Controllers\Api\LessonsController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\SectionController;
@@ -36,11 +37,8 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('/user', function (Request $request) {
         return $request->user()->load(['userInfos', 'userInfos.permissions','userInfos.roles',]);
     });
-    Route::get('/status/{userId}/{lessonId}', function (Request $request, UserInfos $userId, Lesson $lessonId) {
-        $userId->lessons()->updateExistingPivot($lessonId->id, ['is_completed' => true]);
-        $userId->unsetRelation('lessons');
-        return $userId->lessons()->wherePivot('lesson_id', $lessonId->id)->first();
-    });
+    Route::get('/status/{userId}/{lessonId}', [LessonsController::class, 'updateLearnerProgress']);
+    
     Route::get('/exists/{courseId}', [CourseController::class, 'checkIfExist']);
 
     //Relationships API
