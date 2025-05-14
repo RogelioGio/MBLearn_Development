@@ -23,15 +23,13 @@ class UpdateEnrollmentStatus
     {
         $course = $event->lesson->course;
         $enrollment = $event->userInfos->enrollments()->where('course_id', $course->id)->first();
-        if($enrollment->enrollment_status === 'enrolled'){
+        $lesson_count = $course->lessons()->count();
+        $completed_count = $event->userInfos->lessons()->where('course_id', $course->id)
+            ->wherePivot('is_completed', true)->count();
+        if($lesson_count < $completed_count){
             $enrollment->update(['enrollment_status' => 'ongoing']);
-        } elseif($enrollment->enrollment_status === 'ongoing'){
-            $lesson_count = $course->lessons()->count();
-            $completed_count = $event->userInfos->lessons()->where('course_id', $course->id)
-                ->wherePivot('is_completed', true)->count();
-            if($lesson_count === $completed_count){
-                $enrollment->update(['enrollment_status' => 'finished']);
-            }
+        } elseif($lesson_count == $completed_count){
+            $enrollment->update(['enrollment_status' => 'finished']);
         }
     }
 }
