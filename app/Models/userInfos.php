@@ -57,6 +57,10 @@ class UserInfos extends Model
             ->withTimestamps();
     }
 
+    public function lessonsCompletedCount($courseId): int{
+        return $this->lessons()->where('course_id', $courseId)->wherePivot('is_completed', true)->count();
+    }
+
     public function statusEnrollings(){
         return $this->enrollings()->with('course')->get()->map(function ($enrollment){
             $courses = $enrollment->course;

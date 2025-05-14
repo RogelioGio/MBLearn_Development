@@ -43,6 +43,10 @@ class Course extends Model
         return $this->hasManyThrough(UserInfos::class, Enrollment::class, 'course_id', 'id', 'id', 'user_id');
     }
 
+    public function lessonCount(): int{
+        return $this->lessons()->count();
+    }
+
     public function statusEnrolledUsers(){
         return $this->enrollments()->with('enrolledUser')->get()->map(function ($enrollment){
             $user = $enrollment->enrolledUser;

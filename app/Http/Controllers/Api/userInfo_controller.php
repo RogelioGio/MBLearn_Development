@@ -585,23 +585,21 @@ class userInfo_controller extends Controller
             }
         }
 
-        $courses = $querySort->with(['categories', 'types', 'training_modes'])->where('archived', '=', 'active')->paginate($perPage);
+        $courses = $querySort->with(['categories', 'types', 'training_modes'])->withCount('lessons')->where('archived', '=', 'active')->paginate($perPage);
         $deadline = [];
 
-        foreach($courses as $course){
-            $deadline[] = Enrollment::query()
-            ->where('user_id', '=', $userInfos->id)
-            ->where('course_id', '=', $course->id)
-            ->pluck('end_date');
+        foreach($courses as $index => $course){
+            if($course->lessons_count > 0){
+                $course->progress = $userInfos->lessonsCompletedCount($course->id)/$course->lessons_count * 100;
+            }else{
+                $course->progress = 0;
+            }
+            $course->deadline = Enrollment::query()
+                ->where('user_id', '=', $userInfos->id)
+                ->where('course_id', '=', $course->id)
+                ->pluck('end_date')
+                ->first();
         }
-
-        foreach($deadline as $line){
-            $courses->getCollection()->transform(function ($item) use($line){
-                $item->deadline = $line;
-                return $item;
-            });
-        }
-
         return response() -> json([
             'data' => $courses->items(),
             'total' => $courses->total(),
@@ -748,13 +746,7 @@ class userInfo_controller extends Controller
     public function test(Request $request){
 
         $user = UserInfos::query()->where('id', $request['user_id'])->first();
-        $course = Course::query()->where('id', $request['course_id'])->first();
-        $lessons = $course->lessons()->get();
-        foreach($lessons as $lesson){
-            $user->lessons()->attach($lesson->id, [
-                'is_completed' => false,
-            ]);
-        }
-        return $user->lessons;
+        
+        return $user->lessons()->where('course_id', $request['course_id'])->wherePivot('is_completed', true)->count();
     }
 }
