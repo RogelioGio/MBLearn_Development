@@ -32,6 +32,7 @@ const CourseEnrollmentProps = ({course}) => {
     const [enrolled, setEnrolled] = useState(false)
     const [enrolling, setEnrolling] = useState(false)
     const [empty, setEmpty] = useState(false) // opens the warning
+    const [processing, setProcessing] = useState(false)
 
     const [date, setDate] = React.useState({
             from: new Date(),
@@ -188,6 +189,7 @@ const CourseEnrollmentProps = ({course}) => {
         }
 
         const handleEnrolling = () => {
+            setProcessing(true)
             const enrolees = selected.map(e => ({
                 ...e,
                 start_date: format(new Date(date.from), 'yyyy-MM-dd HH:mm:ss'),
@@ -200,6 +202,7 @@ const CourseEnrollmentProps = ({course}) => {
                 setEnrolling(false)
                 setDurationModal(false)
                 setEnrolled(true);
+                setProcessing(false)
             })
             .catch((err)=>console.log(err));
             // setEnrolling(false)
@@ -633,7 +636,7 @@ const CourseEnrollmentProps = ({course}) => {
         </div>
 
         {/* Training Duration */}
-        <TrainingDurationModal open={durationModal} close={closeEnrolling} enroll={handleEnrolling} date={date} _setDate={setDate} course={course}/>
+        <TrainingDurationModal open={durationModal} close={closeEnrolling} enroll={handleEnrolling} date={date} _setDate={setDate} course={course} enrolling={processing}/>
         {/* Successfully */}
         <CourseEnrollmentSuccesfully open={enrolled} close={close} result={results}/>
         {/* Empty */}

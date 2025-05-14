@@ -37,7 +37,7 @@ function normalizationDuration(values, setField) {
     setField('days', days > 0 ? days : '');
 }
 
-const TraningDurationModal = ({ open, close, enroll, date, _setDate, course}) => {
+const TraningDurationModal = ({ open, close, enroll, date, _setDate, course, enrolling}) => {
     const [duration, setDuration] = useState({
         months: course.months !== null ? course.months : 0,
         weeks: course.weeks !== null ? course.weeks : 0,
@@ -268,7 +268,7 @@ const TraningDurationModal = ({ open, close, enroll, date, _setDate, course}) =>
                                         onClick={()=>enroll()}
                                         className={`bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out w-full
                                         `}>
-                                        Set Duration</button>
+                                        {!enrolling ? "Enroll Learner":"Enrolling"}</button>
                                     </div>
 
                                 </div>

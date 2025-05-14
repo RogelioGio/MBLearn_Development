@@ -127,44 +127,44 @@ const AddCourseModal = ({open,onClose,tab,refresh}) => {
             setFetching(true)
 
             //Test Case
-            if(parseInt(values.courseID, 10) === testfetchedCourse.CourseID){
-                axiosClient.get(`exists/${values.courseID}`)
-                .then((res) =>
-                    {
+            // if(parseInt(values.courseID, 10) === testfetchedCourse.CourseID){
+            //     axiosClient.get(`exists/${values.courseID}`)
+            //     .then((res) =>
+            //         {
+            //             setFetching(false);
+            //             setFetchedCourse(testfetchedCourse);
+            //             toggleState("steps", (current) => current + 1)
+            //         }
+            //     ).catch((err) => {
+            //         setFetching(false);
+            //         setFieldError("courseID", "The course is already in the system")
+
+            //     })
+            //     return
+            // } else {
+            //     setFetching(false)
+            // }
+
+
+            compELearnAxios.get(`courses/${values.courseID}`)
+            .then((res) => {
+                axiosClient.get(`exist/${values.courseID}`)
+                    .then((res) =>
+                        {
+                            setFetching(false);
+                            setFetchedCourse(testfetchedCourse);
+                            toggleState("steps", (current) => current + 1)
+                        }
+                    ).catch((err) => {
                         setFetching(false);
-                        setFetchedCourse(testfetchedCourse);
-                        toggleState("steps", (current) => current + 1)
-                    }
-                ).catch((err) => {
-                    setFetching(false);
-                    setFieldError("courseID", "The course is already in the system")
+                        setFieldError("courseID", "The course is already in the system")
 
-                })
-                return
-            } else {
-                setFetching(false)
-            }
-
-
-            // compELearnAxios.get(`courses/${values.courseID}`)
-            // .then((res) => {
-                // axiosClient.get(`exist/${values.courseID}`)
-                //     .then((res) =>
-                //         {
-                //             setFetching(false);
-                //             setFetchedCourse(testfetchedCourse);
-                //             toggleState("steps", (current) => current + 1)
-                //         }
-                //     ).catch((err) => {
-                //         setFetching(false);
-                //         setFieldError("courseID", "The course is already in the system")
-
-                //     })
-            // })
-            // .catch((err) => {
-            //     setFetching(false);
-            //     setFieldError("courseID", "Invalid Course ID. Please enter the correct Course ID.")
-            // })
+                    })
+            })
+            .catch((err) => {
+                setFetching(false);
+                setFieldError("courseID", "Invalid Course ID. Please enter the correct Course ID.")
+            })
         }
     })
 
