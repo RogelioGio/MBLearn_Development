@@ -8,7 +8,7 @@ import { Progress } from "./progress";
 const StepperContext = createContext();
 
 export const Stepper = forwardRef(
-({ children, initialStep = 0, enableStepClick = false, onStepChange}, ref) => {
+({ children, initialStep = 0, enableStepClick = false, onStepChange ,complete, learnerProgress=[]}, ref) => {
     const [active, setActive] = useState(initialStep);
 
     const steps = React.Children.toArray(children).filter(
@@ -109,7 +109,7 @@ export const Stepper = forwardRef(
                 <>
                 <div className="w-full grid grid-cols-[1fr_20rem] gap-x-2 h-full">
                 {/* Step Content */}
-                <ScrollArea className="h-[calc(100vh-11.5rem)] pr-5 pl-4">
+                <ScrollArea className="h-[calc(100vh-9.5rem)] pr-5 pl-4">
                     <div>
                         {isCompleted ? completedStep : steps[active]}
                     </div>
@@ -118,15 +118,16 @@ export const Stepper = forwardRef(
                 {/* Step Indicators */}
                 <div className="flex flex-col gap-y-1 transition-all ease-in-out pr-3 pl-2 border-l border-divider mb-2">
                     {steps.map((step, index) => {
-                        const isDone = index < active;
+                        const stepID = step.props.stepID;
+                        const isDone = learnerProgress.includes(stepID);
                         const isActive = index === active;
                         return (
                             <div
                                 key={index}
                                 className={`group grid grid-cols-[min-content_1fr] py-3 px-2 hover:cursor-pointer hover:bg-primarybg gap-2 transition-all ease-in-out rounded-md border-2 border-transparent ${isActive ? "border-2 !border-primary":null}`}
-                                onClick={()=>{if(enableStepClick){
+                                onClick={()=>{if(enableStepClick && index !== active){
                                     setActive(index)
-                                    console.log(index)
+                                    complete()
                                 }}}
                             >
                                 {/* Indicator */}

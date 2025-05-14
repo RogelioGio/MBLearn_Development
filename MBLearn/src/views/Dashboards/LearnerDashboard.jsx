@@ -132,9 +132,9 @@ const LearnerDashboard = ({name,user}) => {
                                             <div className="flex flex-col justify-center p-3">
                                                 <div className="flex flex-row justify-between items-end font-text text-unactive text-xs py-2">
                                                     <p>Progress: </p>
-                                                    <p className="text-xl">50%</p>
+                                                    <p className="text-xl">{course.progress}%</p>
                                                 </div>
-                                                <Progress value={50}/>
+                                                <Progress value={course.progress}/>
                                             </div>
                                         </div>
                                     )

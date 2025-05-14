@@ -107,7 +107,7 @@ export default function LearnerCourseManager() {
 
     const fetchCourses = () => {
         setLoading(true)
-        axiosClient.get(`/select-user-courses/${user.user_infos?.id}`,
+        axiosClient.get(`/select-user-courses/${user.user_infos?.id}?enrollment_status[eq]=${duration}`,
             {
                 params: {
                     page: pageState.currentPage,
@@ -128,13 +128,13 @@ export default function LearnerCourseManager() {
     }
 
     useEffect(() => {
-        fetchCourses()
-        if (!coursetype) {
+        if (!coursetype && !duration) {
             setDuration("enrolled")
         } else {
-            setDuration(coursetype)
+            fetchCourses()
         }
-    },[])
+
+    },[duration])
 
     useEffect(() => {
         console.log(enrolled)
@@ -283,7 +283,7 @@ export default function LearnerCourseManager() {
                         >
                         <option value="enrolled">Enrolled</option>
                         <option value="ongoing">On-going</option>
-                        <option value="duesoon">Due Soon</option>
+                        <option value="finished">Finished</option>
                         </select>
 
                         <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-primary sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
@@ -319,7 +319,7 @@ export default function LearnerCourseManager() {
                     <div className="w-full h-full col-span-4 grid grid-rows-2 grid-cols-4 gap-2 px-5 py-2">
                         {
                             enrolled?.map((course) => (
-                                <div className='bg-white text-white h-full rounded-md shadow-md hover:scale-105 hover:cursor-pointer transition-all ease-in-out grid grid-rows-[min-content_1fr_1fr_min-content]' 
+                                <div className='bg-white text-white h-full rounded-md shadow-md hover:scale-105 hover:cursor-pointer transition-all ease-in-out grid grid-rows-[min-content_1fr_1fr_min-content]'
                                     onClick={() => navigate(`/learner/course/${course.id}`)}
                                 >
                                     {/* Course Thumbnail */}
@@ -336,13 +336,13 @@ export default function LearnerCourseManager() {
                                     <div className="px-4 pb-5">
                                         <div className="flex flex-row justify-between font-text text-unactive text-xs py-2">
                                             <p>Progress</p>
-                                            <p>10 %</p>
+                                            <p>{course.progress} %</p>
                                         </div>
-                                        <Progress value={10}/>
+                                        <Progress value={course.progress}/>
                                     </div>
                                         {/* Datas */}
                                     </div>
-                            
+
                             ))
                         }
                     </div>

@@ -14,12 +14,13 @@ import { useStateContext } from "../contexts/ContextProvider";
 import { Progress } from "../components/ui/progress";
 import Course from "../views/Course";
 import axiosClient from "../axios-client";
-
+import Loading from "../assets/course_Loading.svg"
 
 const CourseModuleProps = ({headers, course}) => {
     const stepperRef = useRef();
     const [activeStepMeta, setActiveMeta] = useState({title: "", desc: "", stepID:""})
     const {role,user} = useStateContext()
+    const [loading, setLoading] = useState()
 
 
     //Lesson must be in this object structure
@@ -44,11 +45,44 @@ const CourseModuleProps = ({headers, course}) => {
     //New handleNext
     const completeModule = (moduleId) => {
         if(!moduleId) return
-        stepperRef.current?.next()
+
         setLearnerProgress(prev => {
             if(prev.includes(moduleId)) return prev
             return [...prev, moduleId]
         })
+
+        setLoading(true)
+        if (learnerProgress.some(p => p === moduleId)) {
+            setLoading(false)
+            stepperRef.current?.next()
+            return
+        } else {
+            setTimeout(() => {
+                stepperRef.current?.next()
+                setLoading(false)
+            },2000)
+        }
+
+        axiosClient.get(`/status/${user.user_infos.id}/${moduleId}`)
+        .then((res) => {console.log(res)})
+        .catch((e) => console.log(e))
+    }
+    const LessonHop = (moduleId) => {
+        if(!moduleId) return
+
+        setLearnerProgress(prev => {
+            if(prev.includes(moduleId)) return prev
+            return [...prev, moduleId]
+        })
+        setLoading(true)
+        if (learnerProgress.some(p => p === moduleId)) {
+            setLoading(false)
+            return
+        } else {
+            setTimeout(() => {
+                setLoading(false)
+            },2000)
+        }
 
         axiosClient.get(`/status/${user.user_infos.id}/${moduleId}`)
         .then((res) => {console.log(res)})
@@ -171,8 +205,8 @@ const CourseModuleProps = ({headers, course}) => {
                         <p className="font-header text-sm text-primary group-hover:text-white">BACK</p>
                     </div>
                     <div>
-                        <p className="font-header text-primary">
-                            {activeStepMeta?.title}
+                        <p className={`${loading ? "font-text text-unactive":"font-header text-primary" } text-primary`}>
+                            {loading ? "Loading..." : activeStepMeta?.title}
                         </p>
                     </div>
                     <div className="group h-fit py-2 px-5 border-primary border-2 rounded-md shadow-md flex flex-row  justify-center items-center bg-white hover:bg-primary transition-all ease-in-out gap-2 hover:cursor-pointer"
@@ -199,7 +233,7 @@ const CourseModuleProps = ({headers, course}) => {
 
             {/* Modules */}
             <div className="col-start-1 col-span-2 row-start-3 row-span-2 border-divider">
-                <Stepper initialStep={0} enableStepClick={true} ref={stepperRef} onStepChange={(index,meta) => setActiveMeta(meta)}>
+                <Stepper initialStep={0} enableStepClick={true} ref={stepperRef} onStepChange={(index,meta) => setActiveMeta(meta)} complete={()=> LessonHop(activeStepMeta?.stepID)} learnerProgress={learnerProgress}>
                     {
                         course?.lessons.map((lesson, index) => {
                             let content;
@@ -216,8 +250,16 @@ const CourseModuleProps = ({headers, course}) => {
                             }
 
                             return (
-                            <Step key={index} stepTitle={lesson.lesson_name} stepDesc={"Hello"} stepID={lesson.id}>
-                                {content}
+                            <Step key={index} stepTitle={lesson.lesson_name} stepDesc={"Hello"} stepID={lesson.id} onClick={()=>completeModule(lesson.id)}>
+                                {
+                                    loading ? (
+                                        <div className="h-[calc(100vh-11rem)] flex flex-col items-center justify-center">
+                                            <img src={Loading} alt="" className="w-40"/>
+                                            <h1 className='font-header text-xl text-primary'>"Loading your learning journey..."</h1>
+                                            <p className='font-text'>Empowering you with the knowledge to achieve your goals</p>
+                                        </div>
+                                    ) : content
+                                }
                             </Step>
                             );
                         })
