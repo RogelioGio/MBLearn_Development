@@ -135,6 +135,7 @@ Route::middleware('auth:sanctum')->group(function(){
     //Fetching All nessesary call for courselist maintenance
     Route::get('/coursecontext',[CourseContextController::class,'index']);
     Route::get('/coursecontext/{id}/{userInfos}',[CourseContextController::class,'getSelectedCourse']);
+    Route::get('/coursecontext/{id}',[CourseContextController::class,'adminGetSelectedCourse']);
 
 
     //extra (permission)
