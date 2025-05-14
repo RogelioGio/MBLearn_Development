@@ -1,6 +1,14 @@
 import { useEffect, useState } from "react";
 
-const Course = ""
+const Course =
+{
+    "type":"doc",
+    "content":[
+        {"headerBlock":"heading","attrs":{"textAlign":null,"level":3},
+        "content":[
+            {"type":"text","text":"1."},
+            {"type":"text","marks":[{"type":"bold"}],"text":"Web Development with Laravel"}]},
+        {"textType":"paragraph","attrs":{"textAlign":null},"content":[{"type":"text","marks":[{"type":"bold"}],"text":"Description"},{"type":"text","text":":"},{"type":"hardBreak"},{"type":"text","text":"Learn how to build modern, scalable web applications using Laravel, the leading PHP framework. This course covers core concepts such as routing, Blade templating, Eloquent ORM, authentication, and API development. Ideal for developers looking to streamline backend development with elegant syntax and powerful tools."}]},{"type":"horizontalRule"},{"headerBlock":"heading","attrs":{"textAlign":null,"level":3},"content":[{"type":"text","text":"2."},{"type":"text","marks":[{"type":"bold"}],"text":"Full-Stack Web Development"}]},{"textType":"paragraph","attrs":{"textAlign":null},"content":[{"type":"text","marks":[{"type":"bold"}],"text":"Description"},{"type":"text","text":":"},{"type":"hardBreak"},{"type":"text","text":"Master both frontend and backend technologies in this comprehensive course. You'll learn HTML, CSS, JavaScript, React, Node.js, Express, and MongoDB to build complete web applications. Includes hands-on projects and deployment strategies to launch your apps online."}]},{"type":"horizontalRule"},{"headerBlock":"heading","attrs":{"textAlign":null,"level":3},"content":[{"type":"text","text":"3."},{"type":"text","marks":[{"type":"bold"}],"text":"Introduction to HTML & CSS"}]},{"textType":"paragraph","attrs":{"textAlign":null},"content":[{"type":"text","marks":[{"type":"bold"}],"text":"Description"},{"type":"text","text":":"},{"type":"hardBreak"},{"type":"text","text":"This beginner-friendly course introduces the building blocks of the web. Learn how to create and style responsive web pages using HTML and CSS. No prior coding experience required."}]},{"type":"horizontalRule"},{"headerBlock":"heading","attrs":{"textAlign":null,"level":3},"content":[{"type":"text","text":"4."},{"type":"text","marks":[{"type":"bold"}],"text":"JavaScript Essentials"}]},{"textType":"paragraph","attrs":{"textAlign":null},"content":[{"type":"text","marks":[{"type":"bold"}],"text":"Description"},{"type":"text","text":":"},{"type":"hardBreak"},{"type":"text","text":"Understand the fundamentals of JavaScript, the language of the web. Explore variables, functions, DOM manipulation, events, and basic debugging. A great foundation for frontend or full-stack development."}]}]}
 
 
 const Content = ({ course }) => {
@@ -8,8 +16,8 @@ const Content = ({ course }) => {
 
     useEffect(() => {
         if (course) {
+            console.log(typeof course) // Debugging log
             const courseData = JSON.parse(course);
-            console.log(typeof courseData) // Debugging log
             setLesson(courseData); // Ensure course is valid before setting
         } else {
             console.warn("Course prop is undefined or empty.");
@@ -24,7 +32,7 @@ const Content = ({ course }) => {
             textObject.marks.slice().reverse().forEach(mark => {
                 switch (mark.type) {
                     case "bold":
-                        element = <strong className="font-header text-xs" key={index}>{element}</strong>;
+                        element = <strong className="font-header" key={index}>{element}</strong>;
                         break;
                     case "italic":
                         element = <em key={index}>{element}</em>;
@@ -101,7 +109,7 @@ const Content = ({ course }) => {
                         perBlockRef = [];
                     }
 
-                    if (content.textBlock) {
+                    if (content.textType) {
                         const align = content.attrs?.textAlign
                             ? `text-${content.attrs.textAlign}`
                             : 'text-left';
