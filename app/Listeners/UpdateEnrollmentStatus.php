@@ -26,7 +26,7 @@ class UpdateEnrollmentStatus
         $lesson_count = $course->lessons()->count();
         $completed_count = $event->userInfos->lessons()->where('course_id', $course->id)
             ->wherePivot('is_completed', true)->count();
-        if($lesson_count < $completed_count){
+        if($lesson_count > $completed_count){
             $enrollment->update(['enrollment_status' => 'ongoing']);
         } elseif($lesson_count == $completed_count){
             $enrollment->update(['enrollment_status' => 'finished']);
