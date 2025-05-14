@@ -13,6 +13,7 @@ use App\Models\Division;
 use App\Models\Section;
 use App\Models\Training_Mode;
 use App\Models\Type;
+use App\Models\UserInfos;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -32,8 +33,10 @@ class CourseContextController extends Controller
         ]);
     }
 
-    public function getSelectedCourse($id){
+    public function getSelectedCourse($id, UserInfos $userInfos){
         $course = Course::with('adder', 'assignedCourseAdmins','categories','types','training_modes', 'lessons')->find($id);
+        $course->completed_count = $userInfos->lessons()->where('course_id', $id)->wherePivot('is_completed', true)->count();
+        $course->completed_lessons = $userInfos->lessons()->where('course_id', $id)->wherePivot('is_completed', true)->pluck('lessons.id');
         $course->adder->load(['branch', 'department', 'branch.city', 'title']);
         $course->assignedCourseAdmins->load(['branch', 'department', 'branch.city', 'title']);
         //$main = $course->adder()->with(['branch', 'department', 'branch.city', 'title'])->get();

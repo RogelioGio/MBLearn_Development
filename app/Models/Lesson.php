@@ -25,7 +25,7 @@ class Lesson extends Model
 
     public function learners(): BelongsToMany{
         return $this->belongsToMany(UserInfos::class, 'learner_progress', 'lesson_id', 'userInfo_id')
-            ->withPivotValue('is_completed', false)
+            ->withPivot('is_completed')
             ->withTimestamps();
     }
 }
