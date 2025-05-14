@@ -34,8 +34,8 @@ class CourseController extends Controller
         $builder = Course::query();
         $querySort = $sort->transform($builder, $request);
 
-        // $page = $request->input('page',1); // default page
-        // $perPage = $request->input('per_page', 3); // default per page
+        $page = $request->input('page',1); // default page
+        $perPage = $request->input('perPage', 3); // default per page
 
         if($request->has('type_id')){
             if(!($request->input('type_id')['eq'] === "")){
@@ -59,13 +59,13 @@ class CourseController extends Controller
             }
         }
 
-        $courses = $querySort->with(['categories', 'types', 'training_modes'])->where('archived', '=', 'active')->get();
+        $courses = $querySort->with(['categories', 'types', 'training_modes'])->where('archived', '=', 'active')->paginate($perPage);
 
         return response() -> json([
             'data' => $courses,
             'total' => $courses->count(),
-            // 'lastPage' => $courses->lastPage(),
-            // 'currentPage' => $courses->currentPage(),
+            'lastPage' => $courses->lastPage(),
+            'currentPage' => $courses->currentPage(),
         ],200);
 
     }
@@ -216,7 +216,7 @@ class CourseController extends Controller
             }
         }
         $enrolls = $query->paginate($perPage);
-        
+
         $users = $enrolls->getCollection()->map(function ($enrollment){
             $user = $enrollment->enrolledUser->load(['division','department','section','city','branch']);
             $user->enrollment_status = $enrollment->enrollment_status;

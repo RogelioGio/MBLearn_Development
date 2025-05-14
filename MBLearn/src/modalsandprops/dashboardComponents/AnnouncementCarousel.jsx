@@ -91,7 +91,7 @@ const AnnouncmentCarousel = () => {
 
                                     </CarouselItem>
                                 ) : (
-                                    carouselData.map((img, index) => (
+                                    carouselData.slice(0, 2).map((img, index) => (
                                     <CarouselItem key={index} w-full h-full>
                                     <div
                                         className="border-2 border-primary h-full rounded-md shadow-sm bg-white bg-center bg-cover"
@@ -99,7 +99,6 @@ const AnnouncmentCarousel = () => {
                                             backgroundImage: `url(${import.meta.env.VITE_API_BASE_URL}/storage/carouselimages/${img.image_path})`,
                                         }}
                                         >
-                                        {/* Optional: Overlay or content here */}
                                     </div>
                                     </CarouselItem>
                                 ))
