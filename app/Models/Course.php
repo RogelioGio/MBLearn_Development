@@ -27,6 +27,7 @@ class Course extends Model
         'months',
         'weeks',
         'days',
+        'published',
         'system_admin_id',
         'assigned_course_admin_id',
     ];
@@ -76,6 +77,14 @@ class Course extends Model
 
     public function training_modes():BelongsToMany{
         return $this->belongsToMany(Training_Mode::class, 'traning__mode__course', 'course_id', 'training_mode_id');
+    }
+
+    public function course_permissions(): BelongsToMany{
+        return $this->belongsToMany(Permission::class, 'course_permission', 'course_id', 'permission_id');
+    }
+
+    public function author(): BelongsTo{
+        return $this->belongsTo(UserInfos::class, 'author_id', 'id');
     }
 
 }
