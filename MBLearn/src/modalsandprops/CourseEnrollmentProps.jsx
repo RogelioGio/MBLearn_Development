@@ -1,4 +1,4 @@
-import { faChevronLeft, faChevronRight, faFilter, faSearch, faUserPlus } from '@fortawesome/free-solid-svg-icons'
+import { faChevronLeft, faChevronRight, faFilter, faSearch, faUserPlus, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React, { useEffect, useState } from 'react'
 import axiosClient from '../axios-client'
@@ -33,6 +33,7 @@ const CourseEnrollmentProps = ({course}) => {
     const [enrolling, setEnrolling] = useState(false)
     const [empty, setEmpty] = useState(false) // opens the warning
     const [processing, setProcessing] = useState(false)
+    const [filter, setFilter] = useState(false)
 
     const [date, setDate] = React.useState({
             from: new Date(),
@@ -353,11 +354,21 @@ const CourseEnrollmentProps = ({course}) => {
                         </div>
                     </div>
                     {/* Filter Button */}
-                    {/* <div className="flex flex-col justify-end py-1">
-                        <div className="aspect-square border-2 border-primary rounded-md shadow-md text-white bg-primary flex flex-row justify-center items-center hover:scale-105 hover:cursor-pointer transition-all ease-in-out">
-                            <FontAwesomeIcon icon={faFilter} className="p-2"/>
+                    <div className="flex flex-row justify-center py-1 gap-2">
+                        <div className="w-full py-2 border-2 border-primary rounded-md shadow-md text-white bg-primary flex flex-row justify-center items-center hover:cursor-pointer transition-all ease-in-out gap-2"
+                            onClick={() => {setFilter(true)}}>
+                            <FontAwesomeIcon icon={faFilter}/>
+                            <p className="font-header">Filter</p>
                         </div>
-                    </div> */}
+                        {
+                            filter &&
+                            <div className="w-full py-2 border-2 border-primary rounded-md shadow-md text-primary flex flex-row justify-center items-center hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out gap-2"
+                            onClick={() => {setFilter(false)}}>
+                                <FontAwesomeIcon icon={faXmark} className="text-xl"/>
+                                <p className="font-header">Clear</p>
+                            </div>
+                        }
+                    </div>
                     </SheetContent>
                 </Sheet>
             </div>
@@ -640,7 +651,7 @@ const CourseEnrollmentProps = ({course}) => {
         {/* Successfully */}
         <CourseEnrollmentSuccesfully open={enrolled} close={close} result={results}/>
         {/* Empty */}
-        <NoEmployeeSelectedModal isOpen={empty} onClose={()=>setEmpty(false)} />
+        <NoEmployeeSelectedModal isOpen={empty} onClose={()=>{setEmpty(false),setEnrolling(false)}} />
         </>
     )
 }
