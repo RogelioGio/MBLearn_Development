@@ -54,14 +54,30 @@ class userCredentials_controller extends Controller
     }
 
     public function changeUserPermissions(UserCredentials $userCredentials, ChangeUserPermissionsRequest $request){
-        $bulk = collect($request->all())->map(function($arr, $key){
+        if(!$request['role_id']){
+            $bulk = collect($request['permissions'])->map(function($arr, $key){
             $test = [];
-            foreach($arr as $key => $value){
+            foreach($arr as $keys => $value){
+                $test = $value;
+            }
+            return $test;
+            });
+            $userCredentials->userInfos->permissions()->sync($bulk);
+            $userCredentials->userInfos->roles;
+
+        return response()->json([
+            'message' => 'Roles and Permissions changed',
+            'user' => $userCredentials->load(['userInfos.permissions', 'userInfos.roles']),
+        ]);
+        }
+        $userCredentials->userInfos->roles()->sync($request['role_id']);
+        $bulk = collect($request['permissions'])->map(function($arr, $key){
+            $test = [];
+            foreach($arr as $keys => $value){
                 $test = $value;
             }
             return $test;
         });
-
         $userCredentials->userInfos->permissions()->sync($bulk);
 
         return response()->json([

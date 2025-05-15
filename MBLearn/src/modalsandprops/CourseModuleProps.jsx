@@ -250,7 +250,7 @@ const CourseModuleProps = ({headers, course}) => {
                             }
 
                             return (
-                            <Step key={index} stepTitle={lesson.lesson_name} stepDesc={"Hello"} stepID={lesson.id} onClick={()=>completeModule(lesson.id)}>
+                            <Step key={index} stepTitle={lesson.lesson_name} stepDesc={`This is the ${lesson.lesson_name} short description`} stepID={lesson.id} onClick={()=>completeModule(lesson.id)}>
                                 {
                                     loading ? (
                                         <div className="h-[calc(100vh-11rem)] flex flex-col items-center justify-center">

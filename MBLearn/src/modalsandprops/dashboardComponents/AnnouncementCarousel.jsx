@@ -91,7 +91,7 @@ const AnnouncmentCarousel = () => {
 
                                     </CarouselItem>
                                 ) : (
-                                    carouselData.slice(0, 2).map((img, index) => (
+                                    carouselData.slice(0, 5).map((img, index) => (
                                     <CarouselItem key={index} w-full h-full>
                                     <div
                                         className="border-2 border-primary h-full rounded-md shadow-sm bg-white bg-center bg-cover"

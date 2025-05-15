@@ -22,7 +22,8 @@ class ChangeUserPermissionsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            '*.permission_Id' => 'required|integer|exists:permissions,id',
+            'role_id' => 'nullable|integer|exists:roles,id',
+            'permissions.*.permission_Id' => 'nullable|integer|exists:permissions,id',
         ];
     }
 }

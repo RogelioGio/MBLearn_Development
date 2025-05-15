@@ -127,7 +127,7 @@ const LearnerDashboard = ({name,user}) => {
                                                 <p className="font-text text-unactive text-xs">Course ID: {course?.CourseID}</p>
                                             </div>
                                             <div className="flex flex-col justify-center px-3">
-                                                <p className="font-text text-unactive text-xs">Deadline: {format(new Date(course.deadline[0]), 'MMMM d, yyyy')}</p>
+                                                <p className="font-text text-unactive text-xs">Deadline: {format(new Date(course.deadline), 'MMMM d, yyyy')}</p>
                                             </div>
                                             <div className="flex flex-col justify-center p-3">
                                                 <div className="flex flex-row justify-between items-end font-text text-unactive text-xs py-2">
