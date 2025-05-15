@@ -142,7 +142,7 @@ export default function Course() {
                                 {/* Course Name */}
                                 <div >
                                     <h1 className="font-header text-2xl font-bold text-primary">{course?.name} </h1>
-                                    <p className="font-text text-xs text-unactive">Course ID: 12345678910 </p>
+                                    <p className="font-text text-xs text-unactive">Course ID: {course?.CourseID} </p>
                                 </div>
                                 {/* Course Status */}
                                 <span className="inline-flex items-center rounded-md bg-secondaryprimary px-4 py-2 text-xs font-medium text-primary font-text ring-1 ring-primary gap-1">

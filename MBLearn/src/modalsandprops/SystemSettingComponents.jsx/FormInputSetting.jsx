@@ -141,7 +141,7 @@ const FormInputSetting = () => {
                             loading ? (
                                 "Loading..."
                             ):(
-                                currentDivision.map((division =>(
+                                currentDivision?.map((division =>(
                                     <tr key={division.id} className={`font-text text-md text-primary hover:bg-gray-200 cursor-pointer`}>
                                         <td className={`font-text p-4 flex flex-row items-center gap-4 border-l-2 border-transparent transition-all ease-in-out`}>{division.division_name}</td>
                                         <td className={`font-text p-4 gap-4 transition-all ease-in-out`}>{format(new Date(division.created_at), "MMMM dd, yyyy")}</td>
@@ -247,7 +247,7 @@ const FormInputSetting = () => {
                                 loading ? (
                                     "Loading..."
                                 ):(
-                                    currentDepartment.map((department =>(
+                                    currentDepartment?.map((department =>(
                                         <tr key={department.id} className={`font-text text-md text-primary hover:bg-gray-200 cursor-pointer`}>
                                             <td className={`font-text p-4 flex flex-row items-center gap-4 border-l-2 border-transparent transition-all ease-in-out`}>{department.department_name}</td>
                                             <td className={`font-text p-4 gap-4 transition-all ease-in-out`}>{format(new Date(department.created_at), "MMMM dd, yyyy")}</td>
@@ -349,7 +349,7 @@ const FormInputSetting = () => {
                             >
                             <option value=''>Select Department</option>
                             {
-                                departments.map((department) => (
+                                departments?.map((department) => (
                                     <option key={department.id} value={department.id}>{department.department_name}</option>
                                 ))
                             }
@@ -374,7 +374,7 @@ const FormInputSetting = () => {
                                 loading ? (
                                     "Loading..."
                                 ):(
-                                    titles.map((title =>(
+                                    titles?.map((title =>(
                                         <tr key={title.id} className={`font-text text-md text-primary hover:bg-gray-200 cursor-pointer`}>
                                             <td className={`font-text p-4 flex flex-row items-center gap-4 border-l-2 border-transparent transition-all ease-in-out`}>{title.title_name}</td>
                                             <td className={`font-text p-4 gap-4 transition-all ease-in-out`}>{format(new Date(title.created_at), "MMMM dd, yyyy")}</td>
@@ -434,7 +434,7 @@ const FormInputSetting = () => {
                                 loading ? (
                                     "Loading..."
                                 ):(
-                                    currentSection.map((section =>(
+                                    currentSection?.map((section =>(
                                         <tr key={section.id} className={`font-text text-md text-primary hover:bg-gray-200 cursor-pointer`}>
                                             <td className={`font-text p-4 flex flex-row items-center gap-4 border-l-2 border-transparent transition-all ease-in-out`}>{section.section_name}</td>
                                             <td className={`font-text p-4 gap-4 transition-all ease-in-out`}>{format(new Date(section.created_at), "MMMM dd, yyyy")}</td>
@@ -539,7 +539,7 @@ const FormInputSetting = () => {
                                 loading ? (
                                     "Loading..."
                                 ):(
-                                    currentCity.map((city =>(
+                                    currentCity?.map((city =>(
                                         <tr key={city.id} className={`font-text text-md text-primary hover:bg-gray-200 cursor-pointer`}>
                                             <td className={`font-text p-4 flex flex-row items-center gap-4 border-l-2 border-transparent transition-all ease-in-out`}>{city.city_name}</td>
                                             <td className={`font-text p-4 gap-4 transition-all ease-in-out`}>{format(new Date(city.created_at), "MMMM dd, yyyy")}</td>
@@ -641,7 +641,7 @@ const FormInputSetting = () => {
                             >
                                 <option value=''>Select a city</option>
                             {
-                                cities.map((city) => (
+                                cities?.map((city) => (
                                     <option key={city.id} value={city.id}>{city.city_name}</option>
                                 ))
                             }

@@ -16,14 +16,14 @@ export const OptionProvider = ({children}) => {
         section:[]
     })
 
-    useEffect(() => {
-        const fetchOptions = () => {
-            axiosClient.get("/options")
-            .then((res) => {
-                setOptions(res.data)
-            }).catch((err) => console.log(err))
-        }
+    const fetchOptions = () => {
+        axiosClient.get("/options")
+        .then((res) => {
+            setOptions(res.data)
+        }).catch((err) => console.log(err))
+    }
 
+    useEffect(() => {
         fetchOptions();
     },[]);
 

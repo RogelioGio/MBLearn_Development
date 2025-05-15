@@ -8,7 +8,7 @@ import { useFormik } from "formik";
 import axiosClient from "../axios-client";
 import EdituserErrorModal from "./EdituserErrorModal";
 import AccountPermissionProps from "./AccountPermissionsProps"
-import { DatabaseZap } from "lucide-react";
+import { DatabaseZap, Edit } from "lucide-react";
 import { useStateContext } from "../contexts/ContextProvider";
 
 
@@ -100,18 +100,24 @@ const EditUserCredsModal = ({open, close, ID, editSuccess}) => {
                     permissions: accountPerm
                 }
                 console.log("Tab 2 submitted:", payload);
-                setUpdating(false)
+
 
                 if(selectedUser.user_infos.roles?.[0].id !== values.role){
-                    null
+                    setTimeout(() => {
+                            setTab(1)
+                            setUpdating(false)
+                            close();
+                            editSuccess();
+                        }, 1000);
                 } else {
                     axiosClient.put(`/updateUserPermission/${selectedUser.id}`, accountPerm)
                     .then((res) => {
-                        editSuccess();
-                        setTab(1)
-                        close();
-                        setUpdating(false);
-                        console.log(res);
+                        setTimeout(() => {
+                            setTab(1)
+                            setUpdating(false)
+                            close();
+                            editSuccess();
+                        }, 1000);
                     })
                 }
             }

@@ -2,12 +2,12 @@ import { Switch } from "MBLearn/src/components/ui/switch"
 import { useEffect, useState } from "react";
 import LearnerPermissionProps from "./LearnerPermissionProps";
 
-const CourseAdminPermissionProps = ({isChecked,permissionswitch,permissionRef,roleHopState}) => {
+const CourseAdminPermissionProps = ({isChecked,permissionswitch,permissionRef,systemAdminRoleHopState}) => {
 
     const [roleHopping, setRoleHopping] = useState();
-    useEffect(() => {
-        console.log("Role Hopping State: ", roleHopState)
-    },[roleHopState])
+    // useEffect(() => {
+    //     console.log("Role Hopping State: ", roleHopState)
+    // },[roleHopState])
 
     return(
         <>
@@ -40,7 +40,7 @@ const CourseAdminPermissionProps = ({isChecked,permissionswitch,permissionRef,ro
         </div>
         {/* Cascading Account Role Permission */}
         {
-            roleHopState && (<div>
+            !systemAdminRoleHopState && (<div>
                 <p className="font-text text-unactive text-sm py-2">Role Access Permission</p>
                 <div className="flex flex-col gap-2 border border-primary rounded-md p-5 bg-white shadow-md">
                     <div className="w-full flex flex-row justify-between items-center">

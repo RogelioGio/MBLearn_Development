@@ -141,7 +141,7 @@ const SystemAdminPermissionProps = ({isChecked,permissionswitch,permissionRef}) 
         {
             roleHopping && (
                 <>
-                    <CourseAdminPermissionProps isChecked={isChecked} permissionswitch={permissionswitch} permissionRef={permissionRef} roleHopState={roleHopping}/>
+                    <CourseAdminPermissionProps isChecked={isChecked} permissionswitch={permissionswitch} permissionRef={permissionRef} systemAdminRoleHopState={roleHopping}/>
                     <LearnerPermissionProps isChecked={isChecked} permissionswitch={permissionswitch} permissionRef={permissionRef} />
                 </>
             )

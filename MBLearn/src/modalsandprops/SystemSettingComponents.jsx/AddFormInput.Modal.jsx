@@ -8,12 +8,14 @@ import axiosClient from 'MBLearn/src/axios-client';
 import { useOption } from 'MBLearn/src/contexts/AddUserOptionProvider';
 import { useEffect, useState } from 'react';
 import * as Yup from 'yup';
+import { toast } from "sonner"
 
 const AddFormInputModal = ({ isOpen, onClose, formInput, category}) => {
     const {departments, cities} = useOption()
     const [adding, setAdding] = useState(false)
 
     const formik = useFormik({
+        enableReinitialize: true,
         initialValues:
         formInput === 'Branch' ? {
             city: '',
@@ -25,7 +27,6 @@ const AddFormInputModal = ({ isOpen, onClose, formInput, category}) => {
             [formInput]: Yup.string().required('This field is required')
         }),
         onSubmit: (value) => {
-            debugger
             console.log(value[formInput])
 
             setAdding(true)
@@ -47,37 +48,53 @@ const AddFormInputModal = ({ isOpen, onClose, formInput, category}) => {
             }
 
             const payload = {
-                ...(formInput === "Branch" && { city: value.city }),
+                ...(formInput === "Branch" && { city_id: value.city }),
                 [`${formInput.toLowerCase()}_name`]: value[formInput]
             }
 
-            axiosClient.post(`/${getEndPoint(formInput)}`, payload)
-            const endPoint = getEndPoint(formInput)
-
             if (formInput === 'Branch') {
-                axiosClient.post(`/${endPoint}`, payload)
+                axiosClient.post(`/${getEndPoint(formInput)}`, payload)
                 .then((res) =>
                     {
-                        console.log(res)
+                        toast.success("New Form input added", {
+                                    description: "New form input added in the system"
+                                });
                         setAdding(false)
+                        setTimeout(()=>{
+                            formik.resetForm()
+                        },500)
+                        onClose();
                     })
                 .catch((err) => {
                     setAdding(false)
+                    toast.error("Adding Form Input Failed", {
+                                description: "Something went wrong while saving the data."
+                                });
+                    formik.resetForm()
                 })
             } else {
-                axiosClient.post(`/${endPoint}`, payload)
+                axiosClient.post(`/${getEndPoint(formInput)}`, payload)
                 .then((res) =>
                     {
-                        console.log(res)
+                        toast.success("New Form input added", {
+                                    description: "New form input added in the system"
+                                });
                         setAdding(false)
+                        setTimeout(()=>{
+                            formik.resetForm()
+                        },500)
+                        onClose()
                     })
                 .catch((err) => {
                     setAdding(false)
+                    toast.error("Adding Form Input Failed", {
+                                description: "Something went wrong while saving the data."
+                                });
+                    formik.resetForm()
                 })
             }
         }
     })
-
 
     return (
         <>
@@ -209,7 +226,6 @@ const AddFormInputModal = ({ isOpen, onClose, formInput, category}) => {
                                                 value={formik.values[formInput]}
                                                 onChange={formik.handleChange}
                                                 onBlur={formik.handleBlur}
-                                                maxLength={11}
                                                 className="w-full font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
                                                 {/* Validation Errors */}
                                             </div>
