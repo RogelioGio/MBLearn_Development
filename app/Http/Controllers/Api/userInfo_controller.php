@@ -556,6 +556,28 @@ class userInfo_controller extends Controller
         ]);
     }
 
+    public function enrollmentStatusCount(UserInfos $userInfos){
+        $enrolled = 0;
+        $ongoing = 0;
+        $finished = 0;
+
+        $enrollments = $userInfos->enrollments()->get();
+        foreach($enrollments as $enrollment){
+            if($enrollment->enrollment_status == "enrolled"){
+                $enrolled += 1;
+            }else if($enrollment->enrollment_status == "ongoing"){
+                $ongoing += 1;
+            }else if($enrollment->enrollment_status == "finished"){
+                $finished += 1;
+            }
+        }
+        return response()->json([
+            'enrolled_count' => $enrolled,
+            'ongoing_count' => $ongoing,
+            'finished_count' => $finished
+        ]);
+    }
+
     public function getUserCourses(UserInfos $userInfos, Request $request){
         $page = $request->input('page', 1); // default page
         $perPage = $request->input('per_page', 8); // default per page
