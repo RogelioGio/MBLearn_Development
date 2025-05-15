@@ -77,6 +77,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('/reset-user-creds',[userCredentials_controller::class, 'resetUsers']); //reset user table
     Route::get('get-profile-image',[userInfo_controller::class, 'getProfile']); //Get Profile Image for UserCredentials
     Route::get('/select-user-creds/{employeeID}',[userCredentials_controller::class, 'findUser_EmployeeID']);
+    Route::put('/reset-password/{userCredentials}', [userCredentials_controller::class, 'resetUserPassword']);
     Route::put('/restore-user-creds/{userCredentials}', [userCredentials_controller::class, 'restoreUser']);
     Route::get('/reset-user',[userInfo_controller::class, 'resetUser']); //reset user table
 
