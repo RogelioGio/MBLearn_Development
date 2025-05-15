@@ -127,4 +127,8 @@ class UserInfos extends Model
     public function profileImages(): HasMany{
         return $this->hasMany(ProfileImage::class, 'user_id', 'id');
     }
+
+    public function createdCourses(): HasMany{
+        return $this->hasMany(Course::class, 'author_id', 'id');
+    }
 }

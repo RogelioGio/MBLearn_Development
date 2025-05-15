@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::table('courses', function (Blueprint $table) {
             $table->boolean('published')->default(false)->after('description');
+            $table->foreignId('author_id')->nullable()->constrained('userInfo', 'id')->nullOnDelete();
+
         });
     }
 

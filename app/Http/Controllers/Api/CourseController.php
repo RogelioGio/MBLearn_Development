@@ -204,6 +204,7 @@ class CourseController extends Controller
 
         $filter = new UserInfosFilter();
         $queryItems = $filter->transform($request);
+        $lesson_count = $course->lessons()->count();
 
         $query = $course->enrollments()->whereHas('enrolledUser', function($subQuery) use($queryItems){
             $subQuery->where($queryItems)->where('status', '=', 'Active');
@@ -217,15 +218,15 @@ class CourseController extends Controller
         }
         $enrolls = $query->paginate($perPage);
 
-        $users = $enrolls->getCollection()->map(function ($enrollment){
-            $user = $enrollment->enrolledUser->load(['division','department','section','city','branch']);
-            $user->enrollment_status = $enrollment->enrollment_status;
-            $user->due_soon = $enrollment->due_soon;
-            return $user;
-        });
+        foreach($enrolls as $user){
+            $user->enrolledUser->load(['division','department','section','city','branch']);
+            $user->enrollment_status = $user->enrollment_status;
+            $user->due_soon = $user->due_soon;
+            $user->completed_percentage = round(($user->enrolledUser->lessons()->where('course_id', $course->id)->wherePivot('is_completed', true)->count() / $lesson_count) * 100, 2);
+        }
 
         return response() -> json([
-            'data' => $users,
+            'data' => $enrolls,
             'total' => $enrolls->total(),
             'lastPage' => $enrolls->lastPage(),
             'currentPage' => $enrolls->currentPage(),

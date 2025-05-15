@@ -147,12 +147,14 @@ const AddCourseModal = ({open,onClose,tab,refresh}) => {
 
 
             compELearnAxios.get(`courses/${values.courseID}`)
-            .then((res) => {
+            .then((response) => {
+                console.log("Response: ", response.data);
                 axiosClient.get(`exists/${values.courseID}`)
                     .then((res) =>
                         {
                             setFetching(false);
-                            setFetchedCourse(testfetchedCourse);
+                            setFetchedCourse(response.data);
+                            setCourseLesson(response.data.lessons)
                             toggleState("steps", (current) => current + 1)
                         }
                     ).catch((err) => {
@@ -184,8 +186,8 @@ const AddCourseModal = ({open,onClose,tab,refresh}) => {
         //validation
         validationSchema: Yup.object({
             course_id: Yup.string()
-                .required('Input CourseID first') // Check if course ID is empty
-                .min(11, 'CourseID must be 11 characters'), // Check if course ID is less than 11 characters
+                .required('Input CourseID first'), // Check if course ID is empty
+                //.min(11, 'CourseID must be 11 characters'), // Check if course ID is less than 11 characters
             course_name: Yup.string()
                 .required('Course name shouldnt be empty') // Check if course name is empty
                 .max(50, 'Course name shouldnt exceed 50 characters') // Check if course name exceeds 50 characters
@@ -218,7 +220,7 @@ const AddCourseModal = ({open,onClose,tab,refresh}) => {
         initialValues: {
             course_description: fetchedCourse?.CourseDescription || '',
             course_objectives: fetchedCourse?.CourseObjective || '',
-            course_outcomes: fetchedCourse?.CourseDescription || '',
+            course_outcomes: fetchedCourse?.CourseOutcomes || '',
         },
         validationSchema: Yup.object({
             course_description: Yup.string()
@@ -524,6 +526,7 @@ const AddCourseModal = ({open,onClose,tab,refresh}) => {
                                                 Back</button>
                                                 <input type="submit"
                                                     value="Continue"
+                                                    onClick={console.log(formik2.values)}
                                                     className={`bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out w-full
                                                     `}/>
                                                 </div>

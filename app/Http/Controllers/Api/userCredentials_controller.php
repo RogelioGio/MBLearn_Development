@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\addUserCredential_request;
+use App\Http\Requests\ChangeUserPasswordRequest;
 use App\Http\Requests\ChangeUserPermissionsRequest;
 use App\Http\Requests\updateUserCreds_info;
 use App\Http\Resources\CourseResource;
@@ -54,19 +55,47 @@ class userCredentials_controller extends Controller
     }
 
     public function changeUserPermissions(UserCredentials $userCredentials, ChangeUserPermissionsRequest $request){
-        $bulk = collect($request->all())->map(function($arr, $key){
+        if(!$request['role_id']){
+            $bulk = collect($request['permissions'])->map(function($arr, $key){
             $test = [];
-            foreach($arr as $key => $value){
+            foreach($arr as $keys => $value){
+                $test = $value;
+            }
+            return $test;
+            });
+            $userCredentials->userInfos->permissions()->sync($bulk);
+            $userCredentials->userInfos->roles;
+
+        return response()->json([
+            'message' => 'Roles and Permissions changed',
+            'user' => $userCredentials->load(['userInfos.permissions', 'userInfos.roles']),
+        ]);
+        }
+        $userCredentials->userInfos->roles()->sync($request['role_id']);
+        $bulk = collect($request['permissions'])->map(function($arr, $key){
+            $test = [];
+            foreach($arr as $keys => $value){
                 $test = $value;
             }
             return $test;
         });
-
         $userCredentials->userInfos->permissions()->sync($bulk);
 
         return response()->json([
             'message' => 'Permissions changed',
             'user' => $userCredentials->load(['userInfos.permissions']),
+        ]);
+    }
+
+    public function resetUserPassword(UserCredentials $userCredentials){
+        $userInfo = $userCredentials->userInfos;
+        $userCredentials->update([
+            'password' => bcrypt(preg_replace('/\s+/', '', $userInfo->first_name)."_".$userInfo->employeeID),
+        ]);
+
+        return response()->json([
+            'message' => 'User Password Updated Successfully',
+            'data' => $userCredentials
         ]);
     }
 
@@ -217,9 +246,9 @@ class userCredentials_controller extends Controller
     public function restoreUser(UserCredentials $userCredentials)
     {
         if($userCredentials){
-            $userCredentials->userInfos->status = "Active";
+            $userCredentials->userInfos->update(['status' => "Active"]);
             $userCredentials->save();
-            return response()->json(['message' => 'User restored'], 200);
+            return response()->json(['message' => 'User restored', 'user' => $userCredentials], 200);
         }else {
             return response()->json(['message' => 'User not found'], 404);
         }
