@@ -6,12 +6,15 @@ import { useStateContext } from "MBLearn/src/contexts/ContextProvider"
 import { useUser } from "MBLearn/src/contexts/selecteduserContext"
 import { useEffect, useState } from "react"
 import dayjs from "dayjs";
+import { toast } from "sonner"
+import axiosClient from "MBLearn/src/axios-client"
 
-const ReactivationAccountModal = ({open, close, id}) => {
+const ReactivationAccountModal = ({open, close, id, refresh}) => {
     const [loading, setLoading] = useState(false)
     const {cities,departments,location,titles,roles,permission} = useOption();
     const {user} = useStateContext()
     const {selectedUser, selectUser, isFetching} = useUser();
+    const [reactivating, SetReactivating] = useState();
 
     useEffect(() => {
             if (open && id) {
@@ -33,10 +36,25 @@ const ReactivationAccountModal = ({open, close, id}) => {
         setLoading(isFetching);
     }, [isFetching]);
 
-    useEffect(() => {
-        console.log(id);
-    }, [id]);
 
+
+    const handleReactivation = () => {
+        SetReactivating(true)
+        axiosClient.put(`/restore-user-creds/${selectedUser.user_credentials_id}`)
+        .then(()=>{
+            toast.success("User Reactivated", {
+                description: "The selected is reactivated in the system"
+            })
+            SetReactivating(false),
+            setTimeout(() => {
+                refresh(),
+                close()
+            },800)
+        }).catch(() => {
+            SetReactivating(false)
+        })
+
+    }
 
 
     return(
@@ -151,8 +169,8 @@ const ReactivationAccountModal = ({open, close, id}) => {
                                     <div className="w-full inline-flex flex-col items-center gap-2 p-4 rounded-md font-header uppercase text-primary border-2 border-primary text-xs hover:text-white hover:cursor-pointer hover:bg-primaryhover transition-all ease-in-out" onClick={close}>
                                         Cancel
                                     </div>
-                                    <div className="w-full inline-flex flex-col items-center gap-2 bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover transition-all ease-in-out" onClick={close}>
-                                        Re-Activate
+                                    <div className="w-full inline-flex flex-col items-center gap-2 bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover transition-all ease-in-out" onClick={()=>handleReactivation()}>
+                                        {reactivating ? "Reactivating..." : "Reactivate Account"}
                                     </div>
                                 </div>
                             </div>

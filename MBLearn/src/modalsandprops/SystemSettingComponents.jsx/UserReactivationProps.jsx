@@ -1,7 +1,9 @@
+import { format } from "date-fns"
 import { useOption } from "MBLearn/src/contexts/AddUserOptionProvider"
 
-const UserReactivationProps = ({id,image, name, MBEmail, branch, city, selected}) => {
-    const {cities,departments,location,titles,roles,permission} = useOption()
+
+const UserReactivationProps = ({id,image, name, MBEmail, branch, city, _division,_section,login_time_stamp,selected}) => {
+    const {cities,departments,location,titles,roles,division,section} = useOption()
 
     return(
         <tr className='font-text text-sm hover:bg-gray-200 hover:cursor-pointer' onClick={()=>selected(id)}>
@@ -27,10 +29,14 @@ const UserReactivationProps = ({id,image, name, MBEmail, branch, city, selected}
                 </div>
             </td>
             <td className='py-3 px-4'>
-
+                    {/* Division */}
+                    <p className='text-unactive'>{division?.find(d => d.id === _division)?.division_name}</p>
+                    {/* Section */}
+                    <p className='text-unactive'>{section?.find(s => s.id === _section)?.section_name}</p>
             </td>
             <td className='py-3 px-4'>
-
+                    {/* Last Login TimeStamp */}
+                    <p className='text-unactive'>{format(new Date(login_time_stamp), 'MMMM d, yyyy')}</p>
             </td>
         </tr>
     )
