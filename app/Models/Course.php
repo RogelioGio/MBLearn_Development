@@ -64,7 +64,8 @@ class Course extends Model
 
     //IDK if multiple course admin can be assigned to a course, subject to change
     public function assignedCourseAdmins(): BelongsToMany{
-        return $this->belongsToMany(UserInfos::class, 'course_userinfo_assignment', 'course_id', 'user_id');
+        return $this->belongsToMany(UserInfos::class,'course_userinfo_assignment', 'course_id', 'user_id')
+            ->using(CourseUserAssigned::class)->withPivot('id');
     }
 
     public function categories():BelongsToMany{

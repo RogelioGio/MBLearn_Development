@@ -13,6 +13,7 @@ use App\Http\Requests\updateUserInfo;
 use App\Models\Branch;
 use App\Models\CarouselImage;
 use App\Models\Course;
+use App\Models\CourseUserAssigned;
 use App\Models\Department;
 use App\Models\Division;
 use App\Models\Enrollment;
@@ -774,21 +775,15 @@ class userInfo_controller extends Controller
     }
 
     public function test(Request $request){
-        $trues = [];
-        $enrollment = Enrollment::all();
-        foreach($enrollment as $enroll){
-            $end = Carbon::parse($enroll->end_date);
-            $in3days = Carbon::now()->addDays(3);
-            if($end->lessThanOrEqualTo($in3days)){
-                $trues[] = [
-                    'user' => $enroll->userInfos,
-                    'course' => $enroll->course,
-                    'end_date' => $enroll->end_date
-                ];
-            }
-        }
+        $course = Course::query()->find($request->input('course_id'));
+        $user = UserInfos::query()->find($request->input('user_id'));
+        $pivot = $course->assignedCourseAdmins()->where('user_id', $user->id)->first()->pivot;
+
+        // $perm = CourseUserAssigned::find($pivot->id);
+
+        // $perm->permissions()->sync([1,2]);
         return response()->json([
-            'data' => $trues
+            'data' => $pivot->load(['permissions'])
         ]);
     }
 }

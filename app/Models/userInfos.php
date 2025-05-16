@@ -75,7 +75,8 @@ class UserInfos extends Model
     }
 
     public function assignedCourses(): BelongsToMany{
-        return $this->belongsToMany(Course::class, 'course_userinfo_assignment', 'user_id', 'course_id');
+        return $this->belongsToMany(Course::class, 'course_userinfo_assignment', 'course_id', 'user_id')
+            ->using(CourseUserAssigned::class)->withPivot('id');
     }
 
     public function roles(): BelongsToMany{
