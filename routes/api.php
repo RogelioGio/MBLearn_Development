@@ -90,7 +90,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('/courses/bulk', [CourseController::class, 'bulkStore']);
     Route::get('/assigned-course-admins/{course}', [CourseController::class, 'getAssignedCourseAdmin']);
     Route::get('/select-user-enrollment-status/{userInfos}', [userInfo_controller::class, 'enrollmentStatusCount']);
-    Route::put('/delete-enrolled-user/{userInfos}/{course}', [CourseController::class, 'removeEnrolledUser']);
+    Route::delete('/delete-enrolled-user/{userInfos}/{course}', [CourseController::class, 'removeEnrolledUser']);
 
 
     //Enrollment API
