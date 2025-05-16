@@ -233,6 +233,18 @@ class CourseController extends Controller
         ]);
     }
 
+    public function removeEnrolledUser(Course $course, UserInfos $userInfos){
+        if($course->enrollments()->where(['user_id', $userInfos->id, 'enrollment_status' => 'enrolled'])->exists()){
+            $course->enrollments()->detach($userInfos->id);
+            return response()->json([
+                'message' => 'User removed from course'
+            ]);
+        }
+        return response()->json([
+            'message' => 'User has already taken the course'
+        ]);
+    }
+
     public function countCourseStatus(Course $course){
         $enrolled = $course->enrollments()->where('enrollment_status', 'enrolled')->count();
         $ongoing = $course->enrollments()->where('enrollment_status', 'ongoing')->count();
