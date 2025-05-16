@@ -8,10 +8,81 @@ import AnnouncmentCarousel from '../modalsandprops/dashboardComponents/Announcem
 import LearnerDashboard from './Dashboards/LearnerDashboard';
 import { CarouselPrevious, CarouselNext } from '../components/ui/carousel';
 import CourseAdminDashboard from './Dashboards/CourseAdminDashboard';
+import {Label, Area, AreaChart, CartesianGrid, XAxis, PolarGrid,
+  PolarRadiusAxis,
+  RadialBar,
+  RadialBarChart,} from 'recharts';
+import {  ChartContainer,
+        ChartLegend,
+        ChartLegendContent,
+        ChartTooltip,
+        ChartTooltipContent, } from '../components/ui/chart';
+
+
+const chartConfig = {
+    visitors: {
+    label: "Visitors",
+  },
+  desktop: {
+    label: "Desktop",
+    color: "var(--chart-1)",
+  },
+  mobile: {
+    label: "Mobile",
+    color: "var(--chart-3)",
+  },
+}
+
+const chartConfig2 = {
+  visitors: {
+    label: "Visitors",
+  },
+  safari: {
+    label: "Safari",
+    color: "var(--chart-1)",
+  },
+}
+
+
 
 
 //One Dashboard Component for 3 different roles
 const DashboardLayout = ({role,name,user}) => {
+
+    const chartData2 = [
+      { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
+    ]
+    const chartData = [
+    { date: "2024-04-01", desktop: 222, mobile: 150 },
+  { date: "2024-04-02", desktop: 97, mobile: 180 },
+  { date: "2024-04-03", desktop: 167, mobile: 120 },
+  { date: "2024-04-04", desktop: 242, mobile: 260 },
+  { date: "2024-04-05", desktop: 373, mobile: 290 },
+  { date: "2024-04-06", desktop: 301, mobile: 340 },
+  { date: "2024-04-07", desktop: 245, mobile: 180 },
+  { date: "2024-04-08", desktop: 409, mobile: 320 },
+  { date: "2024-04-09", desktop: 59, mobile: 110 },
+  { date: "2024-04-10", desktop: 261, mobile: 190 },
+  { date: "2024-04-11", desktop: 327, mobile: 350 },
+  { date: "2024-04-12", desktop: 292, mobile: 210 },
+  { date: "2024-04-13", desktop: 342, mobile: 380 },
+  { date: "2024-04-14", desktop: 137, mobile: 220 },
+  { date: "2024-04-15", desktop: 120, mobile: 170 },
+  { date: "2024-04-16", desktop: 138, mobile: 190 },
+  { date: "2024-04-17", desktop: 446, mobile: 360 },
+  { date: "2024-04-18", desktop: 364, mobile: 410 },
+  { date: "2024-04-19", desktop: 243, mobile: 180 },
+  { date: "2024-04-20", desktop: 89, mobile: 150 },
+  { date: "2024-04-21", desktop: 137, mobile: 200 },
+  { date: "2024-04-22", desktop: 224, mobile: 170 },
+  { date: "2024-04-23", desktop: 138, mobile: 230 },
+  { date: "2024-04-24", desktop: 387, mobile: 290 },
+  { date: "2024-04-25", desktop: 215, mobile: 250 },
+  { date: "2024-04-26", desktop: 75, mobile: 130 },
+  { date: "2024-04-27", desktop: 383, mobile: 420 },
+  { date: "2024-04-28", desktop: 122, mobile: 180 },
+    ]
+
     switch(role){
         //System admin Dasboard
         case 'System Admin':
@@ -40,41 +111,154 @@ const DashboardLayout = ({role,name,user}) => {
                         <p className="font-header text-primary text-base">Calendar</p>
                         <p className="font-text text-unactive text-xs">Stay organized by tracking schedule and activities</p>
                     </div>
-                    <div className="bg-white w-full h-full rounded-md shadow-md border-2 border-primary">
-
+                    <div className="w-full h-full rounded-md shadow-md border-2 border-primary">
                     </div>
                 </div>
 
 
                 {/* Changing Content */}
-                {/* <div className='col-span-3 row-start-3 ml-5 pr-2 pt-2 pb-5'>
-                    <div className='bg-white w-full h-full rounded-md shadow-md'>
+                <div className='col-span-3 row-start-3 ml-5 pr-2 pt-2 pb-5 flex flex-col'>
+                    <div className='pb-3'>
+                        <p className="font-header text-primary text-base">Online User Statistics</p>
+                        <p className="font-text text-unactive text-xs">Visualization of the current amount of online users of MBLearn </p>
 
+                    </div>
+                    <div className='bg-white w-full h-full rounded-md shadow-md border-2 border-primary px-2'>
+                        <ChartContainer config={chartConfig} className="aspect-auto h-[200px] w-full">
+                            <AreaChart data={chartData}>
+                                <defs>
+                                    <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
+                                        <stop
+                                        offset="5%"
+                                        stopColor="var(--chart-2)"
+                                        stopOpacity={0.8}
+                                        />
+                                        <stop
+                                        offset="95%"
+                                        stopColor="var(--chart-3)"
+                                        stopOpacity={0.1}
+                                        />
+                                    </linearGradient>
+                                    <linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
+                                        <stop
+                                        offset="5%"
+                                        stopColor="var(--color-mobile)"
+                                        stopOpacity={0.8}
+                                        />
+                                        <stop
+                                        offset="95%"
+                                        stopColor="var(--color-mobile)"
+                                        stopOpacity={0.1}
+                                        />
+                                    </linearGradient>
+                                </defs>
+                                <CartesianGrid vertical={false} />
+                                <XAxis
+                                dataKey="date"
+                                tickLine={false}
+                                axisLine={false}
+                                tickMargin={8}
+                                minTickGap={32}
+                                tickFormatter={(value) => {
+                                    const date = new Date(value)
+                                    return date.toLocaleDateString("en-US", {
+                                    month: "short",
+                                    day: "numeric",
+                                    })
+                                }}
+                                />
+                                <ChartTooltip
+                                cursor={false}
+                                content={
+                                    <ChartTooltipContent
+                                    labelFormatter={(value) => {
+                                        return new Date(value).toLocaleDateString("en-US", {
+                                        month: "short",
+                                        day: "numeric",
+                                        })
+                                    }}
+                                    indicator="dot"
+                                    />
+                                }
+                                />
+                                <Area
+                                dataKey="mobile"
+                                type="natural"
+                                fill="url(#fillMobile)"
+                                stroke="var(--color-mobile)"
+                                stackId="a"
+                                />
+                                <Area
+                                dataKey="desktop"
+                                type="natural"
+                                fill="url(#fillDesktop)"
+                                stroke="var(--color-desktop)"
+                                stackId="a"
+                                />
+                                <ChartLegend content={<ChartLegendContent />} />
+                            </AreaChart>
+                        </ChartContainer>
                     </div>
                 </div>
-                <div className='col-span-1 row-start-3 mr-5 pt-2 pb-5 gap-4 grid grid-rows-3'>
-                    <div className='bg-white w-full h-full rounded-md shadow-md p-5 hover:cursor-pointer hover:bg-primary ease-in-out transition-all flex flex-row gap-4 group border-2 border-primary'>
-                        <div className='flex justify-center items-center'>
-                            <FontAwesomeIcon icon={faPeopleGroup} className='text-primary text-5xl group-hover:text-white'/>
-                        </div>
-                        <div className='font-text text-sm text-unactive'>
-                            <p className='group-hover:text-white'>Current Online Users</p>
-                            <p className='font-header text-3xl text-primary group-hover:text-white'>7,000 <span className='font-text text-sm text-unactive group-hover:text-white'>users</span></p>
-                        </div>
+                <div className='col-span-1 row-start-3 mr-5 pt-2 pb-5 flex flex-col'>
+                    <div className='pb-3'>
+                        <p className="font-header text-primary text-base">Total MBLearn Users</p>
+                        <p className="font-text text-unactive text-xs">Total number of MBLearn users</p>
                     </div>
-                    <div className='bg-white w-full h-full rounded-md shadow-md p-5 hover:cursor-pointer hover:bg-primary ease-in-out transition-all flex flex-row gap-4 group border-2 border-primary'>
-                        <div className='flex justify-center items-center'>
-                                <FontAwesomeIcon icon={faHeartPulse} className='text-primary text-5xl group-hover:text-white'/>
-                            </div>
-                            <div className='font-text text-sm text-unactive'>
-                                <p className='group-hover:text-white'>System Uptime</p>
-                                <p className='font-header text-3xl text-primary group-hover:text-white'>00:00:00</p>
-                            </div>
-                    </div>
-                    <div className='bg-white w-full h-full rounded-md shadow-md p-5 hover:cursor-pointer hover:bg-primary ease-in-out transition-all border-2 border-primary'>
+                    <div className='bg-white w-full h-full rounded-md shadow-md border-2 border-primary'>
+                        <ChartContainer config={chartConfig2} className="mx-auto aspect-square max-h-[150px]" >
+                            <RadialBarChart
+                                data={chartData2}
+                                startAngle={0}
+                                endAngle={250}
+                                innerRadius={80}
+                                outerRadius={110}
+                            >
+                                <PolarGrid
+                                gridType="circle"
+                                radialLines={false}
+                                stroke="none"
+                                className="first:fill-muted last:fill-background"
+                                polarRadius={[86, 74]}
+                                />
 
+                                <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
+              <Label
+                content={({ viewBox }) => {
+                  if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                    return (
+                      <text
+                        x={viewBox.cx}
+                        y={viewBox.cy}
+                        textAnchor="middle"
+                        dominantBaseline="middle"
+                      >
+                        <tspan
+                          x={viewBox.cx}
+                          y={viewBox.cy}
+                          className="fill-foreground text-4xl font-bold"
+                        >
+                          {chartData2[0].visitors.toLocaleString()}
+                        </tspan>
+                        <tspan
+                          x={viewBox.cx}
+                          y={(viewBox.cy || 0) + 24}
+                          className="fill-muted-foreground"
+                        >
+                          Visitors
+                        </tspan>
+                      </text>
+                    )
+                  }
+                }}
+              />
+            </PolarRadiusAxis>
+
+                                <RadialBar dataKey="visitors" background cornerRadius={10} />
+                            </RadialBarChart>
+                        </ChartContainer>
                     </div>
-                </div> */}
+                </div>
 
             </div>
             )

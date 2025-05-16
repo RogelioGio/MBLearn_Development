@@ -122,7 +122,7 @@ const LearnerDashboard = ({name,user}) => {
                     ) : (
                         <div className="w-full h-full grid grid-cols-4 grid-rows-1 gap-2">
                             {
-                                enrolled.map((course) => {
+                                enrolled.filter(item => item.progress !== 100).map((course) => {
                                     return (
                                         <div className="bg-white w-full h-full shadow-md rounded-md grid grid-cols-1 grid-rows-[min-content_1fr_1fr_min-content_min-content] hover:cursor-pointer hover:scale-105 transition-all ease-in-out" onClick={() => navigate(`/learner/course/${course.id}`)}>
                                             <div className="bg-gradient-to-b from-[hsl(239,94%,19%)] via-[hsl(214,97%,27%)] to-[hsl(201,100%,36%)] w-full h-14 rounded-t-md p-3">

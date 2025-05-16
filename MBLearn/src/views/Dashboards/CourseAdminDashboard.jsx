@@ -172,11 +172,11 @@ const CourseAdminDashboard = ({name, user}) => {
                                 <div className="grid grid-cols-[1fr_min-content_1fr] gap-1 p-3">
                                     <div className="flex flex-row items-center font-text justify-between">
                                         <p className="text-xs text-unactive">On-going Learner</p>
-                                        <p className="font-header text-primary">10</p>
+                                        <p className="font-header text-primary">{course.ongoing}</p>
                                     </div>
                                     <div className="w-[1px] h-full bg-divider"/>
                                     <div className="flex flex-row items-center font-text justify-between">
-                                        <p className="font-header text-primary">10</p>
+                                        <p className="font-header text-primary">{course.enrolled}</p>
                                         <p className="text-xs text-right text-unactive">Enrolled Learner</p>
                                     </div>
                                 </div>
