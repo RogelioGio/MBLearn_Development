@@ -254,10 +254,15 @@ class CourseController extends Controller
             return response()->json([
                 'message' => 'User removed from course'
             ]);
+        } else{
+            return response()->json([
+                'message' => 'User has already taken the course'
+            ]);
         }
         return response()->json([
-            'message' => 'User has already taken the course'
-        ]);
+            'message' => 'User is not enrolled in the course'
+        ], 404);
+
     }
 
     public function countCourseStatus(UserInfos $userInfos){
