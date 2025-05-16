@@ -210,7 +210,6 @@ class CourseController extends Controller
             $subQuery->where($queryItems)->where('status', '=', 'Active');
         });
 
-
         if($request->has('enrollment_status')){
             if(in_array($request->input('enrollment_status')['eq'],$acceptedEnrollmentFilter)){
                 $query->where('enrollment_status', $request->input('enrollment_status')['eq']);
@@ -245,10 +244,10 @@ class CourseController extends Controller
         ]);
     }
 
-    public function countCourseStatus(Course $course){
-        $enrolled = $course->enrollments()->where('enrollment_status', 'enrolled')->count();
-        $ongoing = $course->enrollments()->where('enrollment_status', 'ongoing')->count();
-        $finished = $course->enrollments()->where('enrollment_status', 'finished')->count();
+    public function countCourseStatus(UserInfos $userInfos){
+        $enrolled = $userInfos->enrollments()->where('enrollment_status', 'enrolled')->count();
+        $ongoing = $userInfos->enrollments()->where('enrollment_status', 'ongoing')->count();
+        $finished = $userInfos->enrollments()->where('enrollment_status', 'finished')->count();
 
         return response()->json([
             'Enrolled' => $enrolled,

@@ -84,7 +84,7 @@ Route::middleware('auth:sanctum')->group(function(){
     //User with course API
     Route::get('/select-user-courses/{userInfos}', [userInfo_controller::class, 'getUserCourses']);
     Route::get('/select-course-users/{course}', [CourseController::class, 'getCourseUsers']);
-    Route::get('/enrollment-status-count/{course}', [CourseController::class, 'countCourseStatus']);
+    Route::get('/enrollment-status-count/{userInfos}', [CourseController::class, 'countCourseStatus']);
     Route::get('/select-user-assigned-courses/{userInfos}', [userInfo_controller::class, 'getAssignedCourses']);
     Route::get('/select-user-added-courses/{userInfos}', [userInfo_controller::class, 'getAddedCourses']);
     Route::post('/courses/bulk', [CourseController::class, 'bulkStore']);
