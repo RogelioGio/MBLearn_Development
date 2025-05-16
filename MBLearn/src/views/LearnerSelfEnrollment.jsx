@@ -7,13 +7,24 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useCourseContext } from "../contexts/CourseListProvider"
 import AssignedCourseCatalogCard from "../modalsandprops/AssignedCourseCatalogCard"
 import CourseLoading from "../assets/Course_Loading.svg"
+import SelfEnrollmentModal from "../modalsandprops/SelfEnrollmentModal"
+import TraningDurationModal from "../modalsandprops/TrainingDurationModal"
+import React from "react"
 
 
 
 export default function LearnerSelfEnrollment() {
     const {coursetypes, coursecategories} = useCourseContext()
     const [course, setCourse] = useState([])
+    const [selectedCourse, setSelectedCourse] = useState()
     const [loading, setLoading] = useState(true)
+    const [openEnroll, setOpenEnroll] = useState(false)
+    const [duration, setDuration] = useState(false)
+
+    const [date, setDate] = React.useState({
+        from: new Date(),
+        to: undefined,
+    });
 
     const [sort, setSort] = useState({
         name : "none",
@@ -105,9 +116,8 @@ export default function LearnerSelfEnrollment() {
             },[pageState.currentPage, pageState.perPage])
 
 
-
-
     return(
+    <>
         <div className='grid grid-cols-4 grid-rows-[6.25rem_min-content_1fr_min-content] h-full w-full'>
             <Helmet>
                 {/* Title of the mark-up */}
@@ -237,7 +247,8 @@ export default function LearnerSelfEnrollment() {
                                         trainingType={course.training_type}
                                         tab={"allCourses"}
                                         adder={course?.adder}
-                                        role={"learner"}/>
+                                        role={"learner"}
+                                        selfEnroll={()=>{setOpenEnroll(true), setSelectedCourse(course)}}/>
                                     )
                         )):(
                                 <div className="col-span-4 row-span-2 flex flex-col gap-4 items-center justify-center text-center h-full">
@@ -304,5 +315,9 @@ export default function LearnerSelfEnrollment() {
                 </div>
             </div>
         </div>
+
+        <SelfEnrollmentModal open={openEnroll} onClose={()=>{setOpenEnroll(false)}} course={selectedCourse} setDuration={()=>{setDuration(true)}}/>
+        <TraningDurationModal open={duration} close={()=>{setDuration(false)}} enroll={""} date={date} _setDate={setDate} course={selectedCourse}/>
+        </>
     )
 }
