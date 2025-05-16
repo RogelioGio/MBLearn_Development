@@ -248,7 +248,7 @@ class CourseController extends Controller
     }
 
     public function removeEnrolledUser(UserInfos $userInfos, Course $course){
-        $enrollmentbuilder = $course->enrollments()->where('user_id', $userInfos->id);
+        $enrollmentbuilder = $course->enrollments()->where([['user_id', $userInfos->id], ['enrollment_status', 'enrolled']]);
         if($enrollmentbuilder->exists()){
             $enrollmentbuilder->delete();
             return response()->json([
