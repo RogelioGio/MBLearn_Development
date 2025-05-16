@@ -12,20 +12,24 @@ const CourseLearnerProps = ({course}) => {
         color: "white", // Color of the progress ring
     };
     // Tab
-    const [tab, setTab] = useState(1);
+    const [tab, setTab] = useState("enrolled");
     const [learners, setLearners] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        setLoading(true);
-        axiosClient.get(`/select-course-users/${course.id}`)
+    const fetchLearners = (endpoint) => {
+        axiosClient.get(`/select-course-users/${course.id}?enrollment_status[eq]=${endpoint}`)
         .then((res) => {
             setLearners(res.data.data.data);
             setLoading(false);
         }).catch((err) => {
             console.log(err)
         })
-    },[]);
+    }
+
+    useEffect(() => {
+        setLoading(true);
+        fetchLearners(tab);
+    },[tab]);
     useEffect(() => {
         console.log(learners)
     }), [learners]
@@ -34,21 +38,21 @@ const CourseLearnerProps = ({course}) => {
         <div className="mr-5 grid grid-rows-[min-content_min-content_auto_min-content] grid-cols-4 h-full">
                 {/* Header */}
                 <div className='w-full grid grid-row-1 grid-cols-3 gap-2 col-span-4 pt-2'>
-                    <div className= {`text-primary p-3 border-2 border-primary bg-white rounded-md hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out ${tab === 1 ? "!bg-primary text-white":null}`} onClick={() => setTab(1)}>
+                    <div className= {`text-primary p-3 border-2 border-primary bg-white rounded-md hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out ${tab === "enrolled" ? "!bg-primary text-white":null}`} onClick={() => setTab("enrolled")}>
                         <div className='flex flex-row items-center gap-2'>
                             <FontAwesomeIcon icon={faGraduationCap}/>
                             <h1 className="font-header text-lg">Latest Learner </h1>
                         </div>
                         <p className="font-text text-xs">Latest batch of learner that is going to take this course</p>
                     </div>
-                    <div className= {`text-primary p-3 border-2 border-primary bg-white rounded-md hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out ${tab === 2 ? "!bg-primary text-white":null}`} onClick={() => setTab(2)}>
+                    <div className= {`text-primary p-3 border-2 border-primary bg-white rounded-md hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out ${tab === "ongoing" ? "!bg-primary text-white":null}`} onClick={() => setTab("ongoing")}>
                     <div className='flex flex-row items-center gap-2'>
                             <FontAwesomeIcon icon={faBookOpen}/>
                             <h1 className="font-header text-lg">On-going Learners</h1>
                         </div>
                         <p className="font-text text-xs">On-going batch that is currently taking the course</p>
                     </div>
-                    <div className= {`text-primary p-3 border-2 border-primary bg-white rounded-md hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out ${tab === 3 ? "!bg-primary text-white":null}`} onClick={() => setTab(3)}>
+                    <div className= {`text-primary p-3 border-2 border-primary bg-white rounded-md hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out ${tab === "finished" ? "!bg-primary text-white":null}`} onClick={() => setTab("finished")}>
                     <div className='flex flex-row items-center gap-2'>
                             <FontAwesomeIcon icon={faAward}/>
                             <h1 className="font-header text-lg">Finished Learners</h1>

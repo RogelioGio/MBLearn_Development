@@ -8,6 +8,7 @@ import { useState } from "react";
 import { addDays, addMonths, addWeeks, differenceInDays, differenceInMonths, differenceInWeeks, format } from "date-fns"
 import { useEffect } from "react";
 import { useFormik } from "formik";
+import { use } from "react";
 
 function normalizationDuration(values, setField) {
     let months = parseInt(values.months) || 0;
@@ -39,10 +40,19 @@ function normalizationDuration(values, setField) {
 
 const TraningDurationModal = ({ open, close, enroll, date, _setDate, course, enrolling}) => {
     const [duration, setDuration] = useState({
-        months: course.months !== null ? course.months : 0,
-        weeks: course.weeks !== null ? course.weeks : 0,
-        days: course.days !== null ? course.days : 0,
+        months: course?.months || 0,
+        weeks: course?.weeks || 0,
+        days: course?.days ||  0,
     })
+
+    useEffect(() => {
+        if (!course) return
+        setDuration ((d) => ({
+            months: course?.months,
+            weeks: course?.weeks,
+            days: course?.days,
+        }))
+    }, [course])
 
 
 
@@ -93,16 +103,17 @@ const TraningDurationModal = ({ open, close, enroll, date, _setDate, course, enr
     };
 
     useEffect(() => {
+        if (!open) return;
+        setDuration ((d) => ({
+            months: course?.months,
+            weeks: course?.weeks,
+            days: course?.days,
+        }))
         _setDate((d) => ({
             from: d?.from,
             to: calculateDuration(d?.from, duration),
         }));
-        setDuration ((d) => ({
-            months: course.months !== null ? course.months : 0,
-            weeks: course.weeks !== null ? course.weeks : 0,
-            days: course.days !== null ? course.days : 0,
-        }))
-        }, [open]);
+        }, [open, course]);
 
     useEffect(() => {
         formik.setFieldValue('months', duration.months);
@@ -230,15 +241,17 @@ const TraningDurationModal = ({ open, close, enroll, date, _setDate, course, enr
                                         <PopoverTrigger asChild>
                                             <button className="flex flex-row justify-between items-center font-text border border-divider rounded-md py-2 px-4 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary">
                                                 <p>{
-                                                    date?.from ? (
-                                                        date?.to ? (
-                                                            <>
-                                                            {format(date.from, "LLL dd, y")} -{" "}
-                                                            {format(date.to, "LLL dd, y")}
-                                                            </>
-                                                        ) : (format(date.from, "LLL dd, y"))
-                                                    ) : ("Pick a Date")
-
+                                                    date?.from instanceof Date && !isNaN(date?.from) ? (
+                                                        date?.to instanceof Date && !isNaN(date?.to) ? (
+                                                        <>
+                                                            {format(date.from, "LLL dd, y")} - {format(date.to, "LLL dd, y")}
+                                                        </>
+                                                        ) : (
+                                                        format(date.from, "LLL dd, y")
+                                                        )
+                                                    ) : (
+                                                        "Pick a Date"
+                                                    )
                                                     }</p>
                                                 <FontAwesomeIcon icon={faCalendar} className="text-primary text-lg"/>
                                             </button>

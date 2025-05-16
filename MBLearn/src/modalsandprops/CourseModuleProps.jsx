@@ -16,12 +16,11 @@ import Course from "../views/Course";
 import axiosClient from "../axios-client";
 import Loading from "../assets/course_Loading.svg"
 
-const CourseModuleProps = ({headers, course}) => {
+const CourseModuleProps = ({headers, course, LearnerProgress}) => {
     const stepperRef = useRef();
     const [activeStepMeta, setActiveMeta] = useState({title: "", desc: "", stepID:""})
     const {role,user} = useStateContext()
     const [loading, setLoading] = useState()
-
 
     //Lesson must be in this object structure
     // const LessonObject = {
@@ -39,7 +38,10 @@ const CourseModuleProps = ({headers, course}) => {
     //     files: []
     // }
 
-    const [learnerProgress, setLearnerProgress] = useState([])
+    useEffect(() => {
+        console.log("Learner Progress: ", LearnerProgress)
+    }, [LearnerProgress])
+    const [learnerProgress, setLearnerProgress] = useState(LearnerProgress || [])
     const [progress, setProgress] = useState()
 
     //New handleNext

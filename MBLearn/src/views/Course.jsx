@@ -27,7 +27,7 @@ import CoursePublishingModal from "../modalsandprops/CoursePublishingModal"
 
 export default function Course() {
     const navigate = useNavigate();
-    const {role} = useStateContext();
+    const {role, user} = useStateContext();
     const {id} = useParams();
     const [course, setCourse] = useState([]);
     const [isLoading ,setLoading] = useState(true);
@@ -37,6 +37,7 @@ export default function Course() {
     const [openPublish, setOpenPublish] = useState(false);
     const [assign, setAssign] = useState(false);
     const {selectCourse, selectedCourse, isFetching, resetSelectedCourse} = useCourse();
+    const [learnerProgress, setLearnerProgress] = useState();
 
 
     useEffect(() => {
@@ -48,6 +49,13 @@ export default function Course() {
         selectCourse(id);
         setLoading(isFetching);
         setCourse(selectedCourse);
+
+        axiosClient.get(`/coursecontext/${id}/${user.user_infos.id}`)
+        .then((res) => {
+            console.log(res.data)
+            setLearnerProgress(res.data.completed_lessons);
+        }).catch((e) => console.log(e))
+
     }, [selectedCourse,id, isFetching]);
 
     // useEffect(() => {
@@ -157,7 +165,7 @@ export default function Course() {
                                     <p className="font-header">Detail</p>
                                 </div>
                             </div>
-                        </>} course={course}/>
+                        </>} course={course} LearnerProgress={learnerProgress}/>
                     </>
                 ) :
                 (
