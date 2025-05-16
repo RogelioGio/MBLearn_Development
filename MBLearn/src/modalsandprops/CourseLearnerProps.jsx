@@ -5,6 +5,8 @@ import React, { useEffect, useState } from 'react';
 import axiosClient from '../axios-client';
 
 const CourseLearnerProps = ({course}) => {
+
+
     const stat = {
         progress: 50, // Progress in percentage
         color: "white", // Color of the progress ring
@@ -18,12 +20,15 @@ const CourseLearnerProps = ({course}) => {
         setLoading(true);
         axiosClient.get(`/select-course-users/${course.id}`)
         .then((res) => {
-            setLearners(res.data);
+            setLearners(res.data.data.data);
             setLoading(false);
         }).catch((err) => {
             console.log(err)
         })
     },[]);
+    useEffect(() => {
+        console.log(learners)
+    }), [learners]
 
     return(
         <div className="mr-5 grid grid-rows-[min-content_min-content_auto_min-content] grid-cols-4 h-full">
@@ -32,21 +37,21 @@ const CourseLearnerProps = ({course}) => {
                     <div className= {`text-primary p-3 border-2 border-primary bg-white rounded-md hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out ${tab === 1 ? "!bg-primary text-white":null}`} onClick={() => setTab(1)}>
                         <div className='flex flex-row items-center gap-2'>
                             <FontAwesomeIcon icon={faGraduationCap}/>
-                            <h1 className="font-header text-lg">Latest Learner Batch</h1>
+                            <h1 className="font-header text-lg">Latest Learner </h1>
                         </div>
                         <p className="font-text text-xs">Latest batch of learner that is going to take this course</p>
                     </div>
                     <div className= {`text-primary p-3 border-2 border-primary bg-white rounded-md hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out ${tab === 2 ? "!bg-primary text-white":null}`} onClick={() => setTab(2)}>
                     <div className='flex flex-row items-center gap-2'>
                             <FontAwesomeIcon icon={faBookOpen}/>
-                            <h1 className="font-header text-lg">On-going Batch</h1>
+                            <h1 className="font-header text-lg">On-going Learners</h1>
                         </div>
                         <p className="font-text text-xs">On-going batch that is currently taking the course</p>
                     </div>
                     <div className= {`text-primary p-3 border-2 border-primary bg-white rounded-md hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out ${tab === 3 ? "!bg-primary text-white":null}`} onClick={() => setTab(3)}>
                     <div className='flex flex-row items-center gap-2'>
                             <FontAwesomeIcon icon={faAward}/>
-                            <h1 className="font-header text-lg">Previous Batch</h1>
+                            <h1 className="font-header text-lg">Finished Learners</h1>
                         </div>
                         <p className="font-text text-xs">Previous batch that is done taking the course</p>
                     </div>
@@ -75,10 +80,6 @@ const CourseLearnerProps = ({course}) => {
                         <thead className='font-header text-xs text-primary bg-secondaryprimary'>
                             <tr>
                                 <th className='py-4 px-4 w-2/7'>EMPLOYEE NAME</th>
-                                <th className='py-4 px-4 w-1/7'>DIVSION</th>
-                                <th className='py-4 px-4 w-1/7'>DEPARTMENT</th>
-                                <th className='py-4 px-4 w-1/7'>SECTION</th>
-                                <th className='py-4 px-4 w-1/7'>LOCATION</th>
                                 <th className='py-4 px-4 w-1/7'>COURSE PROGRESS</th>
                             </tr>
                         </thead>
@@ -100,24 +101,6 @@ const CourseLearnerProps = ({course}) => {
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className='py-3 px-4'>
-                                                <div className='h-4 w-full bg-gray-300 rounded-full'></div>
-                                            </td>
-                                            <td className='py-3 px-4'>
-                                                <div className='flex flex-col gap-2'>
-                                                <div className='h-4 w-full bg-gray-300 rounded-full'></div>
-                                                <div className='h-4 w-1/2 bg-gray-300 rounded-full'></div>
-                                                </div>
-                                            </td>
-                                            <td className='py-3 px-4'>
-                                                <div className='h-4 w-full bg-gray-300 rounded-full'></div>
-                                            </td>
-                                            <td className='py-3 px-4'>
-                                            <div className='flex flex-col gap-2'>
-                                                <div className='h-4 w-full bg-gray-300 rounded-full'></div>
-                                                <div className='h-4 w-1/2 bg-gray-300 rounded-full'></div>
-                                                </div>
-                                            </td>
                                             <td className='py-3 px-4 flex flex-col gap-2'>
                                                 <div className='h-4 w-full bg-gray-300 rounded-full'></div>
                                                 <div className='h-4 w-1/2 bg-gray-300 rounded-full'></div>
@@ -126,7 +109,7 @@ const CourseLearnerProps = ({course}) => {
                                     ))
                                 ) : learners.length === 0 ? (
                                     <tr className='font-text text-sm hover:bg-gray-200'>
-                                        <td colSpan={6} className='text-center text-unactive py-3 px-4'>
+                                        <td colSpan={2} className='text-center text-unactive py-3 px-4'>
                                             No Enrollees
                                         </td>
                                     </tr>
@@ -137,35 +120,13 @@ const CourseLearnerProps = ({course}) => {
                                             <div className='flex items-center gap-2'>
                                                 {/* User Image */}
                                                 <div className='bg-blue-500 h-10 w-10 rounded-full'>
-                                                    <img src={learner.profile_image} alt="" className='rounded-full'/>
+                                                    <img src={learner.enrolled_user.profile_image} alt="" className='rounded-full'/>
                                                 </div>
                                                 {/* Name and employee-id*/}
                                                 <div>
-                                                    <p className='font-text'>{learner.first_name} {learner.middle_name} {learner.last_name} {learner.suffix_name}</p>
-                                                    <p className='text-unactive text-xs'>ID: {learner.employeeID}</p>
+                                                    <p className='font-text'>{learner.enrolled_user.first_name} {learner.enrolled_user.middle_name} {learner.enrolled_user.last_name} {learner.enrolled_user.suffix_name}</p>
+                                                    <p className='text-unactive text-xs'>ID: {learner.enrolled_user.employeeID}</p>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td className='py-3 px-4'>
-                                            <p className='text-unactive'>{learner.division?.division_name}</p>
-                                        </td>
-                                        <td className='py-3 px-4'>
-                                            <div className='flex flex-col'>
-                                                {/* Department */}
-                                                <p className='text-unactive'>{learner.department?.department_name}</p>
-                                                {/* Title */}
-                                                <p className='text-unactive text-xs'>{learner.titles}</p>
-                                            </div>
-                                        </td>
-                                        <td className='py-3 px-4'>
-                                        <p className='text-unactive'>{learner.section?.section_name}</p>
-                                        </td>
-                                        <td className='py-3 px-4'>
-                                            <div className='flex flex-col'>
-                                            {/* Branch Location */}
-                                            <p className='text-unactive'>{}</p>
-                                            {/* City Location */}
-                                            <p className='text-unactive text-xs'>Novaliches</p>
                                             </div>
                                         </td>
                                         <td className='py-3 px-4 flex flex-row gap-2'>
@@ -173,11 +134,11 @@ const CourseLearnerProps = ({course}) => {
                                                 size={35} // Diameter of the ring
                                                 roundCaps
                                                 thickness={4} // Thickness of the progress bar
-                                                sections={[{ value: stat.progress, color: "blue" }]} // Lighter blue progress
-                                                rootColor="hsl(218, 97%, 15%)" // Darker blue track
+                                                sections={[{ value: learner.completed_percentage, color: "hsl(218,97%,26%)" }]} // Lighter blue progress
+                                                rootColor="hsl(210, 14%, 83%)" // Darker blue track
                                                 />
                                             <div>
-                                                <p className='font-header'>{stat.progress}%</p>
+                                                <p className='font-header'>{learner.completed_percentage}%</p>
                                                 <p className='font-text text-xs'>Employee Progress</p>
                                             </div>
                                         </td>

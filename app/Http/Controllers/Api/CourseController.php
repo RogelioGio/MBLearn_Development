@@ -59,7 +59,7 @@ class CourseController extends Controller
             }
         }
 
-        $courses = $querySort->with(['categories', 'types', 'training_modes'])->where('archived', '=', 'active')->paginate($perPage);
+        $courses = $querySort->with(['categories', 'types', 'training_modes','adder'])->where('archived', '=', 'active')->paginate($perPage);
 
         return response() -> json([
             'data' => $courses,
@@ -274,10 +274,10 @@ class CourseController extends Controller
         $perPage = $request->input('per_page', 5); // default per page
 
         $admins = $course->assignedCourseAdmins()
-        ->with(['branch', 'department', 'branch.city', 'title',])
+        ->with(['branch', 'department', 'branch.city', 'title','division','section'])
         ->paginate($perPage);
 
-        $main = $course->adder()->with(['branch', 'department', 'branch.city', 'title'])->get();
+        $main = $course->adder()->with(['branch', 'department', 'branch.city', 'title', 'division','section'])->get();
 
         return response()->json([
             'data' => $admins->items(),

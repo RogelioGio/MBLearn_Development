@@ -57,29 +57,31 @@ const CourseDetailsModal = ({open,close,classname,selectedCourse}) => {
 
                                             {/* Person-contributer */}
                                             {/* Main Course Admin toh */}
-                                            <div className='flex flex-col justify-center py-2 col-span-3'>
+                                            <div className='col-span-1 flex flex-col items-start justify-center gap-y-2'>
                                                 <p className='font-text text-xs text-unactive'>Course Contributor:</p>
-                                                <div className='grid grid-cols-3 grid-rows-[min-content] gap-x-2 pt-2'>
-                                                    <div className='col-start-1 col-span-2 row-start-1 flex flex-row gap-2'>
-                                                        <div className='bg-blue-500 h-10 w-10 rounded-full'>
-                                                            <img src={selectedCourse?.adder?.profile_image} alt="" className='rounded-full' />
-                                                        </div>
-                                                        <div>
-                                                            <p className='font-text'>{selectedCourse?.adder?.first_name} {selectedCourse?.adder?.middle_name} {selectedCourse?.adder?.last_name} {selectedCourse?.adder?.name_suffix}</p>
-                                                            <p className='text-unactive text-xs font-text'>ID: {selectedCourse?.adder?.employeeID}</p>
-                                                        </div>
+                                                <div className='flex-row flex gap-x-2'>
+                                                    <div className='bg-blue-500 h-10 w-10 rounded-full'>
+                                                        <img src={selectedCourse?.adder?.profile_image} alt="" className='rounded-full' />
                                                     </div>
                                                     <div>
-                                                        {/* Division */}
-                                                        {/* Department */}
-                                                        {/* Section */}
-                                                    </div>
-                                                    <div>
-                                                        {/* Branch */}
-                                                        {/* City */}
+                                                        <p className='font-text'>{selectedCourse?.adder?.first_name} {selectedCourse?.adder?.middle_name} {selectedCourse?.adder?.last_name} {selectedCourse?.adder?.name_suffix}</p>
+                                                        <p className='text-unactive text-xs font-text'>ID: {selectedCourse?.adder?.employeeID}</p>
                                                     </div>
                                                 </div>
                                             </div>
+                                            <div className='col-span-1 flex flex-col items-start justify-center gap-y-2'>
+                                                <p className='font-text text-xs text-unactive'>Course Author:</p>
+                                                <div className='flex-row flex gap-x-2'>
+                                                    <div className='bg-blue-500 h-10 w-10 rounded-full'>
+                                                        <img src="" alt="" className='rounded-full' />
+                                                    </div>
+                                                    <div>
+                                                        <p className='font-text'>Author's Name</p>
+                                                        <p className='text-unactive text-xs font-text'>ID: 11110110291</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                         </div>
                                 </DialogPanel>
                             </div>

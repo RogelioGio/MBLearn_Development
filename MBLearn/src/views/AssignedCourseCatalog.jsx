@@ -106,7 +106,7 @@ export default function AssignedCourseCatalog() {
             axiosClient.get('/courses', {
                 params: {
                     page: pageState.currentPage,
-                    perPage: pageState.perPage,
+                    perPage: 6,
                 }
             })
             .then(({ data }) => {
@@ -124,7 +124,7 @@ export default function AssignedCourseCatalog() {
 
     const [pageState, setPagination] = useState({
         currentPage: 1,
-        perPage: 8,
+        perPage: 6,
         totalCourses: 0,
         lastPage:1,
         startNumber: 0,
@@ -267,19 +267,19 @@ export default function AssignedCourseCatalog() {
 
             {/* Tabs */}
             <div className="px-5 col-span-4 w-full py-2 flex flex-row justify-between items-center gap-2">
-                <div className= {`w-full border-2 border-primary px-4 py-2 rounded-md shadow-md text-primary font-header ${tab === "myCourses" ? "bg-primary text-white":"bg-white"} hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out`} onClick={() => {setTab("myCourses")}}>
+                <div className= {`w-full border-2 border-primary px-4 py-2 rounded-md shadow-md text-primary font-header ${tab === "myCourses" ? "bg-primary text-white":"bg-white"} hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out`} onClick={() => {if(!loading) return setTab("myCourses")}}>
                         <p className="flex gap-2"><span><FontAwesomeIcon icon={faBookBookmark}/></span> My Courses</p>
                         {/* <p className="text-xs font-text">Manage and view all your inputted courses</p> */}
                     </div>
-                    <div className={`w-full border-2 border-primary px-4 py-2 rounded-md shadow-md text-primary font-header ${tab === "assignedCourses" ? "bg-primary text-white":"bg-white"} hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out`} onClick={() => {setTab("assignedCourses")}}>
+                    <div className={`w-full border-2 border-primary px-4 py-2 rounded-md shadow-md text-primary font-header ${tab === "assignedCourses" ? "bg-primary text-white":"bg-white"} hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out`} onClick={() => {if(!loading) return setTab("assignedCourses")}}>
                         <p className="flex gap-2"><span><FontAwesomeIcon icon={faBook}/></span>Assigned Courses</p>
                         {/* <p className="text-xs font-text">Manage and view all your assigned courses</p> */}
                     </div>
-                    <div className={`w-full border-2 border-primary px-4 py-2 rounded-md shadow-md text-primary font-header ${tab === "allCourses" ? "bg-primary text-white":"bg-white"} hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out`} onClick={() => {setTab("allCourses")}}>
+                    <div className={`w-full border-2 border-primary px-4 py-2 rounded-md shadow-md text-primary font-header ${tab === "allCourses" ? "bg-primary text-white":"bg-white"} hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out`} onClick={() => {if(!loading) return setTab("allCourses")}}>
                         <p className="flex gap-2"><span><FontAwesomeIcon icon={faSwatchbook}/></span>All Courses Catalog</p>
                         {/* <p className="text-xs font-text">View all availbale courses in MBLearn</p> */}
                     </div>
-                    <div className={`w-full border-2 border-primary px-4 py-2 rounded-md shadow-md text-primary font-header ${tab === "archivedCourses" ? "bg-primary text-white":"bg-white"} hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out`} onClick={() => {setTab("archivedCourses")}}>
+                    <div className={`w-full border-2 border-primary px-4 py-2 rounded-md shadow-md text-primary font-header ${tab === "archivedCourses" ? "bg-primary text-white":"bg-white"} hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out`} onClick={() => {if(!loading) return setTab("archivedCourses")}}>
                         <p className="flex gap-2"><span><FontAwesomeIcon icon={faBookmark}/></span>Archived Courses</p>
                         {/* <p className="text-xs font-text">View all archived courses</p> */}
                     </div>
@@ -406,11 +406,12 @@ export default function AssignedCourseCatalog() {
             </div>
 
             {/* Course Catalog */}
-            <div className="mx-5 col-span-4 row-start-4 row-span-1 grid grid-cols-4 grid-rows-2 gap-2 py-2">
+            <div className = {`mx-5 col-span-4 row-start-4 row-span-1 grid grid-cols-3 grid-rows-2 gap-3 py-2`}>
                 {
-                    assigned_course && !loading ? assigned_course?.map((course, index) => {
-                        return(
-                            <AssignedCourseCatalogCard key={index}
+                    !loading ? (
+                        assigned_course && assigned_course.length > 0 ? (
+                            assigned_course?.map((course, index) => (
+                                <AssignedCourseCatalogCard key={index}
                                 id={course.id}
                                 name={course.name}
                                 courseId={course?.CourseID}
@@ -418,13 +419,22 @@ export default function AssignedCourseCatalog() {
                                 courseCategory={course.categories[0]?.category_name}
                                 trainingMode={course.training_modes[0]?.modes_name}
                                 trainingType={course.training_type}
-                                tab={tab}/>
-                        )}) : (
+                                tab={tab}
+                                adder={course?.adder}
+                                />
+                            ))
+                        ) :
+                        (
                             <div className="col-span-4 row-span-2 flex flex-col gap-4 items-center justify-center text-center h-full">
-                                <img src={CourseLoading} alt="" className="w-80"/>
-                                <p className="text-sm font-text text-primary">Hang tight! 🚀 Loading courses for — great things take a second!</p>
+                                <p className="text-sm font-text text-unactive">No available courses yet</p>
                             </div>
                         )
+                    ) : (
+                        <div className="col-span-4 row-span-2 flex flex-col gap-4 items-center justify-center text-center h-full">
+                                <img src={CourseLoading} alt="" className="w-80"/>
+                                <p className="text-sm font-text text-primary">Hang tight! 🚀 Loading courses for — great things take a second!</p>
+                        </div>
+                    )
                 }
             </div>
 

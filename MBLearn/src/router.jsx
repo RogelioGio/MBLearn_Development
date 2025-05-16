@@ -170,7 +170,9 @@ const router = createBrowserRouter([
                     },
                     {
                         path: "learnerselfenrollment",
-                        element: <LearnerSelfEnrollment/>
+                        element: <CourseListProvider>
+                            <LearnerSelfEnrollment/>
+                        </CourseListProvider>
                     },
                     {
                         path:"course/:id",
