@@ -7,6 +7,7 @@ use App\Filters\CourseFilter;
 use App\Filters\CourseSort;
 use App\Filters\UserInfosFilter;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\BulkAddPermissionsToCourse;
 use App\Http\Requests\BulkAssignCourseAdmins;
 use App\Http\Requests\BulkStoreCourseRequest;
 use App\Http\Requests\StoreCourseRequest;
@@ -126,6 +127,18 @@ class CourseController extends Controller
         return response()->json([
             "Message" => "Bulk Store complete",
             "Data" => $bulk
+        ]);
+    }
+
+    public function setCoursePermissions(Course $course, BulkAddPermissionsToCourse $request){
+        $permissions = collect($request->validated())->map(function($arr, $key){
+            return $arr;
+        });
+
+        $course->course_permissions()->sync($permissions->toArray());
+        return response()->json([
+            "Message" => "Permissions added to course",
+            "Data" => $course->course_permissions
         ]);
     }
 
