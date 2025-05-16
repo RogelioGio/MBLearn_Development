@@ -621,7 +621,7 @@ class userInfo_controller extends Controller
 
         foreach($courses as $index => $course){
             if($course->lessons_count > 0){
-                $course->progress = $userInfos->lessonsCompletedCount($course->id)/$course->lessons_count * 100;
+                $course->progress = round($userInfos->lessonsCompletedCount($course->id)/$course->lessons_count * 100, 2);
             }else{
                 $course->progress = 0;
             }

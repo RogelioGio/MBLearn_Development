@@ -19,6 +19,7 @@ use App\Models\LessonFile;
 use App\Models\Training_Mode;
 use App\Models\Type;
 use App\Models\UserInfos;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -266,14 +267,36 @@ class CourseController extends Controller
     }
 
     public function countCourseStatus(UserInfos $userInfos){
-        $enrolled = $userInfos->enrollments()->where('enrollment_status', 'enrolled')->count();
-        $ongoing = $userInfos->enrollments()->where('enrollment_status', 'ongoing')->count();
-        $finished = $userInfos->enrollments()->where('enrollment_status', 'finished')->count();
-
+        $enrollments = $userInfos->enrollments()->get();
+        $enrolled = 0;
+        $ongoing = 0;
+        $due_soon = 0;
+        $finished = 0;
+        foreach($enrollments as $enrollment){
+            $deadline = Carbon::parse($enrollment->end_date);
+            if(!$deadline->isPast()){
+                if($enrollment->enrollment_status == 'enrolled'){
+                    $enrolled++;
+                } elseif($enrollment->enrollment_status == 'ongoing'){
+                    $ongoing++;
+                } elseif($enrollment->enrollment_status == 'finished'){
+                    $finished++;
+                } elseif($enrollment->due_soon == true || !($enrollment->enrollment_status == 'finished')){
+                    $due_soon++;
+                }
+            } else if($enrollment->allow_late == true){
+                if($enrollment->enrollment_status == 'enrolled'){
+                    $enrolled++;
+                } elseif($enrollment->enrollment_status == 'ongoing'){
+                    $ongoing++;
+                }
+            }
+        }
         return response()->json([
             'Enrolled' => $enrolled,
             'Ongoing' => $ongoing,
-            'Finished' => $finished
+            'Finished' => $finished,
+            'Due Soon' => $due_soon
         ]);
     }
 
