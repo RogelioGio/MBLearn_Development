@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Filters\CourseSort;
 use App\Filters\UserInfosFilter;
+use App\helpers\LessonCountHelper;
 use App\helpers\LogActivityHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AddUsersRequest;
@@ -363,10 +364,9 @@ class userInfo_controller extends Controller
                 $querySort->where('training_type', $request->input('training_type'));
             }
         }
-
-
         $courses = $querySort->with(['categories', 'types', 'training_modes'])->where('archived', '=', 'active')->paginate($perPage);
 
+        LessonCountHelper::getEnrollmentStatusCount($courses);
         return response()->json([
             'data' => $courses->items(),
             'total' => $courses->total(),
@@ -453,12 +453,13 @@ class userInfo_controller extends Controller
 
         $courses = $querySort->with(['categories', 'types', 'training_modes'])->where('archived', '=', 'active')->paginate($perPage);
 
+        $final = LessonCountHelper::getEnrollmentStatusCount($courses);
         return response()->json([
-            'data' => $courses->items(),
-            'total' => $courses->total(),
-            'lastPage' => $courses->lastPage(),
-            'currentPage' => $courses->currentPage(),
-            'per' => $courses->perPage()
+            'data' => $final->items(),
+            'total' => $final->total(),
+            'lastPage' => $final->lastPage(),
+            'currentPage' => $final->currentPage(),
+            'per' => $final->perPage()
         ],200);
     }
 

@@ -281,7 +281,8 @@ class CourseController extends Controller
                     $ongoing++;
                 } elseif($enrollment->enrollment_status == 'finished'){
                     $finished++;
-                } elseif($enrollment->due_soon == true || !($enrollment->enrollment_status == 'finished')){
+                } 
+                if($enrollment->due_soon == true || !($enrollment->enrollment_status == 'finished')){
                     $due_soon++;
                 }
             } else if($enrollment->allow_late == true){
