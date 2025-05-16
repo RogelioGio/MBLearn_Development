@@ -776,14 +776,14 @@ class userInfo_controller extends Controller
 
     public function test(Request $request){
         $course = Course::query()->find($request->input('course_id'));
-        $user = UserInfos::query()->find($request->input('user_id'));
-        $pivot = $course->assignedCourseAdmins()->where('user_id', $user->id)->first()->pivot;
-
+        // $user = UserInfos::query()->find($request->input('user_id'));
+        // $pivot = $course->assignedCourseAdmins()->where('user_id', $user->id)->first()->pivot;
+        $permIds = $course->course_permissions->pluck('id')->toArray();
         // $perm = CourseUserAssigned::find($pivot->id);
 
         // $perm->permissions()->sync([1,2]);
         return response()->json([
-            'data' => $pivot->load(['permissions'])
+            'data' => $permIds,
         ]);
     }
 }

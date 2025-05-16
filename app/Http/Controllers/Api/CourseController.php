@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\AssignCourseAdmin;
 use App\Filters\CourseFilter;
 use App\Filters\CourseSort;
 use App\Filters\UserInfosFilter;
@@ -20,7 +21,7 @@ use App\Models\UserInfos;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Pagination\LengthAwarePaginator;
-
+use PhpParser\Node\Expr\Assign;
 
 class CourseController extends Controller
 {
@@ -142,6 +143,7 @@ class CourseController extends Controller
             return $messyArray;
         });
         $course->assignedCourseAdmins()->syncWithoutDetaching($bulk);
+        AssignCourseAdmin::dispatch($course, $bulk);
         return response()->json([
             'message' => "Course Admins assigned to ".$course->name
         ]);

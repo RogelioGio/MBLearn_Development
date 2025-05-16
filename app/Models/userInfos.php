@@ -43,7 +43,7 @@ class UserInfos extends Model
 
     //Functions for relationships
     public function enrollments(): HasMany{
-        return $this->hasMany(Enrollment::class, 'user_id');
+        return $this->hasMany(Enrollment::class, 'user_id', 'id');
     }
 
     //TODO change name to be more clear, for knowing who made the enrollment
