@@ -108,6 +108,47 @@ input[type="password"]::-webkit-textfield-decoration-container {
     @apply bg-background text-foreground;
     }
 }
+@layer base {
+  /* Hide event blocks inside day cells */
+  .fc-daygrid-event-harness {
+    @apply hidden !important;
+  }
+
+  /* Style day cells: border, rounded, cursor, bg, font, text alignment */
+  .fc-daygrid-day{
+    @apply border border-gray-300 bg-primary hover:cursor-pointer font-sans text-sm text-center !important;
+  }
+
+  /* Day cells hover background */
+  .fc-daygrid-day:hover {
+    @apply bg-gray-100;
+  }
+
+  /* Style today’s day cell differently */
+  .fc-day-today {
+    @apply bg-yellow-100 border-yellow-400;
+  }
+
+  /* Style weekday header cells */
+  .fc-col-header-cell {
+    @apply bg-gray-50 border-b border-gray-300 text-gray-600 font-semibold text-sm;
+  }
+
+  /* Remove default focus outline from events (if any visible) */
+  .fc .fc-event:focus {
+    outline: none;
+  }
+
+  /* Optional: style the calendar container */
+  .fc {
+    @apply bg-white rounded-lg shadow-md p-4;
+  }
+
+  /* Remove FullCalendar’s default table spacing */
+  .fc table {
+    @apply border-collapse border-spacing-0;
+  }
+}
 
 /* md screen styles */
 /* sm screen style */
