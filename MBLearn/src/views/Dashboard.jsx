@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useStateContext } from '../contexts/ContextProvider';
 import axiosClient from '../axios-client';
 import { Helmet } from 'react-helmet';
@@ -58,6 +58,22 @@ const chartConfig2 = {
 
 //One Dashboard Component for 3 different roles
 const DashboardLayout = ({role,name,user}) => {
+
+    const calendarRef = useRef()
+    const [monthLabel, setMonthLabel] = useState("")
+    const updateMonthLabel = () => {
+        const current = calendarRef.current?.getCurrentMonth();
+        if (current) {
+        setMonthLabel(format(current, "MMMM yyyy"));
+        }
+    };
+    useEffect(() => {
+        updateMonthLabel(); // set initial label
+    }, []);
+    const sampleEvents = [
+        { date: "2025-05-20", title: "Meeting with Finance" },
+        { date: "2025-05-25", title: "Payroll Deadline" },
+    ];
 
     const chartData2 = [
       { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
@@ -119,8 +135,8 @@ const DashboardLayout = ({role,name,user}) => {
                 <div className='col-span-1 row-span-1 pr-5 py-2 grid grid-cols-1 grid-rows-[min-content_1fr]'>
                     <div className='flex flex-row justify-between items-center'>
                         <div className="pb-3">
-                            <p className="font-text text-unactive text-xs">Current Date:</p>
-                            <p className="font-header text-primary text-base">{format(new Date(), "MMMM d yyy")}</p>
+                            <p className="font-text text-unactive text-xs">Current Month & Date:</p>
+                            <p className="font-header text-primary text-base">{monthLabel || "Loadding"}</p>
                         </div>
                         <div className='flex flex-row gap-2'>
                             <div>
@@ -129,19 +145,21 @@ const DashboardLayout = ({role,name,user}) => {
                                 </div>
                             </div>
                             <div>
-                                <div className='w-9 h-9 border-2 rounded-md text-primary border-primary flex justify-center items-center hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out'>
+                                <div className='w-9 h-9 border-2 rounded-md text-primary border-primary flex justify-center items-center hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out'
+                                onClick={()=> {calendarRef.current?.goToPreviousMonth(), setTimeout(updateMonthLabel, 0)}}>
                                     <ArrowLeft className="h-4 w-4" />
                                 </div>
                             </div>
                             <div>
-                                <div className='w-9 h-9 border-2 rounded-md text-primary border-primary flex justify-center items-center hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out'>
+                                <div className='w-9 h-9 border-2 rounded-md text-primary border-primary flex justify-center items-center hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out'
+                                onClick={()=> {calendarRef.current?.goToNextMonth(), setTimeout(updateMonthLabel, 0)}}>
                                 <ArrowRight className="h-4 w-4" />
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div className="w-full h-full rounded-md shadow-md border-2 border-primary overflow-hidden">
-                        <Calendar/>
+                        <Calendar ref={calendarRef} events={sampleEvents}/>
                     </div>
                 </div>
 
@@ -154,7 +172,7 @@ const DashboardLayout = ({role,name,user}) => {
 
                     </div>
                     <div className='bg-white w-full h-full rounded-md shadow-md border-2 border-primary px-2'>
-                        {/* <ChartContainer config={chartConfig} className="aspect-auto h-[200px] w-full">
+                        <ChartContainer config={chartConfig} className="aspect-auto h-[200px] w-full">
                             <AreaChart data={chartData}>
                                 <defs>
                                     <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
@@ -227,7 +245,7 @@ const DashboardLayout = ({role,name,user}) => {
                                 />
                                 <ChartLegend content={<ChartLegendContent />} />
                             </AreaChart>
-                        </ChartContainer> */}
+                        </ChartContainer>
                     </div>
                 </div>
                 <div className='col-span-1 row-start-3 mr-5 pb-5 flex flex-col'>
@@ -236,7 +254,7 @@ const DashboardLayout = ({role,name,user}) => {
                         <p className="font-text text-unactive text-xs">Total number of MBLearn users</p>
                     </div>
                     <div className='bg-white w-full h-full rounded-md shadow-md border-2 border-primary'>
-                        {/* <ChartContainer config={chartConfig2} className="mx-auto aspect-square max-h-[150px]" >
+                        <ChartContainer config={chartConfig2} className="mx-auto aspect-square max-h-[150px]" >
                             <RadialBarChart
                                 data={chartData2}
                                 startAngle={0}
@@ -286,7 +304,7 @@ const DashboardLayout = ({role,name,user}) => {
 
                                 <RadialBar dataKey="visitors" background cornerRadius={10} />
                             </RadialBarChart>
-                        </ChartContainer> */}
+                        </ChartContainer>
                     </div>
                 </div>
 

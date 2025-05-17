@@ -1,5 +1,5 @@
 import {
-  startOfMonth,
+   startOfMonth,
   endOfMonth,
   startOfWeek,
   endOfWeek,
@@ -9,11 +9,12 @@ import {
   format,
   isSameMonth,
   isSameDay,
+  parseISO,
 } from "date-fns";
-import { useState } from "react";
+import { forwardRef, useImperativeHandle, useState } from "react";
 
 
-export default function Calendar() {
+const Calendar = forwardRef(({events = []}, ref) => {
     const [currentMonth, setCurrentMonth] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState(null);
 
@@ -23,6 +24,15 @@ export default function Calendar() {
     const monthEnd = endOfMonth(monthStart);
     const startDate = startOfWeek(monthStart);
     const endDate = endOfWeek(monthEnd);
+
+    //Expose Methods to parent component
+    useImperativeHandle(ref, () => ({
+        goToNextMonth: () => setCurrentMonth((prev)=> addMonths(prev, 1)),
+        goToPreviousMonth: () => setCurrentMonth((prev)=> subMonths(prev, 1)),
+        goToToday: () => setCurrrentMonth(new Date()),
+        getCurrentMonth: () => currentMonth,
+        setSelectedDate,
+    }))
 
     const renderDays = () => (
         <div className="grid grid-cols-7 bg-primary text-center py-1 text-white font-header text-sm">
@@ -37,6 +47,11 @@ export default function Calendar() {
         const days = [];
         let day = startDate;
 
+        //normalize the event dates to read string to dates
+        const eventDates = events.map((e) => (
+            typeof e.date === "string" ? format(parseISO(e.date), "yyyy-MM-dd") :  format(e.date, "yyyy-MM-dd")
+        ))
+
         //6 weeks
         for(let i=0; i<42; i++){
             const formattedDate = format(day, "d");
@@ -44,9 +59,13 @@ export default function Calendar() {
             const isCurrentMonth = isSameMonth(day, currentMonth);
             const isToday = isSameDay(day, new Date());
 
+            //event identifiers
+            const dayKey = format(day, "yyyy-MM-dd");
+            const hasEvent = eventDates.includes(dayKey)
+
             days.push(
                 <div key={day} className={`font-text flex items-center justify-center border border-divi ${!isCurrentMonth ? "!text-gray-300" : ""}`}>
-                    <div className={`text-sm w-8 h-7 flex items-center justify-center ${isToday && !isSameDay(day, selectedDate) ? "bg-primary text-white rounded-md shadow-md hover:text-white" : ""} transition-all hover:border hover:cursor-pointer hover:text-primary border-primary rounded-md`}>{formattedDate}</div>
+                    <div className={`text-sm w-8 h-7 flex items-center justify-center ${isToday && !isSameDay(day, selectedDate) ? "bg-primary text-white rounded-md shadow-md hover:text-white" : ""} ${hasEvent ? "border-2 border-primary text-primary font-header":""} transition-all hover:border hover:cursor-pointer hover:text-primary border-primary rounded-md`}>{formattedDate}</div>
                 </div>
             )
             day = addDays(day, 1);
@@ -75,5 +94,6 @@ export default function Calendar() {
             </div>
         </>
     )
-}
+})
+export default Calendar;
 
