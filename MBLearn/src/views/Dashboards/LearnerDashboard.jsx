@@ -4,11 +4,13 @@ import axiosClient from "MBLearn/src/axios-client"
 import AnnouncmentCarousel from "MBLearn/src/modalsandprops/dashboardComponents/AnnouncementCarousel"
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { Calendar } from "MBLearn/src/components/ui/calendar"
 import * as React from "react"
 import { format } from "date-fns"
 import { Progress } from "MBLearn/src/components/ui/progress"
 import { ArrowLeft, ArrowRight } from "lucide-react"
+import { faCalendar } from "@fortawesome/free-regular-svg-icons"
+import Calendar from "MBLearn/src/modalsandprops/dashboardComponents/Calendar"
+
 
 const LearnerDashboard = ({name,user}) => {
     const [enrolled, setEnrolled] = useState([])
@@ -71,11 +73,31 @@ const LearnerDashboard = ({name,user}) => {
 
         {/* Calender */}
         <div className='col-span-1 row-span-1 pr-5 py-2 grid grid-cols-1 grid-rows-[min-content_1fr]'>
-            <div className="pb-3">
-                <p className="font-header text-primary text-base">Calendar</p>
-                <p className="font-text text-unactive text-xs">Stay organized by tracking schedule and activities</p>
+            <div className='flex flex-row justify-between items-center'>
+                <div className="pb-3">
+                    <p className="font-text text-unactive text-xs">Current Date:</p>
+                    <p className="font-header text-primary text-base">{format(new Date(), "MMMM d yyy")}</p>
+                </div>
+                <div className='flex flex-row gap-2'>
+                    <div>
+                        <div className='w-9 h-9 border-2 rounded-md text-primary border-primary flex justify-center items-center hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out'>
+                            <FontAwesomeIcon icon={faCalendar} className='text-sm'/>
+                        </div>
+                    </div>
+                    <div>
+                        <div className='w-9 h-9 border-2 rounded-md text-primary border-primary flex justify-center items-center hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out'>
+                            <ArrowLeft className="h-4 w-4" />
+                        </div>
+                    </div>
+                    <div>
+                        <div className='w-9 h-9 border-2 rounded-md text-primary border-primary flex justify-center items-center hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out'>
+                        <ArrowRight className="h-4 w-4" />
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div className="bg-white w-full h-full rounded-md shadow-md border-2 border-primary flex">
+            <div className="w-full h-full rounded-md shadow-md border-2 border-primary overflow-hidden">
+                <Calendar/>
             </div>
         </div>
 
@@ -122,7 +144,7 @@ const LearnerDashboard = ({name,user}) => {
                     ) : (
                         <div className="w-full h-full grid grid-cols-4 grid-rows-1 gap-2">
                             {
-                                enrolled.map((course) => {
+                                enrolled.filter(item => item.progress !== 100).map((course) => {
                                     return (
                                         <div className="bg-white w-full h-full shadow-md rounded-md grid grid-cols-1 grid-rows-[min-content_1fr_1fr_min-content_min-content] hover:cursor-pointer hover:scale-105 transition-all ease-in-out" onClick={() => navigate(`/learner/course/${course.id}`)}>
                                             <div className="bg-gradient-to-b from-[hsl(239,94%,19%)] via-[hsl(214,97%,27%)] to-[hsl(201,100%,36%)] w-full h-14 rounded-t-md p-3">

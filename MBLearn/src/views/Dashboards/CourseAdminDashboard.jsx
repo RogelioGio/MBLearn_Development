@@ -6,6 +6,12 @@ import AnnouncmentCarousel from "MBLearn/src/modalsandprops/dashboardComponents/
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { format } from "date-fns";
+import Calendar from "MBLearn/src/modalsandprops/dashboardComponents/Calendar";
+import { faCalendar } from "@fortawesome/free-regular-svg-icons";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+
+
 const CourseAdminDashboard = ({name, user}) => {
     const [tab, setTab] = useState("myCourses")
     const [loading, setLoading] = useState(false)
@@ -109,14 +115,33 @@ const CourseAdminDashboard = ({name, user}) => {
                 <AnnouncmentCarousel/>
             </div>
             <div className='col-span-1 row-span-1 pr-5 py-2 grid grid-cols-1 grid-rows-[min-content_1fr]'>
-            <div className="pb-3">
-                <p className="font-header text-primary text-base">Calendar</p>
-                <p className="font-text text-unactive text-xs">Stay organized by tracking schedule and activities</p>
+            <div className='flex flex-row justify-between items-center'>
+                        <div className="pb-3">
+                            <p className="font-text text-unactive text-xs">Current Date:</p>
+                            <p className="font-header text-primary text-base">{format(new Date(), "MMMM d yyy")}</p>
+                        </div>
+                        <div className='flex flex-row gap-2'>
+                            <div>
+                                <div className='w-9 h-9 border-2 rounded-md text-primary border-primary flex justify-center items-center hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out'>
+                                    <FontAwesomeIcon icon={faCalendar} className='text-sm'/>
+                                </div>
+                            </div>
+                            <div>
+                                <div className='w-9 h-9 border-2 rounded-md text-primary border-primary flex justify-center items-center hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out'>
+                                    <ArrowLeft className="h-4 w-4" />
+                                </div>
+                            </div>
+                            <div>
+                                <div className='w-9 h-9 border-2 rounded-md text-primary border-primary flex justify-center items-center hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out'>
+                                <ArrowRight className="h-4 w-4" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="w-full h-full rounded-md shadow-md border-2 border-primary overflow-hidden">
+                        <Calendar/>
+                    </div>
             </div>
-            <div className="bg-white w-full h-full rounded-md shadow-md border-2 border-primary">
-
-            </div>
-        </div>
         {/* Courses Carosel */}
         <div className='row-start-3 col-span-3 px-5 pt-2 p-2 flex flex-col'>
             {/* Header */}
@@ -172,11 +197,11 @@ const CourseAdminDashboard = ({name, user}) => {
                                 <div className="grid grid-cols-[1fr_min-content_1fr] gap-1 p-3">
                                     <div className="flex flex-row items-center font-text justify-between">
                                         <p className="text-xs text-unactive">On-going Learner</p>
-                                        <p className="font-header text-primary">10</p>
+                                        <p className="font-header text-primary">{course.ongoing}</p>
                                     </div>
                                     <div className="w-[1px] h-full bg-divider"/>
                                     <div className="flex flex-row items-center font-text justify-between">
-                                        <p className="font-header text-primary">10</p>
+                                        <p className="font-header text-primary">{course.enrolled}</p>
                                         <p className="text-xs text-right text-unactive">Enrolled Learner</p>
                                     </div>
                                 </div>
