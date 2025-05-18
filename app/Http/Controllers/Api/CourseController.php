@@ -334,7 +334,7 @@ class CourseController extends Controller
 
     }
 
-    public function courseSearch(CourseSearchRequest $request){
+    public function CourseSearch(CourseSearchRequest $request){
         $search = $request['search'];
         $perPage = $request->input('perPage', 5); //Number of entry per page
         $page = $request->input('page', 1);//Default page

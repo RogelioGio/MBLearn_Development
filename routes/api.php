@@ -38,6 +38,7 @@ Route::middleware('auth:sanctum')->group(function(){
         return $request->user()->load(['userInfos', 'userInfos.permissions','userInfos.roles',]);
     });
     Route::get('/status/{userId}/{lessonId}', [LessonsController::class, 'updateLearnerProgress']);
+    Route::get('/course-search', [CourseController::class, 'CourseSearch']);
     
     Route::get('/exists/{courseId}', [CourseController::class, 'checkIfExist']);
 
@@ -81,6 +82,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::put('/reset-password/{userCredentials}', [userCredentials_controller::class, 'resetUserPassword']);
     Route::put('/restore-user-creds/{userCredentials}', [userCredentials_controller::class, 'restoreUser']);
     Route::get('/reset-user',[userInfo_controller::class, 'resetUser']); //reset user table
+    Route::get('/user-creds-search', [userCredentials_controller::class, 'UserCredsSearch']);
 
     //User with course API
     Route::get('/select-user-courses/{userInfos}', [userInfo_controller::class, 'getUserCourses']);
