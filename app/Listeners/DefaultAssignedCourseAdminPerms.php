@@ -28,7 +28,7 @@ class DefaultAssignedCourseAdminPerms
         foreach ($userids as $userid) {
             $pivot = $course->assignedCourseAdmins()->where('user_id', $userid)->first()->pivot;
             $perm = CourseUserAssigned::find($pivot->id);
-            $perm->permissions()->sync([1,2,3]);
+            $perm->permissions()->sync($permIds);
         }
 
     }
