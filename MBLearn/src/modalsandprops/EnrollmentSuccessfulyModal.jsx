@@ -67,7 +67,7 @@ const EnrolledSuccessfullyModal = ({ isOpen, onClose, result }) => {
         setSelectedCourse(result[0]?.course.id)
         setSelectedEnrolees(result.find((result)=> result.course.id === selectedCourse)?.enrollees)
         setSelectedCourses(result.map(entry => entry.course))
-    },[result])
+    },[result,isOpen])
 
 
     return(

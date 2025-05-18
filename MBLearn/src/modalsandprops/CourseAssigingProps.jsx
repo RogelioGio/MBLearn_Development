@@ -19,9 +19,9 @@ const CourseAssigningProps = ({isfiltered, id, handleInput, loading, name, emplo
                         <td className='text-sm  py-3 px-4'>
                             <div className='flex items-center gap-4'>
                                 {/* Checkbox */}
-                                <div className="group grid size-4 grid-cols-1">
+                                <div className="group grid size-4 grid-cols-[1rem] w-4 h-4">
                                     <input type="checkbox"
-                                        className="col-start-1 row-start-1 appearance-none border border-divider rounded checked:border-primary checked:bg-primary focus:ring-2 focus:ring-primary focus:outline-none focus:ring-offset-1"
+                                        className="w-4 h-4 col-start-1 row-start-1 appearance-none border border-divider rounded checked:border-primary checked:bg-primary focus:ring-2 focus:ring-primary focus:outline-none focus:ring-offset-1"
                                         name={employeeID}
                                         id={employeeID}
                                         checked={selectedCourseAdmin}
@@ -47,19 +47,19 @@ const CourseAssigningProps = ({isfiltered, id, handleInput, loading, name, emplo
                                             />
                                     </svg>
                                 </div>
+                                <div className="flex flex-row gap-x-2 items-center">
+                                    {/* User Image */}
+                                        {
+                                            profile_image ?
+                                            <img src={profile_image} alt="" className='rounded-full h-10 w-10'/>
+                                            : <div className="bg-blue-500 h-10 w-10"></div>
+                                        }
 
-                                {/* User Image */}
-                                <div className= 'h-10 w-10 rounded-full'>
-                                    {
-                                        profile_image ?
-                                        <img src={profile_image} alt="" className='rounded-full'/>
-                                        : <div className="bg-blue-500"></div>
-                                    }
-                                </div>
-                                {/* Name and employee-id*/}
-                                <div>
-                                    <p className='font-text'>{name}</p>
-                                    <p className='text-unactive text-xs'>ID: {employeeID}</p>
+                                    {/* Name and employee-id*/}
+                                    <div>
+                                        <p className='font-text'>{name}</p>
+                                        <p className='text-unactive text-xs'>ID: {employeeID}</p>
+                                    </div>
                                 </div>
                             </div>
                         </td>

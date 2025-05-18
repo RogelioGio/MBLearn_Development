@@ -137,7 +137,7 @@ const AddAssignCourseAdmin = ({courseID ,open, close,}) => {
         <DialogBackdrop transition className="backdrop-blur-sm fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in z-20"/>
             <div className='fixed inset-0 z-20 w-screen overflow-y-auto'>
                 <div className='flex min-h-full items-center justify-center p-4'>
-                    <DialogPanel transition className='z-20 relative overflow-hidden transform rounded-md w-5/6 bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in'>
+                    <DialogPanel transition className='z-20 relative overflow-hidden transform rounded-md w-[75vw] bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in'>
                         <div className='bg-white rounded-md h-full p-5 flex flex-col'>
                            {/* Header */}
                             <div className="pt-2 pb-4 mx-4 border-b border-divider flex flex-col justify-between item-center">
