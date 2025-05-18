@@ -813,20 +813,16 @@ class userInfo_controller extends Controller
     }
 
     public function test(Request $request){
-        // $course = Course::query()->find($request->input('course_id'));
-        // // $user = UserInfos::query()->find($request->input('user_id'));
-        // // $pivot = $course->assignedCourseAdmins()->where('user_id', $user->id)->first()->pivot;
-        // $permIds = $course->course_permissions->pluck('id')->toArray();
-        // // $perm = CourseUserAssigned::find($pivot->id);
+        $course = Course::query()->find(71);
+        $user = UserInfos::query()->find(109);
+        $pivot = $course->assignedCourseAdmins()->where('user_id', $user->id)->first()->pivot;
+        $permIds = $course->course_permissions->pluck('id')->toArray();
+        $perm = CourseUserAssigned::find($pivot->id);
 
-        // // $perm->permissions()->sync([1,2]);
-        // return response()->json([
-        //     'data' => $permIds,
-        // ]);
-        $result = UserCredentials::search(null)
-            ->paginate(5);
+        $perm->permissions()->sync([1,2]);
         return response()->json([
-            'data' => $result
-        ], 200);
+            'data' => $pivot
+        ]);
+
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\AssignCourseAdmin;
+use App\Models\CourseUserAssigned;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
@@ -25,7 +26,9 @@ class DefaultAssignedCourseAdminPerms
         $course = $event->course;
         $permIds = $course->course_permissions->pluck('id')->toArray();
         foreach ($userids as $userid) {
-            $course->assignedCourseAdmins()->where('user_id', $userid)->first()->pivot->permissions()->sync($permIds);
+            $pivot = $course->assignedCourseAdmins()->where('user_id', $userid)->first()->pivot;
+            $perm = CourseUserAssigned::find($pivot->id);
+            $perm->permissions()->sync([1,2,3]);
         }
 
     }

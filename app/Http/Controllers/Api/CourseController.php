@@ -157,9 +157,9 @@ class CourseController extends Controller
             return $messyArray;
         });
         $course->assignedCourseAdmins()->syncWithoutDetaching($bulk);
-        AssignCourseAdmin::dispatch($course, $bulk);
+        AssignCourseAdmin::dispatch($course, $bulk->toArray());
         return response()->json([
-            'message' => "Course Admins assigned to ".$course->name
+            'message' => "Course Admins assigned to ".$course->name,
         ]);
     }
 
@@ -330,6 +330,10 @@ class CourseController extends Controller
             'lastPage' => $admins->lastPage(),
             'currentPage' => $admins->currentPage(),
         ], 200);
+
+    }
+
+    public function courseSearch(Request $request){
 
     }
 
