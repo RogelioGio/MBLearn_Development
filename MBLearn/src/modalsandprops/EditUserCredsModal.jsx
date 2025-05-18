@@ -103,12 +103,19 @@ const EditUserCredsModal = ({open, close, ID, editSuccess}) => {
 
 
                 if(selectedUser.user_infos.roles?.[0].id !== values.role){
-                    setTimeout(() => {
+                    axiosClient.put(`/updateUserPermission/${selectedUser.id}`, payload)
+                    .then((res) => {
+                        console.log(res);
+                        setTimeout(() => {
                             setTab(1)
                             setUpdating(false)
                             close();
                             editSuccess();
                         }, 1000);
+                    }).catch((err) => {
+                        console.log(err);
+                    })
+
                 } else {
                     axiosClient.put(`/updateUserPermission/${selectedUser.id}`, accountPerm)
                     .then((res) => {

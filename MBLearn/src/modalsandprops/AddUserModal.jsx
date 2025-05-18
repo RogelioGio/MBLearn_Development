@@ -75,9 +75,11 @@ const AddUserModal = ({open, close, updateTable}) => {
         //validation
         validationSchema: Yup.object({
 
-            employeeID: Yup.string().required('required *').length(11, 'Employee ID must be exactly 11 characters'),
-            lastname: Yup.string().required('required *'),
-            firstname: Yup.string().required('required *'),
+            employeeID: Yup.string().required('required *').matches(/^\d+$/, 'Numbers only').length(11, 'Employee ID must be exactly 11 characters'),
+            lastname: Yup.string().required('required *').matches(/^[A-Za-z.\s]+$/, 'Only letters are allowed'),
+            firstname: Yup.string().required('required *').matches(/^[A-Za-z.\s]+$/, 'Only letters are allowed'),
+            middlename: Yup.string().matches(/^[A-Za-z]+\.?$/, 'Invalid Special Character'),
+            suffix: Yup.string().matches(/^[A-Za-z]+\.?$/, 'Invalid Special Character'),
             department: Yup.string().required('required *'),
             title: Yup.string().required('required *'),
             city: Yup.string().required('required *'),
@@ -89,10 +91,10 @@ const AddUserModal = ({open, close, updateTable}) => {
             setLoading(true)
             const payload = {
                 employeeID: values.employeeID,
-                first_name: values.firstname,
-                last_name: values.lastname,
-                middle_name: values.middlename,
-                name_suffix: values.suffix,
+                first_name: values.firstname.charAt(0).toUpperCase() + values.firstname.slice(1),
+                last_name: values.lastname.charAt(0).toUpperCase() + values.lastname.slice(1),
+                middle_name: values.middlename.charAt(0).toUpperCase() + values.middlename.slice(1),
+                name_suffix: values.suffix.charAt(0).toUpperCase() + values.suffix.slice(1),
                 department_id: values.department,
                 section_id: values.section,
                 division_id: values.division,
@@ -263,6 +265,7 @@ const AddUserModal = ({open, close, updateTable}) => {
                                                         value={formik.values.lastname}
                                                         onChange={formik.handleChange}
                                                         onBlur={formik.handleBlur}
+                                                        maxLength={50}
                                                         className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
                                                 {formik.touched.lastname && formik.errors.lastname ? (<div className="text-red-500 text-xs font-text">{formik.errors.lastname}</div>):null}
                                                 </div>
@@ -275,6 +278,7 @@ const AddUserModal = ({open, close, updateTable}) => {
                                                         value={formik.values.firstname}
                                                         onChange={formik.handleChange}
                                                         onBlur={formik.handleBlur}
+                                                        maxLength={50}
                                                         className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
                                                 {formik.touched.firstname && formik.errors.firstname ? (<div className="text-red-500 text-xs font-text">{formik.errors.firstname}</div>):null}
                                                 </div>
@@ -282,13 +286,15 @@ const AddUserModal = ({open, close, updateTable}) => {
                                             <div className="inline-flex flex-row gap-2 row-start-2 col-span-1 w-full py-2">
                                                 <div className="w-3/4 gap-1 inline-flex flex-col">
                                                 <label htmlFor="name" className="font-text  text-xs flex flex-row justify-between">
-                                                <p>Middle Name</p>
+                                                <p>Middle Name or Middle Initial</p>
                                                 </label>
                                                 <input type="text" name="middlename"
                                                     value={formik.values.middlename}
                                                     onChange={formik.handleChange}
                                                     onBlur={formik.handleBlur}
+                                                    maxLength={20}
                                                     className="w-full font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
+                                                    {formik.touched.middlename && formik.errors.middlename ? (<div className="text-red-500 text-xs font-text">{formik.errors.middlename}</div>):null}
                                                 </div>
                                                 <div className="w-1/4 gap-1 inline-flex flex-col">
                                                 <label htmlFor="name" className="font-text  text-xs flex flex-row justify-between">
@@ -298,7 +304,9 @@ const AddUserModal = ({open, close, updateTable}) => {
                                                     value={formik.values.suffix}
                                                     onChange={formik.handleChange}
                                                     onBlur={formik.handleBlur}
+                                                    maxLength={4}
                                                     className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary w-full"/>
+                                                    {formik.touched.suffix && formik.errors.suffix ? (<div className="text-red-500 text-xs font-text">{formik.errors.suffix}</div>):null}
                                                 </div>
                                             </div>
                                                 </div>
@@ -321,6 +329,8 @@ const AddUserModal = ({open, close, updateTable}) => {
                                                                 onChange={formik.handleChange}
                                                                 onBlur={formik.handleBlur}
                                                                 maxLength={11}
+                                                                inputMode="numeric"
+                                                                pattern="\d*"
                                                                 className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
                                                         {formik.touched.employeeID && formik.errors.employeeID ? (<div className="text-red-500 text-xs font-text">{formik.errors.employeeID}</div>):null}
                                                     </div>
@@ -503,16 +513,16 @@ const AddUserModal = ({open, close, updateTable}) => {
                                                 <div className="grid grid-cols-3 gap-x-2 gap-y-4 p-2">
                                                     <div className="flex flex-col gap-1">
                                                         <p className="font-text text-xs text-unactive">Last Name:</p>
-                                                        <p className="font-text">{formik.values.lastname}</p>
+                                                        <p className="font-text">{formik.values.lastname.charAt(0).toUpperCase() + formik.values.lastname.slice(1)}</p>
                                                     </div>
                                                     <div className="flex flex-col gap-1">
                                                         <p className="font-text text-xs text-unactive">First Name:</p>
-                                                        <p className="font-text">{formik.values.firstname}</p>
+                                                        <p className="font-text">{formik.values.firstname.charAt(0).toUpperCase() + formik.values.firstname.slice(1)}</p>
                                                     </div>
                                                     <div className="inline-flex flex-row">
                                                         <div className="flex flex-col gap-1 w-3/4">
                                                             <p className="font-text text-xs text-unactive">Middle Name:</p>
-                                                            <p className="font-text">{formik.values.middlename}</p>
+                                                            <p className="font-text">{formik.values.middlename.charAt(0).toUpperCase() + formik.values.middlename.slice(1)}</p>
                                                         </div>
                                                         <div className="flex flex-col gap-1 w-1/4">
                                                             <p className="font-text text-xs text-unactive">Suffix:</p>

@@ -15,11 +15,11 @@ const User = ({re_move,click,userID,name,department,title,branch,city,profile_ur
     return(
         <tr className={`font-text text-sm hover:bg-gray-200 ${selectedUsers? 'bg-gray-200':''}`} onClick={() => click(userID)}>
                 <td className={`text-sm  py-3 px-4 border-l-2 border-transparent transition-all ease-in-out ${selectedUsers? '!border-primary':''}`}>
-                    <div className='flex items-center gap-4 flex-row'>
+                    <div className='flex items-center gap-3 flex-row '>
                          {/* Checkbox */}
-                        <div className="group grid size-4 grid-cols-1">
+                        <div className="group grid w-4 h-4 grid-cols-1">
                             <input type="checkbox"
-                                className="col-start-1 row-start-1 appearance-none border border-divider rounded checked:border-primary checked:bg-primary focus:ring-2 focus:ring-primary focus:outline-none focus:ring-offset-1"
+                                className="w-4 h-4 col-start-1 row-start-1 appearance-none border border-divider rounded checked:border-primary checked:bg-primary focus:ring-2 focus:ring-primary focus:outline-none focus:ring-offset-1"
                                 onClick={(e) => e.stopPropagation()}
                                 onChange={(e) => {
                                     handleCheckbox(e, userID);
@@ -46,19 +46,18 @@ const User = ({re_move,click,userID,name,department,title,branch,city,profile_ur
                                     />
                             </svg>
                         </div>
+                        <div className='flex flex-row gap-4 items-center'>
+                            {/* User Image */}
+                                {
+                                    profile_url ? <img src={profile_url} alt="" className='rounded-full h-10 w-10'/>
+                                    : <div className='bg-blue-500 h-10 w-10 rounded-full'></div>
+                                }
 
-                        {/* User Image */}
-                        <div className= 'h-10 w-10 rounded-full'>
-                            {
-                                profile_url ? <img src={profile_url} alt="" className='rounded-full'/>
-                                : <div className='bg-blue-500 h-10 w-10 rounded-full'></div>
-                            }
-
-                        </div>
-                        {/* Name and employee-id*/}
-                        <div>
-                            <p className='font-text'>{name}</p>
-                            <p className='text-unactive text-xs'>ID: {employeeID}</p>
+                            {/* Name and employee-id*/}
+                            <div>
+                                <p className='font-text'>{name}</p>
+                                <p className='text-unactive text-xs'>ID: {employeeID}</p>
+                            </div>
                         </div>
                     </div>
                 </td>

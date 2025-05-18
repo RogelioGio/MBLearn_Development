@@ -20,11 +20,10 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation}) =>{
     const [editing, setEditing] = useState(false)
     const [updating, setUpdating] = useState(false)
 
-    const handleBranchesOptions = (e) =>{
+    const handleBranchesOptions = (e) => {
         const city = e.target.value;
         formik.setFieldValue('city', city)
-        formik.setFieldValue('branch', '')
-
+        formik.setFieldValue('branch_id', selectedUser.branch_id)
         //Filtering
         const filteredBranches = location.filter((branch) => branch.city_id.toString() === city)
         setSelectedBranches(filteredBranches)
