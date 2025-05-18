@@ -1,10 +1,13 @@
 import { Switch } from "MBLearn/src/components/ui/switch"
 import CourseAdminPermissionProps from "./CourseAdminPermissionProps"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import LearnerPermissionProps from "./LearnerPermissionProps";
 const SystemAdminPermissionProps = ({isChecked,permissionswitch,permissionRef}) => {
 
     const [roleHopping, setRoleHopping] = useState();
+    useEffect(()=> {
+        isChecked("RoleHopping") ? setRoleHopping(true) : null
+    },[])
 
     return(
         <>

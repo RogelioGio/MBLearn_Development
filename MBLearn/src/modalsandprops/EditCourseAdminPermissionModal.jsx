@@ -4,7 +4,7 @@ import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import { Switch } from "MBLearn/src/components/ui/switch"
 
 
-const EditCourseAdminPermissionModal = ({open, onClose}) => {
+const EditCourseAdminPermissionModal = ({open, onClose, courseAdmin}) => {
     return(
         <Dialog open={open} onClose={()=>{}}>
             <DialogBackdrop transition className="fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in z-40"/>
@@ -31,11 +31,11 @@ const EditCourseAdminPermissionModal = ({open, onClose}) => {
                                 <p className="text-xs text-unactive font-text">Selected Course Admins:</p>
                                 <div className="flex flex-row gap-2">
                                     <div className="w-10 h-10 rounded-full bg-primaryhover">
-                                        <img src="" alt="" />
+                                        <img src={courseAdmin?.profile_image} alt="" className="rounded-full"/>
                                     </div>
                                     <div>
-                                        <p className="text-primary font-header text-xl">John Doe</p>
-                                        <p className="text-unactive font-text text-xs">ID: 123456789</p>
+                                        <p className="text-primary font-header text-xl">{courseAdmin?.first_name} {courseAdmin?.middle_name} {courseAdmin?.last_name} {courseAdmin?.name_suffix}</p>
+                                        <p className="text-unactive font-text text-xs">ID: {courseAdmin?.employeeID}</p>
                                     </div>
                                 </div>
                             </div>

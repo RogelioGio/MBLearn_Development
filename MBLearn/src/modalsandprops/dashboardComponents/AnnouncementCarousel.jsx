@@ -12,18 +12,25 @@ import React, { useEffect, useState } from "react";
 import PhotoforCarouselModal from "../PhotoforCarouselModal";
 import axiosClient from "MBLearn/src/axios-client";
 import { useStateContext } from "MBLearn/src/contexts/ContextProvider";
+import { useCarouselContext } from "MBLearn/src/contexts/CarourselContext";
 
 
 const AnnouncmentCarousel = () => {
     const [openAdd, setOpenAdd] = useState(false)
     const [carouselData, setCarouselData] = useState([])
-    const [isLoading, setIsLoading] = useState(true)
+    const [isLoading, setIsLoading] = useState()
     const {role} = useStateContext()
+    const carousels = useCarouselContext()
 
 
     useEffect(() => {
-        fetchPanels()
-    }, [])
+        setIsLoading(true)
+        console.log(carousels)
+        if(carousels) {
+            setCarouselData(carousels)
+            setIsLoading(false)
+        }
+    }, [carousels])
 
     const fetchPanels = () => {
         setIsLoading(true)

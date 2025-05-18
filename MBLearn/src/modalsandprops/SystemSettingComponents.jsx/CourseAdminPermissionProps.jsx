@@ -5,9 +5,9 @@ import LearnerPermissionProps from "./LearnerPermissionProps";
 const CourseAdminPermissionProps = ({isChecked,permissionswitch,permissionRef,systemAdminRoleHopState}) => {
 
     const [roleHopping, setRoleHopping] = useState();
-    // useEffect(() => {
-    //     console.log("Role Hopping State: ", roleHopState)
-    // },[roleHopState])
+    useEffect(() => {
+        isChecked("RoleHopping") ? setRoleHopping(true) : setRoleHopping(false)
+    },[])
 
     return(
         <>
