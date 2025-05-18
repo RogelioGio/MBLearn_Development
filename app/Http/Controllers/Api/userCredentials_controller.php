@@ -6,6 +6,7 @@ use App\Http\Requests\addUserCredential_request;
 use App\Http\Requests\ChangeUserPasswordRequest;
 use App\Http\Requests\ChangeUserPermissionsRequest;
 use App\Http\Requests\updateUserCreds_info;
+use App\Http\Requests\UserCredsSearchRequest;
 use App\Http\Resources\CourseResource;
 use App\Models\UserCredentials;
 use App\Models\UserInfos;
@@ -217,6 +218,27 @@ class userCredentials_controller extends Controller
             'lastPage' => $userCredentials->lastPage(),
             'currentPage' => $userCredentials->currentPage(),
             'data' => $userCredentials->items()
+        ]);
+
+    }
+
+    public function UserCredsSearch(UserCredsSearchRequest $request){
+        $search = $request['search'];
+        $perPage = $request->input('perPage', 5); //Number of entry per page
+        $page = $request->input('page', 1);//Default page
+        $status = $request['status'] ?? 'Active';
+        $result = UserCredentials::search($search);
+
+        $result = $result->whereHas('userInfos', function ($query) use ($status) {
+            $query->where('status', $status)->with(['userInfos', 'userInfos.roles', 'userInfos.city', 'userInfos.branch',
+        'userInfos.department', 'userInfos.section', 'userInfos.division', 'userInfos.title']);
+        })->paginate($perPage);
+
+        return response()->json([
+            'total' => $result->total(),
+            'lastPage' => $result->lastPage(),
+            'currentPage' => $result->currentPage(),
+            'data' => $result->items()
         ]);
 
     }
