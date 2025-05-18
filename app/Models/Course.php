@@ -8,11 +8,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Laravel\Scout\Searchable;
 
 class Course extends Model
 {
     /** @use HasFactory<\Database\Factories\CourseFactory> */
-    use HasFactory;
+    use HasFactory, Searchable;
 
     protected $fillable = [
         'name',
@@ -86,6 +87,16 @@ class Course extends Model
 
     public function author(): BelongsTo{
         return $this->belongsTo(UserInfos::class, 'author_id', 'id');
+    }
+
+    public function toSearchableArray(){
+        $array = $this->toArray();
+        $array['name'] = $this->name;
+        $array['CourseID'] = $this->CourseID;
+        $array['course_outcomes'] = $this->course_outcomes;
+        $array['course_objectives'] = $this->course_objectives;
+        $array['description'] = $this->description;
+        return $array;
     }
 
 }

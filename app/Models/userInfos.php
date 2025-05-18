@@ -11,12 +11,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Laravel\Scout\Searchable;
 use Znck\Eloquent\Relations\BelongsToThrough;
 
 #[ObservedBy([UserInfosObserver::class])]
 class UserInfos extends Model
 {
-    use HasFactory;
+    use HasFactory, Searchable;
 
     /**
      * The table associated with the model.
@@ -37,6 +38,8 @@ class UserInfos extends Model
         'user_credentials_id',
     ];
 
+    protected $touches = ['userCredentials', 'roles', 'branch', 'department', 'division', 'title', 'section'];
+
     public function userCredentials(): BelongsTo{
         return $this->belongsTo(UserCredentials::class, 'user_credentials_id', 'id');
     }
@@ -50,6 +53,7 @@ class UserInfos extends Model
     public function enrollings(): HasMany{
         return $this->hasMany(Enrollment::class, 'enroller_id');
     }
+
 
     public function lessons(): BelongsToMany{
         return $this->belongsToMany(Lesson::class, 'learner_progress', 'userInfo_id', 'lesson_id')
@@ -131,5 +135,25 @@ class UserInfos extends Model
 
     public function createdCourses(): HasMany{
         return $this->hasMany(Course::class, 'author_id', 'id');
+    }
+
+    public function toSearchableArray()
+    {
+        $array = $this->toArray();
+        $array['first_name'] = $this->first_name ?? null;
+        $array['last_name'] = $this->last_name ?? null;
+        $array['middle_name'] = $this->middle_name ?? null;
+        $array['title_name'] = $this->title->title_name ?? null;;
+        $array['department_name'] = $this->department->department_name ?? null;
+        $array['section_name'] = $this->section->section_name ?? null;
+        $array['division_name'] = $this->division->division_name ?? null;
+        $array['branch_name'] = $this->branch->branch_name ?? null;
+        $array['status'] = $this->status ?? null;
+        $array['role_name'] = $this->roles->map(function ($data){
+            return $data['role_name'];
+        })->toArray();
+        
+        // Customize the array as needed
+        return $array;
     }
 }

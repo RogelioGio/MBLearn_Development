@@ -11,6 +11,7 @@ use App\Http\Requests\AddUsersRequest;
 use App\Http\Requests\BulkStoreUserRequest;
 use App\Http\Requests\TestArrayRequest;
 use App\Http\Requests\updateUserInfo;
+use App\Http\Requests\UserInfoSearchRequest;
 use App\Models\Branch;
 use App\Models\CarouselImage;
 use App\Models\Course;
@@ -249,6 +250,42 @@ class userInfo_controller extends Controller
             'data' => $output
         ]);
     }
+
+    public function UserInfoSearch(UserInfoSearchRequest $request){
+        $search = $request['search'];
+        $perPage = $request->input('perPage', 5); //Number of entry per page
+        $page = $request->input('page', 1);//Default page
+        $status = $request['status'] ?? 'Active';
+        $course_id = $request['course_id'] ?? null;
+        $relation = $request['relation'] ?? 'enrolled';
+        $result = UserInfos::search($search);
+
+        if(!$course_id){
+            $result = $result->query(function($query) use ($status) {
+                $query->where('status', '=', $status)
+                    ->with(['roles', 'division', 'section', 'department', 'title', 'branch', 'city']);
+                return $query;
+            })->paginate($perPage);
+
+        }else{
+            $result = $result->query(function($query) use($status, $course_id, $relation){
+                $query->where('status', '=', $status)
+                    ->whereHas($relation, function($subquery) use ($course_id){
+                        $subquery->where('courses.id', '=', $course_id);
+                    })
+                    ->with(['roles', 'division', 'section', 'department', 'title', 'branch', 'city']);
+                return $query;
+            })->paginate($perPage);
+        }
+
+        return response()->json([
+            'data' => $result->items(),
+            'total' => $result->total(),
+            'lastPage' => $result->lastPage(),
+            'currentPage' => $result->currentPage(),
+        ], 200);
+    }
+
     /**
     * Generate a default profile image URL based on the user's name
     */
@@ -776,15 +813,20 @@ class userInfo_controller extends Controller
     }
 
     public function test(Request $request){
-        $course = Course::query()->find($request->input('course_id'));
-        // $user = UserInfos::query()->find($request->input('user_id'));
-        // $pivot = $course->assignedCourseAdmins()->where('user_id', $user->id)->first()->pivot;
-        $permIds = $course->course_permissions->pluck('id')->toArray();
-        // $perm = CourseUserAssigned::find($pivot->id);
+        // $course = Course::query()->find($request->input('course_id'));
+        // // $user = UserInfos::query()->find($request->input('user_id'));
+        // // $pivot = $course->assignedCourseAdmins()->where('user_id', $user->id)->first()->pivot;
+        // $permIds = $course->course_permissions->pluck('id')->toArray();
+        // // $perm = CourseUserAssigned::find($pivot->id);
 
-        // $perm->permissions()->sync([1,2]);
+        // // $perm->permissions()->sync([1,2]);
+        // return response()->json([
+        //     'data' => $permIds,
+        // ]);
+        $result = UserCredentials::search(null)
+            ->paginate(5);
         return response()->json([
-            'data' => $permIds,
-        ]);
+            'data' => $result
+        ], 200);
     }
 }

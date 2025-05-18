@@ -9,11 +9,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Laravel\Sanctum\HasApiTokens;
-
+use Laravel\Scout\Searchable;
 
 class UserCredentials extends Model implements Authenticatable
 {
-    use HasApiTokens,HasFactory;
+    use HasApiTokens,HasFactory, Searchable;
 
     /**
      * The table associated with the model.
@@ -98,4 +98,12 @@ class UserCredentials extends Model implements Authenticatable
         return $this->hasManyDeepFromRelations($this->roles(), (new Role())->permissions());
     }
 
+    public function toSearchableArray(){
+        $array = $this->toArray();
+        $array['MBemail'] = $this->MBemail;
+        $array['first_name'] = $this->userInfos->first_name ?? null;
+        $array['last_name'] = $this->userInfos->last_name ?? null;
+
+        return $array;
+    }
 }

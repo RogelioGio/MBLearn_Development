@@ -67,6 +67,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::put('/update-user-info/{userInfos}',[userInfo_controller::class, 'updateUser']);
     Route::delete('/delete-user/{userInfos}',[userInfo_controller::class, 'deleteUser']);
     Route::put('/restore-user/{userInfos}', [userInfo_controller::class, 'restoreUser']);
+    Route::get('/user-search', [userInfo_controller::class, 'UserInfoSearch']);
 
     Route::post('/addusercredentials', [userCredentials_controller::class, 'addUserCredentials']);
     Route::put('/update-user-creds/{userCredentials}',[userCredentials_controller::class, 'updateUserCredentials']);
