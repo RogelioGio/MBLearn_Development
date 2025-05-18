@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\BulkAddPermissionsToCourse;
 use App\Http\Requests\BulkAssignCourseAdmins;
 use App\Http\Requests\BulkStoreCourseRequest;
+use App\Http\Requests\CourseSearchRequest;
 use App\Http\Requests\StoreCourseRequest;
 use App\Http\Resources\CourseResource;
 use App\Models\Category;
@@ -333,8 +334,45 @@ class CourseController extends Controller
 
     }
 
-    public function courseSearch(Request $request){
+    public function courseSearch(CourseSearchRequest $request){
+        $search = $request['search'];
+        $perPage = $request->input('perPage', 5); //Number of entry per page
+        $page = $request->input('page', 1);//Default page
+        $status = $request['status'] ?? 'active';
+        $user_id = $request['user_id'] ?? null;
+        $relation = $request['relation'] ?? 'enrolled';
+        $result = Course::search($search);
 
+        if(!$user_id){
+            $result = $result->query(function ($query) use ($status){
+                $query->where('archived', '=', $status)
+                    ->with(['categories', 'types']);
+                    return $query;
+            })->paginate($perPage);
+        } else {
+            $result = $result->query(function ($query) use ($status, $user_id, $relation){
+                if($relation == 'enrolled'){
+                    $query->whereHas('enrollments', function($subQuery) use ($user_id){
+                        $subQuery->where('user_id', '=', $user_id);
+                    })->where('archived', '=', $status)
+                    ->with(['categories', 'types']);
+                    return $query;
+                } else if($relation == 'assigned'){
+                    $query->whereHas('enrolledUsers', function($subQuery) use ($user_id){
+                        $subQuery->where('user_id', '=', $user_id);
+                    })->where('archived', '=', $status)
+                    ->with(['categories', 'types']);
+                    return $query;
+                }
+            })->paginate($perPage);
+        }
+
+        return response()->json([
+            'data' => $result->items(),
+            'total' => $result->total(),
+            'lastPage' => $result->lastPage(),
+            'currentPage' => $result->currentPage(),
+        ], 200);
     }
 
     /**

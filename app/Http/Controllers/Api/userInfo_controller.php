@@ -257,7 +257,7 @@ class userInfo_controller extends Controller
         $page = $request->input('page', 1);//Default page
         $status = $request['status'] ?? 'Active';
         $course_id = $request['course_id'] ?? null;
-        $relation = $request['relation'] ?? 'enrolled';
+        $relation = $request['relation'] ?? 'enrollments';
         $result = UserInfos::search($search);
 
         if(!$course_id){
@@ -269,12 +269,21 @@ class userInfo_controller extends Controller
 
         }else{
             $result = $result->query(function($query) use($status, $course_id, $relation){
-                $query->where('status', '=', $status)
-                    ->whereHas($relation, function($subquery) use ($course_id){
-                        $subquery->where('courses.id', '=', $course_id);
-                    })
-                    ->with(['roles', 'division', 'section', 'department', 'title', 'branch', 'city']);
-                return $query;
+                if($relation == 'enrolled'){
+                    $query->where('status', '=', $status)
+                        ->whereHas('enrollments', function($subquery) use ($course_id){
+                            $subquery->where('courses.id', '=', $course_id);
+                        })
+                        ->with(['roles', 'division', 'section', 'department', 'title', 'branch', 'city']);
+                    return $query;
+                } else if($relation == 'assigned'){
+                    $query->where('status', '=', $status)
+                        ->whereHas('assignedCourses', function($subquery) use ($course_id){
+                            $subquery->where('courses.id', '=', $course_id);
+                        })
+                        ->with(['roles', 'division', 'section', 'department', 'title', 'branch', 'city']);
+                    return $query;
+                }
             })->paginate($perPage);
         }
 
@@ -813,15 +822,18 @@ class userInfo_controller extends Controller
     }
 
     public function test(Request $request){
-        $course = Course::query()->find(71);
-        $user = UserInfos::query()->find(109);
-        $pivot = $course->assignedCourseAdmins()->where('user_id', $user->id)->first()->pivot;
-        $permIds = $course->course_permissions->pluck('id')->toArray();
-        $perm = CourseUserAssigned::find($pivot->id);
+        // $course = Course::query()->find(71);
+        // $user = UserInfos::query()->find(109);
+        // $pivot = $course->assignedCourseAdmins()->where('user_id', $user->id)->first()->pivot;
+        // $permIds = $course->course_permissions->pluck('id')->toArray();
+        // $perm = CourseUserAssigned::find($pivot->id);
 
-        $perm->permissions()->sync([1,2]);
+        // $perm->permissions()->sync([1,2]);
+        $users = UserInfos::whereHas('assignedCourses', function($query) {
+            $query->where('course_id', 71);
+        })->get();
         return response()->json([
-            'data' => $pivot
+            'data' => $users
         ]);
 
     }
