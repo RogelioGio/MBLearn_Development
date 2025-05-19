@@ -282,7 +282,7 @@ class CourseController extends Controller
                     $ongoing++;
                 } elseif($enrollment->enrollment_status == 'finished'){
                     $finished++;
-                } 
+                }
                 if($enrollment->due_soon == true || !($enrollment->enrollment_status == 'finished')){
                     $due_soon++;
                 }
@@ -298,7 +298,7 @@ class CourseController extends Controller
             'Enrolled' => $enrolled,
             'Ongoing' => $ongoing,
             'Finished' => $finished,
-            'Due Soon' => $due_soon
+            'DueSoon' => $due_soon
         ]);
     }
 
