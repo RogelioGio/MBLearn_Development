@@ -32,7 +32,7 @@ const LearnerDashboard = ({name,user}) => {
         .then(({data}) => {
             console.log(data.data)
             setEnrolled(data.data)
-            setLoading(false)
+
         })
         .catch((err) => {
             console.log(err)
@@ -43,10 +43,11 @@ const LearnerDashboard = ({name,user}) => {
         .then((res) => {
             setCount(res.data)
             console.log(res.data)
+            setLoading(false)
         }).catch((e)=> {
             console.log(e)
         })
-    }, [])
+    }, [user])
 
     useEffect(() => {
         console.log(enrolled)
@@ -184,57 +185,58 @@ const LearnerDashboard = ({name,user}) => {
                     <p className="font-text text-unactive text-xs">Tracks and displays your recent learning activities.</p>
                 </div>
 
-                {
-                    <div className="w-full h-full grid grid-col-1 grid-rows-3 gap-2">
-                        {
-                            count?.Enrolled > 0 &&
-                            <div className="w-full h-full bg-white border-2 border-primary rounded-md shadow-md px-3 py-1 flex flex-row  justify-start items-center gap-3 hover:cursor-pointer hover:bg-primary group transition-all ease-in-out"
-                                onClick={() => navigate('/learner/learnercoursemanager/enrolled')}>
-                                {/* icon */}
-                                <div className="group-hover:text-white group-hover:bg-gray-50 group-hover:bg-opacity-20  text-primary flex flex-col item-center justify-center bg-primarybg p-2 aspect-square rounded-full">
-                                    <FontAwesomeIcon icon={faGraduationCap} className="text-base"/>
+                <div className="w-full h-full grid grid-col-1 grid-rows-3 gap-2 ">
+                    {Loading ? (
+                        Array.from({length: 3}).map((index)=>(
+                            <div className="animate-pulse w-full h-full bg-white rounded-md shadow-md px-3 py-1 flex flex-row  justify-start items-center gap-3 hover:cursor-pointer hover:bg-primary group transition-all ease-in-out" />
+                        ))
+                    ) : (
+                        <>
+                            {count?.Enrolled > 0 && (
+                                <div className="w-full h-full bg-white border-2 border-primary rounded-md shadow-md px-3 py-1 flex flex-row  justify-start items-center gap-3 hover:cursor-pointer hover:bg-primary group transition-all ease-in-out"
+                                    onClick={() => navigate('/learner/learnercoursemanager/enrolled')}>
+                                    {/* icon */}
+                                    <div className="group-hover:text-white group-hover:bg-gray-50 group-hover:bg-opacity-20  text-primary flex flex-col item-center justify-center bg-primarybg p-2 aspect-square rounded-full">
+                                        <FontAwesomeIcon icon={faGraduationCap} className="text-base"/>
+                                    </div>
+                                    {/* desc */}
+                                    <div className="flex flex-col justify-center items-start">
+                                        <p className="group-hover:text-white font-header text-sm text-primary">Enrolled</p>
+                                        <p className="group-hover:text-white font-text text-unactive text-xs">You're just enrolled to {count?.Enrolled} courses</p>
+                                    </div>
                                 </div>
-                                {/* desc */}
-                                <div className="flex flex-col justify-center items-start">
-                                    <p className="group-hover:text-white font-header text-sm text-primary">Enrolled</p>
-                                    <p className="group-hover:text-white font-text text-unactive text-xs">You're just enrolled to {count?.Enrolled} courses</p>
-
+                            )}
+                            {count?.Ongoing > 0 && (
+                                <div className="w-full h-full bg-white border-2 border-primary rounded-md shadow-md px-3 py-1 flex flex-row  justify-start items-center gap-3 hover:cursor-pointer hover:bg-primary group transition-all ease-in-out"
+                                    onClick={() => navigate('/learner/learnercoursemanager/ongoing')}>
+                                    {/* icon */}
+                                    <div className="group-hover:text-white group-hover:bg-gray-50 group-hover:bg-opacity-20  text-primary flex flex-col item-center justify-center bg-primarybg p-2 aspect-square rounded-full">
+                                        <FontAwesomeIcon icon={faClock} className="text-base"/>
+                                    </div>
+                                    {/* desc */}
+                                    <div className="flex flex-col justify-center items-start">
+                                        <p className="group-hover:text-white font-header text-sm text-primary">On-going</p>
+                                        <p className="group-hover:text-white font-text text-unactive text-xs">You have {count?.Ongoing} courses on-going</p>
+                                    </div>
                                 </div>
-                            </div>
-                        }
-                        {
-                            count?.Ongoing > 0 &&
-                            <div className="w-full h-full bg-white border-2 border-primary rounded-md shadow-md px-3 py-1 flex flex-row  justify-start items-center gap-3 hover:cursor-pointer hover:bg-primary group transition-all ease-in-out"
-                            onClick={() => navigate('/learner/learnercoursemanager/ongoing')}>
-                             {/* icon */}
-                            <div className="group-hover:text-white group-hover:bg-gray-50 group-hover:bg-opacity-20  text-primary flex flex-col item-center justify-center bg-primarybg p-2 aspect-square rounded-full">
-                                <FontAwesomeIcon icon={faClock} className="text-base"/>
-                            </div>
-                            {/* desc */}
-                            <div className="flex flex-col justify-center items-start">
-                                <p className="group-hover:text-white font-header text-sm text-primary">On-going</p>
-                                <p className="group-hover:text-white font-text text-unactive text-xs">You have {count?.Ongoing} courses on-going</p>
-
-                            </div>
-                            </div>
-                        }
-                        {
-                            <div className="w-full h-full bg-white border-2 border-primary rounded-md shadow-md px-3 py-1 flex flex-row  justify-start items-center gap-3 hover:cursor-pointer hover:bg-primary group transition-all ease-in-out"
-                                onClick={() => navigate('/learner/learnercoursemanager/duesoon')}>
-                                {/* icon */}
-                                <div className="group-hover:text-white group-hover:bg-gray-50 group-hover:bg-opacity-20  text-primary flex flex-col item-center justify-center bg-primarybg p-2 aspect-square rounded-full">
-                                    <FontAwesomeIcon icon={faTriangleExclamation} className="text-base"/>
+                            )}
+                            {count?.DueSoon > 0 && (
+                                <div className="w-full h-full bg-white border-2 border-primary rounded-md shadow-md px-3 py-1 flex flex-row  justify-start items-center gap-3 hover:cursor-pointer hover:bg-primary group transition-all ease-in-out"
+                                    onClick={() => navigate('/learner/learnercoursemanager/ongoing')}>
+                                    {/* icon */}
+                                    <div className="group-hover:text-white group-hover:bg-gray-50 group-hover:bg-opacity-20  text-primary flex flex-col item-center justify-center bg-primarybg p-2 aspect-square rounded-full">
+                                        <FontAwesomeIcon icon={faTriangleExclamation} className="text-base"/>
+                                    </div>
+                                    {/* desc */}
+                                    <div className="flex flex-col justify-center items-start">
+                                        <p className="group-hover:text-white font-header text-sm text-primary">Due soon</p>
+                                        <p className="group-hover:text-white font-text text-unactive text-xs">You have {count?.DueSoon} courses due soon</p>
+                                    </div>
                                 </div>
-                                {/* desc */}
-                                <div className="flex flex-col justify-center items-start">
-                                    <p className="group-hover:text-white font-header text-sm text-primary">Due soon</p>
-                                    <p className="group-hover:text-white font-text text-unactive text-xs">You have 5 courses due soon</p>
-                                </div>
-                            </div>
-                        }
-
-                    </div>
-                }
+                            )}
+                        </>
+                    )}
+                </div>
             </div>
         </div>
     </div>

@@ -124,9 +124,7 @@ const router = createBrowserRouter([
                     {
                         path: "courses",
                         element:
-                        <CourseListProvider>
                                 <AssignedCourse/>
-                        </CourseListProvider>
                     },
                     {
                         path: "coursereports",
@@ -145,7 +143,10 @@ const router = createBrowserRouter([
             },
             {
                 path:"/learner",
-                element: <Learner/>,
+                element:
+                <CourseListProvider>
+                    <Learner/>
+                </CourseListProvider>,
                 children: [
                     {
                         path: "/learner",
@@ -158,9 +159,7 @@ const router = createBrowserRouter([
                     {
                         path: "learnercoursemanager/:coursetype?",
                         element: <SelectedCourseProvider>
-                                    <CourseListProvider>
                                         <LearnerCourseManager/>
-                                    </CourseListProvider>
                             </SelectedCourseProvider>
                     },
                     {
@@ -169,17 +168,14 @@ const router = createBrowserRouter([
                     },
                     {
                         path: "learnerselfenrollment",
-                        element: <CourseListProvider>
+                        element:
                             <LearnerSelfEnrollment/>
-                        </CourseListProvider>
                     },
                     {
                         path:"course/:id",
                         element:
                         <SelectedCourseProvider>
-                            <CourseListProvider>
                                 <Course/>
-                            </CourseListProvider>
                         </SelectedCourseProvider>
                     },
 

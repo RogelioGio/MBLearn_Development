@@ -55,7 +55,7 @@ const CourseLearnerProps = ({course}) => {
                     <div className= {`text-primary p-3 border-2 border-primary bg-white rounded-md hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out ${tab === "finished" ? "!bg-primary text-white":null}`} onClick={() => setTab("finished")}>
                     <div className='flex flex-row items-center gap-2'>
                             <FontAwesomeIcon icon={faAward}/>
-                            <h1 className="font-header text-lg">Finished Learners</h1>
+                            <h1 className="font-header text-lg">Completed Learners</h1>
                         </div>
                         <p className="font-text text-xs">Previous batch that is done taking the course</p>
                     </div>
