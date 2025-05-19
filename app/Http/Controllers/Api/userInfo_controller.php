@@ -743,6 +743,18 @@ class userInfo_controller extends Controller
                 ->where('archived', '=', 'active')
                 ->paginate($perPage, ['*'], 'page', $page);
 
+            foreach($paginate as $course){
+            if($course->lessons_count > 0){
+                $course->progress = round($userInfos->lessonsCompletedCount($course->id)/$course->lessons_count * 100, 2);
+            }else{
+                $course->progress = 0;
+            }
+            $course->deadline = Enrollment::query()
+                ->where('user_id', '=', $userInfos->id)
+                ->where('course_id', '=', $course->id)
+                ->pluck('end_date')
+                ->first();
+            }
             return $paginate;
             });
             LessonCountHelper::getEnrollmentStatusCount($courses);
@@ -753,8 +765,20 @@ class userInfo_controller extends Controller
                 'currentPage' => $courses->currentPage(),
             ]);
         }
-        
+
         $test = Cache::get($cacheKey);
+        foreach($test as $course){
+            if($course->lessons_count > 0){
+                $course->progress = round($userInfos->lessonsCompletedCount($course->id)/$course->lessons_count * 100, 2);
+            }else{
+                $course->progress = 0;
+            }
+            $course->deadline = Enrollment::query()
+                ->where('user_id', '=', $userInfos->id)
+                ->where('course_id', '=', $course->id)
+                ->pluck('end_date')
+                ->first();
+        }
         LessonCountHelper::getEnrollmentStatusCount($test);
 
         return response() -> json([
