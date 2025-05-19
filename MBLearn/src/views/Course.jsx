@@ -50,11 +50,13 @@ export default function Course() {
         setLoading(isFetching);
         setCourse(selectedCourse);
 
-        axiosClient.get(`/coursecontext/${id}/${user.user_infos.id}`)
-        .then((res) => {
-            console.log(res.data)
-            setLearnerProgress(res.data.completed_lessons);
-        }).catch((e) => console.log(e))
+        if (role === "Learner") {
+            axiosClient.get(`/coursecontext/${id}/${user.user_infos.id}`)
+            .then((res) => {
+                console.log(res.data)
+                setLearnerProgress(res.data.completed_lessons);
+            }).catch((e) => console.log(e))
+        }
 
     }, [selectedCourse,id, isFetching]);
 

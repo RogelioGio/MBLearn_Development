@@ -314,15 +314,14 @@ const AddCourseModal = ({open,onClose,tab,refresh}) => {
                                     }}
                                     completedIcon={<FontAwesomeIcon icon={faCircleCheckRegular} className="!text-white"/>}>
                                 <Stepper.Step icon={<FontAwesomeIcon icon={faSearch} className="!text-primary"/>}>
-                                    <form onSubmit={formik.handleSubmit}>
-                                        <div className='grid grid-cols-[1fr_min-content_1fr] grid-rows-[min-content_min-content_auto] gap-x-2 gap-y-2'>
+                                    <form onSubmit={formik.handleSubmit} className="grid grid-cols-3 gap-x-3 items-end">
                                             {/* Header */}
                                             <div className='col-span-3 border-b border-divider pb-2'>
                                                 <h1 className='text-primary font-header'>Step 1</h1>
                                                 <p className='text-unactive font-text'>Please input an valid Course ID to be added in the course catalog of MBLearn or Create an Course from Comp-E-Learn</p>
                                             </div>
                                             {/* Input */}
-                                            <div className='row-start-2 py-2'>
+                                            <div className='row-start-2 py-2 col-span-2'>
                                             <label htmlFor="name" className="font-header text-xs flex flex-row justify-between pb-2">
                                             <p className="font-text">Course ID:</p>
                                             </label>
@@ -335,33 +334,14 @@ const AddCourseModal = ({open,onClose,tab,refresh}) => {
                                                 {/* Validation Errors */}
                                                 {formik.touched.courseID && formik.errors.courseID ? (<div className="text-red-500 text-xs font-text">{formik.errors.courseID}</div>):null}
                                             </div>
-                                            <div className='row-start-3 w-full flex'>
+                                            <div className='row-start-2 w-full flex py-2'>
                                             <button
                                                 type="submit"
                                                 className={`h-fit border-2 w-full border-primary rounded-md shadow-md bg-primary text-white justify-center flex items-center py-2 px-20 font-header transition-all ease-in-out focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary`}
                                             >
-                                                <p>{fetching ? "Checking..." : "Check Avaliable Course"}</p>
+                                                <p>{fetching ? "Checking..." : "Check"}</p>
                                             </button>
-                                            </div>
-                                            <div className="grid grid-rows-[1fr_min-content_1fr] mx-2 col-start-2 row-start-2 row-span-2 items-center place-items-center">
-                                                <div className="h-full w-[1px] bg-divider"/>
-                                                <p className="font-text text-unactive">or</p>
-                                                <div className="h-full w-[1px] bg-divider"/>
-                                            </div>
-                                            <div className="col-start-3 row-start-2 flex flex-row items-center justify-center">
-                                                <div className="py-2 flex flex-row items-center justify-center gap-2">
-                                                    <img src={CompeLearn} alt="" className="w-12"/>
-                                                    <div>
-                                                        <p className="font-text text-primary text-2xl"><span className="font-header">Comp-E-Learn</span> Extension</p>
-                                                        <p className="font-text text-unactive text-xs">Create an course using Comp-E-Learn Extension </p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className={`row-start-3 h-fit border-2 w-full border-primary rounded-md shadow-md bg-primary text-white justify-center flex items-center py-2 px-20 font-header transition-all ease-in-out focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary hover:cursor-pointer hover:bg-primaryhover`}
-                                                onClick={()=>navigate("/comp_e_learn")}
-                                            >
-                                                <p>Create a Course</p>
-                                            </div>
+
                                         </div>
                                     </form>
                                 </Stepper.Step>

@@ -29,6 +29,7 @@ const AccountPermissionProps = ({refPermissions, selectedRole, role, setAccountP
     const availablePermission = () => {
         const selected = role?.find((r) => r.id === parseInt(selectedRole));
         if (selected) {
+            console.log(selected)
             setPermissions(selected?.permissions)
             _setAccountPerm((selected?.permissions || []).map(p => ({
                 permission_Id: p.id

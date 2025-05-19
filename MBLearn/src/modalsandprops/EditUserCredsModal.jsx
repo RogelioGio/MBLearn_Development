@@ -12,13 +12,13 @@ import { DatabaseZap, Edit } from "lucide-react";
 import { useStateContext } from "../contexts/ContextProvider";
 
 
-const EditUserCredsModal = ({open, close, ID, editSuccess}) => {
+const EditUserCredsModal = ({open, close, User, ID, editSuccess}) => {
     const {user} = useStateContext()
     const [isLoading, setLoading] = useState(true);
     const {cities=[], titles=[], location=[], roles=[], departments=[], permission=[]} = useOption();
     const [tab, setTab] = useState(1)
     const [updating, setUpdating] = useState(false)
-    const [role, setRoles] = useState([])
+    const [Role, setRoles] = useState([])
     const [selectedUser, setSelectedUser] = useState()
     const [accountPerm, setAccountPerm] =useState([])
 
@@ -31,14 +31,17 @@ const EditUserCredsModal = ({open, close, ID, editSuccess}) => {
 
     useEffect(() => {
         setLoading(true)
-        axiosClient.get(`/select-user-creds/${ID}`)
-        .then(({data}) => {
-            setSelectedUser(data)
-            console.log(data)
-            setLoading(false)
-        })
-        .catch(error => console.error(error));
-    },[ID])
+        // axiosClient.get(`/select-user-creds/${ID}`)
+        // .then(({data}) => {
+        //     setSelectedUser(data)
+        //     console.log(data)
+        //     setLoading(false)
+        // })
+        // .catch(error => console.error(error));
+        console.log(User)
+        setSelectedUser(User)
+        setLoading(false)
+    },[User])
     //Handle Password
         const [showPassword, setShowPassword] = useState(false);
         const [password, setPassword] = useState('');
@@ -152,7 +155,6 @@ const EditUserCredsModal = ({open, close, ID, editSuccess}) => {
             .catch(error => console.error(error));
         }
         useEffect(() => {
-            fetchRoles()
             setRoles(formik.values.role)
         },[])
 
@@ -279,7 +281,7 @@ const EditUserCredsModal = ({open, close, ID, editSuccess}) => {
                                                     </div>
                                                     {
                                                         hasPermission(user, ["EditUserRoles"]) ? (<div className="col-span-3">
-                                                            <AccountPermissionProps refPermissions={permission} selectedRole={formik.values.role} role={role} setAccountPerm={setAccountPerm} currentPerm={selectedUser.user_infos.permissions} originalRole={selectedUser.user_infos.roles[0].id}/>
+                                                            <AccountPermissionProps refPermissions={permission} selectedRole={formik.values.role} role={roles} setAccountPerm={setAccountPerm} currentPerm={selectedUser.user_infos.permissions} originalRole={selectedUser.user_infos.roles[0].id}/>
                                                         </div>) : (null)
 
                                                     }

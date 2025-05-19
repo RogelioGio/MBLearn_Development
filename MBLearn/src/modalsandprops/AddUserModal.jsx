@@ -174,15 +174,15 @@ const AddUserModal = ({open, close, updateTable}) => {
     }
 
     //Permission Helper
-    const fetchRoles = () => {
-        axiosClient.get('/roles')
-        .then(({data}) => {
-            setRoles(data.roles)
-        })
-        .catch(error => console.error(error));
-    }
+    // const fetchRoles = () => {
+    //     axiosClient.get('/roles')
+    //     .then(({data}) => {
+    //         setRoles(data.roles)
+    //     })
+    //     .catch(error => console.error(error));
+    // }
     useEffect(() => {
-        fetchRoles()
+        setRoles(roles)
     },[])
 
 

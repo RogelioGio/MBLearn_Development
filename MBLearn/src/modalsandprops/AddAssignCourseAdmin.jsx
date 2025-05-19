@@ -19,9 +19,11 @@ import {
     DrawerTrigger,
     } from "../components/ui/drawer"
 import AssignCourseAdminModalSuccessfully from "./AssignCourseAdminSuccessfullyModal";
+import { useOption } from "../contexts/AddUserOptionProvider"
+
 
 const AddAssignCourseAdmin = ({courseID ,open, close,}) => {
-    const {departments, cities, branches, divisions ,sections} = useCourseContext()
+    const {departments, cities, location, division ,section} = useOption()
     const [loading, setLoading] = useState(false)
     const [selectedBranches, setSelectedBranches] = useState([])
     const [filteredEmployee, setFilteredEmployee] = useState([])
@@ -93,10 +95,12 @@ const AddAssignCourseAdmin = ({courseID ,open, close,}) => {
         const city = e.target.value;
         formik.setFieldValue('city', city)
         formik.setFieldValue('branch', '')
+        console.log(city)
+        console.log(location.city_id)
+
 
         //Filtering
-        const filteredBranches = branches.filter((branch) => branch.city_id.toString() === city)
-        setSelectedBranches(filteredBranches)
+        setSelectedBranches(location?.filter((l) => String(l.city_id) === String(city)));
     }
 
     const handleSelectedCourseAdmin = (e, id) => {
@@ -180,7 +184,7 @@ const AddAssignCourseAdmin = ({courseID ,open, close,}) => {
                                                             onBlur={formik.handleBlur}
                                                         >
                                                         <option value="">Select a Division</option>
-                                                        {divisions?.map((division) => (
+                                                        {division?.map((division) => (
                                                             <option key={division.id} value={division.id}>{division.division_name}</option>
                                                         ))}
                                                         </select>
@@ -214,7 +218,7 @@ const AddAssignCourseAdmin = ({courseID ,open, close,}) => {
                                                             onBlur={formik.handleBlur}
                                                         >
                                                         <option value="">Select a Section</option>
-                                                        {sections?.map((section) => (
+                                                        {section?.map((section) => (
                                                             <option key={section.id} value={section.id}>{section.section_name}</option>
                                                         ))}
                                                         </select>

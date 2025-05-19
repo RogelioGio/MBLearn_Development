@@ -38,7 +38,7 @@ Route::middleware('auth:sanctum')->group(function(){
         return $request->user()->load(['userInfos', 'userInfos.permissions','userInfos.roles',]);
     });
     Route::get('/status/{userId}/{lessonId}', [LessonsController::class, 'updateLearnerProgress']);
-    
+
     Route::get('/exists/{courseId}', [CourseController::class, 'checkIfExist']);
 
     //Relationships API

@@ -401,7 +401,7 @@ class userInfo_controller extends Controller
                 $querySort->where('training_type', $request->input('training_type'));
             }
         }
-        $courses = $querySort->with(['categories', 'types', 'training_modes'])->where('archived', '=', 'active')->paginate($perPage);
+        $courses = $querySort->with(['categories', 'types', 'training_modes', 'lessons'])->where('archived', '=', 'active')->paginate($perPage);
 
         LessonCountHelper::getEnrollmentStatusCount($courses);
         return response()->json([
@@ -488,7 +488,7 @@ class userInfo_controller extends Controller
             }
         }
 
-        $courses = $querySort->with(['categories', 'types', 'training_modes'])->where('archived', '=', 'active')->paginate($perPage);
+        $courses = $querySort->with(['categories', 'types', 'training_modes', 'lessons'])->where('archived', '=', 'active')->paginate($perPage);
 
         $final = LessonCountHelper::getEnrollmentStatusCount($courses);
         return response()->json([

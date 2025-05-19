@@ -3,11 +3,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useOption } from "../contexts/AddUserOptionProvider";
 import { useEffect } from "react";
 
-const UserSecEntyProps = ({user,name,employeeID,MBEmail,city,branch,division,section,department,role,image,status,lastLogin,edit}) => {
+const UserSecEntyProps = ({user,name,employeeID,MBEmail,city,branch,division,section,department,role,image,status,lastLogin,edit,select}) => {
 
     return (
         <tr className='font-text text-sm hover:bg-gray-200 hover:cursor-pointer'
-        onClick={(e) => edit(e,user)} >
+        onClick={(e) => edit(e,user,select)} >
                         <td className='text-sm py-3 px-4'>
                             <div className='flex items-center gap-2'>
                                 {/* User Image */}

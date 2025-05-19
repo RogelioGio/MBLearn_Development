@@ -65,6 +65,7 @@ const PhotoforCarouselModal = ({open, close, refresh}) => {
         back} = usePagination(panels,5)
 
     useEffect(() => {
+        if(!open) return
         fetchPanels()
     },[])
 
