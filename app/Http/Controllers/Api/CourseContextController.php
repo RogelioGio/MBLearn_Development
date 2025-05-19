@@ -16,21 +16,28 @@ use App\Models\Type;
 use App\Models\UserInfos;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Cache;
 
 class CourseContextController extends Controller
 {
     public function index(){
+        if(!Cache::has('course_context')){
+            $inputs = Cache::remember('course_context', 60, function () {
+                return [
+                    'coursetypes' => Type::all(),
+                    'coursecategories' => Category::all(),
+                    'departments' => Department::all(),
+                    'cities' => City::all(),
+                    'branches' => Branch::all(),
+                    'divisions' => Division::all(),
+                    'sections' => Section::all(),
+                ];
+            });
+            return response()->json($inputs);
+        }
+        $inputs = Cache::get('course_context');
 
-        return response() ->json([
-            'coursetypes' => Type::all(),
-            'coursecategories' => Category::all(),
-            'departments' => Department::all(),
-            'cities' => City::all(),
-            'branches' => Branch::all(),
-            'divisions' => Division::all(),
-            'sections' => Section::all(),
-            'coursePermission' => null
-        ]);
+        return response()->json($inputs);
     }
 
     public function getSelectedCourse($id, UserInfos $userInfos){

@@ -36,6 +36,7 @@ class LessonCountHelper{
             $course->enrolled = $enrolled;
             $course->ongoing = $ongoing;
             $course->due_soon = $due_soon;
+            $course->deadline = $deadline;
         }
         return $courses;
     }
