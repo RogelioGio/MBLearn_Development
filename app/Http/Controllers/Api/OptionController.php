@@ -20,7 +20,7 @@ class OptionController extends Controller
             'departments' => Department::all(),
             'location' => Branch::all(),
             'titles' => Title::all(),
-            'roles' => Role::all(),
+            'roles' => Role::all()->load('permissions'),
             'permission' => Permission::all(),
             'division' => Division::all(),
             'section' => Section::all(),

@@ -23,6 +23,7 @@ export default function UserAccountSecurityMaintenance(){
     const [isReady, setIsReady] = useState(false);
     const [users, setUsers] = useState([])
     const [selectedBranches, setSelectedBranches] = useState([])
+    const [SelectedUser, setSelectedUser] = useState()
 
 
     const [modalState, setModalState] = useState({
@@ -100,7 +101,7 @@ export default function UserAccountSecurityMaintenance(){
 
     useEffect(()=>{console.log(userID.isEdit)},[userID.isEdit])
     //Open and CLose Modals
-    const OpenEdit = (e,ID) => {
+    const OpenEdit = (e,ID, User) => {
         const hasPermission = user.user_infos.permissions?.some(
             (permission) =>
                 permission.permission_name === "EditUserRoles" ||
@@ -108,6 +109,8 @@ export default function UserAccountSecurityMaintenance(){
         );
 
         if (!hasPermission) return;
+
+        setSelectedUser(User)
 
         e.stopPropagation();
         toggleUserID("isEdit", ID);
@@ -387,6 +390,7 @@ export default function UserAccountSecurityMaintenance(){
                                         status={user.user_infos?.status}
                                         lastLogin={user?.last_logged_in}
                                         edit={OpenEdit}
+                                        select={user}
                                         />
                                 ))
                             )
@@ -451,7 +455,7 @@ export default function UserAccountSecurityMaintenance(){
             </div>
 
             {/* View User Credentials Modal */}
-            <EditUserCredsModal open={modalState.isEdit} close={CloseEdit} ID={userID.isEdit} editSuccess={OpenSuccessFullyEdit}/>
+            <EditUserCredsModal open={modalState.isEdit} close={CloseEdit} ID={userID.isEdit} editSuccess={OpenSuccessFullyEdit} User={SelectedUser}/>
             <EditUserSuccessfully open={modalState.isEditSuccess} close={CloseSuccessFullyEdit}/>
         </div>
     )

@@ -12,6 +12,7 @@ import SystemAdminPermissionProps from "./SystemAdminPermssionProps"
 import CourseAdminPermissionProps from "./CourseAdminPermissionProps"
 import CourseLoading from "../../assets/Course_Loading.svg";
 import { ScrollArea } from "MBLearn/src/components/ui/scroll-area" // Ensure styles are imported
+import LearnerPermissionProps from "./LearnerPermissionProps"
 
 const RoleManagementSetting = () => {
     const [roles, setRoles] = useState([])
@@ -227,6 +228,14 @@ const RoleManagementSetting = () => {
                                         case 2:
                                             return (
                                                 <CourseAdminPermissionProps
+                                                    isChecked={isChecked}
+                                                    permissionswitch={permissionswitch}
+                                                    permissionRef={refPermission}
+                                                />
+                                            );
+                                        case 3:
+                                            return (
+                                                <LearnerPermissionProps
                                                     isChecked={isChecked}
                                                     permissionswitch={permissionswitch}
                                                     permissionRef={refPermission}

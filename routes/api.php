@@ -39,7 +39,7 @@ Route::middleware('auth:sanctum')->group(function(){
     });
     Route::get('/status/{userId}/{lessonId}', [LessonsController::class, 'updateLearnerProgress']);
     Route::get('/course-search', [CourseController::class, 'CourseSearch']);
-    
+
     Route::get('/exists/{courseId}', [CourseController::class, 'checkIfExist']);
 
     //Relationships API

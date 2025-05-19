@@ -138,7 +138,7 @@ const CourseModuleProps = ({headers, course, LearnerProgress}) => {
                             }
 
                             return (
-                            <Step key={index} stepTitle={lesson.lesson_name} stepDesc={"Hello"}>
+                            <Step key={index} stepTitle={lesson.lesson_name} stepDesc={`This is the ${lesson.lesson_name} short description`}>
                                 {content}
                             </Step>
                             );

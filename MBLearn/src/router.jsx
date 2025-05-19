@@ -90,7 +90,10 @@ const router = createBrowserRouter([
             },
             {
                 path:"/courseadmin",
-                element: <ProtectedRoutes allowed={["System Admin","Course Admin"]}/>,
+                element:
+                <CourseListProvider>
+                    <ProtectedRoutes allowed={["System Admin","Course Admin"]}/>
+                </CourseListProvider>,
                 children: [
                     {
                         path: "/courseadmin",
@@ -108,18 +111,14 @@ const router = createBrowserRouter([
                         path: "courselistmaintenance",
                         element:
                         <SelectedCourseProvider>
-                        <CourseListProvider>
                             <CourseListMaintenance/>,
-                        </CourseListProvider>
                         </SelectedCourseProvider>
                     },
                     {
                         path:"course/:id",
                         element:
                         <SelectedCourseProvider>
-                            <CourseListProvider>
                                 <Course/>
-                            </CourseListProvider>
                         </SelectedCourseProvider>
                     },
                     {

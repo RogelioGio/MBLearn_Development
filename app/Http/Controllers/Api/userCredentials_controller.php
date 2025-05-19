@@ -108,7 +108,7 @@ class userCredentials_controller extends Controller
         $currentUserId = $request->user()->userInfos->id;
         $count = 0;
         $query = UserCredentials::with(['userInfos', 'userInfos.roles', 'userInfos.city', 'userInfos.branch',
-        'userInfos.department', 'userInfos.section', 'userInfos.division', 'userInfos.title'])
+        'userInfos.department', 'userInfos.section', 'userInfos.division', 'userInfos.title','userInfos.permissions'])
         ->orderBy('created_at', 'desc')
         ->whereHas('userInfos', function ($subQuery) use ($currentUserId) {
             $subQuery->where('status', 'Active');

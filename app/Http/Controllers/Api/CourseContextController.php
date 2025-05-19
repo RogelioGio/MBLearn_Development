@@ -24,12 +24,12 @@ class CourseContextController extends Controller
         return response() ->json([
             'coursetypes' => Type::all(),
             'coursecategories' => Category::all(),
-            'trainingmodes' => Training_Mode::all(),
             'departments' => Department::all(),
             'cities' => City::all(),
             'branches' => Branch::all(),
             'divisions' => Division::all(),
             'sections' => Section::all(),
+            'coursePermission' => null
         ]);
     }
 
