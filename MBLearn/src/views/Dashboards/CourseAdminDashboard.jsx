@@ -36,9 +36,6 @@ const CourseAdminDashboard = ({name, user}) => {
         }
 
 
-    useEffect(() => {
-        fetchCourses(tab)
-    },[tab])
     const fetchCourses = (typeOfCourse) => {
         setLoading(true)
         if(typeOfCourse === "myCourses"){
@@ -84,7 +81,7 @@ const CourseAdminDashboard = ({name, user}) => {
 
     useEffect(()=>{
         fetchCourses(tab)
-    },[pageState.currentPage, pageState.perPage])
+    },[pageState.currentPage, pageState.perPage, tab])
 
     const back = () => {
         if (loading) return;
@@ -240,9 +237,15 @@ const CourseAdminDashboard = ({name, user}) => {
                     <p className="font-text text-unactive text-xs">Tracks your learners concerns and activities.</p>
                 </div>
 
-                {
-                    <div className="w-full h-full flex flex-col gap-2">
-                        <div className="w-full h-fit bg-white border-2 border-primary rounded-md shadow-md p-4 flex flex-row  justify-start items-center gap-3 hover:cursor-pointer hover:bg-primary group transition-all ease-in-out"
+                <div className="w-full h-full grid grid-col-1 grid-rows-3 gap-2 ">
+                    {
+                        loading ? (
+                            Array.from({length: 3}).map((index)=>(
+                            <div className="animate-pulse w-full h-full bg-white rounded-md shadow-md px-3 py-1 flex flex-row  justify-start items-center gap-3 hover:cursor-pointer hover:bg-primary group transition-all ease-in-out" />
+                            ))
+                        ) : (
+                            <>
+                            <div className="w-full h-fit bg-white border-2 border-primary rounded-md shadow-md p-4 flex flex-row  justify-start items-center gap-3 hover:cursor-pointer hover:bg-primary group transition-all ease-in-out"
                             //onClick={() => navigate('/learner/learnercoursemanager/enrolled')}
                             >
                             {/* icon */}
@@ -258,7 +261,7 @@ const CourseAdminDashboard = ({name, user}) => {
                         </div>
                         {/* <div className="w-full h-full bg-white border-2 border-primary rounded-md shadow-md px-3 py-1 flex flex-row  justify-start items-center gap-3 hover:cursor-pointer hover:bg-primary group transition-all ease-in-out"
                             onClick={() => navigate('/learner/learnercoursemanager/ongoing')}>
-                             icon
+                            icon
                             <div className="group-hover:text-white group-hover:bg-gray-50 group-hover:bg-opacity-20  text-primary flex flex-col item-center justify-center bg-primarybg p-2 aspect-square rounded-full">
                                 <FontAwesomeIcon icon={faClock} className="text-base"/>
                             </div>
@@ -282,8 +285,10 @@ const CourseAdminDashboard = ({name, user}) => {
                                 <p className="group-hover:text-white font-text text-unactive text-xs">3 Learners are not done to thier course</p>
                             </div>
                         </div>
-                    </div>
-                }
+                            </>
+                        )
+                    }
+                </div>
             </div>
         </div>
         </div>
