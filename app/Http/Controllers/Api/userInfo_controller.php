@@ -424,8 +424,8 @@ class userInfo_controller extends Controller
                 ->paginate($perPage, ['*'], 'page', $page);
 
             foreach($paginate as $course){
-                if($course->lessons_count > 0){
-                    $course->progress = round($userInfos->lessonsCompletedCount($course->id)/$course->lessons_count * 100, 2);
+                if($course->lessonCount() > 0){
+                    $course->progress = round($userInfos->lessonsCompletedCount($course->id)/$course->lessonCount() * 100, 2);
                 }else{
                     $course->progress = 0;
                 }
@@ -545,8 +545,8 @@ class userInfo_controller extends Controller
                 ->paginate($perPage);
 
             foreach($paginate as $course){
-                if($course->lessons_count > 0){
-                    $course->progress = round($userInfos->lessonsCompletedCount($course->id)/$course->lessons_count * 100, 2);
+                if($course->lessonCount() > 0){
+                    $course->progress = round($userInfos->lessonsCompletedCount($course->id)/$course->lessonCount() * 100, 2);
                 }else{
                     $course->progress = 0;
                 }
@@ -743,9 +743,12 @@ class userInfo_controller extends Controller
                 ->where('archived', '=', 'active')
                 ->paginate($perPage);
 
-            foreach($paginate as $course){
-            if($course->lessons_count > 0){
-                $course->progress = round($userInfos->lessonsCompletedCount($course->id)/$course->lessons_count * 100, 2);
+
+            return $paginate;
+            });
+            foreach($courses as $course){
+            if($course->lessonCount() > 0){
+                $course->progress = round($userInfos->lessonsCompletedCount($course->id)/$course->lessonCount() * 100, 2);
             }else{
                 $course->progress = 0;
             }
@@ -755,8 +758,6 @@ class userInfo_controller extends Controller
                 ->pluck('end_date')
                 ->first();
             }
-            return $paginate;
-            });
             LessonCountHelper::getEnrollmentStatusCount($courses);
             return response() -> json([
                 'data' => $courses->items(),
@@ -768,8 +769,8 @@ class userInfo_controller extends Controller
 
         $test = Cache::get($cacheKey);
         foreach($test as $course){
-            if($course->lessons_count > 0){
-                $course->progress = round($userInfos->lessonsCompletedCount($course->id)/$course->lessons_count * 100, 2);
+            if($course->lessonCount() > 0){
+                $course->progress = round($userInfos->lessonsCompletedCount($course->id)/$course->lessonCount() * 100, 2);
             }else{
                 $course->progress = 0;
             }
