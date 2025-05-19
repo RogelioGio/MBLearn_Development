@@ -33,6 +33,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon as SupportCarbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 
@@ -627,57 +628,66 @@ class userInfo_controller extends Controller
     }
 
     public function getUserCourses(UserInfos $userInfos, Request $request){
-        $page = $request->input('page', 1); // default page
-        $perPage = $request->input('per_page', 8); // default per page
-        $sort = new CourseSort();
-        $builder = $userInfos->enrolledCourses();
-        $querySort = $sort->transform($builder, $request);
+        $filterData = [
+            'page' => $request->input('page', 1),
+            'per_page' => $request->input('per_page', 8),
+            'type_id' => $request->input('type_id'),
+            'category_id' => $request->input('category_id'),
+            'training_type' => $request->input('training_type'),
+            'enrollment_status' => $request->input('enrollment_status'),
+        ];
+        $cacheKey = 'userInfo'.$userInfos->id.':enrolledCourses:'.json_encode($filterData);
 
-        if($request->has('type_id')){
-            if(!($request->input('type_id')['eq'] == "")){
-                $querySort->whereHas('types', function($subQuery) use ($request){
-                    $subQuery->where('type_id', $request->input('type_id'));
+        $courses = Cache::remember($cacheKey, now()->addMinutes(60), function() use ($userInfos, $request, $filterData){
+            $page = $filterData['page'];
+            $perPage = $filterData['per_page'];
+
+            $sort = new CourseSort();
+            $builder = $userInfos->enrolledCourses();
+            $querySort = $sort->transform($builder, $request);
+
+            if(!empty($filterData['type_id']) && $filterData['type_id'] != ""){
+                $querySort->whereHas('types', function($subQuery) use ($filterData){
+                    $subQuery->where('type_id', $filterData['type_id']);
                 });
             }
-        }
 
-        if($request->has('category_id')){
-            if(!($request->input('category_id')['eq'] == "")){
-                $querySort->whereHas('categories', function($subQuery) use ($request){
-                    $subQuery->where('category_id', $request->input('category_id'));
+            if(!empty($filterData['category_id']) && $filterData['category_id'] != ""){
+                $querySort->whereHas('categories', function($subQuery) use ($filterData){
+                    $subQuery->where('category_id', $filterData['category_id']);
                 });
             }
-        }
 
-        if($request->has('training_type')){
-            if(!($request->input('training_type')['eq'] == "")){
-                $querySort->where('training_type', $request->input('training_type'));
+            if(!empty($filterData['training_type']) && $filterData['training_type'] != ""){
+                $querySort->where('training_type', $filterData['training_type']);
             }
-        }
 
-        if($request->has('enrollment_status')){
-            if(!($request->input('enrollment_status')['eq'] == "")){
-                $querySort->whereHas('enrollments', function($subQuery) use ($request){
-                    $subQuery->where('enrollment_status', $request->input('enrollment_status'));
+            if(!empty($filterData['enrollment_status']) && $filterData['enrollment_status'] != ""){
+                $querySort->whereHas('enrollments', function($subQuery) use ($filterData){
+                    $subQuery->where('enrollment_status', $filterData['enrollment_status']);
                 });
             }
-        }
 
-        $courses = $querySort->with(['categories', 'types', 'training_modes'])->withCount('lessons')->where('archived', '=', 'active')->paginate($perPage);
-        $deadline = [];
+            $paginate = $querySort->with(['categories', 'types', 'training_modes'])
+                ->where('archived', '=', 'active')
+                ->paginate($perPage, ['*'], 'page', $page);
 
-        foreach($courses as $index => $course){
-            if($course->lessons_count > 0){
-                $course->progress = round($userInfos->lessonsCompletedCount($course->id)/$course->lessons_count * 100, 2);
-            }else{
-                $course->progress = 0;
+            foreach($paginate as $course){
+                if($course->lessons_count > 0){
+                    $course->progress = round($userInfos->lessonsCompletedCount($course->id)/$course->lessons_count * 100, 2);
+                }else{
+                    $course->progress = 0;
+                }
+                $course->deadline = Enrollment::query()
+                    ->where('user_id', '=', $userInfos->id)
+                    ->where('course_id', '=', $course->id)
+                    ->pluck('end_date')
+                    ->first();
             }
-            $course->deadline = Enrollment::query()
-                ->where('user_id', '=', $userInfos->id)
-                ->where('course_id', '=', $course->id)
-                ->pluck('end_date')
-                ->first();
-        }
+
+            return $paginate;
+        });
+        
         return response() -> json([
             'data' => $courses->items(),
             'total' => $courses->total(),
@@ -829,11 +839,10 @@ class userInfo_controller extends Controller
         // $perm = CourseUserAssigned::find($pivot->id);
 
         // $perm->permissions()->sync([1,2]);
-        $users = UserInfos::whereHas('assignedCourses', function($query) {
-            $query->where('course_id', 71);
-        })->get();
+        Cache::put('driver_test', 'working!', 600);
+        Cache::get('driver_test'); // should return 'working!'
         return response()->json([
-            'data' => $users
+            'data' => Cache::getStore()
         ]);
 
     }
