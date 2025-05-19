@@ -387,7 +387,7 @@ class userInfo_controller extends Controller
 
         $filterData = [
             'page' => $request->input('page', 1),
-            'per_page' => $request->input('per_page', 8),
+            'perPage' => $request->input('perPage', 6),
             'type_id' => $request->input('type_id'),
             'category_id' => $request->input('category_id'),
             'training_type' => $request->input('training_type'),
@@ -397,7 +397,7 @@ class userInfo_controller extends Controller
         if(!Cache::has($cacheKey)){
             $courses = Cache::remember($cacheKey, now()->addMinutes(60), function() use ($userInfos, $request, $filterData){
             $page = $filterData['page'];
-            $perPage = $filterData['per_page'];
+            $perPage = $filterData['perPage'];
 
             $sort = new CourseSort();
             $builder = $userInfos->assignedCourses();
@@ -508,7 +508,7 @@ class userInfo_controller extends Controller
     public function getAddedCourses(UserInfos $userInfos,Request $request){
         $filterData = [
             'page' => $request->input('page', 1),
-            'per_page' => $request->input('per_page', 8),
+            'perPage' => $request->input('perPage', 6),
             'type_id' => $request->input('type_id'),
             'category_id' => $request->input('category_id'),
             'training_type' => $request->input('training_type'),
@@ -518,7 +518,7 @@ class userInfo_controller extends Controller
         if(!Cache::has($cacheKey)){
             $courses = Cache::remember($cacheKey, now()->addMinutes(60), function() use ($userInfos, $request, $filterData){
             $page = $filterData['page'];
-            $perPage = $filterData['per_page'];
+            $perPage = $filterData['perPage'];
 
             $sort = new CourseSort();
             $builder = $userInfos->addedCourses();
@@ -542,7 +542,7 @@ class userInfo_controller extends Controller
 
             $paginate = $querySort->with(['categories', 'types', 'training_modes'])
                 ->where('archived', '=', 'active')
-                ->paginate($perPage, ['*'], 'page', $page);
+                ->paginate($perPage);
 
             foreach($paginate as $course){
                 if($course->lessons_count > 0){
@@ -700,7 +700,7 @@ class userInfo_controller extends Controller
     public function getUserCourses(UserInfos $userInfos, Request $request){
         $filterData = [
             'page' => $request->input('page', 1),
-            'per_page' => $request->input('per_page', 8),
+            'perPage' => $request->input('perPage', 6),
             'type_id' => $request->input('type_id'),
             'category_id' => $request->input('category_id'),
             'training_type' => $request->input('training_type'),
@@ -711,7 +711,7 @@ class userInfo_controller extends Controller
         if(!Cache::has($cacheKey)){
             $courses = Cache::remember($cacheKey, now()->addMinutes(60), function() use ($userInfos, $request, $filterData){
             $page = $filterData['page'];
-            $perPage = $filterData['per_page'];
+            $perPage = $filterData['perPage'];
 
             $sort = new CourseSort();
             $builder = $userInfos->enrolledCourses();
@@ -741,7 +741,7 @@ class userInfo_controller extends Controller
 
             $paginate = $querySort->with(['categories', 'types', 'training_modes'])
                 ->where('archived', '=', 'active')
-                ->paginate($perPage, ['*'], 'page', $page);
+                ->paginate($perPage);
 
             foreach($paginate as $course){
             if($course->lessons_count > 0){
