@@ -387,7 +387,7 @@ class userInfo_controller extends Controller
 
         $filterData = [
             'page' => $request->input('page', 1),
-            'per_page' => $request->input('per_page', 8),
+            'perPage' => $request->input('perPage', 6),
             'type_id' => $request->input('type_id'),
             'category_id' => $request->input('category_id'),
             'training_type' => $request->input('training_type'),
@@ -397,7 +397,7 @@ class userInfo_controller extends Controller
         if(!Cache::has($cacheKey)){
             $courses = Cache::remember($cacheKey, now()->addMinutes(60), function() use ($userInfos, $request, $filterData){
             $page = $filterData['page'];
-            $perPage = $filterData['per_page'];
+            $perPage = $filterData['perPage'];
 
             $sort = new CourseSort();
             $builder = $userInfos->assignedCourses();
@@ -508,7 +508,7 @@ class userInfo_controller extends Controller
     public function getAddedCourses(UserInfos $userInfos,Request $request){
         $filterData = [
             'page' => $request->input('page', 1),
-            'per_page' => $request->input('per_page', 8),
+            'perPage' => $request->input('perPage', 6),
             'type_id' => $request->input('type_id'),
             'category_id' => $request->input('category_id'),
             'training_type' => $request->input('training_type'),
@@ -518,7 +518,7 @@ class userInfo_controller extends Controller
         if(!Cache::has($cacheKey)){
             $courses = Cache::remember($cacheKey, now()->addMinutes(60), function() use ($userInfos, $request, $filterData){
             $page = $filterData['page'];
-            $perPage = $filterData['per_page'];
+            $perPage = $filterData['perPage'];
 
             $sort = new CourseSort();
             $builder = $userInfos->addedCourses();
@@ -542,7 +542,7 @@ class userInfo_controller extends Controller
 
             $paginate = $querySort->with(['categories', 'types', 'training_modes'])
                 ->where('archived', '=', 'active')
-                ->paginate($perPage, ['*'], 'page', $page);
+                ->paginate($perPage);
 
             foreach($paginate as $course){
                 if($course->lessons_count > 0){
@@ -700,7 +700,7 @@ class userInfo_controller extends Controller
     public function getUserCourses(UserInfos $userInfos, Request $request){
         $filterData = [
             'page' => $request->input('page', 1),
-            'per_page' => $request->input('per_page', 8),
+            'perPage' => $request->input('perPage', 6),
             'type_id' => $request->input('type_id'),
             'category_id' => $request->input('category_id'),
             'training_type' => $request->input('training_type'),
@@ -711,7 +711,7 @@ class userInfo_controller extends Controller
         if(!Cache::has($cacheKey)){
             $courses = Cache::remember($cacheKey, now()->addMinutes(60), function() use ($userInfos, $request, $filterData){
             $page = $filterData['page'];
-            $perPage = $filterData['per_page'];
+            $perPage = $filterData['perPage'];
 
             $sort = new CourseSort();
             $builder = $userInfos->enrolledCourses();
@@ -741,8 +741,20 @@ class userInfo_controller extends Controller
 
             $paginate = $querySort->with(['categories', 'types', 'training_modes'])
                 ->where('archived', '=', 'active')
-                ->paginate($perPage, ['*'], 'page', $page);
+                ->paginate($perPage);
 
+            foreach($paginate as $course){
+            if($course->lessons_count > 0){
+                $course->progress = round($userInfos->lessonsCompletedCount($course->id)/$course->lessons_count * 100, 2);
+            }else{
+                $course->progress = 0;
+            }
+            $course->deadline = Enrollment::query()
+                ->where('user_id', '=', $userInfos->id)
+                ->where('course_id', '=', $course->id)
+                ->pluck('end_date')
+                ->first();
+            }
             return $paginate;
             });
             LessonCountHelper::getEnrollmentStatusCount($courses);
@@ -753,8 +765,20 @@ class userInfo_controller extends Controller
                 'currentPage' => $courses->currentPage(),
             ]);
         }
-        
+
         $test = Cache::get($cacheKey);
+        foreach($test as $course){
+            if($course->lessons_count > 0){
+                $course->progress = round($userInfos->lessonsCompletedCount($course->id)/$course->lessons_count * 100, 2);
+            }else{
+                $course->progress = 0;
+            }
+            $course->deadline = Enrollment::query()
+                ->where('user_id', '=', $userInfos->id)
+                ->where('course_id', '=', $course->id)
+                ->pluck('end_date')
+                ->first();
+        }
         LessonCountHelper::getEnrollmentStatusCount($test);
 
         return response() -> json([
