@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UserInfoSearchRequest extends FormRequest
+class UserCredsSearchRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,8 +26,6 @@ class UserInfoSearchRequest extends FormRequest
             'page' => 'nullable|integer|min:1',
             'per_page' => 'nullable|integer|min:1|max:100',
             'status' => 'required|in:Active,Inactive',
-            'course_id' => 'nullable|exists:courses,id',
-            'relation' => 'nullable|in:enrolled,assigned'
         ];
     }
 }
