@@ -245,7 +245,7 @@ const CourseAdminDashboard = ({name, user}) => {
                             ))
                         ) : (
                             <>
-                            <div className="w-full h-fit bg-white border-2 border-primary rounded-md shadow-md p-4 flex flex-row  justify-start items-center gap-3 hover:cursor-pointer hover:bg-primary group transition-all ease-in-out"
+                            <div className="w-full h-full bg-white border-2 border-primary rounded-md shadow-md p-4 flex flex-row  justify-start items-center gap-3 hover:cursor-pointer hover:bg-primary group transition-all ease-in-out"
                             //onClick={() => navigate('/learner/learnercoursemanager/enrolled')}
                             >
                             {/* icon */}

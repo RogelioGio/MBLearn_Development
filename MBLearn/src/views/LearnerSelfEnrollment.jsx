@@ -175,7 +175,7 @@ export default function LearnerSelfEnrollment() {
                                 <option value=''>Select Type</option>
                                 {
                                     coursetypes.map((c) => (
-                                        <option key={c.id} value={role.id}>{c.type_name}</option>
+                                        <option key={c.id} value={""}>{c.type_name}</option>
                                     ))
                                 }
                             </select>

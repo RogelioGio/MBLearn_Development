@@ -33,12 +33,16 @@ const chartConfig = {
     visitors: {
     label: "Visitors",
   },
-  desktop: {
-    label: "Desktop",
+  SystemAdmin: {
+    label: "System Admin",
     color: "var(--chart-1)",
   },
-  mobile: {
-    label: "Mobile",
+  CourseAdmin: {
+    label: "Course Admin",
+    color: "var(--chart-2)",
+  },
+  Learner: {
+    label: "Learner",
     color: "var(--chart-3)",
   },
 }
@@ -79,34 +83,16 @@ const DashboardLayout = ({role,name,user}) => {
       { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
     ]
     const chartData = [
-    { date: "2024-04-01", desktop: 222, mobile: 150 },
-    { date: "2024-04-02", desktop: 97, mobile: 180 },
-    { date: "2024-04-03", desktop: 167, mobile: 120 },
-    { date: "2024-04-04", desktop: 242, mobile: 260 },
-    { date: "2024-04-05", desktop: 373, mobile: 290 },
-    { date: "2024-04-06", desktop: 301, mobile: 340 },
-    { date: "2024-04-07", desktop: 245, mobile: 180 },
-    { date: "2024-04-08", desktop: 409, mobile: 320 },
-    { date: "2024-04-09", desktop: 59, mobile: 110 },
-    { date: "2024-04-10", desktop: 261, mobile: 190 },
-    { date: "2024-04-11", desktop: 327, mobile: 350 },
-    { date: "2024-04-12", desktop: 292, mobile: 210 },
-    { date: "2024-04-13", desktop: 342, mobile: 380 },
-    { date: "2024-04-14", desktop: 137, mobile: 220 },
-    { date: "2024-04-15", desktop: 120, mobile: 170 },
-    { date: "2024-04-16", desktop: 138, mobile: 190 },
-    { date: "2024-04-17", desktop: 446, mobile: 360 },
-    { date: "2024-04-18", desktop: 364, mobile: 410 },
-    { date: "2024-04-19", desktop: 243, mobile: 180 },
-    { date: "2024-04-20", desktop: 89, mobile: 150 },
-    { date: "2024-04-21", desktop: 137, mobile: 200 },
-    { date: "2024-04-22", desktop: 224, mobile: 170 },
-    { date: "2024-04-23", desktop: 138, mobile: 230 },
-    { date: "2024-04-24", desktop: 387, mobile: 290 },
-    { date: "2024-04-25", desktop: 215, mobile: 250 },
-    { date: "2024-04-26", desktop: 75, mobile: 130 },
-    { date: "2024-04-27", desktop: 383, mobile: 420 },
-    { date: "2024-04-28", desktop: 122, mobile: 180 },
+    { date: "2024-04-01", visitors: 500, SystemAdmin: 120, CourseAdmin: 80, Learner: 300 },
+  { date: "2024-04-02", visitors: 450, SystemAdmin: 130, CourseAdmin: 70, Learner: 250 },
+  { date: "2024-04-03", visitors: 480, SystemAdmin: 140, CourseAdmin: 90, Learner: 250 },
+  { date: "2024-04-04", visitors: 530, SystemAdmin: 110, CourseAdmin: 100, Learner: 320 },
+  { date: "2024-04-05", visitors: 560, SystemAdmin: 150, CourseAdmin: 85, Learner: 325 },
+  { date: "2024-04-06", visitors: 520, SystemAdmin: 125, CourseAdmin: 95, Learner: 300 },
+  { date: "2024-04-07", visitors: 490, SystemAdmin: 135, CourseAdmin: 75, Learner: 280 },
+  { date: "2024-04-08", visitors: 510, SystemAdmin: 120, CourseAdmin: 80, Learner: 310 },
+  { date: "2024-04-09", visitors: 470, SystemAdmin: 115, CourseAdmin: 85, Learner: 270 },
+  { date: "2024-04-10", visitors: 495, SystemAdmin: 130, CourseAdmin: 90, Learner: 275 },
     ]
 
     switch(role){
@@ -172,7 +158,7 @@ const DashboardLayout = ({role,name,user}) => {
 
                     </div>
                     <div className='bg-white w-full h-full rounded-md shadow-md border-2 border-primary px-2'>
-                        <ChartContainer config={chartConfig} className="aspect-auto h-[200px] w-full">
+                        <ChartContainer config={chartConfig} className="aspect-auto h-full w-full">
                             <AreaChart data={chartData}>
                                 <defs>
                                     <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
@@ -184,6 +170,18 @@ const DashboardLayout = ({role,name,user}) => {
                                         <stop
                                         offset="95%"
                                         stopColor="var(--chart-3)"
+                                        stopOpacity={0.1}
+                                        />
+                                    </linearGradient>
+                                    <linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
+                                        <stop
+                                        offset="5%"
+                                        stopColor="var(--color-mobile)"
+                                        stopOpacity={0.8}
+                                        />
+                                        <stop
+                                        offset="95%"
+                                        stopColor="var(--color-mobile)"
                                         stopOpacity={0.1}
                                         />
                                     </linearGradient>
@@ -230,14 +228,21 @@ const DashboardLayout = ({role,name,user}) => {
                                 }
                                 />
                                 <Area
-                                dataKey="mobile"
+                                dataKey="SystemAdmin"
                                 type="natural"
                                 fill="url(#fillMobile)"
                                 stroke="var(--color-mobile)"
                                 stackId="a"
                                 />
                                 <Area
-                                dataKey="desktop"
+                                dataKey="CourseAdmin"
+                                type="natural"
+                                fill="url(#fillDesktop)"
+                                stroke="var(--color-desktop)"
+                                stackId="a"
+                                />
+                                <Area
+                                dataKey="Learner"
                                 type="natural"
                                 fill="url(#fillDesktop)"
                                 stroke="var(--color-desktop)"
