@@ -1,6 +1,6 @@
 import { Helmet } from "react-helmet"
 import axiosClient from "../axios-client"
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { FerrisWheel } from "lucide-react"
 import { faArrowDownShortWide, faArrowDownZA, faArrowUpAZ, faArrowUpWideShort, faChevronLeft, faChevronRight, faFilter, faSearch, faSort } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -10,16 +10,23 @@ import CourseLoading from "../assets/Course_Loading.svg"
 import SelfEnrollmentModal from "../modalsandprops/SelfEnrollmentModal"
 import TraningDurationModal from "../modalsandprops/TrainingDurationModal"
 import React from "react"
+import { useStateContext } from "../contexts/ContextProvider"
+import { format } from "date-fns"
+import SelfEnrollmentSuccessfullyModal from "../modalsandprops/SelfEnrollmentSuccessfullyModal"
+
 
 
 
 export default function LearnerSelfEnrollment() {
+    const {user} = useStateContext()
     const {coursetypes, coursecategories} = useCourseContext()
     const [course, setCourse] = useState([])
     const [selectedCourse, setSelectedCourse] = useState()
     const [loading, setLoading] = useState(true)
     const [openEnroll, setOpenEnroll] = useState(false)
     const [duration, setDuration] = useState(false)
+    const [enrolling, setEnrolling] = useState()
+    const [enrolled, setEnrolled] = useState(false)
 
     const [date, setDate] = React.useState({
         from: new Date(),
@@ -115,6 +122,29 @@ export default function LearnerSelfEnrollment() {
                 fetchCourses()
             },[pageState.currentPage, pageState.perPage])
 
+
+    //Handle Enrollment
+    const handleEnrollment = (course) => {
+        setEnrolling(true)
+        const payload = [
+            {
+            userId: user.user_infos.id,
+            courseId: course.id,
+            enrollerId: user.user_infos.id,
+            start_date: format(new Date(date.from), 'yyyy-MM-dd' + ' 00:00:00'),
+            end_date: format(new Date(date.to), 'yyyy-MM-dd' + ' 23:59:59')
+            }
+        ]
+
+        axiosClient.post('enrollments/bulk', payload)
+                    .then(({data}) => {
+                        setEnrolling(false)
+                        setOpenEnroll(false)
+                        setDuration(false)
+                        setEnrolled(true)
+                    })
+                    .catch((err)=>console.log(err));
+    }
 
     return(
     <>
@@ -317,7 +347,8 @@ export default function LearnerSelfEnrollment() {
         </div>
 
         <SelfEnrollmentModal open={openEnroll} onClose={()=>{setOpenEnroll(false)}} course={selectedCourse} setDuration={()=>{setDuration(true)}}/>
-        <TraningDurationModal open={duration} close={()=>{setDuration(false)}} enroll={""} date={date} _setDate={setDate} course={selectedCourse}/>
+        <SelfEnrollmentSuccessfullyModal open={enrolled} close={()=> {setEnrolled(false), setSelectedCourse(),fetchCourses()}} course={selectedCourse}/>
+        <TraningDurationModal open={duration} close={()=>{setDuration(false)}} enroll={()=>handleEnrollment(selectedCourse)} date={date} _setDate={setDate} course={selectedCourse} enrolling={enrolling}/>
         </>
     )
 }

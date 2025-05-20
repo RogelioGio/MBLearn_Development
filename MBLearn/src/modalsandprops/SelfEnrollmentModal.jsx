@@ -2,7 +2,7 @@ import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 
-const SelfEnrollmentModal = ({open, onClose, course, setDuration}) => {
+const SelfEnrollmentModal = ({open, onClose, course, setDuration, enrolling}) => {
     return (
         <Dialog open={open} onClose={()=>{}}>
             <DialogBackdrop transition className="fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in z-40" />
@@ -68,7 +68,7 @@ const SelfEnrollmentModal = ({open, onClose, course, setDuration}) => {
                                             </button>
                                             {/* Submit */}
                                             <input type="submit"
-                                                    value="Enroll Course"
+                                                    value="Enroll"
                                                     className="bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out w-full" onClick={()=>{setDuration()}}/>
                                         </div>
                             </div>

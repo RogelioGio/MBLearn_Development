@@ -3,7 +3,7 @@ import { useStateContext } from '../contexts/ContextProvider';
 import axiosClient from '../axios-client';
 import { Helmet } from 'react-helmet';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBookOpenReader, faGraduationCap, faHeartPulse, faPenToSquare, faPeopleGroup, faUserLock, faUserShield } from '@fortawesome/free-solid-svg-icons';
+import { faBookOpenReader, faGraduationCap, faHeartPulse, faPenToSquare, faPeopleGroup, faUser, faUserLock, faUserShield } from '@fortawesome/free-solid-svg-icons';
 import AnnouncmentCarousel from '../modalsandprops/dashboardComponents/AnnouncementCarousel';
 import LearnerDashboard from './Dashboards/LearnerDashboard';
 import { CarouselPrevious, CarouselNext } from '../components/ui/carousel';
@@ -35,25 +35,30 @@ const chartConfig = {
   },
   SystemAdmin: {
     label: "System Admin",
-    color: "var(--chart-1)",
+    color: "hsl(218, 97%, 26%)",
   },
   CourseAdmin: {
     label: "Course Admin",
-    color: "var(--chart-2)",
+    color: "hsl(218, 97%, 35%)",
   },
   Learner: {
     label: "Learner",
-    color: "var(--chart-3)",
+    color: "hsl(218, 97%, 50%)",
   },
 }
 
 const chartConfig2 = {
-  visitors: {
-    label: "Visitors",
+  SystemAdmin: {
+    label: "System Admin",
+    color: "hsl(218, 97%, 26%)",
   },
-  safari: {
-    label: "Safari",
-    color: "var(--chart-1)",
+  CourseAdmin: {
+    label: "Course Admin",
+    color: "hsl(218, 97%, 35%)",
+  },
+  Learner: {
+    label: "Learner",
+    color: "hsl(218, 97%, 50%)",
   },
 }
 
@@ -80,20 +85,65 @@ const DashboardLayout = ({role,name,user}) => {
     ];
 
     const chartData2 = [
-      { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
+        {systemAdmin: 120, courseAdmin: 600, learner:500 },
     ]
-    const chartData = [
-    { date: "2024-04-01", visitors: 500, SystemAdmin: 120, CourseAdmin: 80, Learner: 300 },
-  { date: "2024-04-02", visitors: 450, SystemAdmin: 130, CourseAdmin: 70, Learner: 250 },
-  { date: "2024-04-03", visitors: 480, SystemAdmin: 140, CourseAdmin: 90, Learner: 250 },
-  { date: "2024-04-04", visitors: 530, SystemAdmin: 110, CourseAdmin: 100, Learner: 320 },
-  { date: "2024-04-05", visitors: 560, SystemAdmin: 150, CourseAdmin: 85, Learner: 325 },
-  { date: "2024-04-06", visitors: 520, SystemAdmin: 125, CourseAdmin: 95, Learner: 300 },
-  { date: "2024-04-07", visitors: 490, SystemAdmin: 135, CourseAdmin: 75, Learner: 280 },
-  { date: "2024-04-08", visitors: 510, SystemAdmin: 120, CourseAdmin: 80, Learner: 310 },
-  { date: "2024-04-09", visitors: 470, SystemAdmin: 115, CourseAdmin: 85, Learner: 270 },
-  { date: "2024-04-10", visitors: 495, SystemAdmin: 130, CourseAdmin: 90, Learner: 275 },
-    ]
+    const totalUser = chartData2[0].systemAdmin + chartData2[0].courseAdmin + chartData2[0].learner
+    //Sample Data
+const chartData = [
+  // --- January ---
+  { date: "2025-01-01", visitors: 460, SystemAdmin: 110, CourseAdmin: 70,  Learner: 280 },
+  { date: "2025-01-02", visitors: 480, SystemAdmin: 118, CourseAdmin: 72,  Learner: 290 },
+  { date: "2025-01-03", visitors: 495, SystemAdmin: 120, CourseAdmin: 78,  Learner: 300 },
+  { date: "2025-01-04", visitors: 470, SystemAdmin: 122, CourseAdmin: 74,  Learner: 285 },
+  { date: "2025-01-05", visitors: 500, SystemAdmin: 125, CourseAdmin: 80,  Learner: 295 },
+  { date: "2025-01-06", visitors: 520, SystemAdmin: 130, CourseAdmin: 82,  Learner: 308 },
+  { date: "2025-01-07", visitors: 505, SystemAdmin: 128, CourseAdmin: 79,  Learner: 298 },
+  // …(keep pattern through Jan-31)…
+
+  // --- February ---
+  { date: "2025-02-01", visitors: 515, SystemAdmin: 132, CourseAdmin: 84,  Learner: 305 },
+  { date: "2025-02-02", visitors: 525, SystemAdmin: 134, CourseAdmin: 86,  Learner: 310 },
+  // …Feb-28…
+
+  // --- March ---
+  { date: "2025-03-01", visitors: 530, SystemAdmin: 136, CourseAdmin: 88,  Learner: 315 },
+  // …Mar-31…
+
+  // --- April (sample already looked like this, so numbers stay similar) ---
+  { date: "2025-04-01", visitors: 500, SystemAdmin: 120, CourseAdmin: 80,  Learner: 300 },
+  { date: "2025-04-02", visitors: 450, SystemAdmin: 130, CourseAdmin: 70,  Learner: 250 },
+  { date: "2025-04-03", visitors: 480, SystemAdmin: 140, CourseAdmin: 90,  Learner: 250 },
+  { date: "2025-04-04", visitors: 530, SystemAdmin: 110, CourseAdmin: 100, Learner: 320 },
+  { date: "2025-04-05", visitors: 560, SystemAdmin: 150, CourseAdmin: 85,  Learner: 325 },
+  { date: "2025-04-06", visitors: 520, SystemAdmin: 125, CourseAdmin: 95,  Learner: 300 },
+  { date: "2025-04-07", visitors: 490, SystemAdmin: 135, CourseAdmin: 75,  Learner: 280 },
+  { date: "2025-04-08", visitors: 510, SystemAdmin: 120, CourseAdmin: 80,  Learner: 310 },
+  { date: "2025-04-09", visitors: 470, SystemAdmin: 115, CourseAdmin: 85,  Learner: 270 },
+  { date: "2025-04-10", visitors: 495, SystemAdmin: 130, CourseAdmin: 90,  Learner: 275 },
+  // …Apr-30…
+
+  // --- May (up to today) ---
+  { date: "2025-05-01", visitors: 540, SystemAdmin: 138, CourseAdmin: 92,  Learner: 325 },
+  { date: "2025-05-02", visitors: 550, SystemAdmin: 140, CourseAdmin: 94,  Learner: 330 },
+  { date: "2025-05-03", visitors: 560, SystemAdmin: 142, CourseAdmin: 96,  Learner: 335 },
+  { date: "2025-05-04", visitors: 545, SystemAdmin: 139, CourseAdmin: 95,  Learner: 328 },
+  { date: "2025-05-05", visitors: 555, SystemAdmin: 141, CourseAdmin: 97,  Learner: 332 },
+  { date: "2025-05-06", visitors: 565, SystemAdmin: 144, CourseAdmin: 99,  Learner: 338 },
+  { date: "2025-05-07", visitors: 558, SystemAdmin: 142, CourseAdmin: 98,  Learner: 334 },
+  { date: "2025-05-08", visitors: 570, SystemAdmin: 146, CourseAdmin: 100, Learner: 340 },
+  { date: "2025-05-09", visitors: 575, SystemAdmin: 148, CourseAdmin: 102, Learner: 345 },
+  { date: "2025-05-10", visitors: 580, SystemAdmin: 150, CourseAdmin: 104, Learner: 350 },
+  { date: "2025-05-11", visitors: 590, SystemAdmin: 152, CourseAdmin: 106, Learner: 355 },
+  { date: "2025-05-12", visitors: 585, SystemAdmin: 151, CourseAdmin: 105, Learner: 352 },
+  { date: "2025-05-13", visitors: 595, SystemAdmin: 153, CourseAdmin: 107, Learner: 357 },
+  { date: "2025-05-14", visitors: 600, SystemAdmin: 155, CourseAdmin: 109, Learner: 360 },
+  { date: "2025-05-15", visitors: 610, SystemAdmin: 158, CourseAdmin: 111, Learner: 365 },
+  { date: "2025-05-16", visitors: 605, SystemAdmin: 156, CourseAdmin: 110, Learner: 362 },
+  { date: "2025-05-17", visitors: 615, SystemAdmin: 160, CourseAdmin: 113, Learner: 368 },
+  { date: "2025-05-18", visitors: 620, SystemAdmin: 162, CourseAdmin: 115, Learner: 372 },
+  { date: "2025-05-19", visitors: 625, SystemAdmin: 164, CourseAdmin: 117, Learner: 375 },
+  { date: "2025-05-20", visitors: 630, SystemAdmin: 166, CourseAdmin: 118, Learner: 378 },
+];
 
     switch(role){
         //System admin Dasboard
@@ -152,16 +202,49 @@ const DashboardLayout = ({role,name,user}) => {
 
                 {/* Changing Content */}
                 <div className='col-span-3 row-start-3 ml-5 pr-3 pb-5 flex flex-col'>
-                    <div className='pb-3'>
+                    <div className='pb-3 grid grid-cols-4'>
+                        <div className='col-span-2'>
                         <p className="font-header text-primary text-base">Online User Statistics</p>
                         <p className="font-text text-unactive text-xs">Visualization of the current amount of online users of MBLearn </p>
+                        </div>
+                        <div className='col-span-1 col-start-4'>
+                        <div className="grid grid-cols-1">
+                            <select id="dept" name="dept" className="appearance-none text-primary font-header col-start-1 row-start-1 border-2 border-primary rounded-md py-2 px-4 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                // value={formik.values.role}
+                                // onChange={formik.handleChange}
+                                // onBlur={formik.handleBlur}\
+                                >
+                                <option value='' className='text-primary font-header'>Last 3 Months</option>
+                                <option value='' className='text-primary font-header'>Last 30 Days</option>
+                                <option value='' className='text-primary font-header'>Last 7 Days</option>
+
+                            </select>
+                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                            <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        </div>
+
 
                     </div>
-                    <div className='bg-white w-full h-full rounded-md shadow-md border-2 border-primary px-2'>
-                        <ChartContainer config={chartConfig} className="aspect-auto h-full w-full">
+                    <div className='w-full h-full'>
+                        <ChartContainer config={chartConfig} className="aspect-auto h-full w-full flex flex-col gap-4">
                             <AreaChart data={chartData}>
+                            <ChartLegend content={<ChartLegendContent />}/>
                                 <defs>
-                                    <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
+                                    <linearGradient id="fillSystemAdmin" x1="0" y1="0" x2="0" y2="1">
+                                        <stop
+                                        offset="5%"
+                                        stopColor="var(--chart-1)"
+                                        stopOpacity={0.8}
+                                        />
+                                        <stop
+                                        offset="95%"
+                                        stopColor="var(--chart-2)"
+                                        stopOpacity={0.1}
+                                        />
+                                    </linearGradient>
+                                    <linearGradient id="fillCourseAdmin" x1="0" y1="0" x2="0" y2="1">
                                         <stop
                                         offset="5%"
                                         stopColor="var(--chart-2)"
@@ -173,27 +256,15 @@ const DashboardLayout = ({role,name,user}) => {
                                         stopOpacity={0.1}
                                         />
                                     </linearGradient>
-                                    <linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
+                                    <linearGradient id="fillLearner" x1="0" y1="0" x2="0" y2="1">
                                         <stop
                                         offset="5%"
-                                        stopColor="var(--color-mobile)"
+                                        stopColor="var(--chart-4)"
                                         stopOpacity={0.8}
                                         />
                                         <stop
                                         offset="95%"
-                                        stopColor="var(--color-mobile)"
-                                        stopOpacity={0.1}
-                                        />
-                                    </linearGradient>
-                                    <linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
-                                        <stop
-                                        offset="5%"
-                                        stopColor="var(--color-mobile)"
-                                        stopOpacity={0.8}
-                                        />
-                                        <stop
-                                        offset="95%"
-                                        stopColor="var(--color-mobile)"
+                                        stopColor="var(--chart-5)"
                                         stopOpacity={0.1}
                                         />
                                     </linearGradient>
@@ -205,6 +276,7 @@ const DashboardLayout = ({role,name,user}) => {
                                 axisLine={false}
                                 tickMargin={8}
                                 minTickGap={32}
+                                tick={{ fill: "hsl(218, 97%, 26%)" }}
                                 tickFormatter={(value) => {
                                     const date = new Date(value)
                                     return date.toLocaleDateString("en-US", {
@@ -228,88 +300,105 @@ const DashboardLayout = ({role,name,user}) => {
                                 }
                                 />
                                 <Area
-                                dataKey="SystemAdmin"
+                                dataKey="Learner"
                                 type="natural"
-                                fill="url(#fillMobile)"
-                                stroke="var(--color-mobile)"
+                                fill="url(#fillLearner)"
+                                stroke="hsl(218, 97%, 50%)"
                                 stackId="a"
                                 />
                                 <Area
                                 dataKey="CourseAdmin"
                                 type="natural"
-                                fill="url(#fillDesktop)"
-                                stroke="var(--color-desktop)"
+                                fill="url(#fillCourseAdmin)"
+                                stroke="hsl(218, 97%, 35%)"
                                 stackId="a"
                                 />
                                 <Area
-                                dataKey="Learner"
+                                dataKey="SystemAdmin"
                                 type="natural"
-                                fill="url(#fillDesktop)"
-                                stroke="var(--color-desktop)"
+                                fill="url(#fillSystemAdmin)"
+                                stroke="hsl(218, 97%, 26%)"
                                 stackId="a"
                                 />
-                                <ChartLegend content={<ChartLegendContent />} />
+
                             </AreaChart>
                         </ChartContainer>
                     </div>
                 </div>
                 <div className='col-span-1 row-start-3 mr-5 pb-5 flex flex-col'>
-                    <div className='pb-3'>
-                        <p className="font-header text-primary text-base">Total MBLearn Users</p>
-                        <p className="font-text text-unactive text-xs">Total number of MBLearn users</p>
+                    <div className='pb-3 flex flex-row justify-between'>
+                        <div>
+                            <p className="font-header text-primary text-base">Total MBLearn Users</p>
+                            <p className="font-text text-unactive text-xs">Total number of MBLearn users</p>
+                        </div>
+                        <div className='w-9 h-9 border-primary border-2 rounded-md flex items-center justify-center text-primary hover:bg-primary hover:text-white hover:cursor-pointer transition-all ease-in-out'>
+                            <FontAwesomeIcon icon={faUser}/>
+                        </div>
                     </div>
-                    <div className='bg-white w-full h-full rounded-md shadow-md border-2 border-primary'>
-                        <ChartContainer config={chartConfig2} className="mx-auto aspect-square max-h-[150px]" >
+                    <div className='w-full h-full border-2 flex flex-col items-center justify-center'>
+                        <ChartContainer config={chartConfig2} className="h-[30vh] aspect-square" >
                             <RadialBarChart
                                 data={chartData2}
-                                startAngle={0}
-                                endAngle={250}
+                                endAngle={180}
                                 innerRadius={80}
-                                outerRadius={110}
+                                outerRadius={130}
                             >
-                                <PolarGrid
-                                gridType="circle"
-                                radialLines={false}
-                                stroke="none"
-                                className="first:fill-muted last:fill-background"
-                                polarRadius={[86, 74]}
+                                <ChartTooltip
+                                cursor={false}
+                                content={<ChartTooltipContent hideLabel />}
                                 />
 
                                 <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
-              <Label
-                content={({ viewBox }) => {
-                  if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                    return (
-                      <text
-                        x={viewBox.cx}
-                        y={viewBox.cy}
-                        textAnchor="middle"
-                        dominantBaseline="middle"
-                      >
-                        <tspan
-                          x={viewBox.cx}
-                          y={viewBox.cy}
-                          className="fill-foreground text-4xl font-bold"
-                        >
-                          {chartData2[0].visitors.toLocaleString()}
-                        </tspan>
-                        <tspan
-                          x={viewBox.cx}
-                          y={(viewBox.cy || 0) + 24}
-                          className="fill-muted-foreground"
-                        >
-                          Visitors
-                        </tspan>
-                      </text>
-                    )
-                  }
-                }}
-              />
-            </PolarRadiusAxis>
+                                    <Label
+                                        content={({ viewBox }) => {
+                                        if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                                            return (
+                                            <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle">
+                                                <tspan
+                                                x={viewBox.cx}
+                                                y={(viewBox.cy || 0) - 16}
+                                                className="fill-foreground text-2xl font-header text-primary"
+                                                >
+                                                {totalUser.toLocaleString()}
+                                                </tspan>
+                                                <tspan
+                                                x={viewBox.cx}
+                                                y={(viewBox.cy || 0) + 4}
+                                                className="fill-muted-foreground font-text"
+                                                >
+                                                Total Users
+                                                </tspan>
+                                            </text>
+                                            )
+                                        }
+                                        }}
+                                    />
+                                </PolarRadiusAxis>
 
-                                <RadialBar dataKey="visitors" background cornerRadius={10} />
+                                <RadialBar
+                                dataKey="systemAdmin"
+                                stackId="a"
+                                cornerRadius={5}
+                                fill="hsl(218, 97%, 26%)"
+                                className="stroke-transparent stroke-2"
+                                />
+                                <RadialBar
+                                dataKey="courseAdmin"
+                                stackId="a"
+                                cornerRadius={5}
+                                fill="hsl(218, 97%, 35%)"
+                                className="stroke-transparent stroke-2"
+                                />
+                                <RadialBar
+                                dataKey="learner"
+                                stackId="a"
+                                cornerRadius={5}
+                                fill="hsl(218, 97%, 50%)"
+                                className="stroke-transparent stroke-2"
+                                />
                             </RadialBarChart>
                         </ChartContainer>
+
                     </div>
                 </div>
 
