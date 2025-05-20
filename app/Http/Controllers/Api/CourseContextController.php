@@ -22,7 +22,7 @@ class CourseContextController extends Controller
 {
     public function index(){
         if(!Cache::has('course_context')){
-            $inputs = Cache::remember('course_context', 60, function () {
+            $inputs = Cache::remember('course_context', now()->addMinutes(60), function () {
                 return [
                     'coursetypes' => Type::all(),
                     'coursecategories' => Category::all(),

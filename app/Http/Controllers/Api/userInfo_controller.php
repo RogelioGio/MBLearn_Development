@@ -12,6 +12,7 @@ use App\Http\Requests\BulkStoreUserRequest;
 use App\Http\Requests\TestArrayRequest;
 use App\Http\Requests\updateUserInfo;
 use App\Http\Requests\UserInfoSearchRequest;
+use App\Jobs\PermissionToUser;
 use App\Models\Branch;
 use App\Models\CarouselImage;
 use App\Models\Course;
@@ -31,12 +32,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\UserCredentials;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon as SupportCarbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 class userInfo_controller extends Controller
 {
@@ -46,24 +49,17 @@ class userInfo_controller extends Controller
     public function addUser(AddUsersRequest $addUsersRequest){
 
         $existingatedData = $addUsersRequest->validated();
-        $title = Title::query()->find($existingatedData['title_id']);
-        $department = Department::query()->find($existingatedData['department_id']);
-        $branch = Branch::query()->find($existingatedData['branch_id']);
-        $role = Role::query()->find($existingatedData['role_id']);
-        $division = Division::query()->find($existingatedData['division_id']);
-        $section = Section::query()->find($existingatedData['section_id']);
-        $permissions = [];
 
-        $profile_image = $this -> generateProfileImageurl($existingatedData['first_name'].$existingatedData['last_name']);
-        $status = $existingatedData['status'] ?? 'Active';
-        $existingUser = UserInfos::where('employeeID', $existingatedData['employeeID'])->first();
-        $existingEmail = UserCredentials::where('MBemail', $existingatedData['MBemail'])->first();
-
-        if ($existingUser) {
+        if(UserInfos::where('employeeID', $existingatedData['employeeID'])->exists()){
             return response()->json([
                 'message' => 'User already exists',
-                'user' => $existingUser
-            ], 409); // Use 409 Conflict instead of 200
+            ], 409);
+        }
+
+        if(UserCredentials::where('MBemail', $existingatedData['MBemail'])->exists()){
+            return response()->json([
+                'message' => 'User creds already exists',
+            ], 409);
         }
 
         // Combine first name, middle initial, last name, and suffix into a full name
@@ -75,51 +71,62 @@ class userInfo_controller extends Controller
         // Generate profile image URL (pass the correct name variable)
         $profile_image = $this->generateProfileImageUrl($fullName);
 
-        if($existingEmail){
 
-        }
+        DB::beginTransaction();
 
-        $userCredentials = UserCredentials::create([
-            'MBemail' => $existingatedData['MBemail'],
-            'password' => $existingatedData['password'],
-        ]);
+        try{
+            $options = Cache::get('options');
+            $title = $options['titles']->firstWhere('id', $existingatedData['title_id']);
+            $department = $options['departments']->firstWhere('id', $existingatedData['department_id']);
+            $branch = $options['location']->firstWhere('id', $existingatedData['branch_id']);
+            $division = $options['division']->firstWhere('id', $existingatedData['division_id']);
+            $section = $options['section']->firstWhere('id', $existingatedData['section_id']);
 
-        $userInfo = UserInfos::create([
-            'employeeID' => $existingatedData['employeeID'],
-            'first_name' => $existingatedData['first_name'],
-            'last_name' => $existingatedData['last_name'],
-            'middle_name' => $existingatedData['middle_name'],
-            'name_suffix' => $existingatedData['name_suffix'],
-            'status' =>$status,
-            'profile_image' =>$profile_image
-        ]);
+            $status = $existingatedData['status'] ?? 'Active';
 
-        if($existingatedData['permissions']){
-            foreach($existingatedData['permissions'] as $tests){
-                foreach($tests as $key => $value){
-                    $permissions[] = $value;
-                }
+            $userCredentials = new UserCredentials([
+                'MBemail' => $existingatedData['MBemail'],
+                'password' => $existingatedData['password'],
+            ]);
+
+            $userInfo = new UserInfos([
+                'employeeID' => $existingatedData['employeeID'],
+                'first_name' => $existingatedData['first_name'],
+                'last_name' => $existingatedData['last_name'],
+                'middle_name' => $existingatedData['middle_name'],
+                'name_suffix' => $existingatedData['name_suffix'],
+                'status' =>$status,
+                'profile_image' =>$profile_image
+            ]);
+
+            $userInfo->branch()->associate($branch);
+            $userInfo->title()->associate($title);
+            $userInfo->department()->associate($department);
+            $userInfo->section()->associate($section);
+            $userInfo->division()->associate($division);
+            $userInfo->save();
+            $userInfo->roles()->sync($existingatedData['role_id']);
+            $userCredentials->userInfos()->save($userInfo);
+            $userCredentials->save();
+
+            DB::commit();
+
+            if($existingatedData['permissions'] ?? false){
+                PermissionToUser::dispatch($userInfo, $existingatedData['permissions'] ?? []);
             }
+
+            return response()->json([
+                'message' => 'User registered successfully',
+                'user_info' => $userInfo,
+                'permissions' => $existingatedData['permissions'] ?? false
+            ], 201);
+        } catch(Exception $e){
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Failed to create user',
+                'error' => $e->getMessage()
+            ],400);
         }
-
-
-        $userInfo->branch()->associate($branch);
-        $userInfo->title()->associate($title);
-        $userInfo->department()->associate($department);
-        $userInfo->section()->associate($section);
-        $userInfo->division()->associate($division);
-        $userInfo->roles()->sync($role->id);
-        $userInfo->save();
-        $userCredentials->userInfos()->save($userInfo);
-        $userInfo->permissions()->sync($permissions);
-        // Return a success response
-        return response()->json([
-            'message' => 'User registered successfully',
-            'user_info' => $userInfo->load(['permissions']),
-            'user_role' => $userInfo->roles,
-            'branch' => $userInfo->branch,
-            'user_credentials' => $userCredentials
-        ], 201);
 
     }
 
@@ -163,7 +170,7 @@ class userInfo_controller extends Controller
             return $oneDArray;
         });
         foreach($bulk as $single){
-            $existing = UserInfos::query()->where('employeeID', '=', $single['employeeID'])->first();
+            $existing = UserInfos::query()->where('employeeID', '=', $single['employeeID'])->exists();
             $email = strtolower(preg_replace('/\s+/', '', $single['first_name'])
                         .preg_replace('/\s+/', '', $single['last_name'])
                         ."@mbtc.com");
@@ -925,18 +932,71 @@ class userInfo_controller extends Controller
         ],200);
     }
 
-    public function test(Request $request){
+    public function test(AddUsersRequest $addUsersRequest){
         // $course = Course::query()->find(71);
         // $user = UserInfos::query()->find(109);
         // $pivot = $course->assignedCourseAdmins()->where('user_id', $user->id)->first()->pivot;
         // $permIds = $course->course_permissions->pluck('id')->toArray();
         // $perm = CourseUserAssigned::find($pivot->id);
 
-        // $perm->permissions()->sync([1,2]);
-        Cache::put('driver_test', 'working!', 600);
-        Cache::get('driver_test'); // should return 'working!'
+        // // $perm->permissions()->sync([1,2]);
+        // $userInfo = UserInfos::find(128);
+        // PermissionToUser::dispatch($userInfo, $existingatedData['permissions'] ?? []);
+        
+        $existingatedData = $addUsersRequest->validated();
+
+        if(UserInfos::where('employeeID', $existingatedData['employeeID'])->exists()){
+            return response()->json([
+                'message' => 'User already exists',
+            ], 409);
+        }
+
+        if(UserCredentials::where('MBemail', $existingatedData['MBemail'])->exists()){
+            return response()->json([
+                'message' => 'User creds already exists',
+            ], 409);
+        }
+
+        // Combine first name, middle initial, last name, and suffix into a full name
+        $fullName = trim("{$existingatedData['first_name']} " .
+                            ("{$existingatedData['middle_name']}" ? "{$existingatedData['middle_name']}. " : "") .
+                            "{$existingatedData['last_name']} " .
+                            ("{$existingatedData['name_suffix']}" ? $existingatedData['name_suffix'] : ""));
+
+        // Generate profile image URL (pass the correct name variable)
+            $profile_image = $this->generateProfileImageUrl($fullName);
+            $options = Cache::get('options');
+            $title = $options['titles']->firstWhere('id', $existingatedData['title_id']);
+            $department = $options['departments']->firstWhere('id', $existingatedData['department_id']);
+            $branch = $options['location']->firstWhere('id', $existingatedData['branch_id']);
+            $division = $options['division']->firstWhere('id', $existingatedData['division_id']);
+            $section = $options['section']->firstWhere('id', $existingatedData['section_id']);
+
+            $status = $existingatedData['status'] ?? 'Active';
+            
+            $userCredentials = new UserCredentials([
+                'MBemail' => $existingatedData['MBemail'],
+                'password' => $existingatedData['password'],
+            ]);
+
+            $userInfo = new UserInfos([
+                'employeeID' => $existingatedData['employeeID'],
+                'first_name' => $existingatedData['first_name'],
+                'last_name' => $existingatedData['last_name'],
+                'middle_name' => $existingatedData['middle_name'],
+                'name_suffix' => $existingatedData['name_suffix'],
+                'status' =>$status,
+                'profile_image' =>$profile_image
+            ]);
+
+            $userInfo->branch()->associate($branch);
+            $userInfo->title()->associate($title);
+            $userInfo->department()->associate($department);
+            $userInfo->section()->associate($section);
+            $userInfo->division()->associate($division);
+
         return response()->json([
-            'data' => Cache::getStore()
+            'data' => $fullName
         ]);
 
     }

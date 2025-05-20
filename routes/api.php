@@ -149,7 +149,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::put('/updateUserPermission/{userCredentials}', [userCredentials_controller::class, 'changeUserPermissions']);
     Route::post('/setCoursePermission/{course}', [CourseController::class, 'setCoursePermissions']);
 
-    Route::get('/test', [userInfo_controller::class, 'test']);
+    Route::post('/test', [userInfo_controller::class, 'test']);
 
 });
 
