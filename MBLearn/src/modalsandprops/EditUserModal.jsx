@@ -11,10 +11,10 @@ import AddUserErrorModal from "./AdduserErrorModal"
 import EditUserCredsModal from "./EditUserCredsModal"
 import EdituserErrorModal from "./EdituserErrorModal"
 
-const EditUserModal = ({open, close, classname, ID, close_confirmation}) =>{
+const EditUserModal = ({open, close, classname, ID, close_confirmation, selectedUser}) =>{
     const { roles = [], departments = [], titles = [], location = [], cities = [], division, section} = useOption() || {};
-    const {selectedUser, selectUser, isFetching} = useUser();
-    const [loading, setLoading] = useState(true);
+    // const {selectedUser, selectUser, isFetching} = useUser();
+    const [loading, setLoading] = useState(false);
     const [user, setUser] = useState();
     const [selectedBranches, setSelectedBranches] = useState([])
     const [editing, setEditing] = useState(false)
@@ -29,25 +29,25 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation}) =>{
         setSelectedBranches(filteredBranches)
     }
 
-    useEffect(() => {
-            if (open && ID) {
-                if (selectedUser?.id === ID) {
-                    setLoading(false);
-                } else {
-                    setLoading(true);
-                    selectUser(ID);
-                }
-            }
-        }, [ID, selectedUser, open]);
-        useEffect(() => {
-            if (selectedUser && !isFetching) {
-                setLoading(false);
-            }
-        }, [selectedUser, isFetching]);
+    // useEffect(() => {
+    //         if (open && ID) {
+    //             if (selectedUser?.id === ID) {
+    //                 setLoading(false);
+    //             } else {
+    //                 setLoading(true);
+    //                 selectUser(ID);
+    //             }
+    //         }
+    //     }, [ID, selectedUser, open]);
+    //     useEffect(() => {
+    //         if (selectedUser && !isFetching) {
+    //             setLoading(false);
+    //         }
+    //     }, [selectedUser, isFetching]);
 
-    useEffect(() => {
-        setLoading(isFetching);
-    }, [isFetching]);
+    // useEffect(() => {
+    //     setLoading(isFetching);
+    // }, [isFetching]);
 
     //payload and validation schema
     const formik = useFormik({
@@ -84,7 +84,7 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation}) =>{
             },
         //validation
         validationSchema: Yup.object({
-            employeeID: Yup.string().required('required *').length(11, 'Employee ID must be exactly 11 characters'),
+            employeeID: Yup.string().required('required *').matches(/^\d+$/, 'Numbers only').length(11, 'Employee ID must be exactly 11 characters'),
             first_name: Yup.string().required('required *'),
             last_name: Yup.string().required('required *'),
             title_id: Yup.string().required('required *'),
@@ -94,7 +94,7 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation}) =>{
         onSubmit: (values) => {
             console.log(values)
             setUpdating(true)
-            axiosClient.put(`/update-user-info/${ID}`,values)
+            axiosClient.put(`/update-user-info/${selectedUser.id}`,values)
             .then((response) => {console.log(response)
                 setUpdating(false)
                 close_confirmation()

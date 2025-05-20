@@ -153,15 +153,6 @@ const CourseAdminDashboard = ({name, user}) => {
                         <p className="font-text text-xs group-hover:text-white">View all your assigned courses in one place</p>
                     </div>
                 </div>
-                {/* <div className="col-start-2 flex flex-row gap-2 items-center pb-2">
-                    <div className="border-2 border-primary p-1 px-2 aspect-square rounded-md shadow-md text-primary hover:bg-primary hover:cursor-pointer hover:text-white">
-                        <FontAwesomeIcon icon={faArrowLeft} />
-                    </div>
-                    <div className="font-header text-primary">{pageState.currentPage}/{pageState.lastPage}</div>
-                    <div className="border-2 border-primary p-1 px-2 aspect-square rounded-md shadow-md text-primary hover:bg-primary hover:cursor-pointer hover:text-white">
-                        <FontAwesomeIcon icon={faArrowRight} />
-                        </div>
-                </div> */}
             </div>
             {/* Content */}
             <div className="w-full h-full grid grid-cols-4 grid-rows-1 gap-2">
@@ -180,7 +171,8 @@ const CourseAdminDashboard = ({name, user}) => {
                             </div>
                         ))
                     ):(
-                        assignedCourse.map((course)=>(
+                        assignedCourse.length > 0 ? (
+                            assignedCourse.map((course)=>(
                             <div className="bg-white w-full h-full shadow-md rounded-md grid grid-cols-1 grid-rows-[min-content_1fr_1fr_min-content] hover:cursor-pointer hover:scale-105 transition-all ease-in-out" onClick={() => navigate(`/courseadmin/course/${course.id}`)}>
                                 <div className="bg-gradient-to-b from-[hsl(239,94%,19%)] via-[hsl(214,97%,27%)] to-[hsl(201,100%,36%)] w-full h-14 rounded-t-md p-3">
                                     <span className="inline-flex items-center rounded-md bg-primarybg px-2 py-1 text-xs font-medium text-primary font-text">
@@ -204,29 +196,41 @@ const CourseAdminDashboard = ({name, user}) => {
                                 </div>
                             </div>
                         ))
+                        ) : (
+                            <div className="w-full flex flex-col justify-center items-center col-span-4">
+                                <p className="font-text text-unactive">No Courses Available</p>
+                            </div>
+                        )
                     )
                 }
             </div>
 
-            <div className="flex flex-row justify-between pt-2">
-                <div className="border-2 border-primary p-1 px-2 aspect-square rounded-md shadow-md text-primary hover:bg-primary hover:cursor-pointer hover:text-white"
-                onClick={back}>
-                    <FontAwesomeIcon icon={faArrowLeft} />
-                </div>
+                {
+                    assignedCourse.length > 0 ? (
+                    <div className="flex flex-row justify-between pt-2">
+                                <>
+                                    <div className="border-2 border-primary p-1 px-2 aspect-square rounded-md shadow-md text-primary hover:bg-primary hover:cursor-pointer hover:text-white"
+                                    onClick={back}>
+                                        <FontAwesomeIcon icon={faArrowLeft} />
+                                    </div>
 
-                <div className="flex flex-row items-center gap-2">
-                    {
-                        Array.from({length: pageState.lastPage}).map((_,i) => (
-                            <div key={i} className={`w-2 h-2 rounded-full ${i+1 === pageState.currentPage ? 'bg-primary': 'bg-unactive'}`}/>
-                        ))
-                    }
-                </div>
+                                    <div className="flex flex-row items-center gap-2">
+                                        {
+                                            Array.from({length: pageState.lastPage}).map((_,i) => (
+                                                <div key={i} className={`w-2 h-2 rounded-full ${i+1 === pageState.currentPage ? 'bg-primary': 'bg-unactive'}`}/>
+                                            ))
+                                        }
+                                    </div>
 
-                <div className="border-2 border-primary p-1 px-2 aspect-square rounded-md shadow-md text-primary hover:bg-primary hover:cursor-pointer hover:text-white"
-                onClick={next}>
-                    <FontAwesomeIcon icon={faArrowRight} />
-                </div>
-            </div>
+                                    <div className="border-2 border-primary p-1 px-2 aspect-square rounded-md shadow-md text-primary hover:bg-primary hover:cursor-pointer hover:text-white"
+                                    onClick={next}>
+                                        <FontAwesomeIcon icon={faArrowRight} />
+                                    </div>
+                                </>
+
+                    </div>
+                    ) : (null)
+                }
         </div>
 
         {/* Activities */}

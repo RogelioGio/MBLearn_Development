@@ -11,24 +11,29 @@ import DeleteUserModal from './DeleteUserModal'
 import { useNavigate } from 'react-router-dom'
 
 
-const UserEntryModal = ({open, close, classname,ID}) =>{
-    const {selectUser, selectedUser, isFetching} = useUser()
+const UserEntryModal = ({open, close, classname,ID ,selectedUser}) =>{
+    //const {selectUser, selectedUser, isFetching} = useUser()
     //API Call for fetching specific user
     const [date, setDate] = useState();
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(false)
     const navigate = useNavigate();
+
+    useEffect(() => {
+        console.log("Selected User: ", selectedUser)
+    },[])
+
 
 
     //branch choice handelling
-    const handleBranchesOptions = (e) =>{
-        const city = e.target.value;
-        formik.setFieldValue('city', city)
-        formik.setFieldValue('branch', '')
+    // const handleBranchesOptions = (e) =>{
+    //     const city = e.target.value;
+    //     formik.setFieldValue('city', city)
+    //     formik.setFieldValue('branch', '')
 
-        //Filtering
-        const filteredBranches = location.filter((branch) => branch.city_id.toString() === city)
-        setSelectedBranches(filteredBranches)
-    }
+    //     //Filtering
+    //     const filteredBranches = location.filter((branch) => branch.city_id.toString() === city)
+    //     setSelectedBranches(filteredBranches)
+    // }
 
     //Modal states
     const [modalState, setModalState] = useState({
@@ -44,21 +49,21 @@ const UserEntryModal = ({open, close, classname,ID}) =>{
         })));
     }
 
-    useEffect(() => {
-        if (open && ID) {
-            if (selectedUser?.id === ID) {
-                setLoading(false);
-            } else {
-                setLoading(true);
-                selectUser(ID);
-            }
-        }
-    }, [ID, selectedUser, open]);
-    useEffect(() => {
-        if (selectedUser && !isFetching) {
-            setLoading(false);
-        }
-    }, [selectedUser, isFetching]);
+    // useEffect(() => {
+    //     if (open && ID) {
+    //         if (selectedUser?.id === ID) {
+    //             setLoading(false);
+    //         } else {
+    //             setLoading(true);
+    //             selectUser(ID);
+    //         }
+    //     }
+    // }, [ID, selectedUser, open]);
+    // useEffect(() => {
+    //     if (selectedUser && !isFetching) {
+    //         setLoading(false);
+    //     }
+    // }, [selectedUser, isFetching]);
 
     //function for readable dates
     useEffect(() => {
@@ -153,14 +158,14 @@ const UserEntryModal = ({open, close, classname,ID}) =>{
             <div className='row-start-2 col-start-1 py-4 px-4 border-b border-r border-divider'>
                 {/* Department */}
                 <p className='font-header text-sm text-unactive uppercase'>Department:</p>
-                <p className='font-text text-lg'>{selectedUser.department.department_name}</p>
+                <p className='font-text text-lg'>{selectedUser?.department?.department_name}</p>
                 {/* <p className='font-text text-xs uppercase'>{selectedUser?.title.title_name}</p> */}
             </div>
             <div className='row-start-2 col-start-2 py-4 px-4 border-b border-r border-divider'>
                 {/* Branch & City */}
                 <p className='font-header text-sm text-unactive uppercase'>Branch:</p>
-                <p className='font-text text-lg'>{selectedUser.branch.branch_name}</p>
-                <p className='font-text text-xs uppercase'>{selectedUser?.city.city_name}</p>
+                <p className='font-text text-lg'>{selectedUser?.branch?.branch_name}</p>
+                <p className='font-text text-xs uppercase'>{selectedUser?.city?.city_name}</p>
             </div>
             <div className='row-start-2 col-start-3 py-4 px-4 border-b border-divider'>
                 {/* System Admin */}
@@ -170,7 +175,7 @@ const UserEntryModal = ({open, close, classname,ID}) =>{
                 {/* User Status */}
             <div className='row-start-3 col-span-2 py-4 px-4 border-r border-divider'>
                 <p className='font-header text-sm text-unactive uppercase'>User Status:</p>
-                <p className='font-text text-lg'>{selectedUser.status}</p>
+                <p className='font-text text-lg'>{selectedUser?.status}</p>
             </div>
                 {/* User Added */}
             <div className='row-start-3 col-span-1 py-4 px-4'>

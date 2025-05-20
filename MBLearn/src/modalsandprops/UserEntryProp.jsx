@@ -4,7 +4,7 @@ import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react'
 import React, { useState } from 'react'
 import { useStateContext } from '../contexts/ContextProvider'
 
-const User = ({re_move,click,userID,name,department,title,branch,city,profile_url,employeeID,role,edit,_delete,handleCheckbox,selected,isChecked,userDetail,division,section}) => {
+const User = ({re_move,click,userID,name,department,title,branch,city,profile_url,employeeID,role,edit,_delete,handleCheckbox,selected,isChecked,userDetail,division,section,selectedUser}) => {
     const selectedUsers = selected.some(
         (user) => user.Selected_ID === userID
     )
@@ -13,7 +13,7 @@ const User = ({re_move,click,userID,name,department,title,branch,city,profile_ur
 
 
     return(
-        <tr className={`font-text text-sm hover:bg-gray-200 ${selectedUsers? 'bg-gray-200':''}`} onClick={() => click(userID)}>
+        <tr className={`font-text text-sm hover:bg-gray-200 ${selectedUsers? 'bg-gray-200':''}`} onClick={() => click()}>
                 <td className={`text-sm  py-3 px-4 border-l-2 border-transparent transition-all ease-in-out ${selectedUsers? '!border-primary':''}`}>
                     <div className='flex items-center gap-3 flex-row '>
                          {/* Checkbox */}

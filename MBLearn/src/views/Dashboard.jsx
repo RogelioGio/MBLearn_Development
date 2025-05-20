@@ -335,69 +335,24 @@ const chartData = [
                             <FontAwesomeIcon icon={faUser}/>
                         </div>
                     </div>
-                    <div className='w-full h-full border-2 flex flex-col items-center justify-center'>
-                        <ChartContainer config={chartConfig2} className="h-[30vh] aspect-square" >
-                            <RadialBarChart
-                                data={chartData2}
-                                endAngle={180}
-                                innerRadius={80}
-                                outerRadius={130}
-                            >
-                                <ChartTooltip
-                                cursor={false}
-                                content={<ChartTooltipContent hideLabel />}
-                                />
+                    <div className='w-full h-full items-center justify-center grid grid-cols-1 grid-rows-4 gap-y-2'>
+                        <div className='flex flex-row justify-between items-center text-primary'>
+                            <p className='text-xs font-text text-unactive'>ACTIVE USERS</p>
+                            <p className='text-2xl font-header'>14,000</p>
+                        </div>
+                        <div className='flex flex-row border-2 border-primary w-full h-full rounded-md items-center justify-between px-3 py-1 text-primary hover:cursor hover:bg-primary hover:text-white transition-all ease-in-out hover:cursor-pointer'>
+                                <p className='text-xs font-text'><span><FontAwesomeIcon icon={faUserShield}/></span> System Admin Accounts</p>
+                                <p className='text-lg font-header'>5,000</p>
 
-                                <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
-                                    <Label
-                                        content={({ viewBox }) => {
-                                        if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                                            return (
-                                            <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle">
-                                                <tspan
-                                                x={viewBox.cx}
-                                                y={(viewBox.cy || 0) - 16}
-                                                className="fill-foreground text-2xl font-header text-primary"
-                                                >
-                                                {totalUser.toLocaleString()}
-                                                </tspan>
-                                                <tspan
-                                                x={viewBox.cx}
-                                                y={(viewBox.cy || 0) + 4}
-                                                className="fill-muted-foreground font-text"
-                                                >
-                                                Total Users
-                                                </tspan>
-                                            </text>
-                                            )
-                                        }
-                                        }}
-                                    />
-                                </PolarRadiusAxis>
-
-                                <RadialBar
-                                dataKey="systemAdmin"
-                                stackId="a"
-                                cornerRadius={5}
-                                fill="hsl(218, 97%, 26%)"
-                                className="stroke-transparent stroke-2"
-                                />
-                                <RadialBar
-                                dataKey="courseAdmin"
-                                stackId="a"
-                                cornerRadius={5}
-                                fill="hsl(218, 97%, 35%)"
-                                className="stroke-transparent stroke-2"
-                                />
-                                <RadialBar
-                                dataKey="learner"
-                                stackId="a"
-                                cornerRadius={5}
-                                fill="hsl(218, 97%, 50%)"
-                                className="stroke-transparent stroke-2"
-                                />
-                            </RadialBarChart>
-                        </ChartContainer>
+                        </div>
+                        <div className='flex flex-row border-2 border-primary w-full h-full rounded-md items-center justify-between px-3 py-1 text-primary hover:cursor hover:bg-primary hover:text-white transition-all ease-in-out hover:cursor-pointer'>
+                                <p className='text-xs font-text'><span><FontAwesomeIcon icon={faBookOpenReader}/></span> Course Admin Accounts</p>
+                                <p className='text-lg font-header'>5,100</p>
+                        </div>
+                        <div className='flex flex-row border-2 border-primary w-full h-full rounded-md items-center justify-between px-3 py-1 text-primary hover:cursor hover:bg-primary hover:text-white transition-all ease-in-out hover:cursor-pointer'>
+                                <p className='text-xs font-text'><span><FontAwesomeIcon icon={faGraduationCap}/></span> Learner Accounts</p>
+                                <p className='text-lg font-header'>5,100</p>
+                        </div>
 
                     </div>
                 </div>

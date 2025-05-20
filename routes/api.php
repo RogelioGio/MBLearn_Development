@@ -35,7 +35,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function(){
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', function (Request $request) {
-        return $request->user()->load(['userInfos', 'userInfos.permissions','userInfos.roles',]);
+        return $request->user()->load(['userInfos', 'userInfos.city','userInfos.permissions','userInfos.roles',]);
     });
     Route::get('/status/{userId}/{lessonId}', [LessonsController::class, 'updateLearnerProgress']);
     Route::get('/course-search', [CourseController::class, 'CourseSearch']);
@@ -151,6 +151,7 @@ Route::middleware('auth:sanctum')->group(function(){
 
     //CompE Routes
     Route::get('/compECourses', [CompECourseController::class, 'index']);
+    Route::get('/compECourses/{course}', [CompECourseController::class, 'show']);
 
     Route::post('/test', [userInfo_controller::class, 'test']);
 

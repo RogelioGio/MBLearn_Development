@@ -182,13 +182,18 @@ export default function UserManagementMaintenance() {
     //Loading State
     const [isLoading, setLoading] = useState(true);
 
+    //Selected User Object
+    const [selectedUser, setSelectedUser] = useState()
+
     //Open and Closing User Description
-    const OpenDialog = (ID) => {
-        setUserID(ID);
+    const OpenDialog = (user) => {
+        setSelectedUser(user);
+        //setUserID(ID);
         toggleModal("isOpen",true);
     }
     const CloseDialog = () => {
-        setUserID('');
+        //setUserID('');
+        setSelectedUser();
         toggleModal("isOpen",false);
     }
 
@@ -200,19 +205,22 @@ export default function UserManagementMaintenance() {
 
 
     // Open and Close Edit User Modal
-    const OpenEdit = (e, ID) => {
+    const OpenEdit = (e, user) => {
         e.stopPropagation();
-        toggleUserID("isEdit", ID);
+        //toggleUserID("isEdit", ID);
+        setSelectedUser(user)
         toggleModal("isEdit", true);
     }
     const CloseEdit = () => {
+        setSelectedUser()
         toggleModal("isEdit", false);
     }
 
     // Open and Close Delete User Modal
-    const OpenDelete = (e, EmployeeID) => {
+    const OpenDelete = (e, user) => {
         e.stopPropagation();
-        toggleUserID("isDelete", EmployeeID);
+        setSelectedUser(user)
+        //toggleUserID("isDelete", EmployeeID);
         toggleModal("isDelete", true);
     }
 
@@ -586,7 +594,7 @@ export default function UserManagementMaintenance() {
                                     return(<User
                                             key={userEntry.id}
                                             userID={userEntry.id}
-                                            click={OpenDialog}
+                                            click={()=>OpenDialog(userEntry)}
                                             name={fullName}
                                             division={userEntry.division?.division_name || "No Division Yet"}
                                             department={userEntry.department?.department_name || "No Department Yet"}
@@ -597,12 +605,13 @@ export default function UserManagementMaintenance() {
                                             profile_url={userEntry.profile_image}
                                             employeeID={userEntry.employeeID}
                                             role={userEntry.roles?.[0]?.role_name || "No Role Yet"}
-                                            edit={OpenEdit}
-                                            _delete={OpenDelete}
+                                            edit={(e)=>OpenEdit(e,userEntry)}
+                                            _delete={(e)=>OpenDelete(e,userEntry)}
                                             handleCheckbox = {handleCheckbox}
                                             selected = {checkedUsers}
                                             isChecked={checkedUsers.some(user => user.Selected_ID === userEntry.id)}
                                             userDetail = {OpenDetailView}
+                                            selectedUser={userEntry}
                                             />)
                                     }
 
@@ -674,18 +683,18 @@ export default function UserManagementMaintenance() {
 
 
                     {/* User Profile Card */}
-                    <UserEntryModal open={modalState.isOpen} close={CloseDialog} classname='relative z-10' ID={userID}/>
+                    <UserEntryModal open={modalState.isOpen} close={CloseDialog} classname='relative z-10' ID={userID} selectedUser={selectedUser}/>
 
                     {/* Add User Modal */}
                     <AddUserModal open={modalState.isOpenAdd} close={CloseAddUser} updateTable={fetchUsers}/>
 
                     {/* Edit User Modal */}
-                    <EditUserModal open={modalState.isEdit} close={CloseEdit} ID={userID.isEdit} close_confirmation={OpenSuccessFullyEdit}/>
+                    <EditUserModal open={modalState.isEdit} close={CloseEdit} ID={userID.isEdit} close_confirmation={OpenSuccessFullyEdit} selectedUser={selectedUser}/>
                     <EditUserSuccessfully open={modalState.isEditSuccess} close={CloseSuccessFullyEdit}/>
 
 
                     {/* Delete User Modal */}
-                    <DeleteUserModal open={modalState.isDelete} close={CloseDelete} EmployeeID={userID.isDelete} close_confirmation={OpenSuccessFullyDelete}/>
+                    <DeleteUserModal open={modalState.isDelete} close={CloseDelete} EmployeeID={userID.isDelete} close_confirmation={OpenSuccessFullyDelete} selectedUser={selectedUser}/>
                     <DeleteUserSuccessfully open={modalState.isDeleteSuccess} close={CloseSuccessFullyDelete}/>
 
         </div>

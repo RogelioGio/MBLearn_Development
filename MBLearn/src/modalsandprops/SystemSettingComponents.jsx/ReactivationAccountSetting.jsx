@@ -16,23 +16,11 @@ const ReactivationAccountSetting = () => {
     const [reactivate, setReactivate] = useState(false)
     const [user, setUsers] = useState()
 
-    const fetchUsers = () => {
-        setLoading(true)
-        axiosClient.get('/index-user-creds/inactive',{
-            params: {
-                page: pageState.currentPage,
-                perPage: pageState.perPage
-            }
-        })
-        .then((response) => {
-            setUnactiveUsers(response.data.data)
-            setLoading(false)
-            pageChangeState("totalUsers", response.data.total)
-            pageChangeState("lastPage", response.data.lastPage)
-        }).catch((e)=>{
-            console.log(e)
-        })
-    }
+
+    useEffect(() => {
+        fetchUsers()
+    },[])
+
 
      //Pagenation States
     const [pageState, setPagination] = useState({
@@ -95,6 +83,26 @@ const ReactivationAccountSetting = () => {
     for(let p = 1; p <= pageState.lastPage; p++){
         Pages.push(p)
     }
+
+    const fetchUsers = () => {
+        setLoading(true)
+        axiosClient.get('/index-user-creds/inactive',{
+            params: {
+                page: pageState.currentPage,
+                perPage: pageState.perPage
+            }
+        })
+        .then((response) => {
+            setUnactiveUsers(response.data.data)
+            setLoading(false)
+            pageChangeState("totalUsers", response.data.total)
+            pageChangeState("lastPage", response.data.lastPage)
+        }).catch((e)=>{
+            console.log(e)
+        })
+    }
+
+
 
     return(
         <>

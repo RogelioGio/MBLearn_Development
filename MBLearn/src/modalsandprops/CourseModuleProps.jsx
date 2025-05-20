@@ -1,4 +1,4 @@
-import { faCircleCheck as faCircleCheckRegular, faSquareCheck } from "@fortawesome/free-regular-svg-icons";
+import { faCircleCheck as faCircleCheckRegular, faClipboard, faSquareCheck } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useRef, useState } from "react";
 import CourseOverview from "../modalsandprops/courseComponents/CourseOverview";
@@ -46,7 +46,14 @@ const CourseModuleProps = ({headers, course, LearnerProgress}) => {
 
     //New handleNext
     const completeModule = (moduleId) => {
-        if(!moduleId) return
+        if(!moduleId) {
+            setLoading(true)
+            setTimeout(() => {
+                stepperRef.current?.next()
+                setLoading(false)
+            },2000)
+            return
+        }
 
         setLearnerProgress(prev => {
             if(prev.includes(moduleId)) return prev
@@ -70,7 +77,13 @@ const CourseModuleProps = ({headers, course, LearnerProgress}) => {
         .catch((e) => console.log(e))
     }
     const LessonHop = (moduleId) => {
-        if(!moduleId) return
+        if(!moduleId) {
+            setLoading(true)
+            setTimeout(() => {
+                setLoading(false)
+            },2000)
+
+        }
 
         setLearnerProgress(prev => {
             if(prev.includes(moduleId)) return prev
@@ -237,6 +250,13 @@ const CourseModuleProps = ({headers, course, LearnerProgress}) => {
             <div className="col-start-1 col-span-2 row-start-3 row-span-2 border-divider">
                 <Stepper initialStep={0} enableStepClick={true} ref={stepperRef} onStepChange={(index,meta) => setActiveMeta(meta)} complete={()=> LessonHop(activeStepMeta?.stepID)} learnerProgress={learnerProgress}>
                     {
+                        course?.description && course?.course_objectives && course?.course_outcomes ? (
+                            <Step stepTitle={"Course Overview"} stepDesc={"Quick Summary of the course"} icon={faBook}>
+                                <CourseOverview course={course}/>
+                            </Step>
+                        ) : (null)
+                    }
+                    {
                         course?.lessons.map((lesson, index) => {
                             let content;
                             switch (lesson.lesson_type) {
@@ -266,6 +286,9 @@ const CourseModuleProps = ({headers, course, LearnerProgress}) => {
                             );
                         })
                         }
+                    <Step stepTitle={"Course Assesment"} stepDesc={"Complete the assesment to complete the course"} icon={faClipboard}>
+                        <CourseAssesment course={course}/>
+                    </Step>
                     {/* <Step stepTitle={"Course Overview"} stepDesc={"Quick Summary of the course"}>
                         <CourseOverview/>
                     </Step>

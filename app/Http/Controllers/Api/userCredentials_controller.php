@@ -177,39 +177,6 @@ class userCredentials_controller extends Controller
         })
         ->orderBy('created_at', 'desc');
 
-        // Apply filters based on userInfos attributes
-        if ($request->has('status')) {
-            if(!($request->input('status')['eq'] == "")){
-                $query->whereHas('userInfos', function ($subQuery) use ($request) {
-                    $subQuery->where('status', $request->input('status'));
-                });
-            }
-        }
-
-        if ($request->has('department_id')) {
-            if(!($request->input('department_id')['eq'] == "")){
-                $query->whereHas('userInfos', function ($subQuery) use ($request) {
-                    $subQuery->where('department_id', $request->input('department_id'));
-                });
-            }
-        }
-
-        if ($request->has('branch_id')) {
-            if(!($request->input('branch_id')['eq'] == "")){
-                $query->whereHas('userInfos', function ($subQuery) use ($request) {
-                    $subQuery->where('branch_id', $request->input('branch_id'));
-                });
-            }
-        }
-
-        if ($request->has('role_id')){
-            if(!($request->input('role_id')['eq'] == "")){
-                $query->whereHas('roles', function($subQuery) use ($request){
-                    $subQuery->where('role_id', $request->input('role_id'));
-                });
-            }
-        }
-
         // Paginate the filtered results
         $userCredentials = $query->paginate($perPage);
 
