@@ -164,6 +164,14 @@ class CourseController extends Controller
         ]);
     }
 
+    public function publishCourse(Course $course){
+        $course->update(['published', true]);
+
+        return response()->json([
+            'message' => 'Course has been published'
+        ]);
+    }
+
     //You add course id then mode/category/type id in url
     public function addTrainingMode(Course $course, Training_Mode $training_Mode){
         $course->training_modes()->attach($training_Mode->id);

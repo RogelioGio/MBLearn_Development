@@ -94,6 +94,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('/assigned-course-admins/{course}', [CourseController::class, 'getAssignedCourseAdmin']);
     Route::get('/select-user-enrollment-status/{userInfos}', [userInfo_controller::class, 'enrollmentStatusCount']);
     Route::delete('/delete-enrolled-user/{userInfos}/{course}', [CourseController::class, 'removeEnrolledUser']);
+    Route::get('/publish-course/{course}', [CourseController::class, 'publishCourse']);
 
 
     //Enrollment API
