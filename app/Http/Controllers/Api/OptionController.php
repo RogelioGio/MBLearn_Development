@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Http\Controllers\Api;
+
+use App\helpers\OptionCacheHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Branch;
 use App\Models\City;
@@ -17,18 +19,7 @@ class OptionController extends Controller
 {
     public function index(){
         if(!Cache::has('options')){
-            $options = Cache::remember('options', now()->addMinutes(60), function () {
-                return [
-                    'cities' => City::all(),
-                    'departments' => Department::all(),
-                    'location' => Branch::all(),
-                    'titles' => Title::all(),
-                    'roles' => Role::all()->load('permissions'),
-                    'permission' => Permission::all(),
-                    'division' => Division::all(),
-                    'section' => Section::all(),
-                ];
-            });
+            $options = OptionCacheHelper::CacheOptions();
             return response()->json($options);
         }
         $options = Cache::get('options');

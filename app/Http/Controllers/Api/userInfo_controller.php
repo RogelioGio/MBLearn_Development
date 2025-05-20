@@ -13,6 +13,7 @@ use App\Http\Requests\TestArrayRequest;
 use App\Http\Requests\updateUserInfo;
 use App\Http\Requests\UserInfoSearchRequest;
 use App\Jobs\PermissionToUser;
+use App\Jobs\ResetOptionCache;
 use App\Models\Branch;
 use App\Models\CarouselImage;
 use App\Models\Course;
@@ -942,62 +943,9 @@ class userInfo_controller extends Controller
         // // $perm->permissions()->sync([1,2]);
         // $userInfo = UserInfos::find(128);
         // PermissionToUser::dispatch($userInfo, $existingatedData['permissions'] ?? []);
-        
-        $existingatedData = $addUsersRequest->validated();
-
-        if(UserInfos::where('employeeID', $existingatedData['employeeID'])->exists()){
-            return response()->json([
-                'message' => 'User already exists',
-            ], 409);
-        }
-
-        if(UserCredentials::where('MBemail', $existingatedData['MBemail'])->exists()){
-            return response()->json([
-                'message' => 'User creds already exists',
-            ], 409);
-        }
-
-        // Combine first name, middle initial, last name, and suffix into a full name
-        $fullName = trim("{$existingatedData['first_name']} " .
-                            ("{$existingatedData['middle_name']}" ? "{$existingatedData['middle_name']}. " : "") .
-                            "{$existingatedData['last_name']} " .
-                            ("{$existingatedData['name_suffix']}" ? $existingatedData['name_suffix'] : ""));
-
-        // Generate profile image URL (pass the correct name variable)
-            $profile_image = $this->generateProfileImageUrl($fullName);
-            $options = Cache::get('options');
-            $title = $options['titles']->firstWhere('id', $existingatedData['title_id']);
-            $department = $options['departments']->firstWhere('id', $existingatedData['department_id']);
-            $branch = $options['location']->firstWhere('id', $existingatedData['branch_id']);
-            $division = $options['division']->firstWhere('id', $existingatedData['division_id']);
-            $section = $options['section']->firstWhere('id', $existingatedData['section_id']);
-
-            $status = $existingatedData['status'] ?? 'Active';
-            
-            $userCredentials = new UserCredentials([
-                'MBemail' => $existingatedData['MBemail'],
-                'password' => $existingatedData['password'],
-            ]);
-
-            $userInfo = new UserInfos([
-                'employeeID' => $existingatedData['employeeID'],
-                'first_name' => $existingatedData['first_name'],
-                'last_name' => $existingatedData['last_name'],
-                'middle_name' => $existingatedData['middle_name'],
-                'name_suffix' => $existingatedData['name_suffix'],
-                'status' =>$status,
-                'profile_image' =>$profile_image
-            ]);
-
-            $userInfo->branch()->associate($branch);
-            $userInfo->title()->associate($title);
-            $userInfo->department()->associate($department);
-            $userInfo->section()->associate($section);
-            $userInfo->division()->associate($division);
-
+        ResetOptionCache::dispatch();
         return response()->json([
-            'data' => $fullName
+            'data' => "Done"
         ]);
-
     }
 }

@@ -6,10 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\BulkFormInput;
 use App\Http\Requests\StoreRoleRequest;
 use App\Http\Requests\UpdateRolePermissionRequest;
+use App\Jobs\ResetOptionCache;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\UserInfos;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class RoleController extends Controller
 {
@@ -30,6 +32,7 @@ class RoleController extends Controller
     public function store(StoreRoleRequest $request)
     {
         $role = Role::create($request->all());
+        ResetOptionCache::dispatch();
         return $role;
     }
 
@@ -67,6 +70,7 @@ class RoleController extends Controller
         });
 
         $role->permissions()->sync($bulk);
+        ResetOptionCache::dispatch();
         
         return response()->json([
             "message" => $role->load(['permissions'])

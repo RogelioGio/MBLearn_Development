@@ -7,6 +7,7 @@ use App\Http\Requests\BulkFormInput;
 use App\Models\City;
 use App\Http\Requests\StoreCityRequest;
 use App\Http\Requests\UpdateCityRequest;
+use App\Jobs\ResetOptionCache;
 use Illuminate\Support\Facades\Gate;
 
 class CityController extends Controller
@@ -27,6 +28,7 @@ class CityController extends Controller
     {
         $validated = $request->validated();
         $city = City::create($validated);
+        ResetOptionCache::dispatch();
         return $city;
     }
 
