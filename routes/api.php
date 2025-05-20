@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BranchController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\CityController;
+use App\Http\Controllers\Api\CompECourseController;
 use App\Http\Controllers\Api\CourseController;
 use App\Http\Controllers\Api\DepartmentController;
 use App\Http\Controllers\Api\DivisionController;
@@ -26,7 +27,6 @@ use App\Http\Controllers\Api\SectionController;
 use App\Http\Controllers\Api\SubgroupController;
 use App\Http\Controllers\Api\TitleController;
 use App\Http\Controllers\Api\TypeController;
-use App\Models\Lesson;
 use App\Models\UserInfos;
 
 //New Login routing
@@ -148,6 +148,9 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('/updateRolePermission/{role}', [RoleController::class, 'updateRolePermissions']);
     Route::put('/updateUserPermission/{userCredentials}', [userCredentials_controller::class, 'changeUserPermissions']);
     Route::post('/setCoursePermission/{course}', [CourseController::class, 'setCoursePermissions']);
+
+    //CompE Routes
+    Route::get('/compECourses', [CompECourseController::class, 'index']);
 
     Route::post('/test', [userInfo_controller::class, 'test']);
 
