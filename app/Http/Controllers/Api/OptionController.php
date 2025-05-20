@@ -17,7 +17,7 @@ class OptionController extends Controller
 {
     public function index(){
         if(!Cache::has('options')){
-            $options = Cache::remember('options', 60, function () {
+            $options = Cache::remember('options', now()->addMinutes(60), function () {
                 return [
                     'cities' => City::all(),
                     'departments' => Department::all(),
