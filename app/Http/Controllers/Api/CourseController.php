@@ -102,12 +102,12 @@ class CourseController extends Controller
             $lesson = Lesson::create(['lesson_name' => $lessons['LessonName'],
                         'lesson_content_as_json' => $lessons['LessonContentAsJSON']]);
             $course->lessons()->save($lesson);
-            foreach($lessons['files'] as $files){
-                $file = $request->file('lessons.*.files.*.file');
-                $path = $file->store('/'.$course->name.'/'.$lesson->lesson_name, 'lessonfiles');
-                $file = LessonFile::create(['file_name' => $files['file_name'], 'file_type' => $files['file_type'], 'file_path' => $path]);
-                $file->lesson()->associate($lesson);
-            }
+            // foreach($lessons['files'] as $files){
+            //     $file = $request->file('lessons.*.files.*.file');
+            //     $path = $file->store('/'.$course->name.'/'.$lesson->lesson_name, 'lessonfiles');
+            //     $file = LessonFile::create(['file_name' => $files['file_name'], 'file_type' => $files['file_type'], 'file_path' => $path]);
+            //     $file->lesson()->associate($lesson);
+            // }
         }
 
         $course->types()->syncWithoutDetaching($type->id);

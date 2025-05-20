@@ -6,42 +6,46 @@ import { useEffect, useState } from "react"
 import { useOption } from "../contexts/AddUserOptionProvider"
 import { useUser } from "../contexts/selecteduserContext"
 
-const DeleteUserModal = ({open,close,classname,EmployeeID,close_confirmation,updateTable}) => {
+const DeleteUserModal = ({open,close,classname,EmployeeID,close_confirmation, selectedUser,}) => {
     const {departments,titles,location,cities,division,section} = useOption()||{};
-    const {selectUser, selectedUser, isFetching} = useUser()
-    const [loading, setLoading] = useState(true)
+    //const {selectUser, selectedUser, isFetching} = useUser()
+    const [loading, setLoading] = useState(false)
     const [deleting, setDeleting] = useState(false)
 
-    useEffect(() => {
-        if (open && EmployeeID) {
-            console.log("Modal opened with EmployeeID:", EmployeeID);
-            if (selectedUser?.id === EmployeeID) {
-                setLoading(false);
-                console.log("Selected user already fetched:", selectedUser);
-            } else {
-                setLoading(true);
-                console.log("Fetching user with EmployeeID:", EmployeeID);
-                selectUser(EmployeeID);
-            }
-        }
-    }, [EmployeeID, selectedUser, open]);
+    useEffect(()=>{
+        console.log(selectedUser)
+    },[])
 
-    useEffect(() => {
-        if (selectedUser && !isFetching) {
-            setLoading(false);
-            console.log("Selected user fetched:", selectedUser);
-        }
-    }, [selectedUser, isFetching]);
+    // useEffect(() => {
+    //     if (open && EmployeeID) {
+    //         console.log("Modal opened with EmployeeID:", EmployeeID);
+    //         if (selectedUser?.id === EmployeeID) {
+    //             setLoading(false);
+    //             console.log("Selected user already fetched:", selectedUser);
+    //         } else {
+    //             setLoading(true);
+    //             console.log("Fetching user with EmployeeID:", EmployeeID);
+    //             selectUser(EmployeeID);
+    //         }
+    //     }
+    // }, [EmployeeID, selectedUser, open]);
 
-    useEffect(() => {
-        setLoading(isFetching);
-        console.log("Fetching status changed:", isFetching);
-    }, [isFetching]);
+    // useEffect(() => {
+    //     if (selectedUser && !isFetching) {
+    //         setLoading(false);
+    //         console.log("Selected user fetched:", selectedUser);
+    //     }
+    // }, [selectedUser, isFetching]);
+
+    // useEffect(() => {
+    //     setLoading(isFetching);
+    //     console.log("Fetching status changed:", isFetching);
+    // }, [isFetching]);
 
     const DeleteUser = () => {
         setDeleting(true)
         if(!EmployeeID) return;
-        axiosClient.delete(`/delete-user/${EmployeeID}`)
+        axiosClient.delete(`/delete-user/${selectedUser.id}`, )
         .then((res) => {
             setDeleting(false)
             close_confirmation()
@@ -101,36 +105,36 @@ const DeleteUserModal = ({open,close,classname,EmployeeID,close_confirmation,upd
                                                     {/* Job Title*/}
                                                     <div className="row-start-3 col-start-3">
                                                         <p className="font-text text-xs text-unactive">Title</p>
-                                                        <p className="font-text text-base">{selectedUser?.title_id ? titles.find(title => title.id === selectedUser.title_id)?.title_name || "No Title" : "No Title"}</p>
+                                                        <p className="font-text text-base">{selectedUser?.title?.title_name || "No Title"}</p>
                                                     </div>
 
                                                      {/* Department */}
                                                     <div className="row-start-4 col-start-1">
                                                         <p className="font-text text-xs text-unactive">Division</p>
-                                                        <p className="font-text text-base">{selectedUser?.division_id ? division.find(div => div.id === selectedUser.division_id)?.division_name || "No Division" : "No Division"}</p>
+                                                        <p className="font-text text-base">{selectedUser?.division?.division_name || "No Division"}</p>
                                                     </div>
 
                                                     {/* Department */}
                                                     <div className="row-start-4 col-start-2">
                                                         <p className="font-text text-xs text-unactive">Department</p>
-                                                        <p className="font-text text-base">{selectedUser?.department_id ? departments.find(dept => dept.id === selectedUser.department_id)?.department_name || "No department" : "No department"}</p>
+                                                        <p className="font-text text-base">{selectedUser?.department?.department_name || "No department"}</p>
                                                     </div>
 
                                                     {/* Department */}
                                                     <div className="row-start-4 col-start-3">
                                                         <p className="font-text text-xs text-unactive">Section</p>
-                                                        <p className="font-text text-base">{selectedUser?.section_id ? section.find(sect => sect.id === selectedUser.section_id)?.section_name || "No Section" : "No Section"}</p>
+                                                        <p className="font-text text-base">{selectedUser?.section?.section_name || "No Section"}</p>
                                                     </div>
 
                                                     {/* City */}
                                                     <div className="row-start-5 col-start-1">
                                                         <p className="font-text text-xs text-unactive">City</p>
-                                                        <p className="font-text text-base">{selectedUser?.city.id ? cities.find(city => city.id === selectedUser.city.id)?.city_name || "No city" : "No city"}</p>
+                                                        <p className="font-text text-base">{selectedUser?.city?.city_name || "No city"}</p>
                                                     </div>
                                                     {/* Branch*/}
                                                     <div className="row-start-5 col-span-2">
                                                         <p className="font-text text-xs text-unactive">Branch</p>
-                                                        <p className="font-text text-base">{selectedUser?.branch_id ? location.find(location => location.id === selectedUser.branch_id)?.branch_name || "No Branch" : "No Branch"}</p>
+                                                        <p className="font-text text-base">{selectedUser?.branch?.branch_name || "No Branch"}</p>
                                                     </div>
                                                 </div>
 

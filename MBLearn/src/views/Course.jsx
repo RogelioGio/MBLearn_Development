@@ -97,8 +97,7 @@ export default function Course() {
                                 </div>
                                 {/* Course Status */}
                                 <span className="inline-flex items-center rounded-md bg-secondaryprimary px-4 py-2 text-xs font-medium text-primary font-text ring-1 ring-primary gap-1">
-                                    <FontAwesomeIcon icon={faPencil} className="text-primary text-xs mr-1"/>
-                                    Unpublished
+                                    Published
                                 </span>
                             </div>
                             <div className="flex flex-row gap-1 pr-5">

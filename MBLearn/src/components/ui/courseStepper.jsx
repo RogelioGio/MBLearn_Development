@@ -15,6 +15,7 @@ export const Stepper = forwardRef(
         (child) => child.type === Step
     );
 
+
     const stepsMeta = steps.map((step) => ({
         title: step.props.stepTitle,
         desc: step.props.stepDesc,
@@ -58,6 +59,7 @@ export const Stepper = forwardRef(
                     {steps.map((step, index) => {
                         const isDone = index < active;
                         const isActive = index === active;
+                        const customIcon = step.props.icon;
 
                         return (
                             <div
@@ -121,6 +123,7 @@ export const Stepper = forwardRef(
                         const stepID = step.props.stepID;
                         const isDone = learnerProgress.includes(stepID);
                         const isActive = index === active;
+                        const customIcon = step.props.icon;
                         return (
                             <div
                                 key={index}
@@ -137,13 +140,20 @@ export const Stepper = forwardRef(
                                     isActive ? "border-2 border-primary bg-primary" : "border-2 border-unactive group-hover:border-primary"}`}
                                 >
                                     {isDone ? (
-                                        <FontAwesomeIcon
-                                            icon={faCircleCheckRegular}
-                                            className="text-white p-2"
-                                        />
-                                    ) : (
-                                        <p className={`text-primary font-header text-base ${!isDone && !isActive ? "text-unactive group-hover:text-primary": isActive ? "text-white" : null}`}>{index + 1}</p>
-                                    )}
+                                            <FontAwesomeIcon
+                                                icon={customIcon || faCircleCheckRegular} // ← Use it here
+                                                className="text-white p-2"
+                                            />
+                                        ) : (
+                                            customIcon ? (
+                                                <FontAwesomeIcon
+                                                    icon={customIcon}
+                                                    className={`text-primary font-header text-base ${!isDone && !isActive ? "text-unactive group-hover:text-primary" : isActive ? "text-white" : null}`}
+                                                />
+                                            ) : (
+                                                <p className={`text-primary font-header text-base ${!isDone && !isActive ? "text-unactive group-hover:text-primary" : isActive ? "text-white" : null}`}>{index + 1}</p>
+                                            )
+                                        )}
                                 </div>
                                 {/* Step Description */}
                                 <div className="font-text text-primary ">
@@ -162,9 +172,10 @@ export const Stepper = forwardRef(
     );
 });
 
-export const Step = ({ children }) => {
-    return <div>{children}</div>;
+export const Step = ({ children, icon }) => {
+  return <div data-icon={icon}>{children}</div>;
 };
+
 
 export const StepperCompleted = ({ children }) => {
     return <div>{children}</div>;

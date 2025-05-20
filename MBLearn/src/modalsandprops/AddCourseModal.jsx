@@ -146,7 +146,7 @@ const AddCourseModal = ({open,onClose,tab,refresh}) => {
             // }
 
 
-            compELearnAxios.get(`courses/${values.courseID}`)
+            axiosClient.get(`compECourses/${values.courseID}`)
             .then((response) => {
                 console.log("Response: ", response.data);
                 axiosClient.get(`exists/${values.courseID}`)

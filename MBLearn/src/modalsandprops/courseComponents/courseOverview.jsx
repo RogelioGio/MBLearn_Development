@@ -5,16 +5,8 @@ import { useParams } from "react-router-dom";
 import { useCourse } from "MBLearn/src/contexts/selectedcourseContext";
 import CourseLoading from "../../assets/Course_Loading.svg";
 
-const CourseOveriew = () => {
-    const [isLoading ,setLoading] = useState(true);
-    const [course, setCourse] = useState([]);
-    const {selectedCourse, isFetching} = useCourse();
-
-    useEffect(() => {
-        setLoading(isFetching);
-        setCourse(selectedCourse);
-    },[selectedCourse])
-
+const CourseOveriew = ({course}) => {
+    const [isLoading ,setLoading] = useState(false);
 
 
     return(
@@ -30,18 +22,15 @@ const CourseOveriew = () => {
                                     }</p>
                             </div>
                             <div className="col-span-1 row-span-1 py-5">
-                                <p className="font-header text-primary">Course Objective:</p>
-                                <p className="font-text text-sm">To provide learners with a comprehensive understanding of direct and indirect taxes, their applications, and their implications for individuals and businesses. The course aims to build foundational knowledge in tax structures to improve financial decision-making and compliance.</p>
+                                <p className="font-text text-sm">{
+                                    isLoading ? "Loading..." : course?.course_objectives || "No Course Description Found"
+                                    }</p>
                             </div>
                             <div className="col-span-1 row-span-1 py-5">
                                 <p className="font-header text-primary">Course Outcomes:</p>
-                                <ol>
-                                    <li className="font-text text-sm"><strong>Differentiate</strong> between direct and indirect taxes with relevant examples.</li>
-                                    <li className="font-text text-sm"><strong>Explain</strong> the role of income tax, GST, VAT, and other tax types in business and personal finance.</li>
-                                    <li className="font-text text-sm"><strong>Identify</strong> who is responsible for paying each type of tax and how these taxes are collected.</li>
-                                    <li className="font-text text-sm"><strong>Analyze</strong> the impact of various tax types on pricing, income, and expenditures.</li>
-                                    <li className="font-text text-sm"><strong>Apply</strong> knowledge of tax concepts in realistic business and financial scenarios to ensure compliance.</li>
-                                </ol>
+                                <p className="font-text text-sm">{
+                                    isLoading ? "Loading..." : course?.course_outcomes || "No Course Description Found"
+                                    }</p>
                             </div>
                         </div>
                     ) : (

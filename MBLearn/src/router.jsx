@@ -138,6 +138,10 @@ const router = createBrowserRouter([
                     //     path: "courses/comp_e_learn",
                     //     element: <CompeLearnExtension/>
                     // }
+                    {
+                        path:"accountsettings",
+                        element: <AccountSettings/>
+                    }
 
                 ]
             },
@@ -178,6 +182,10 @@ const router = createBrowserRouter([
                                 <Course/>
                         </SelectedCourseProvider>
                     },
+                    {
+                        path:"accountsettings",
+                        element: <AccountSettings/>
+                    }
 
                 ]
             },
