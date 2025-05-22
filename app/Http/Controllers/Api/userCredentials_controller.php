@@ -114,7 +114,8 @@ class userCredentials_controller extends Controller
             'first_log_in' => true
         ]);
         return response()->json([
-            'message' => 'Password has been changed'
+            'message' => 'Password has been changed',
+            'user' => $userCredentials
         ], 200);
     }
 

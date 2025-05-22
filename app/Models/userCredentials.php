@@ -30,6 +30,7 @@ class UserCredentials extends Model implements Authenticatable
         'password',
         'last_logged_in',
         'user_info_id',
+        'first_log_in'
     ];
 
     /**
