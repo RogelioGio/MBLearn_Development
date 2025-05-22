@@ -10,6 +10,7 @@ import EdituserErrorModal from "./EdituserErrorModal";
 import AccountPermissionProps from "./AccountPermissionsProps"
 import { DatabaseZap, Edit } from "lucide-react";
 import { useStateContext } from "../contexts/ContextProvider";
+import { parse } from "date-fns";
 
 
 const EditUserCredsModal = ({open, close, User, ID, editSuccess}) => {
@@ -99,7 +100,7 @@ const EditUserCredsModal = ({open, close, User, ID, editSuccess}) => {
                 });
             } else {
                 const payload = {
-                    ...(selectedUser.user_infos.roles?.[0].id !== values.role && { role: values }),
+                    ...(selectedUser.user_infos.roles?.[0].id !== values.role && { role: parseInt(values.role) }),
                     permissions: accountPerm
                 }
                 console.log("Tab 2 submitted:", payload);

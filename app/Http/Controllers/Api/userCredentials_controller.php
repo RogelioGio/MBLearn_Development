@@ -56,7 +56,7 @@ class userCredentials_controller extends Controller
     }
 
     public function changeUserPermissions(UserCredentials $userCredentials, ChangeUserPermissionsRequest $request){
-        if(!$request['role_id']){
+        if(!$request['role']){
             $bulk = collect($request['permissions'])->map(function($arr, $key){
             $test = [];
             foreach($arr as $keys => $value){
@@ -72,7 +72,7 @@ class userCredentials_controller extends Controller
             'user' => $userCredentials->load(['userInfos.permissions', 'userInfos.roles']),
         ]);
         }
-        $userCredentials->userInfos->roles()->sync($request['role_id']);
+        $userCredentials->userInfos->roles()->sync($request['role']);
         $bulk = collect($request['permissions'])->map(function($arr, $key){
             $test = [];
             foreach($arr as $keys => $value){
@@ -92,12 +92,30 @@ class userCredentials_controller extends Controller
         $userInfo = $userCredentials->userInfos;
         $userCredentials->update([
             'password' => bcrypt(preg_replace('/\s+/', '', $userInfo->first_name)."_".$userInfo->employeeID),
+            'first_log_in' => false
         ]);
 
         return response()->json([
             'message' => 'User Password Updated Successfully',
             'data' => $userCredentials
         ]);
+    }
+
+    public function changePassword(UserCredentials $userCredentials, ChangeUserPasswordRequest $request ){
+        $validated = $request->validated();
+        if(!$userCredentials){
+            return response()->json([
+                'message' => 'User not found'
+            ], 404);
+        }
+
+        $userCredentials->update([
+            'password' => bcrypt($validated['password']),
+            'first_log_in' => true
+        ]);
+        return response()->json([
+            'message' => 'Password has been changed'
+        ], 200);
     }
 
     //User Credential List
@@ -162,19 +180,10 @@ class userCredentials_controller extends Controller
 
         $page = $request->input('page', 1);//Default page
         $perPage = $request->input('perPage',5); //Number of entry per page
-
-        // $userCredentials = UserCredentials::with(['userInfos', 'userInfos.roles'])->paginate($perPage);
-
-        // return response()->json([
-        //     'total' => $userCredentials->total(),
-        //     'lastPage' => $userCredentials->lastPage(),
-        //     'currentPage' => $userCredentials->currentPage(),
-        //     'data' => $userCredentials->items()
-        // ]);
-
-        $query = UserCredentials::with(['userInfos', 'userInfos.roles']) ->whereHas('userInfos', function ($subQuery) {
-            $subQuery->where('status', 'Inactive'); // Ensure only Active users are fetched
+        $query = UserCredentials::whereHas('userInfos', function ($subQuery) {
+            $subQuery->where('status', 'Inactive');
         })
+        ->with(['userInfos', 'userInfos.roles'])
         ->orderBy('created_at', 'desc');
 
         // Paginate the filtered results

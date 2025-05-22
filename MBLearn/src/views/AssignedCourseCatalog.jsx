@@ -421,6 +421,9 @@ export default function AssignedCourseCatalog() {
                                 trainingType={course.training_type}
                                 tab={tab}
                                 adder={course?.adder}
+                                enrolled={course?.enrolled}
+                                ongoing={course?.ongoing}
+                                due_soon={course?.due_soon}
                                 />
                             ))
                         ) :

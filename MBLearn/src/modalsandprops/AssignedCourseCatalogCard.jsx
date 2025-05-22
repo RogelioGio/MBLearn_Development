@@ -1,7 +1,7 @@
 import { Card, Progress, Text, RingProgress} from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 
-const AssignedCourseCatalogCard = ({name, courseType, courseCategory, trainingType, trainingMode, id, courseId, tab, adder, role, selfEnroll}) => {
+const AssignedCourseCatalogCard = ({name, courseType, courseCategory, trainingType, trainingMode, id, courseId, tab, adder, role, selfEnroll, enrolled, ongoing, due_soon}) => {
     const navigate = useNavigate();
 
     return(
@@ -41,17 +41,17 @@ const AssignedCourseCatalogCard = ({name, courseType, courseCategory, trainingTy
                     <div className='grid grid-cols-[1fr_min-content_1fr_min-content_1fr] gap-2 p-4'>
                     <div className="flex flex-row items-center font-text justify-between">
                         <p className="text-xs text-unactive">Enrolled</p>
-                        <p className="font-header text-primary">10</p>
+                        <p className="font-header text-primary">{enrolled || 0}</p>
                     </div>
                     <div className="w-[1px] h-full bg-divider"/>
                     <div className="flex flex-row items-center font-text justify-between">
                         <p className="text-xs text-unactive">On-going</p>
-                        <p className="font-header text-primary">10</p>
+                        <p className="font-header text-primary">{ongoing || 0}</p>
                     </div>
                     <div className="w-[1px] h-full bg-divider"/>
                     <div className="flex flex-row items-center font-text justify-between">
                         <p className="text-xs text-unactive">Due Soon</p>
-                        <p className="font-header text-primary">10</p>
+                        <p className="font-header text-primary">{due_soon || 0}</p>
                     </div>
                 </div>
                 )

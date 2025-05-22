@@ -107,8 +107,8 @@ class userInfo_controller extends Controller
             $userInfo->division()->associate($division);
             $userInfo->save();
             $userInfo->roles()->sync($existingatedData['role_id']);
-            $userCredentials->userInfos()->save($userInfo);
             $userCredentials->save();
+            $userCredentials->userInfos()->save($userInfo);
 
             DB::commit();
 
@@ -357,13 +357,10 @@ class userInfo_controller extends Controller
             })->where('status', 'Active')
             ->with('roles','division','section','department','title','branch','city')
             ->orderBy('created_at', 'desc')
-            ->paginate(5);
+            ->get();
 
         return response()->json([
-            'data' => $users->items(),
-            'total' => $users->total(),
-            'lastPage' => $users->lastPage(),
-            'currentPage' => $users->currentPage(),
+            'data' => $users,
         ],200);
     }
 
@@ -403,7 +400,7 @@ class userInfo_controller extends Controller
         $cacheKey = 'userInfo'.$userInfos->id.':assignedCourses:'.json_encode($filterData);
 
         if(!Cache::has($cacheKey)){
-            $courses = Cache::remember($cacheKey, now()->addMinutes(60), function() use ($userInfos, $request, $filterData){
+            $courses = Cache::remember($cacheKey, now(), function() use ($userInfos, $request, $filterData){
             $page = $filterData['page'];
             $perPage = $filterData['perPage'];
 
@@ -524,7 +521,7 @@ class userInfo_controller extends Controller
         $cacheKey = 'userInfo'.$userInfos->id.':addedCourses:'.json_encode($filterData);
 
         if(!Cache::has($cacheKey)){
-            $courses = Cache::remember($cacheKey, now()->addMinutes(60), function() use ($userInfos, $request, $filterData){
+            $courses = Cache::remember($cacheKey, now(), function() use ($userInfos, $request, $filterData){
             $page = $filterData['page'];
             $perPage = $filterData['perPage'];
 
@@ -717,7 +714,7 @@ class userInfo_controller extends Controller
         $cacheKey = 'userInfo'.$userInfos->id.':enrolledCourses:'.json_encode($filterData);
 
         if(!Cache::has($cacheKey)){
-            $courses = Cache::remember($cacheKey, now()->addMinutes(60), function() use ($userInfos, $request, $filterData){
+            $courses = Cache::remember($cacheKey, now(), function() use ($userInfos, $request, $filterData){
             $page = $filterData['page'];
             $perPage = $filterData['perPage'];
 
