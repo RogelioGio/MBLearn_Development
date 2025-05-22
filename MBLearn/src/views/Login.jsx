@@ -13,12 +13,15 @@ import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, Dr
 import { toast } from 'sonner'
 import Small_Logo from '../assets/Small_Logo.svg';
 import Mobile_1 from '../assets/Mobile_icon.svg';
+import { useNavigate } from 'react-router'
 
 
 
 export default function Login() {
     const {setUser, setToken, setAvailableRoles, setRole} = useStateContext();
     const isMobile = useMediaQuery({maxWidth: 640});
+    const [firstLogin, setFirstLogin] = useState(true);
+    const navigate = useNavigate();
 
     //loading state
     const [isLoading, setIsLoading] = useState(false);
@@ -83,13 +86,12 @@ export default function Login() {
                 setToken(data.token);
                 setRole(data.user.user_infos.roles[0]?.role_name)
                 console.log(data.user.user_infos.roles[0]?.role_name);
+                console.log(data);
 
-                if (data.redirect) {
-                    window.location.href = data.redirect; // Redirect to the appropriate URL based on role
-                } else {
-                    // If no redirect is provided, proceed with whatever default logic you need
-                    setIsLoading(false);
+                if (false) {
+                    navigate('/welcome')
                 }
+                navigate(data.redirect)
             })
             .catch(({response})=>{
                 if(response){

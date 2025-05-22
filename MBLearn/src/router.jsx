@@ -31,6 +31,7 @@ import LearnerCourseManager from "./views/LearnerCourseManager";
 import LearnerCertficates from "./views/LearnerCertificates";
 import LearnerSelfEnrollment from "./views/LearnerSelfEnrollment";
 import CompeLearnExtension from "./views/CompeLearnExtension";
+import InitialLogin from "./views/InitialLogin";
 
 const router = createBrowserRouter([
 
@@ -224,6 +225,11 @@ const router = createBrowserRouter([
         // <ProtectedRoutes allowed={["System Admin","Course Admin"]}>
         //             <CompeLearnExtension/>
         //         </ProtectedRoutes>
+    },
+
+    {
+        path: "/welcome",
+        element: <InitialLogin/>
     }
 
 
