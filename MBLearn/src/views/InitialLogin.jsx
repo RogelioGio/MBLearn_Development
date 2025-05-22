@@ -4,6 +4,9 @@ import { Formik, useFormik } from 'formik';
 import { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import * as Yup from 'yup';
+import { useStateContext } from '../contexts/ContextProvider';
+import axiosClient from '../axios-client';
+import { useNavigate, useParams } from 'react-router';
 
 //Props for password checker
 const PasswordRule = ({passed, children}) => (
@@ -14,6 +17,9 @@ const PasswordRule = ({passed, children}) => (
 )
 
 export default function InitialLogin() {
+    const {user} = useStateContext();
+    const {id, role} = useParams()
+    const navigate = useNavigate();
 
      //pasword criteria checker
         const [criteria, setCriteria] = useState({
@@ -61,7 +67,19 @@ export default function InitialLogin() {
         }),
         onSubmit: (values) => {
             console.log('Form submitted:', values);
-            Navigate('')
+
+            const payload = {
+                password: values.password,
+                password_confirmation: values.confirmPassword,
+            }
+
+            axiosClient.put(`/change-user-password/${id}`,payload)
+            .then(({data}) => {
+                console.log(data);
+                navigate(`/${role.replace(/\s+/g, '').toLowerCase()}/dashboard`);
+            }).catch((err) => {
+                console.log(err);
+            })
             // Handle form submission here
             // You can send the password to your backend for processing
         },

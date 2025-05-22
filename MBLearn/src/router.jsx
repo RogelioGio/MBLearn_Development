@@ -228,7 +228,7 @@ const router = createBrowserRouter([
     },
 
     {
-        path: "/welcome",
+        path: "/welcome/:id/:role",
         element: <InitialLogin/>
     }
 
