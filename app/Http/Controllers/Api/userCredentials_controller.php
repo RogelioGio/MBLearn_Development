@@ -92,6 +92,7 @@ class userCredentials_controller extends Controller
         $userInfo = $userCredentials->userInfos;
         $userCredentials->update([
             'password' => bcrypt(preg_replace('/\s+/', '', $userInfo->first_name)."_".$userInfo->employeeID),
+            'first_log_in' => false
         ]);
 
         return response()->json([
@@ -108,7 +109,10 @@ class userCredentials_controller extends Controller
             ], 404);
         }
 
-        $userCredentials->update(['password' => bcrypt($validated['password'])]);
+        $userCredentials->update([
+            'password' => bcrypt($validated['password']),
+            'first_log_in' => true
+        ]);
         return response()->json([
             'message' => 'Password has been changed'
         ], 200);
