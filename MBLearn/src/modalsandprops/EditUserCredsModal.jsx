@@ -1,4 +1,4 @@
-import { faEye, faEyeSlash, faUserGroup, faUserLock, faUserPen } from "@fortawesome/free-solid-svg-icons"
+import { faEye, faEyeSlash, faKey, faUserGroup, faUserLock, faUserPen } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react"
 import { useUser } from "../contexts/selecteduserContext";
@@ -22,6 +22,7 @@ const EditUserCredsModal = ({open, close, User, ID, editSuccess}) => {
     const [Role, setRoles] = useState([])
     const [selectedUser, setSelectedUser] = useState()
     const [accountPerm, setAccountPerm] =useState([])
+    const [reseting, setResetting] = useState(false)
 
     //Permission Check
     const hasPermission = (user, perms = []) => {
@@ -135,6 +136,20 @@ const EditUserCredsModal = ({open, close, User, ID, editSuccess}) => {
         }
     })
 
+    //reset
+    const resetPassword = () => {
+        setResetting(true);
+        axiosClient.put(`/reset-password/${selectedUser.id}`)
+        .then((res) => {
+            console.log(res);
+            setResetting(false);
+            close();
+            editSuccess();
+        }).catch((err) => {
+            console.log(err);
+        })
+    }
+
     //Update Error
     const [OpenError, setError] = useState(false)
     const reset = () => {
@@ -224,8 +239,8 @@ const EditUserCredsModal = ({open, close, User, ID, editSuccess}) => {
                                                             <p className="font-text">{selectedUser?.user_infos.branch.branch_name}</p>
                                                             <p className="font-text text-xs">{selectedUser?.user_infos.city?.city_name}</p>
                                                         </div>
-                                                    <div className="inline-flex flex-col gap-1 row-start-2 col-span-2 py-2">
-                                                            <label htmlFor="MBEmail" className="font-text text-xs flex flex-row justify-between">
+                                                    <div className="inline-flex flex-col gap-1 row-start-2 col-span-3 py-2">
+                                                            <label htmlFor="MBEmail" className="font-text text-xs text-unactive flex flex-row justify-between">
                                                                 <p>Employee's Metrobank Email *</p>
                                                             </label>
                                                             <input type="text" name="MBEmail"
@@ -234,7 +249,8 @@ const EditUserCredsModal = ({open, close, User, ID, editSuccess}) => {
                                                                     onBlur={formik.handleBlur}
                                                                     className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
                                                     </div>
-                                                    <div className="inline-flex flex-col gap-1 row-start-2 col-span-1 py-2">
+
+                                                    {/* <div className="inline-flex flex-col gap-1 row-start-2 col-span-1 py-2">
                                                             <label htmlFor="name" className="font-text text-xs flex flex-row justify-between">
                                                                 <p>Employee's Account Password *</p>
                                                             </label>
@@ -248,7 +264,18 @@ const EditUserCredsModal = ({open, close, User, ID, editSuccess}) => {
                                                                 <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} className='text-primary cursor-pointer' onClick={togglePassword}/>
                                                             </div>
                                                             </div>
-                                                    </div>
+                                                    </div> */}
+
+                                                        <div className="col-span-2 flex flex-col justify-center">
+                                                            <p className="font-text text-unactive text-xs">Reset Employee Password</p>
+                                                            <p className="text-xs text-unactive font-text">Reset the current password of the selected user</p>
+                                                        </div>
+                                                        <div className="col-span-1 flex flex-row justify-center items-center">
+                                                            <div className="w-full flex flex-col justify-center items-center text-white p-3 bg-primary rounded-md hover:cursor-pointer hover:bg-primaryhover transition-all ease-in-out" onClick={() => resetPassword()}>
+                                                                <p className="font-header"><span><FontAwesomeIcon icon={faKey}/></span>  {reseting ? "Reseting....":"Reset Password"}</p>
+                                                            </div>
+                                                        </div>
+
                                                     </>
                                                 ) : tab === 1 ? (
                                                     <div className="inline-flex flex-col gap-1 row-start-1 row-span-4 col-span-3 py-2 items-center justify-center">
@@ -295,7 +322,7 @@ const EditUserCredsModal = ({open, close, User, ID, editSuccess}) => {
                                             }
 
                                                 {/* Submit */}
-                                            <div className="row-start-5 col-span-3 py-2 flex flex-row gap-2">
+                                            <div className="row-start-4 col-span-3 py-2 flex flex-row gap-2">
                                                 <button type="button" className="w-full inline-flex flex-col items-center gap-2 p-4 rounded-md font-header uppercase text-primary border-2 border-primary text-xs hover:text-white hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out"
                                                     onClick={() => {
                                                         close();
