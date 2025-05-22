@@ -100,6 +100,20 @@ class userCredentials_controller extends Controller
         ]);
     }
 
+    public function changePassword(UserCredentials $userCredentials, ChangeUserPasswordRequest $request ){
+        $validated = $request->validated();
+        if(!$userCredentials){
+            return response()->json([
+                'message' => 'User not found'
+            ], 404);
+        }
+
+        $userCredentials->update(['password' => bcrypt($validated['password'])]);
+        return response()->json([
+            'message' => 'Password has been changed'
+        ], 200);
+    }
+
     //User Credential List
     public function userCredentialsList(Request $request){
 
@@ -162,19 +176,10 @@ class userCredentials_controller extends Controller
 
         $page = $request->input('page', 1);//Default page
         $perPage = $request->input('perPage',5); //Number of entry per page
-
-        // $userCredentials = UserCredentials::with(['userInfos', 'userInfos.roles'])->paginate($perPage);
-
-        // return response()->json([
-        //     'total' => $userCredentials->total(),
-        //     'lastPage' => $userCredentials->lastPage(),
-        //     'currentPage' => $userCredentials->currentPage(),
-        //     'data' => $userCredentials->items()
-        // ]);
-
-        $query = UserCredentials::with(['userInfos', 'userInfos.roles']) ->whereHas('userInfos', function ($subQuery) {
-            $subQuery->where('status', 'Inactive'); // Ensure only Active users are fetched
+        $query = UserCredentials::whereHas('userInfos', function ($subQuery) {
+            $subQuery->where('status', 'Inactive');
         })
+        ->with(['userInfos', 'userInfos.roles'])
         ->orderBy('created_at', 'desc');
 
         // Paginate the filtered results
