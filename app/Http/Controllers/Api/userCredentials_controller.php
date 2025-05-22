@@ -56,7 +56,7 @@ class userCredentials_controller extends Controller
     }
 
     public function changeUserPermissions(UserCredentials $userCredentials, ChangeUserPermissionsRequest $request){
-        if(!$request['role_id']){
+        if(!$request['role']){
             $bulk = collect($request['permissions'])->map(function($arr, $key){
             $test = [];
             foreach($arr as $keys => $value){
@@ -72,7 +72,7 @@ class userCredentials_controller extends Controller
             'user' => $userCredentials->load(['userInfos.permissions', 'userInfos.roles']),
         ]);
         }
-        $userCredentials->userInfos->roles()->sync($request['role_id']);
+        $userCredentials->userInfos->roles()->sync($request['role']);
         $bulk = collect($request['permissions'])->map(function($arr, $key){
             $test = [];
             foreach($arr as $keys => $value){
