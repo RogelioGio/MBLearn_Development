@@ -10,7 +10,6 @@ import LoginBackground2 from '../assets/Login_Background2.png';
 //Login Page Layout
 export default function GuestLayout() {
     const {token, role} = useStateContext();
-    if(token) {return <Navigate to= {`/${role.toLowerCase().replace(/\s+/g, '')}/dashboard`} replace/>}
 
     return (
         <div className="w-full h-screen flex items-center justify-center bg-primary">

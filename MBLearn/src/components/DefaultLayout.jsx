@@ -8,9 +8,17 @@ import { use } from 'react';
 import LogoutWarningmModal from '../modalsandprops/LogoutWarningModal';
 import { SelectedUserProvider } from '../contexts/selecteduserContext';
 import { OptionProvider } from '../contexts/AddUserOptionProvider';
+import { faClock, faEye, faEyeSlash, faKey, faSquareCheck, faSquareXmark } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+
+
+
+
 
 export default function DefaultLayout() {
-    const {token, role, setRole, setUser, setProfile} = useStateContext();
+    const {token, role, setRole, setUser, setProfile, user} = useStateContext();
     const [ loading, setLoading ] = useState(true)
     const [ warning, setWarning ] = useState(false)
     const navigate = useNavigate();
@@ -30,6 +38,8 @@ export default function DefaultLayout() {
             localStorage.setItem('LAST_ACTIVITY', Date.now());
         }
     };
+
+
 
     // useEffect(() => {
     //     if(!token) return;
@@ -83,12 +93,12 @@ export default function DefaultLayout() {
 
     //fetching the logged in user
     useEffect(() => {
+        console.log('Fetching user data...:', token);
         axiosClient
         .get('/user')
         .then(({data})=>{
             setUser(data)
             setLoading(false)
-
         }).catch((e)=>{
             setLoading(false)
             localStorage.removeItem('ACCESS_TOKEN');
@@ -107,18 +117,13 @@ export default function DefaultLayout() {
     }
 
     if(loading){
-        if(!token){
-            return <Navigate to="/login" replace/>
-        }
         return (
             <div className='h-screen w-screen flex flex-col justify-center items-center bg-background gap-3'>
                 <h1 className='font-header text-5xl text-primary'>"Loading your learning journey..."</h1>
                 <p className='font-text'>Empowering you with the knowledge to achieve your goals</p>
             </div>
-
         )
     }
-
 
     return (
         <div className='flex flex-row items-center h-screen bg-background overflow-hidden'>

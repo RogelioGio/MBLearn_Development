@@ -1,4 +1,4 @@
-import { faBookAtlas, faBookOpen, faFileSignature, faUserClock, faUserLock, faUsers, faUsersLine } from "@fortawesome/free-solid-svg-icons"
+import { faBook, faBookAtlas, faBookOpen, faFileSignature, faFolderClosed, faSliders, faUserClock, faUserLock, faUsers, faUsersLine } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Helmet } from "react-helmet"
 import axiosClient from "../axios-client"
@@ -42,6 +42,18 @@ export default function SystemConfiguration() {
                     <h1 className="uppercase font-text">Re-Activation Account</h1>
                     </div>:null
                 }
+                <div className= {`flex flex-row  items-center w-full px-3 py-3 gap-4 text-sm text-unactive hover:text-primary hover:bg-divider rounded-md cursor-pointer transition-all ease-in-out ${tab === 4 ? '!bg-divider !text-primary':null}`} onClick={() => setTab(4)}>
+                    <FontAwesomeIcon icon={faBook}/>
+                    <h1 className="uppercase font-text">Course Form Input Settings</h1>
+                </div>
+                <div className= {`flex flex-row  items-center w-full px-3 py-3 gap-4 text-sm text-unactive hover:text-primary hover:bg-divider rounded-md cursor-pointer transition-all ease-in-out ${tab === 5 ? '!bg-divider !text-primary':null}`} onClick={() => setTab(5)}>
+                    <FontAwesomeIcon icon={faSliders}/>
+                    <h1 className="uppercase font-text">System Content Settings</h1>
+                </div>
+                <div className= {`flex flex-row  items-center w-full px-3 py-3 gap-4 text-sm text-unactive hover:text-primary hover:bg-divider rounded-md cursor-pointer transition-all ease-in-out ${tab === 6 ? '!bg-divider !text-primary':null}`} onClick={() => setTab(6)}>
+                    <FontAwesomeIcon icon={faFolderClosed}/>
+                    <h1 className="uppercase font-text">Archive and Auditing Settings</h1>
+                </div>
 
             </div>
             {/* Setting Content */}
