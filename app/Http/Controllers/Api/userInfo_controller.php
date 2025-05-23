@@ -467,12 +467,16 @@ class userInfo_controller extends Controller
     public function indexArchivedUsers(Request $request){
         $page = $request->input('page', 1);//Default page
         $perPage = $request->input('perPage',5); //Number of entry per page
+        $currentUserId = $request->user()->userInfos->id;
 
         $filter = new UserInfosFilter();
         $queryItems = $filter->transform($request);
 
         $users =  UserInfos::query()->where($queryItems)
                 ->where('status', '=', 'Inactive')
+                ->whereNot(function($query) use ($currentUserId){
+                    $query->where('id', $currentUserId);
+                })
                 ->orderBy('created_at', 'desc')
                 ->with('roles','division','section','department','title','branch','city')
                 ->paginate($perPage);
