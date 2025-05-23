@@ -88,10 +88,11 @@ export default function Login() {
                 console.log(data.user.user_infos.roles[0]?.role_name);
                 console.log(data);
 
-                if (false) {
-                    navigate('/welcome')
+                if (!data.user.first_log_in) {
+                    navigate(`/welcome/${data.user.id}/${data.user.user_infos.roles[0]?.role_name}`);
+                } else{
+                    navigate(data.redirect)
                 }
-                navigate(data.redirect)
             })
             .catch(({response})=>{
                 if(response){
