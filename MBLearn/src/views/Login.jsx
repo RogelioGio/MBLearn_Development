@@ -14,6 +14,7 @@ import { toast } from 'sonner'
 import Small_Logo from '../assets/Small_Logo.svg';
 import Mobile_1 from '../assets/Mobile_icon.svg';
 import { useNavigate } from 'react-router'
+import ResetPasswordModal from '../modalsandprops/resetPasswordModal'
 
 
 
@@ -22,6 +23,7 @@ export default function Login() {
     const isMobile = useMediaQuery({maxWidth: 640});
     const [firstLogin, setFirstLogin] = useState(true);
     const navigate = useNavigate();
+    const [resetPassword, setResetPassword] = useState(true);
 
     //loading state
     const [isLoading, setIsLoading] = useState(false);
@@ -238,7 +240,7 @@ export default function Login() {
                     </form>
 
                     {/* must be create an modal for forgot password */}
-                    <p className='font-text text-sm self-center text-unactive mt-auto'>Forgot your password? <a href="" className='text-primary'>Let's Reset it!</a></p>
+                    <p className='font-text text-sm self-center text-unactive mt-auto'>Forgot your password? <span className='text-primary hover:cursor-pointer' onClick={() => setResetPassword(true)}>Let's Reset it!</span></p>
                 </div>
             ) : (
                 <div className='h-full grid grid-rows-[auto_1fr_auto]'>
@@ -387,7 +389,7 @@ export default function Login() {
                 </div>
             )
         }
-
+        <ResetPasswordModal open={resetPassword} close={()=>{setResetPassword(false)}}/>
     </>
     )
 }
