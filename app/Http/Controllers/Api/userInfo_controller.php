@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\TestEvent;
 use App\Filters\CourseSort;
 use App\Filters\UserInfosFilter;
 use App\helpers\LessonCountHelper;
@@ -944,7 +945,8 @@ class userInfo_controller extends Controller
         // // $perm->permissions()->sync([1,2]);
         // $userInfo = UserInfos::find(128);
         // PermissionToUser::dispatch($userInfo, $existingatedData['permissions'] ?? []);
-        ResetOptionCache::dispatch();
+        $message = "Hello from laravel";
+        TestEvent::dispatch($message);
         return response()->json([
             'data' => "Done"
         ]);
