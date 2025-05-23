@@ -129,18 +129,12 @@ class userCredentials_controller extends Controller
         $query = UserCredentials::with(['userInfos', 'userInfos.roles', 'userInfos.city', 'userInfos.branch',
         'userInfos.department', 'userInfos.section', 'userInfos.division', 'userInfos.title','userInfos.permissions'])
         ->orderBy('created_at', 'desc')
-        ->whereHas('userInfos', function ($subQuery) use ($currentUserId) {
+        ->whereHas('userInfos', function ($subQuery) {
             $subQuery->where('status', 'Active');
+        })
+        ->whereNot(function ($query) use ($currentUserId){
+            $query->where('id', $currentUserId);
         });
-
-        // Apply filters based on userInfos attributes
-        if ($request->has('status')) {
-            if(!($request->input('status')['eq'] == "")){
-                $query->whereHas('userInfos', function ($subQuery) use ($request) {
-                    $subQuery->where('status', $request->input('status'));
-                });
-            }
-        }
 
         if ($request->has('department_id')) {
             if(!($request->input('department_id')['eq'] == "")){
@@ -181,10 +175,14 @@ class userCredentials_controller extends Controller
 
         $page = $request->input('page', 1);//Default page
         $perPage = $request->input('perPage',5); //Number of entry per page
+        $currentUserId = $request->user()->userInfos->id;
         $query = UserCredentials::whereHas('userInfos', function ($subQuery) {
             $subQuery->where('status', 'Inactive');
         })
         ->with(['userInfos', 'userInfos.roles'])
+        ->whereNot(function ($query) use ($currentUserId){
+            $query->where('id', $currentUserId);
+        })
         ->orderBy('created_at', 'desc');
 
         // Paginate the filtered results
