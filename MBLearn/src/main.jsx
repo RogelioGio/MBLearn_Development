@@ -9,8 +9,7 @@ import { MantineProvider } from '@mantine/core';
 import { Toaster } from './components/ui/sonner';
 import { BrowserRouter } from "react-router-dom";
 import { CarouselContentProvider } from './contexts/CarourselContext'
-
-
+import '../../MBLearn/bootstrap.js';
 
 createRoot(document.getElementById("root")).render(
     <MantineProvider

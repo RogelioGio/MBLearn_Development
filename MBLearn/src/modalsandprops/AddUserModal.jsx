@@ -16,6 +16,7 @@ import AccountPermissionProps from "./AccountPermissionsProps"
 import { ScrollArea } from "../components/ui/scroll-area"
 
 
+
 const AddUserModal = ({open, close, updateTable}) => {
     //Option Context
     const {cities,departments,location,titles,roles,permission,division,section} = useOption();

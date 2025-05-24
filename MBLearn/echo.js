@@ -1,16 +1,20 @@
 import Echo from 'laravel-echo';
+import { io } from 'socket.io-client';
 
-import Pusher from 'pusher-js';
-window.Pusher = Pusher;
+window.io = io;
 
 const echo = new Echo({
-    broadcaster: 'reverb',
-    key: import.meta.env.VITE_REVERB_APP_KEY,
-    wsHost: import.meta.env.VITE_REVERB_HOST,
-    wsPort: import.meta.env.VITE_REVERB_PORT ?? 80,
-    wssPort: import.meta.env.VITE_REVERB_PORT ?? 443,
-    forceTLS: (import.meta.env.VITE_REVERB_SCHEME ?? 'https') === 'https',
-    enabledTransports: ['ws', 'wss'],
+  broadcaster: 'reverb',
+  key: import.meta.env.VITE_REVERB_APP_KEY,
+  host: `${import.meta.env.VITE_REVERB_SCHEME}://${import.meta.env.VITE_REVERB_HOST}:${import.meta.env.VITE_REVERB_PORT}`,
+  transports: ['websocket'],
+  forceTLS: false,
+  disableStats: true,
+  client: io,
 });
 
-export default echo;
+console.log('Echo broadcaster:', 'reverb');
+window.Echo = echo; // Makes Echo globally available
+export default echo; // Allows import where needed
+
+

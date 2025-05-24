@@ -10,7 +10,7 @@ export default function Test(){
             console.log(e);
             console.log('can hear channel')
         });
-        
+
         return () => {
             echo.leave('channel-name')
         }
@@ -32,5 +32,5 @@ export default function Test(){
         Call /Test
     </button>
     </>
-  );  
+  );
 };

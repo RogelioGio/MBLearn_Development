@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Api;
-
+use App\Events\NewNotification;
 use App\Events\TestEvent;
 use App\Events\UserAddedEvent;
 use App\Events\UserArchived;
@@ -452,7 +452,7 @@ class userInfo_controller extends Controller
 
             return $paginate;
             });
-            
+
             $courses = LessonCountHelper::getEnrollmentStatusCount($courses);
             return response() -> json([
                 'data' => $courses->items(),
@@ -461,7 +461,7 @@ class userInfo_controller extends Controller
                 'currentPage' => $courses->currentPage(),
             ]);
         }
-        
+
         $test = Cache::get($cacheKey);
         $test = LessonCountHelper::getEnrollmentStatusCount($test);
 
@@ -577,7 +577,7 @@ class userInfo_controller extends Controller
 
             return $paginate;
             });
-            
+
             $courses = LessonCountHelper::getEnrollmentStatusCount($courses);
             return response() -> json([
                 'data' => $courses->items(),
@@ -586,7 +586,7 @@ class userInfo_controller extends Controller
                 'currentPage' => $courses->currentPage(),
             ]);
         }
-        
+
         $test = Cache::get($cacheKey);
         $test = LessonCountHelper::getEnrollmentStatusCount($test);
 
@@ -955,10 +955,21 @@ class userInfo_controller extends Controller
         // // $perm->permissions()->sync([1,2]);
         // $userInfo = UserInfos::find(128);
         // PermissionToUser::dispatch($userInfo, $existingatedData['permissions'] ?? []);
+<<<<<<< HEAD
+        // $message = "Hello from laravel";
+        // broadcast(new TestEvent($message));
+        // TestEvent::dispatch($message);
+        // return response()->json([
+        //     'data' => "Done"
+        // ]);
+        broadcast((new NewNotification()));
+        return response()->json(['status' => 'Notification sent!']);
+=======
         $message = "Hello from laravel";
         TestEvent::dispatch($message);
         return response()->json([
             'data' => "Done"
         ]);
+>>>>>>> 777da1a168abe34941d806facbfe75a3204fe05b
     }
 }
