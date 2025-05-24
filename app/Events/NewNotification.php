@@ -9,21 +9,19 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use Log;
 
-class TestEvent implements ShouldBroadcast
+class NewNotification implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public string $message;
+    public $message;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(string $message)
+    public function __construct()
     {
-        $this->message = $message;
-        Log::info("TestEvent created with message: $message");
+        $this->message = 'New notification received';
     }
 
     /**
@@ -31,17 +29,19 @@ class TestEvent implements ShouldBroadcast
      *
      * @return array<int, \Illuminate\Broadcasting\Channel>
      */
-    public function broadcastOn(): array
+    public function broadcastOn()
     {
         return [
-            new PrivateChannel('channel-name'),
+            new Channel('notification'),
         ];
     }
-
-    public function broadcastWith(): array{
-        return [
-            'message' => $this->message."yoyoyo"
-        ];
+    public function broadcastAs()
+    {
+        return 'notification-event';
     }
-
+    // {
+    //     return [
+    //         new PrivateChannel('channel-name'),
+    //     ];
+    // }
 }

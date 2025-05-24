@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Api;
-
+use App\Events\NewNotification;
 use App\Events\TestEvent;
 use App\Filters\CourseSort;
 use App\Filters\UserInfosFilter;
@@ -444,7 +444,7 @@ class userInfo_controller extends Controller
 
             return $paginate;
             });
-            
+
             $courses = LessonCountHelper::getEnrollmentStatusCount($courses);
             return response() -> json([
                 'data' => $courses->items(),
@@ -453,7 +453,7 @@ class userInfo_controller extends Controller
                 'currentPage' => $courses->currentPage(),
             ]);
         }
-        
+
         $test = Cache::get($cacheKey);
         $test = LessonCountHelper::getEnrollmentStatusCount($test);
 
@@ -569,7 +569,7 @@ class userInfo_controller extends Controller
 
             return $paginate;
             });
-            
+
             $courses = LessonCountHelper::getEnrollmentStatusCount($courses);
             return response() -> json([
                 'data' => $courses->items(),
@@ -578,7 +578,7 @@ class userInfo_controller extends Controller
                 'currentPage' => $courses->currentPage(),
             ]);
         }
-        
+
         $test = Cache::get($cacheKey);
         $test = LessonCountHelper::getEnrollmentStatusCount($test);
 
@@ -935,7 +935,7 @@ class userInfo_controller extends Controller
         ],200);
     }
 
-    public function test(AddUsersRequest $addUsersRequest){
+    public function test(){
         // $course = Course::query()->find(71);
         // $user = UserInfos::query()->find(109);
         // $pivot = $course->assignedCourseAdmins()->where('user_id', $user->id)->first()->pivot;
@@ -945,10 +945,13 @@ class userInfo_controller extends Controller
         // // $perm->permissions()->sync([1,2]);
         // $userInfo = UserInfos::find(128);
         // PermissionToUser::dispatch($userInfo, $existingatedData['permissions'] ?? []);
-        $message = "Hello from laravel";
-        TestEvent::dispatch($message);
-        return response()->json([
-            'data' => "Done"
-        ]);
+        // $message = "Hello from laravel";
+        // broadcast(new TestEvent($message));
+        // TestEvent::dispatch($message);
+        // return response()->json([
+        //     'data' => "Done"
+        // ]);
+        broadcast((new NewNotification()));
+        return response()->json(['status' => 'Notification sent!']);
     }
 }

@@ -23,7 +23,7 @@ export default function Login() {
     const isMobile = useMediaQuery({maxWidth: 640});
     const [firstLogin, setFirstLogin] = useState(true);
     const navigate = useNavigate();
-    const [resetPassword, setResetPassword] = useState(true);
+    const [resetPassword, setResetPassword] = useState(false);
 
     //loading state
     const [isLoading, setIsLoading] = useState(false);
