@@ -42,6 +42,7 @@ class EnrollmentController extends Controller
     public function bulkStore(BulkStoreEnrollmentRequest $request){
         $bulk = $request->validated();
         $test = [];
+        $users = [];
 
         foreach($bulk as $index => $dat){
             $exists = Enrollment::query()->where([
@@ -62,8 +63,11 @@ class EnrollmentController extends Controller
                     'is_completed' => false,
                 ]);
             }
+            $users[] = $user;
         }
  
+        
+
         // Enrollment::insert($bulk->toArray());
         return response()->json([
             "Message" => "Bulk Store complete",

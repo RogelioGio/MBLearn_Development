@@ -155,11 +155,11 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('/compECourses', [CompECourseController::class, 'index']);
     Route::get('/compECourses/{course}', [CompECourseController::class, 'show']);
 
-    Route::post('/test', [userInfo_controller::class, 'test']);
+
 
 });
 
-
+Route::get('/test', [userInfo_controller::class, 'test']);
 
 //Category API
 Route::get('category',[FilterCategoryController::class, 'index']);

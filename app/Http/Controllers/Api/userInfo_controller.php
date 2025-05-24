@@ -935,7 +935,7 @@ class userInfo_controller extends Controller
         ],200);
     }
 
-    public function test(AddUsersRequest $addUsersRequest){
+    public function test(){
         // $course = Course::query()->find(71);
         // $user = UserInfos::query()->find(109);
         // $pivot = $course->assignedCourseAdmins()->where('user_id', $user->id)->first()->pivot;
@@ -946,7 +946,8 @@ class userInfo_controller extends Controller
         // $userInfo = UserInfos::find(128);
         // PermissionToUser::dispatch($userInfo, $existingatedData['permissions'] ?? []);
         $message = "Hello from laravel";
-        TestEvent::dispatch($message);
+        broadcast(new TestEvent($message));
+        TestEvent::broadcast($message);
         return response()->json([
             'data' => "Done"
         ]);
