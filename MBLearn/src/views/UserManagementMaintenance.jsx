@@ -30,6 +30,8 @@ import {
     SheetTitle,
     SheetTrigger,
 } from "../components/ui/sheet"
+import echo from 'MBLearn/echo';
+import { toast } from 'sonner';
 
 
 
@@ -40,10 +42,31 @@ export default function UserManagementMaintenance() {
     const [selectAll, setSelectAll] = useState(false);
     const navigate = useNavigate();
     const {user} = useStateContext();
+    
 
     useEffect(()=>{
         setCheckedUser([])
+
+        echo.channel('Users')
+        .listen('.User-added', (e) => {
+            console.log(e);
+            toast("Add User Succesfully",{
+                description: `${e.AddedBy} has added ${e.UsersAdded} of users in the system`,
+                dismissible: true,
+                duration: 3000
+            })
+        })
+        .listen("User-Archived", (e) => {
+            console.log(e);
+            toast("Archived User Successfully",{
+                description: `${e.systemadmin} has archived ${e.affected}`
+            })
+        })
+        return () => {
+            echo.leave('')
+        }
     },[])
+
 
     const [selectedBranches, setSelectedBranches] = useState([])
     const handleBranchesOptions = (e) =>{
@@ -341,7 +364,8 @@ export default function UserManagementMaintenance() {
             <div className='col-start-4 row-start-1 flex flex-col justify-center pl-5 mr-5 border-divider border-b'>
                 {
                     user.user_infos.permissions?.some((permission)=> permission.permission_name === "AddUserInfo") ? (
-                        <button className='inline-flex flex-row shadow-md items-center justify-center bg-primary font-header text-white text-base p-4 rounded-full hover:bg-primaryhover hover:scale-105 transition-all ease-in-out' onClick={() => toggleModal("isOpenAdd",true)}>
+                        <button className='inline-flex flex-row shadow-md items-center justify-center bg-primary font-header text-white text-base p-4 rounded-full hover:bg-primaryhover hover:scale-105 transition-all ease-in-out' onClick={() => {
+                            toggleModal("isOpenAdd",true)}}>
                             <FontAwesomeIcon icon={faUserPlus} className='mr-2'/>
                             <p>Add User</p>
                         </button>

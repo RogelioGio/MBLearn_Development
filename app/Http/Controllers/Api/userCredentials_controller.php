@@ -1,6 +1,9 @@
 <?php
 
 namespace App\Http\Controllers\Api;
+
+use App\Events\UserPermissionsChange;
+use App\Events\UserRoleChange;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\addUserCredential_request;
 use App\Http\Requests\ChangeUserPasswordRequest;
@@ -8,9 +11,11 @@ use App\Http\Requests\ChangeUserPermissionsRequest;
 use App\Http\Requests\updateUserCreds_info;
 use App\Http\Requests\UserCredsSearchRequest;
 use App\Http\Resources\CourseResource;
+use App\Models\Role;
 use App\Models\UserCredentials;
 use App\Models\UserInfos;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class userCredentials_controller extends Controller
@@ -56,6 +61,8 @@ class userCredentials_controller extends Controller
     }
 
     public function changeUserPermissions(UserCredentials $userCredentials, ChangeUserPermissionsRequest $request){
+        $adder = Auth::user()->userInfos->first_name;
+        $affected = $userCredentials->userInfos->first_name;
         if(!$request['role']){
             $bulk = collect($request['permissions'])->map(function($arr, $key){
             $test = [];
@@ -66,6 +73,7 @@ class userCredentials_controller extends Controller
             });
             $userCredentials->userInfos->permissions()->sync($bulk);
             $userCredentials->userInfos->roles;
+            UserPermissionsChange::dispatch($adder, $affected);
 
         return response()->json([
             'message' => 'Roles and Permissions changed',
@@ -73,6 +81,7 @@ class userCredentials_controller extends Controller
         ]);
         }
         $userCredentials->userInfos->roles()->sync($request['role']);
+        $role_name = Role::find($request['role'])->role_name;
         $bulk = collect($request['permissions'])->map(function($arr, $key){
             $test = [];
             foreach($arr as $keys => $value){
@@ -81,6 +90,7 @@ class userCredentials_controller extends Controller
             return $test;
         });
         $userCredentials->userInfos->permissions()->sync($bulk);
+        UserRoleChange::dispatch($adder, $affected, $role_name);
 
         return response()->json([
             'message' => 'Permissions changed',

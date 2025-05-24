@@ -44,7 +44,7 @@ const DeleteUserModal = ({open,close,classname,EmployeeID,close_confirmation, se
 
     const DeleteUser = () => {
         setDeleting(true)
-        if(!EmployeeID) return;
+        if(!selectedUser) return;
         axiosClient.delete(`/delete-user/${selectedUser.id}`, )
         .then((res) => {
             setDeleting(false)
@@ -144,7 +144,7 @@ const DeleteUserModal = ({open,close,classname,EmployeeID,close_confirmation, se
                                                         <p>Cancel</p>
                                                     </button>
                                                     <button className="w-full inline-flex flex-col items-center gap-2 row-start-7 col-span-3 bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out"
-                                                        onClick={DeleteUser}>
+                                                        onClick={() => DeleteUser()}>
                                                         <p>{deleting ? "Deleting..." : "Remove User"}</p>
                                                     </button>
                                                 </div>
