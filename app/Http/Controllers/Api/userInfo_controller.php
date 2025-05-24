@@ -945,6 +945,7 @@ class userInfo_controller extends Controller
         // // $perm->permissions()->sync([1,2]);
         // $userInfo = UserInfos::find(128);
         // PermissionToUser::dispatch($userInfo, $existingatedData['permissions'] ?? []);
+<<<<<<< HEAD
         // $message = "Hello from laravel";
         // broadcast(new TestEvent($message));
         // TestEvent::dispatch($message);
@@ -953,5 +954,13 @@ class userInfo_controller extends Controller
         // ]);
         broadcast((new NewNotification()));
         return response()->json(['status' => 'Notification sent!']);
+=======
+        $message = "Hello from laravel";
+        broadcast(new TestEvent($message));
+        TestEvent::broadcast($message);
+        return response()->json([
+            'data' => "Done"
+        ]);
+>>>>>>> 777da1a168abe34941d806facbfe75a3204fe05b
     }
 }

@@ -1,37 +1,36 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import axiosClient from "../axios-client";
 import echo from "MBLearn/echo";
 
 
-
-export default function Test_Notfications() {
-    const [done, setdone] = useState('');
-
+export default function Test(){
     useEffect(() => {
-        console.log('Echo instance:', echo);
-        echo.channel('notification')
-        .listen('.notification-event', (e) => {
-            alert('New notification: ' + "Working");
+        const channel = echo.channel('channel-name').listen('.Test', (e)=>{
+            alert("Hello")
+            console.log(e);
+            console.log('can hear channel')
         });
-    }, []);
 
-    const testNotifications = () => {
-        axiosClient.post('/test')
-        .then((response) => {
-            console.log("Response:", response);
+        return () => {
+            echo.leave('channel-name')
+        }
+    }, [])
+
+    const handleClick = () => {
+        axiosClient.get('test')
+        .then((e) => {
+            console.log(e);
+        }).catch((err) => {
+            console.log('error')
         })
+    };
 
-    }
 
-    return (
-         <div>
-            <button
-                onClick={testNotifications}
-                className="bg-blue-500 text-white font-bold py-2 px-4 rounded"
-            >
-                Test
-            </button>
-            <p>Status: {done || 'Waiting for event...'}</p>
-        </div>
-    );
-}
+  return (
+    <>
+    <button onClick={handleClick}>
+        Call /Test
+    </button>
+    </>
+  );
+};

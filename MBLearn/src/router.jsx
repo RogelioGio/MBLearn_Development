@@ -32,6 +32,7 @@ import LearnerCertficates from "./views/LearnerCertificates";
 import LearnerSelfEnrollment from "./views/LearnerSelfEnrollment";
 import CompeLearnExtension from "./views/CompeLearnExtension";
 import InitialLogin from "./views/InitialLogin";
+import Test from "./views/Test";
 
 const router = createBrowserRouter([
 
@@ -86,6 +87,10 @@ const router = createBrowserRouter([
                     {
                         path:"accountsettings",
                         element: <AccountSettings/>
+                    },
+                    {
+                        path:'test',
+                        element: <Test/>
                     }
                 ]
             },
@@ -142,6 +147,10 @@ const router = createBrowserRouter([
                     {
                         path:"accountsettings",
                         element: <AccountSettings/>
+                    },
+                    {
+                        path:'test',
+                        element: <Test/>
                     }
 
                 ]
