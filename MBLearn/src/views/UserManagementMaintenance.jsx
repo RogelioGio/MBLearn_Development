@@ -42,29 +42,29 @@ export default function UserManagementMaintenance() {
     const [selectAll, setSelectAll] = useState(false);
     const navigate = useNavigate();
     const {user} = useStateContext();
-    
+
 
     useEffect(()=>{
         setCheckedUser([])
 
-        echo.channel('Users')
-        .listen('.User-added', (e) => {
-            console.log(e);
-            toast("Add User Succesfully",{
-                description: `${e.AddedBy} has added ${e.UsersAdded} of users in the system`,
-                dismissible: true,
-                duration: 3000
-            })
-        })
-        .listen("User-Archived", (e) => {
-            console.log(e);
-            toast("Archived User Successfully",{
-                description: `${e.systemadmin} has archived ${e.affected}`
-            })
-        })
-        return () => {
-            echo.leave('')
-        }
+        // echo.channel('Users')
+        // .listen('.User-added', (e) => {
+        //     console.log(e);
+        //     toast("Add User Succesfully",{
+        //         description: `${e.AddedBy} has added ${e.UsersAdded} of users in the system`,
+        //         dismissible: true,
+        //         duration: 3000
+        //     })
+        // })
+        // .listen("User-Archived", (e) => {
+        //     console.log(e);
+        //     toast("Archived User Successfully",{
+        //         description: `${e.systemadmin} has archived ${e.affected}`
+        //     })
+        // })
+        // return () => {
+        //     echo.leave('')
+        // }
     },[])
 
 

@@ -12,7 +12,8 @@ import { faClock, faEye, faEyeSlash, faKey, faSquareCheck, faSquareXmark } from 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-
+import echo from 'MBLearn/echo';
+import { toast } from 'sonner';
 
 
 
@@ -22,6 +23,52 @@ export default function DefaultLayout() {
     const [ loading, setLoading ] = useState(true)
     const [ warning, setWarning ] = useState(false)
     const navigate = useNavigate();
+
+
+    //Laravel ECHO
+    useEffect(() => {
+        if(!token) return;
+
+        //User Management Events (System Admin)
+        // echo.channel('Users')
+        // .listen('.User-added', (e) => {
+        //     console.log(e);
+        //     toast("Add User Succesfully",{
+        //         description: `${e.AddedBy} has added ${e.UsersAdded} of users in the system`,
+        //         dismissible: true,
+        //         duration: 3000
+        //     })
+        // })
+        // .listen("User-Archived", (e) => {
+        //     console.log(e);
+        //     toast("Archived User Successfully",{
+        //         description: `${e.systemadmin} has archived ${e.affected}`
+        //     })
+        // })
+        // .listen('.UserRole', (e) => {
+        //     console.log(e);
+        //     toast("User Role Changed",{
+        //         description: `${e.affected} has been changed into ${e.role} role and permission`,
+        //         dismissible: true,
+        //         duration: 5000
+        //     })
+        // })
+        // listen('.UserPermission', (e) => {
+        //     console.log(e);
+        //     toast("User Permission Changed",{
+        //         description: `user ${e.affected} 's permissions was updated`,
+        //         dismissible: true,
+        //         duration: 5000
+        //     })
+        // })
+        // return () => {
+        //     echo.leave('')
+        // }
+
+
+
+
+    }, []);
 
     //User Activity handling
     const logout = () => {

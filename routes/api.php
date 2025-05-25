@@ -108,7 +108,6 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::apiResource('/courses', CourseController::class);
     Route::apiResource('/categories', CategoryController::class);
     Route::post('/categories/bulk', [CategoryController::class, 'bulkStore']);
-    Route::apiResource('/carousels', CarouselImageController::class);
 
     Route::apiResource('/types', TypeController::class);
     Route::post('types/bulk', [TypeController::class, 'bulkStore']);
@@ -159,6 +158,7 @@ Route::middleware('auth:sanctum')->group(function(){
 
 });
 
+Route::apiResource('/carousels', CarouselImageController::class);
 Route::get('/test', [userInfo_controller::class, 'test']);
 
 //Category API
