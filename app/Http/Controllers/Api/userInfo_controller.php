@@ -3,8 +3,6 @@
 namespace App\Http\Controllers\Api;
 use App\Events\NewNotification;
 use App\Events\TestEvent;
-use App\Events\UserAddedEvent;
-use App\Events\UserArchived;
 use App\Filters\CourseSort;
 use App\Filters\UserInfosFilter;
 use App\helpers\LessonCountHelper;
@@ -40,7 +38,6 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon as SupportCarbon;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
@@ -54,94 +51,90 @@ class userInfo_controller extends Controller
     public function addUser(AddUsersRequest $addUsersRequest){
 
         $existingatedData = $addUsersRequest->validated();
-        $currentUser = Auth::user()->userInfos->first_name;
 
-        // if(UserInfos::where('employeeID', $existingatedData['employeeID'])->exists()){
-        //     return response()->json([
-        //         'message' => 'User already exists',
-        //     ], 409);
-        // }
+        if(UserInfos::where('employeeID', $existingatedData['employeeID'])->exists()){
+            return response()->json([
+                'message' => 'User already exists',
+            ], 409);
+        }
 
-        // if(UserCredentials::where('MBemail', $existingatedData['MBemail'])->exists()){
-        //     return response()->json([
-        //         'message' => 'User creds already exists',
-        //     ], 409);
-        // }
+        if(UserCredentials::where('MBemail', $existingatedData['MBemail'])->exists()){
+            return response()->json([
+                'message' => 'User creds already exists',
+            ], 409);
+        }
 
-        // // Combine first name, middle initial, last name, and suffix into a full name
-        // $fullName = trim("{$existingatedData['first_name']} " .
-        //                     ("{$existingatedData['middle_name']}" ? "{$existingatedData['middle_name']}. " : "") .
-        //                     "{$existingatedData['last_name']} " .
-        //                     ("{$existingatedData['name_suffix']}" ? $existingatedData['name_suffix'] : ""));
+        // Combine first name, middle initial, last name, and suffix into a full name
+        $fullName = trim("{$existingatedData['first_name']} " .
+                            ("{$existingatedData['middle_name']}" ? "{$existingatedData['middle_name']}. " : "") .
+                            "{$existingatedData['last_name']} " .
+                            ("{$existingatedData['name_suffix']}" ? $existingatedData['name_suffix'] : ""));
 
-        // // Generate profile image URL (pass the correct name variable)
-        // $profile_image = $this->generateProfileImageUrl($fullName);
+        // Generate profile image URL (pass the correct name variable)
+        $profile_image = $this->generateProfileImageUrl($fullName);
 
 
-        // DB::beginTransaction();
+        DB::beginTransaction();
 
-        // try{
-        //     $options = Cache::get('options');
-        //     $title = $options['titles']->firstWhere('id', $existingatedData['title_id']);
-        //     $department = $options['departments']->firstWhere('id', $existingatedData['department_id']);
-        //     $branch = $options['location']->firstWhere('id', $existingatedData['branch_id']);
-        //     $division = $options['division']->firstWhere('id', $existingatedData['division_id']);
-        //     $section = $options['section']->firstWhere('id', $existingatedData['section_id']);
+        try{
+            $options = Cache::get('options');
+            $title = $options['titles']->firstWhere('id', $existingatedData['title_id']);
+            $department = $options['departments']->firstWhere('id', $existingatedData['department_id']);
+            $branch = $options['location']->firstWhere('id', $existingatedData['branch_id']);
+            $division = $options['division']->firstWhere('id', $existingatedData['division_id']);
+            $section = $options['section']->firstWhere('id', $existingatedData['section_id']);
 
-        //     $status = $existingatedData['status'] ?? 'Active';
+            $status = $existingatedData['status'] ?? 'Active';
 
-        //     $userCredentials = new UserCredentials([
-        //         'MBemail' => $existingatedData['MBemail'],
-        //         'password' => $existingatedData['password'],
-        //     ]);
+            $userCredentials = new UserCredentials([
+                'MBemail' => $existingatedData['MBemail'],
+                'password' => $existingatedData['password'],
+            ]);
 
-        //     $userInfo = new UserInfos([
-        //         'employeeID' => $existingatedData['employeeID'],
-        //         'first_name' => $existingatedData['first_name'],
-        //         'last_name' => $existingatedData['last_name'],
-        //         'middle_name' => $existingatedData['middle_name'],
-        //         'name_suffix' => $existingatedData['name_suffix'],
-        //         'status' =>$status,
-        //         'profile_image' =>$profile_image
-        //     ]);
+            $userInfo = new UserInfos([
+                'employeeID' => $existingatedData['employeeID'],
+                'first_name' => $existingatedData['first_name'],
+                'last_name' => $existingatedData['last_name'],
+                'middle_name' => $existingatedData['middle_name'],
+                'name_suffix' => $existingatedData['name_suffix'],
+                'status' =>$status,
+                'profile_image' =>$profile_image
+            ]);
 
-        //     $userInfo->branch()->associate($branch);
-        //     $userInfo->title()->associate($title);
-        //     $userInfo->department()->associate($department);
-        //     $userInfo->section()->associate($section);
-        //     $userInfo->division()->associate($division);
-        //     $userInfo->save();
-        //     $userInfo->roles()->sync($existingatedData['role_id']);
-        //     $userCredentials->save();
-        //     $userCredentials->userInfos()->save($userInfo);
+            $userInfo->branch()->associate($branch);
+            $userInfo->title()->associate($title);
+            $userInfo->department()->associate($department);
+            $userInfo->section()->associate($section);
+            $userInfo->division()->associate($division);
+            $userInfo->save();
+            $userInfo->roles()->sync($existingatedData['role_id']);
+            $userCredentials->save();
+            $userCredentials->userInfos()->save($userInfo);
 
-        //     DB::commit();
+            DB::commit();
 
-            UserAddedEvent::dispatch($currentUser, 1);        
-
-        //     if($existingatedData['permissions'] ?? false){
-        //         PermissionToUser::dispatch($userInfo, $existingatedData['permissions'] ?? []);
-        //     }
+            if($existingatedData['permissions'] ?? false){
+                PermissionToUser::dispatch($userInfo, $existingatedData['permissions'] ?? []);
+            }
 
             return response()->json([
                 'message' => 'User registered successfully',
-                // 'user_info' => $userInfo,
+                'user_info' => $userInfo,
                 'permissions' => $existingatedData['permissions'] ?? false
             ], 201);
-        // } catch(Exception $e){
-        //     DB::rollBack();
-        //     return response()->json([
-        //         'message' => 'Failed to create user',
-        //         'error' => $e->getMessage()
-        //     ],400);
-        // }
+        } catch(Exception $e){
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Failed to create user',
+                'error' => $e->getMessage()
+            ],400);
+        }
 
     }
 
     public function bulkStoreUsers(BulkStoreUserRequest $bulkStoreUserRequest){
         $output = [];
         $count = 0;
-        $currentUser = Auth::user()->userInfos->first_name;
         $bulk = collect($bulkStoreUserRequest->all())->map(function ($arr, $key){
             $messyArray = [];
             $oneDArray = [];
@@ -263,7 +256,6 @@ class userInfo_controller extends Controller
             $userCredentials->userInfos()->save($userInfo);
         }
         $counts = $count."/".$bulk->count()." Successfully Added Users";
-        UserAddedEvent::dispatch($currentUser, $count);
         array_splice($output, 0, 0, $counts);
         return response()->json([
             'data' => $output
@@ -899,10 +891,8 @@ class userInfo_controller extends Controller
     {
         Gate::authorize('delete', UserInfos::class);
         if($userInfos){
-            $current = Auth::user()->userInfos->first_name;
-            $userInfos->update(["status" => "Inactive"]);
+            $userInfos->status = "Inactive";
             $userInfos->save();
-            UserArchived::broadcast($current, $userInfos->first_name);
 
             // LogActivityHelper::logActivity('Delete user', 'Deleted a user', "User Full Name: " . $userInfos->first_name . " " . $userInfos->last_name);
             return response()->json(['message' => 'User is now set to inactive'], 200);
@@ -955,13 +945,11 @@ class userInfo_controller extends Controller
         // // $perm->permissions()->sync([1,2]);
         // $userInfo = UserInfos::find(128);
         // PermissionToUser::dispatch($userInfo, $existingatedData['permissions'] ?? []);
-        // $message = "Hello from laravel";
-        // broadcast(new TestEvent($message));
-        // TestEvent::dispatch($message);
-        // return response()->json([
-        //     'data' => "Done"
-        // ]);
-        broadcast((new NewNotification()));
-        return response()->json(['status' => 'Notification sent!']);
+        $message = "Hello from laravel";
+        broadcast(new TestEvent($message));
+        TestEvent::broadcast($message);
+        return response()->json([
+            'data' => "Done"
+        ]);
     }
 }
