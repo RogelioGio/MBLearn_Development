@@ -200,20 +200,21 @@ const CourseModuleProps = ({headers, course, LearnerProgress}) => {
                     </div>
                 </div>
             </div>
-
             :
             // Learner
             <>
-            <div className="flex flex-row items-center justify-between gap-4 border-b border-divider py-4">
-                {headers}
+            <div className="row-span-2 col-span-2 bg-gradient-to-b from-[hsl(239,94%,19%)] via-[hsl(214,97%,27%)] to-[hsl(201,100%,36%)]">
+                <div className="flex flex-row items-center justify-between gap-4 bg-gradient-to-b from-transparent to-black pt-16 pb-5">
+                    {headers}
+                </div>
             </div>
-            <div className="flex flex-col justify-center py-3 pl-4 border-l border-divider row-span-1">
+            {/* <div className="flex flex-col justify-center py-3 pl-4 border-l border-divider row-span-1">
             <h1 className="font-header text-primary text-lg">Module Contents</h1>
             <p className="font-text text-unactive text-xs">List of the the available content for the course</p>
-            </div>
+            </div> */}
 
              {/* Module Navigation */}
-            <div className="flex flex-row justify-between items-center w-full py-1 pl-2 pr-5">
+            <div className="flex flex-row justify-between items-center w-full py-1 pl-2 pr-5 row-start-3 col-start-1 border-b border-divider">
                     <div className="group h-fit px-5 py-2 border-primary border-2 rounded-md shadow-md flex flex-row justify-center items-center bg-white hover:bg-primary hover:cursor-pointer transition-all ease-in-out gap-2"
                         onClick={()=> stepperRef.current?.back()}>
                         <FontAwesomeIcon icon={faCircleChevronLeft} className="text-primary group-hover:text-white"/>
@@ -236,9 +237,9 @@ const CourseModuleProps = ({headers, course, LearnerProgress}) => {
             </div>
 
             {/* Course Progress */}
-            <div className="pl-4 pr-3 py-2 border-l border-divider flex flex-col gap-y-2 justify-center">
+            <div className="pl-4 pr-3 py-2 border-l border-divider flex flex-col gap-y-2 justify-center row-start-3 col-start-2">
                 <div className="flex flex-row justify-between font-text text-sm text-unactive">
-                    <p>Progress:</p>
+                    <p>Course Progress:</p>
                     <p>{progress || 0}%</p>
                 </div>
                 <div>
@@ -247,7 +248,7 @@ const CourseModuleProps = ({headers, course, LearnerProgress}) => {
             </div>
 
             {/* Modules */}
-            <div className="col-start-1 col-span-2 row-start-3 row-span-2 border-divider">
+            <div className="col-start-1 col-span-2 row-start-4 row-span-2 border-divider">
                 <Stepper initialStep={0} enableStepClick={true} ref={stepperRef} onStepChange={(index,meta) => setActiveMeta(meta)} complete={()=> LessonHop(activeStepMeta?.stepID)} learnerProgress={learnerProgress}>
                     {
                         course?.description && course?.course_objectives && course?.course_outcomes ? (

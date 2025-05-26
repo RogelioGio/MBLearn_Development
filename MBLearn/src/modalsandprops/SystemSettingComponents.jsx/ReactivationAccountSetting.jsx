@@ -201,7 +201,7 @@ const ReactivationAccountSetting = () => {
                 </div>
             </div>
             <div className="row-start-4 col-start-1 col-span-3 flex flex-row items-center justify-between">
-                  <div>
+                <div>
                     {
                         !loading ? (
                             <p className='text-sm font-text text-unactive'>

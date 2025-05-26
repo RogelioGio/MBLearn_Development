@@ -22,15 +22,15 @@ export default function SystemLevelReports() {
 
             {/* Tabs for report segments */}
             <div className="grid grid-cols-3 col-span-4 row-span-1 mx-5 border-divider">
-                <div className={`gap-2 flex items-center justify-center font-text text-unactive border-b py-2 hover:text-primary hover:border-b hover:border-primary hover:bg-divider transition-all ease-in-out border-divider ${tab === "userList" ? "!text-primary border-b border-primary bg-divider" : ""} hover:cursor-pointer`} onClick={() => setTab("userList")}>
+                <div className={`gap-2 flex items-center justify-center font-header text-unactive border-b py-2 hover:text-primary hover:border-b hover:border-primary transition-all ease-in-out border-divider ${tab === "userList" ? "!text-primary border-b border-primary" : ""} hover:cursor-pointer`} onClick={() => setTab("userList")}>
                     <FontAwesomeIcon icon={faUsers}/>
                     <p>User List Reports</p>
                 </div>
-                <div className={`gap-2 flex items-center justify-center font-text text-unactive border-b py-2 hover:text-primary hover:border-b hover:border-primary hover:bg-divider transition-all ease-in-out border-divider ${tab === "userActivity" ? "!text-primary border-b border-primary bg-divider" : ""} hover:cursor-pointer`} onClick={() => setTab("userActivity")}>
+                <div className={`gap-2 flex items-center justify-center font-header text-unactive border-b py-2 hover:text-primary hover:border-b hover:border-primary transition-all ease-in-out border-divider ${tab === "userActivity" ? "!text-primary border-b border-primary" : ""} hover:cursor-pointer`} onClick={() => setTab("userActivity")}>
                     <FontAwesomeIcon icon={faGears} className="mr-2" />
                     <p>System Access Reports</p>
                 </div>
-                <div className={`gap-2 flex items-center justify-center font-text text-unactive border-b py-2 hover:text-primary hover:border-b hover:border-primary hover:bg-divider transition-all ease-in-out border-divider ${tab === "AuditLog" ? "!text-primary border-b border-primary bg-divider" : ""} hover:cursor-pointer`} onClick={() => setTab("AuditLog")}>
+                <div className={`gap-2 flex items-center justify-center font-header text-unactive border-b py-2 hover:text-primary hover:border-b hover:border-primary transition-all ease-in-out border-divider ${tab === "AuditLog" ? "!text-primary border-b border-primary" : ""} hover:cursor-pointer`} onClick={() => setTab("AuditLog")}>
                     <FontAwesomeIcon icon={faWrench} className="mr-2" />
                     <p>Audit Log</p>
                 </div>

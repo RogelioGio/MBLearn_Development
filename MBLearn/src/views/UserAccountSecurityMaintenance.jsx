@@ -27,30 +27,6 @@ export default function UserAccountSecurityMaintenance(){
     const [selectedBranches, setSelectedBranches] = useState([])
     const [SelectedUser, setSelectedUser] = useState()
 
-    //Echo
-    useEffect(()=>{
-        // echo.channel('Users').listen('.UserRole', (e) => {
-        //     console.log(e);
-        //     toast("User Role Changed",{
-        //         description: `${e.affected} has been changed into ${e.role} role and permission`,
-        //         dismissible: true,
-        //         duration: 5000
-        //     })
-        // })
-        // echo.channel('Users').listen('.UserPermission', (e) => {
-        //     console.log(e);
-        //     toast("User Permission Changed",{
-        //         description: `user ${e.affected} 's permissions was updated`,
-        //         dismissible: true,
-        //         duration: 5000
-        //     })
-        // })
-        // return () => {
-        //     echo.leave('Users')
-        // }
-
-    },[])
-
     const [modalState, setModalState] = useState({
         isEdit:false,
         isEditSuccess: false,

@@ -9,6 +9,10 @@ import ReactivationAccountSetting from "../modalsandprops/SystemSettingComponent
 import { ScrollArea } from "@mantine/core"
 import { useStateContext } from "../contexts/ContextProvider"
 import Test_Notfications from "./Test"
+import ArchiveAndAuditingSetting from "../modalsandprops/SystemSettingComponents.jsx/ArchiveAndAuditingSetting"
+import CourseFormInputSetting from "../modalsandprops/SystemSettingComponents.jsx/CourseFormInputSetting"
+import SystemContentSetting from "../modalsandprops/SystemSettingComponents.jsx/SystemContentSetting"
+
 
 export default function SystemConfiguration() {
     const {user} = useStateContext();
@@ -67,8 +71,13 @@ export default function SystemConfiguration() {
                     ) : tab === 3 ? (
                         <ReactivationAccountSetting/>
                     ) : tab === 4 ? (
-                        <Test_Notfications/>
-                    ):(null)
+                        <CourseFormInputSetting/>
+                    ): tab === 5 ? (
+                        <SystemContentSetting/>
+                    ): tab === 6 ? (
+                        <ArchiveAndAuditingSetting/>
+                    ):
+                    (null)
                 }
         </div>
     )

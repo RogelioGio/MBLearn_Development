@@ -73,7 +73,7 @@ export default function Course() {
 
     return(
         <>
-        <div className={`grid ${role === "Course Admin" ? "grid-cols-4 grid-rows-[4rem_3rem_auto]":"grid-cols-[1fr_20rem] grid-rows-[min-content_4rem_auto]"} grid-rows-[4rem_3rem_auto] h-full w-full overflow-hidden`}>
+        <div className={`grid ${role === "Course Admin" ? "grid-cols-4 grid-rows-[4rem_3rem_auto]":"grid-cols-[1fr_20rem] grid-rows-[min-content_min-content_4rem_auto]"} grid-rows-[4rem_3rem_auto] h-full w-full overflow-hidden`}>
             <Helmet>
                 {/* Title of the mark-up */}
                 <title>MBLearn | {isLoading ? "Loading..." : course?.name || "No Course Found"}</title>
@@ -87,8 +87,8 @@ export default function Course() {
                         <div className="flex flex-row col-span-4 items-center justify-between gap-4">
                             <div className="flex flex-row col-span-4 items-center gap-4 pl-5">
                                 {/* Back Button */}
-                                <div className="group aspect-square rounded-full border-primary border-2 flex flex-row justify-center items-center hover:bg-primary transition-all ease-in-out" onClick={()=>navigate(-1)}>
-                                    <FontAwesomeIcon icon={faArrowLeft} className="text-primary text-2xl cursor-pointer p-2 group-hover:text-white"/>
+                                <div className="w-8 h-8 group aspect-square rounded-full border-primary border-2 flex flex-row justify-center items-center hover:bg-primary transition-all ease-in-out" onClick={()=>navigate(-1)}>
+                                    <FontAwesomeIcon icon={faArrowLeft} className="text-primary cursor-pointer p-2 group-hover:text-white"/>
                                 </div>
                                 {/* Course Name */}
                                 <div >
@@ -134,6 +134,9 @@ export default function Course() {
                             <div className= {`group flex justify-center items-center px-5 hover:border-b-2 hover:border-b-primary transition-all ease-in-out hover:cursor-pointer ${tab === "enrollment" ? "border-b-2 border-primary text-primary" : 'text-unactive'}`} onClick={()=> setTab("enrollment")}>
                                 <p className="font-header group-hover:text-primary">Enroll Learner</p>
                             </div>
+                            <div className= {`group flex justify-center items-center px-5 hover:border-b-2 hover:border-b-primary transition-all ease-in-out hover:cursor-pointer ${tab === "report" ? "border-b-2 border-primary text-primary" : 'text-unactive'}`} onClick={()=> setTab("report")}>
+                                <p className="font-header group-hover:text-primary">Course-wide Reports</p>
+                            </div>
                         </div>
 
                         {/* Course Content */}
@@ -146,29 +149,36 @@ export default function Course() {
                         <CourseModuleProps headers={<>
                             <div className="flex flex-row col-span-4 items-center gap-4 pl-5">
                                 {/* Back Button */}
-                                <div className="w-10 h-10 group aspect-square rounded-full border-primary border-2 flex flex-row justify-center items-center hover:bg-primary transition-all ease-in-out" onClick={()=>navigate(-1)}>
-                                    <FontAwesomeIcon icon={faArrowLeft} className="text-primary text-2xl cursor-pointer group-hover:text-white"/>
+                                    <div className="w-8 h-8 group aspect-square rounded-full border-white border-2 flex flex-row justify-center items-center hover:bg-white transition-all ease-in-out" onClick={()=>navigate(-1)}>
+                                    <FontAwesomeIcon icon={faArrowLeft} className="text-white cursor-pointer group-hover:text-primary"/>
                                 </div>
                                 {/* Course Name */}
                                 <div >
-                                    <h1 className="font-header text-2xl font-bold text-primary">{course?.name} </h1>
-                                    <p className="font-text text-xs text-unactive">Course ID: {course?.CourseID} </p>
+                                    <h1 className="font-header text-2xl font-bold text-white">{course?.name} </h1>
+                                    <p className="font-text text-xs text-white">Course ID: {course?.CourseID} </p>
                                 </div>
                                 {/* Course Status */}
-                                <span className="inline-flex items-center rounded-md bg-secondaryprimary px-4 py-2 text-xs font-medium text-primary font-text ring-1 ring-primary gap-1">
+                                {/* <span className="inline-flex items-center rounded-md bg-secondaryprimary px-4 py-2 text-xs font-medium text-primary font-text ring-1 ring-primary gap-1">
                                     <FontAwesomeIcon icon={faPencil} className="text-primary text-xs mr-1"/>
                                     Unpublished
-                                </span>
+                                </span> */}
                             </div>
                             <div className="flex flex-row gap-1 pr-5">
                                 {/* Action Button */}
-                                <div className={`text-primary text-sm border-2 border-primary h-full py-2 px-4 rounded-md shadow-md flex flex-row gap-2 items-center transition-all ease-in-out hover:scale-105 hover:bg-primary hover:text-white hover:cursor-pointer`} onClick={()=>setOpenDetails(true)}>
+                                <div className={`text-white text-sm border-2 border-white h-full py-2 px-4 rounded-md shadow-md flex flex-row gap-2 items-center transition-all ease-in-out hover:scale-105 hover:bg-white hover:text-primary hover:cursor-pointer`} onClick={()=>setOpenDetails(true)}>
                                     <FontAwesomeIcon icon={faCircleInfo} />
                                     <p className="font-header">Detail</p>
                                 </div>
                             </div>
                         </>} course={course} LearnerProgress={learnerProgress}/>
                     </>
+                ) :
+                isLoading && role === "Learner" ? (
+                    <div className="col-span-2 row-span-4 flex flex-col justify-center items-center">
+                        <img src={CourseLoading} alt="" className="w-80"/>
+                        <p className="text-4xl font-header text-primary">Loading...</p>
+                        <p className="text-sm font-text text-primary">Hang tight! 🚀 Loading courses for — great things take a second!</p>
+                    </div>
                 ) :
                 (
                     <div className="col-span-4 row-span-3 flex flex-col justify-center items-center">
