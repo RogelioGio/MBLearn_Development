@@ -1,4 +1,4 @@
-import { faBook, faBookOpen, faBuilding, faGears, faPeopleGroup, faUserGroup, faUsers, faWrench } from "@fortawesome/free-solid-svg-icons"
+import { faBook, faBookOpen, faBuilding, faFilePen, faGears, faPeopleGroup, faUserGroup, faUsers, faWrench } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import React, { useState } from "react"
 import { Helmet } from "react-helmet"
@@ -37,12 +37,38 @@ export default function SystemLevelReports() {
             </div>
 
             {/* Content */}
-            <div className="px-5">
+            <div className="px-5 col-span-4">
                 {
                     tab === "userList" ? (
                         <>
-                            User Master List Report
-                            User Role Distributions
+                            <div className="py-5">
+                                {/* Header */}
+                                <div className="flex flex-row justify-between gap-4">
+                                    <div>
+                                        <p className="text-xl font-header text-primary">User Master List Report</p>
+                                        <p className="text-xs text-unactive">Generates a comprehensive report of all registered users in the system, including their departments, statuses, and other key profile details <br />for administrative oversight and record-keeping.</p>
+                                    </div>
+                                    <div className="border-2 border-primary py-2 px-10 rounded-md shadow-md font-header text-primary flex flex-row gap-2 items-center hover:bg-primary hover:text-white transition-all ease-in-out hover:cursor-pointer">
+                                        <FontAwesomeIcon icon={faFilePen}/>
+                                        <p>Generate Report</p>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div className="py-5">
+                                {/* Header */}
+                                <div className="flex flex-row justify-between gap-4">
+                                    <div>
+                                        <p className="text-xl font-header text-primary">User Role Distributions</p>
+                                        <p className="text-xs text-unactive">Displays the breakdown of users by assigned roles (e.g., Learner, Course Admin, System Admin), providing insights <br/> into role allocation and helping monitor access control across the platform.</p>
+                                    </div>
+                                    <div className="border-2 border-primary py-2 px-10 rounded-md shadow-md font-header text-primary flex flex-row gap-2 items-center hover:bg-primary hover:text-white transition-all ease-in-out hover:cursor-pointer">
+                                        <FontAwesomeIcon icon={faFilePen}/>
+                                        <p>Generate Report</p>
+                                    </div>
+                                </div>
+
+                            </div>
                         </>
                     )
                     : tab === "userActivity" ? (
