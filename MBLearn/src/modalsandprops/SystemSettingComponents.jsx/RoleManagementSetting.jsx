@@ -1,4 +1,4 @@
-import { faFileSignature, faSave, faUserClock, faUserLock, faUsers, faUsersLine } from "@fortawesome/free-solid-svg-icons"
+import { faBookOpenReader, faFileSignature, faGraduationCap, faSave, faSwatchbook, faUserClock, faUserLock, faUsers, faUserShield, faUsersLine } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useForm } from "@inertiajs/vue3"
 import { useFormik } from "formik"
@@ -86,9 +86,9 @@ const RoleManagementSetting = () => {
 
     useEffect(()=>{
         // console.log(permission)
-        console.log(refPermission)
+        //console.log(refPermission)
         // console.log(saved)
-        console.log(saving)
+        //console.log(saving)
     },[refPermission,permissionswitch])
 
     // Save Changes
@@ -130,60 +130,56 @@ const RoleManagementSetting = () => {
                         <h1 className="font-header text-primary text-xl">Role Management</h1>
                         <p className="font-text text-unactive text-xs">Create and manage roles function and permission in the system</p>
                     </div>
-                    <div>
-                        <div className={`flex flex-row justify-center items-center border-2 border-primary py-2 px-8 font-header bg-secondarybackground rounded-md text-primary gap-5 w-full hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md`}>
-                            <FontAwesomeIcon icon={faUserLock}/>
-                            <p>Add Role</p>
-                        </div>
-                    </div>
                 </div>
                 {/* Available Role*/}
-                <div className="row-span-1 col-span-2 flex flex-col gap-5">
-                    <div>
-                        <h1 className="font-header text-primary text-base">Available Roles</h1>
-                        <p className="font-text text-unactive text-xs">Available roles and user that has different roles</p>
+                <div className="row-span-1 col-span-2 grid grid-cols-[1fr_1fr_1fr_1fr] grid-rows-[min-content_auto] gap-2">
+                    <div className="col-span-4">
+                        <p className="text-unactive font-text text-xs">Avaliable Roles:</p>
                     </div>
-                    <div className="w-full border-primary border rounded-md overflow-hidden shadow-md">
-                        <table className='text-left w-full overflow-y-scroll'>
-                        <thead className='font-header text-xs text-primary bg-secondaryprimary'>
-                            <tr>
-                                <th className='py-4 px-4 uppercase'>Role Name</th>
-                                <th className='py-4 px-4 uppercase'>Users</th>
-                            </tr>
-                        </thead>
-                        <tbody className='bg-white divide-y divide-divider'>
-                            {
-                                loading ? (
-                                    <tr className="font-text text-sm hover:bg-gray-200">
-                                    <td colSpan={4} className="text-center py-3 px-4 font-text text-primary">
-                                        Loading...
-                                    </td>
-                                    </tr>
-                                ):(
-                                    roles.map((role) =>(
-                                        <tr key={role.id} className={`font-text text-md text-primary hover:bg-gray-200 cursor-pointer ${selectedRole === role.id ? "bg-gray-200" : ""}`} onClick={() => changeRoles(role.id)}>
-                                            <td className={`font-text p-4 flex flex-row items-center gap-4 border-l-2 border-transparent transition-all ease-in-out  ${selectedRole === role.id ? "border-l-primary" : ""}`}>{role.role_name}</td>
-                                            <td className={`font-text p-4 gap-4 border-l-2 border-transparent transition-all ease-in-out`}>
-                                                <div className='flex flex-row items-center gap-2'>
-                                                    <FontAwesomeIcon icon={faUsers}/>
-                                                    <p>{role.users_count} Users</p>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))
-                                )
-                            }
-                        </tbody>
-                        </table>
-                    </div>
+                    <div className={`hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out border-2 border-primary rounded-md shadow-md p-4 text-primary flex flex-row justify-center items-center gap-x-2 ${selectedRole === 4 ? "bg-primary text-white":null}`} onClick={()=> changeRoles(4)}>
+                        <div>
+                            <p className="font-header">SME</p>
+                            <p className="font-text text-xs">Personnels that create courses</p>
+                        </div>
+                        <FontAwesomeIcon icon={faSwatchbook} className="text-4xl"/>
 
+                    </div>
+                    <div className={`hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out border-2 border-primary rounded-md shadow-md p-4 text-primary flex flex-row justify-center items-center gap-x-2 ${selectedRole === 1 ? "!bg-primary text-white":null}`} onClick={()=>changeRoles(1)}>
+                        <div>
+                            <p className="font-header">System Admin</p>
+                            <p className="font-text text-xs">Personnels that mange users</p>
+                        </div>
+                        <FontAwesomeIcon icon={faUserShield} className="text-4xl"/>
+                    </div>
+                    <div className={`hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out border-2 border-primary rounded-md shadow-md p-4 text-primary flex flex-row justify-center items-center gap-x-2 ${selectedRole === 2 ? "!bg-primary text-white":null}`} onClick={()=>changeRoles(2)}>
+                        <div>
+                            <p className="font-header">Course Admin</p>
+                            <p className="font-text text-xs">Personnels that manage enrollments</p>
+                        </div>
+                        <FontAwesomeIcon icon={faBookOpenReader} className="text-4xl"/>
+                    </div>
+                    <div className={`hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out border-2 border-primary rounded-md shadow-md p-4 text-primary flex flex-row justify-center items-center gap-x-2 ${selectedRole === 3 ? "!bg-primary text-white":null}`} onClick={()=>changeRoles(3)}>
+                        <div>
+                            <p className="font-header">Learners</p>
+                            <p className="font-text text-xs">Personnels that take the courses</p>
+                        </div>
+                        <FontAwesomeIcon icon={faGraduationCap} className="text-4xl"/>
+                    </div>
                 </div>
 
                 {/* Permision Settings */}
                 <div className="row-span-1 col-span-2 flex flex-col gap-2">
                     <div className="row-span-1 col-span-2 flex flex-row justify-between items-center py-2">
                         <div>
-                            <h1 className="font-header text-primary text-base">Default Role Permission</h1>
+                            <h1 className="font-header text-primary text-base">
+                                {
+                                    selectedRole === 1 ? "System Admin "
+                                    : selectedRole === 2 ? "Course Admin "
+                                    : selectedRole === 3 ? "Learner "
+                                    : selectedRole === 4 ? "Subject Matter Experts "
+                                    : null
+                                }
+                                Default Role Permission</h1>
                             <p className="font-text text-unactive text-xs">Cutomize the selected role's permission to the system funtionalities</p>
                         </div>
                         <div>

@@ -10,7 +10,7 @@ import { format } from "date-fns";
 import DeletePanelModal from "./DeletePanelModal";
 
 
-// Front-end Pagination
+
 //Front end Pagination
 const usePagination = (data, itemPerpage = 2) => {
     const [currentPage, setCurrentPage] = useState(1);

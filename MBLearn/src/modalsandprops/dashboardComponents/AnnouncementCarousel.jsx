@@ -68,13 +68,13 @@ const AnnouncmentCarousel = () => {
                             </div>
                         </div>
                         <div className="flex flex-row gap-2 items-center justify-center">
-                            {
+                            {/* {
                                 role === 'System Admin' &&
                                 <div className='aspect-square flex flex-row justify-center items-center text-primary border-2 border-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 hover:bg-primary hover:text-white ease-in-out transition-all'
                                     onClick={() => setOpenAdd(true)}>
                                     <FontAwesomeIcon icon={faPenToSquare} className='text-sm p-2'/>
                                 </div>
-                            }
+                            } */}
                             <CarouselPrevious/>
                             <CarouselNext/>
                         </div>

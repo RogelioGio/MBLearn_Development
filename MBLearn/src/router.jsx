@@ -70,7 +70,10 @@ const router = createBrowserRouter([
                     },
                     {
                         path: "systemconfigurationmaintenance",
-                        element: <SystemConfiguration/>
+                        element:
+                        <CourseListProvider>
+                            <SystemConfiguration/>
+                        </CourseListProvider>
                     },
                     {
                         path: "systemlevelreports",

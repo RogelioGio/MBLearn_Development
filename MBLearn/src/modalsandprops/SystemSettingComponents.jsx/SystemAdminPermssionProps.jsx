@@ -7,7 +7,7 @@ const SystemAdminPermissionProps = ({isChecked,permissionswitch,permissionRef}) 
     const [roleHopping, setRoleHopping] = useState();
     useEffect(()=> {
         isChecked("RoleHopping") ? setRoleHopping(true) : null
-    },[])
+    },[permissionswitch])
 
     return(
         <>

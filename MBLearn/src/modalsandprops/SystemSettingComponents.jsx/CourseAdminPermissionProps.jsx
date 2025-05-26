@@ -7,7 +7,7 @@ const CourseAdminPermissionProps = ({isChecked,permissionswitch,permissionRef,sy
     const [roleHopping, setRoleHopping] = useState();
     useEffect(() => {
         isChecked("RoleHopping") ? setRoleHopping(true) : setRoleHopping(false)
-    },[])
+    },[permissionswitch])
 
     return(
         <>
