@@ -56,7 +56,7 @@ export default function UserManagementMaintenance() {
                 duration: 3000
             })
         })
-        .listen("User-Archived", (e) => {
+        .listen(".User-Archived", (e) => {
             console.log(e);
             toast("Archived User Successfully",{
                 description: `${e.systemadmin} has archived ${e.affected}`
