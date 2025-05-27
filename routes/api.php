@@ -161,6 +161,17 @@ Route::middleware('auth:sanctum')->group(function(){
 
 //PUSH NOTIFICATION
 Route::post('/send-reset-password-req', [PushNotificationController::class, 'sendResetPasswordReq']);
+//Design View PUSH NOTIFICATION
+Route::get('/preview-reset-password-email', function () {
+    $data = [
+        'username' => 'Test User',
+        'imageUrl' => asset('storage/images/Panel-1.png'),
+        'message' => 'Click the link below to reset your password:',
+        'actionUrl' => 'https://example.com/reset-password?email=test@example.com',
+        'actionText' => 'Reset Password',
+    ];
+    return view('emails.reset_password_notification', $data);
+});
 
 Route::apiResource('/carousels', CarouselImageController::class);
 Route::get('/test', [userInfo_controller::class, 'test']);
