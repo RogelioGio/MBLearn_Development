@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\CarouselImageController;
 use App\Http\Controllers\Api\CourseContextController;
 use App\Http\Controllers\Api\FilterOptionController;
 use App\Http\Controllers\Api\OptionController;
+use App\Http\Controllers\PushNotificationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
@@ -157,6 +158,9 @@ Route::middleware('auth:sanctum')->group(function(){
 
 
 });
+
+//PUSH NOTIFICATION
+Route::post('/send-reset-password-req', [PushNotificationController::class, 'sendResetPasswordReq']);
 
 Route::apiResource('/carousels', CarouselImageController::class);
 Route::get('/test', [userInfo_controller::class, 'test']);

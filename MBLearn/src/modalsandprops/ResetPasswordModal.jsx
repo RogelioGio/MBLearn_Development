@@ -3,10 +3,41 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import { useFormik } from "formik";
 import * as React from "react";
+import { useState } from "react";
+import * as Yup from "yup";
+import axiosClient from "../axios-client";
+
 
 const ResetPasswordModal = ({open, close}) => {
+    const [resetting, setResseting] = useState(false);
 
-    const formik = useFormik({})
+    const formik = useFormik({
+        initialValues: {
+            email: '',
+        },
+        validationSchema: Yup.object({
+            email: Yup.string()
+                .email('Invalid email address')
+                .required('Required'),
+        }),
+        onSubmit: (values) => {
+            // Handle form submission
+            setResseting(true);
+            const payload = {
+                email: values.email,
+            };
+            axiosClient.post('/send-reset-password-req',payload)
+            .then((res) => {
+                console.log(res)
+                setResseting(false)
+            }).else((err) => {
+                console.log(err)
+                setResseting(false)
+            })
+            console.log('Form submitted:', payload);
+            // Close the modal after submission
+        },
+    })
 
     return (
         <Dialog open={open} onClose={close}>
@@ -29,29 +60,31 @@ const ResetPasswordModal = ({open, close}) => {
                                 </div>
                             </div>
                         </div>
-                        <div className="px-4 w-full col-span-2">
+                        <form onSubmit={formik.handleSubmit} className="px-4 w-full col-span-2">
+                        <div>
                             <div className="inline-flex flex-col gap-1 col-span-2 py-2 w-full">
-                                <label htmlFor="name" className="font-text text-xs flex flex-row justify-between">
+                                <label htmlFor="email" className="font-text text-xs flex flex-row justify-between">
                                     <p>MBLearn Email <span className="text-red-500">*</span></p>
                                 </label>
-                                <input type="text" name="lastname"
-                                        // value={formik.values.lastname}
-                                        // onChange={formik.handleChange}
-                                        // onBlur={formik.handleBlur}
+                                <input type="text" name="email"
+                                        value={formik.values.email}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
                                         maxLength={50}
                                         className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
-                                {/* {formik.touched.lastname && formik.errors.lastname ? (<div className="text-red-500 text-xs font-text">{formik.errors.lastname}</div>):null} */}
+                                {formik.touched.email && formik.errors.email ? (<div className="text-red-500 text-xs font-text">{formik.errors.email}</div>):null}
                             </div>
                         </div>
-                        <div className="flex flex-row gap-2 px-4 col-span-2">
+                        <div className="flex flex-row gap-2">
                                 <button type="button" className="w-full inline-flex flex-col items-center gap-2 p-4 rounded-md font-header uppercase text-primary border-2 border-primary text-xs hover:text-white hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out"
                                     onClick={close}>
                                     <p>Cancel</p>
                                 </button>
                                 <button type="submit" className="w-full inline-flex flex-col items-center gap-2 bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out">
-                                    <p>Reset</p>
+                                    <p>{resetting ? "Resetting Pasword":"Reset Password"}</p>
                                 </button>
                             </div>
+                        </form>
                         </div>
                     </DialogPanel>
                 </div>
