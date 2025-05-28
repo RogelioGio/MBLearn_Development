@@ -21,6 +21,7 @@ import {
 } from "../components/ui/sheet"
 import { useCourseContext } from "../contexts/CourseListProvider"
 import { useFormik } from "formik"
+import { useCourse } from "../contexts/selectedcourseContext"
 
 
 
@@ -32,6 +33,8 @@ export default function AssignedCourseCatalog() {
     const [tab, setTab] = useState("myCourses");
     const [openAddCourse, setOpenAddCourse] = useState(false);
     const [isFiltered, setFiltered] = useState(false);
+    const {SetCourse} = useCourse();
+    const [selected, setSelected] = useState();
 
     // Sort Order State
     const [sort, setSort] = useState({
@@ -124,7 +127,7 @@ export default function AssignedCourseCatalog() {
 
     const [pageState, setPagination] = useState({
         currentPage: 1,
-        perPage: 6,
+        perPage: 8,
         totalCourses: 0,
         lastPage:1,
         startNumber: 0,
@@ -406,7 +409,7 @@ export default function AssignedCourseCatalog() {
             </div>
 
             {/* Course Catalog */}
-            <div className = {`mx-5 col-span-4 row-start-4 row-span-1 grid grid-cols-3 grid-rows-2 gap-3 py-2`}>
+            <div className = {`mx-5 col-span-4 row-start-4 row-span-1 grid grid-cols-4 grid-rows-2 gap-3 py-2`}>
                 {
                     !loading ? (
                         assigned_course && assigned_course.length > 0 ? (
@@ -424,6 +427,7 @@ export default function AssignedCourseCatalog() {
                                 enrolled={course?.enrolled}
                                 ongoing={course?.ongoing}
                                 due_soon={course?.due_soon}
+                                selected={()=> {SetCourse(course)}}
                                 />
                             ))
                         ) :

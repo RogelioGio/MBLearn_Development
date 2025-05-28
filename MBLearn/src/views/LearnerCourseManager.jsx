@@ -17,7 +17,7 @@ import { useStateContext } from "../contexts/ContextProvider"
 import { useNavigate, useParams } from "react-router-dom"
 import CourseLoading from "../assets/Course_Loading.svg"
 import { Progress } from "../components/ui/progress"
-
+import { useCourse } from "../contexts/selectedcourseContext"
 
 export default function LearnerCourseManager() {
     const {coursetypes, coursecategories} = useCourseContext();
@@ -29,6 +29,7 @@ export default function LearnerCourseManager() {
     const {coursetype} = useParams()
     const [duration, setDuration] = useState();
     const navigate = useNavigate();
+    const {SetCourse} = useCourse()
 
     // Sort Order State
         const [sort, setSort] = useState({
@@ -320,11 +321,11 @@ export default function LearnerCourseManager() {
                         {
                             enrolled?.map((course) => (
                                 <div className='bg-white text-white h-full rounded-md shadow-md hover:scale-105 hover:cursor-pointer transition-all ease-in-out grid grid-rows-[min-content_1fr_1fr_min-content]'
-                                    onClick={() => navigate(`/learner/course/${course.id}`)}
+                                    onClick={() => {navigate(`/learner/course/${course.id}`), SetCourse(course)}}
                                 >
                                     {/* Course Thumbnail */}
                                     <div className="flex flex-row justify-end bg-gradient-to-b from-[hsl(239,94%,19%)] via-[hsl(214,97%,27%)] to-[hsl(201,100%,36%)] rounded-t-md p-4 gap-2">
-                                        <span className="inline-flex items-center rounded-md bg-primarybg px-2 py-1 text-xs font-medium text-primary font-text">Published</span>
+                                        {/* <span className="inline-flex items-center rounded-md bg-primarybg px-2 py-1 text-xs font-medium text-primary font-text">Published</span> */}
                                         <span className="inline-flex items-center rounded-md bg-primarybg px-2 py-1 text-xs font-medium text-primary font-text">{course.training_type}</span>
                                     </div>
                                     <div className='px-4 py-2 flex flex-col justify-center row-span-2'>

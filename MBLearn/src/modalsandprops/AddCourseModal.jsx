@@ -506,7 +506,7 @@ const AddCourseModal = ({open,onClose,tab,refresh}) => {
                                                 Back</button>
                                                 <input type="submit"
                                                     value="Continue"
-                                                    onClick={console.log(formik2.values)}
+                                                    //onClick={console.log(formik2.values)}
                                                     className={`bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out w-full
                                                     `}/>
                                                 </div>

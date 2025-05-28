@@ -30,26 +30,28 @@ export default function Course() {
     const {role, user} = useStateContext();
     const {id} = useParams();
     const [course, setCourse] = useState([]);
-    const [isLoading ,setLoading] = useState(true);
+    const [isLoading ,setLoading] = useState(false);
     const [tab, setTab] = useState("module");
     const [open, setOpen] = useState(false);
     const [openDetails, setOpenDetails] = useState(false);
     const [openPublish, setOpenPublish] = useState(false);
     const [assign, setAssign] = useState(false);
-    const {selectCourse, selectedCourse, isFetching, resetSelectedCourse} = useCourse();
+    const {selectCourse, selectedCourse, isFetching, resetSelectedCourse, Course} = useCourse();
     const [learnerProgress, setLearnerProgress] = useState();
 
 
     useEffect(() => {
         setLoading(true)
+        console.log('the corse is passed is:', Course || "none");
+        setLoading(false);
     },[])
 
-    useEffect(() => {
-        resetSelectedCourse(id);
-        selectCourse(id);
-        setLoading(isFetching);
-        setCourse(selectedCourse);
-    }, [selectedCourse,id, isFetching]);
+    // useEffect(() => {
+    //     resetSelectedCourse(id);
+    //     selectCourse(id);
+    //     setLoading(isFetching);
+    //     setCourse(selectedCourse);
+    // }, [selectedCourse,id, isFetching]);
 
     useEffect(()=>{
         if (role === "Learner") {
@@ -65,10 +67,10 @@ export default function Course() {
         //     console.log("Active Tab:", tab);
         // }, [tab]);
         const tabComponents = {
-            module: <CourseModuleProps course={course}/>,
-            learner: <CourseLearenerProps course={course}/>,
-            courseAdmin: <CourseCourseAdminAssignmentProps courseID={course}/>,
-            enrollment: <CourseEnrollmentProps course={course}/>,
+            module: <CourseModuleProps course={Course}/>,
+            learner: <CourseLearenerProps course={Course}/>,
+            courseAdmin: <CourseCourseAdminAssignmentProps courseID={Course}/>,
+            enrollment: <CourseEnrollmentProps course={Course}/>,
         };
 
     return(
@@ -76,7 +78,7 @@ export default function Course() {
         <div className={`grid ${role === "Course Admin" ? "grid-cols-4 grid-rows-[4rem_3rem_auto]":"grid-cols-[1fr_20rem] grid-rows-[min-content_min-content_4rem_auto]"} grid-rows-[4rem_3rem_auto] h-full w-full overflow-hidden`}>
             <Helmet>
                 {/* Title of the mark-up */}
-                <title>MBLearn | {isLoading ? "Loading..." : course?.name || "No Course Found"}</title>
+                <title>MBLearn | {isLoading ? "Loading..." : Course?.name || "No Course Found"}</title>
             </Helmet>
 
 
@@ -92,13 +94,13 @@ export default function Course() {
                                 </div>
                                 {/* Course Name */}
                                 <div >
-                                    <h1 className="font-header text-2xl font-bold text-primary">{course?.name} </h1>
-                                    <p className="font-text text-xs text-unactive">Course ID: 12345678910 </p>
+                                    <h1 className="font-header text-2xl font-bold text-primary">{Course?.name} </h1>
+                                    <p className="font-text text-xs text-unactive">Course ID: {Course?.CourseID} </p>
                                 </div>
                                 {/* Course Status */}
-                                <span className="inline-flex items-center rounded-md bg-secondaryprimary px-4 py-2 text-xs font-medium text-primary font-text ring-1 ring-primary gap-1">
+                                {/* <span className="inline-flex items-center rounded-md bg-secondaryprimary px-4 py-2 text-xs font-medium text-primary font-text ring-1 ring-primary gap-1">
                                     Published
-                                </span>
+                                </span> */}
                             </div>
                             <div className="flex flex-row gap-1 pr-5">
                                 {/* Action Button */}
@@ -154,8 +156,8 @@ export default function Course() {
                                 </div>
                                 {/* Course Name */}
                                 <div >
-                                    <h1 className="font-header text-2xl font-bold text-white">{course?.name} </h1>
-                                    <p className="font-text text-xs text-white">Course ID: {course?.CourseID} </p>
+                                    <h1 className="font-header text-2xl font-bold text-white">{Course?.name} </h1>
+                                    <p className="font-text text-xs text-white">Course ID: {Course?.CourseID} </p>
                                 </div>
                                 {/* Course Status */}
                                 {/* <span className="inline-flex items-center rounded-md bg-secondaryprimary px-4 py-2 text-xs font-medium text-primary font-text ring-1 ring-primary gap-1">
@@ -170,7 +172,7 @@ export default function Course() {
                                     <p className="font-header">Detail</p>
                                 </div>
                             </div>
-                        </>} course={course} LearnerProgress={learnerProgress}/>
+                        </>} course={Course} LearnerProgress={learnerProgress}/>
                     </>
                 ) :
                 isLoading && role === "Learner" ? (
@@ -194,12 +196,12 @@ export default function Course() {
 
         </div>
         {/* Edit */}
-        <EditCourseModal open={open} close={()=>setOpen(false)} id={course?.id}/>
+        <EditCourseModal open={open} close={()=>setOpen(false)} id={Course?.id}/>
         {/* Assign Course Admin */}
         {/* <AssignCourseAdmin open={assign} close={()=>setAssign(false)} id={course?.id}/> */}
-        <AddAssignCourseAdmin courseID={course?.id} open={assign}  close={()=>setAssign(false)} />
+        <AddAssignCourseAdmin courseID={Course?.id} open={assign}  close={()=>setAssign(false)} />
         {/* CourseDetail */}
-        <CourseDetailsModal open={openDetails} close={()=>setOpenDetails(false)} selectedCourse={course}/>
+        <CourseDetailsModal open={openDetails} close={()=>setOpenDetails(false)} selectedCourse={Course}/>
         {/* Course Publishing */}
         <CoursePublishingModal open={openPublish} close={()=>setOpenPublish(false)} />
         </>

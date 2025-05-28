@@ -10,29 +10,29 @@ import { useCourseContext } from "../contexts/CourseListProvider"
 
 const EditCourseModal = ({open, close, id}) => {
     const [hover, setHover] = useState(false);
-    const [loading, setLoading] = useState(true)
-    const {selectedCourse = [] , selectCourse, isFetching} = useCourse()
+    const [loading, setLoading] = useState(false)
+    const {selectedCourse = [] , selectCourse, isFetching, Course} = useCourse()
     const {coursetypes, coursecategories, trainingmodes} = useCourseContext();
     const [tab, setTab] = useState(1);
 
 
-    useEffect(() => {
-        if (open && id) {
-            formik.resetForm();
-            if (selectedCourse?.id === id) {
-                setLoading(false);
-                } else {
-                    setLoading(true);
-                    selectCourse(id);
-                }
-            }
-        return;
-        }, [id, selectedCourse, open]);
-        useEffect(() => {
-            if (selectedCourse && !isFetching) {
-                setLoading(false);
-            }
-        }, [selectedCourse, isFetching]);
+    // useEffect(() => {
+    //     if (open && id) {
+    //         formik.resetForm();
+    //         if (selectedCourse?.id === id) {
+    //             setLoading(false);
+    //             } else {
+    //                 setLoading(true);
+    //                 selectCourse(id);
+    //             }
+    //         }
+    //     return;
+    //     }, [id, selectedCourse, open]);
+    //     useEffect(() => {
+    //         if (selectedCourse && !isFetching) {
+    //             setLoading(false);
+    //         }
+    //     }, [selectedCourse, isFetching]);
 
 
         const formik = useFormik({
@@ -50,17 +50,17 @@ const EditCourseModal = ({open, close, id}) => {
                 course_objectives: "Loading...",
                 course_outcome: "Loading...",
             }:{
-                courseName: selectedCourse?.name || "",
-                courseType: selectedCourse?.types?.[0].id|| "",
-                courseCategories: selectedCourse?.categories?.[0]?.id || "",
-                training_type: selectCourse?.training_type || "",
-                training_mode: selectedCourse?.training_modes?.[0]?.id || "",
-                shortDescription: selectedCourse?.description || "",
-                months: selectedCourse?.months || "0",
-                weeks: selectedCourse?.weeks || "0",
-                days: selectedCourse?.days || "0",
-                course_objectives: " ",
-                course_outcome: "",
+                courseName: Course?.name || "",
+                courseType: Course?.types?.[0].id|| "",
+                courseCategories: Course?.categories?.[0]?.id || "",
+                training_type: Course?.training_type || "",
+                training_mode: Course?.training_modes?.[0]?.id || "",
+                shortDescription: Course?.description || "",
+                months: Course?.months || "0",
+                weeks: Course?.weeks || "0",
+                days: Course?.days || "0",
+                course_objectives: Course?.course_objectives || "",
+                course_outcome: Course?.course_outcomes || "",
             },
             onSubmit: (values) => {
                 console.log(values)

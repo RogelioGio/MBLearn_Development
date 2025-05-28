@@ -1,11 +1,11 @@
 import { Card, Progress, Text, RingProgress} from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 
-const AssignedCourseCatalogCard = ({name, courseType, courseCategory, trainingType, trainingMode, id, courseId, tab, adder, role, selfEnroll, enrolled, ongoing, due_soon}) => {
+const AssignedCourseCatalogCard = ({name, courseType, courseCategory, trainingType, trainingMode, id, courseId, tab, adder, role, selfEnroll, enrolled, ongoing, due_soon, selected}) => {
     const navigate = useNavigate();
 
     return(
-        <div className='bg-white text-white rounded-md shadow-md hover:scale-105 hover:cursor-pointer transition-all ease-in-out grid grid-rows-[min-content_1fr_min-content]' onClick={() => {role ? selfEnroll() : navigate(`/courseadmin/course/${id}`)}}>
+        <div className='bg-white text-white rounded-md shadow-md hover:scale-105 hover:cursor-pointer transition-all ease-in-out grid grid-rows-[min-content_1fr_min-content]' onClick={() => {role ? selfEnroll() : navigate(`/courseadmin/course/${id}`), selected()}}>
             {/* Course Thumbnail */}
             <div className="flex flex-row justify-end bg-gradient-to-b from-[hsl(239,94%,19%)] via-[hsl(214,97%,27%)] to-[hsl(201,100%,36%)] rounded-t-md p-4 gap-2">
                 <span className="inline-flex items-center rounded-md bg-primarybg px-2 py-1 text-xs font-medium text-primary font-text">Published</span>

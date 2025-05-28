@@ -140,7 +140,7 @@ export default function DefaultLayout() {
 
     //fetching the logged in user
     useEffect(() => {
-        console.log('Fetching user data...:', token);
+        //console.log('Fetching user data...:', token);
         axiosClient
         .get('/user')
         .then(({data})=>{

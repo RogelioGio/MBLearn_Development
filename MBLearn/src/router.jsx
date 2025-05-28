@@ -133,7 +133,9 @@ const router = createBrowserRouter([
                     {
                         path: "courses",
                         element:
+                        <SelectedCourseProvider>
                                 <AssignedCourse/>
+                        </SelectedCourseProvider>
                     },
                     {
                         path: "coursereports",

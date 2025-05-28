@@ -112,14 +112,14 @@ const CourseModuleProps = ({headers, course, LearnerProgress}) => {
     }
 
     useEffect(()=> {
-        console.log("Learner Progress: ", learnerProgress)
-        console.log(learnerProgress.length, "/" , course?.lessons?.length)
+        // console.log("Learner Progress: ", learnerProgress)
+        // console.log(learnerProgress.length, "/" , course?.lessons?.length)
         calculateProgress()
     },[learnerProgress, course?.lessons])
 
-    useEffect(() => {
-        console.log("course", course)
-    }, [course])
+    // useEffect(() => {
+    //     console.log("course", course)
+    // }, [course])
 
     return (
         <>

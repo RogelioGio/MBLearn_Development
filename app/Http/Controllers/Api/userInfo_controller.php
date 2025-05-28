@@ -425,7 +425,7 @@ class userInfo_controller extends Controller
                 $querySort->where('training_type', $filterData['training_type']);
             }
 
-            $paginate = $querySort->with(['categories', 'types', 'training_modes'])
+            $paginate = $querySort->with(['categories', 'types', 'training_modes','adder','lessons'])
                 ->where('archived', '=', 'active')
                 ->paginate($perPage, ['*'], 'page', $page);
 
@@ -550,7 +550,7 @@ class userInfo_controller extends Controller
                 $querySort->where('training_type', $filterData['training_type']);
             }
 
-            $paginate = $querySort->with(['categories', 'types', 'training_modes'])
+            $paginate = $querySort->with(['categories', 'types', 'training_modes','adder','lessons'])
                 ->where('archived', '=', 'active')
                 ->paginate($perPage);
 
@@ -749,7 +749,7 @@ class userInfo_controller extends Controller
                 });
             }
 
-            $paginate = $querySort->with(['categories', 'types', 'training_modes'])
+            $paginate = $querySort->with(['categories', 'types', 'training_modes','lessons'])
                 ->where('archived', '=', 'active')
                 ->paginate($perPage);
 
