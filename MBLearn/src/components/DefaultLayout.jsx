@@ -28,7 +28,11 @@ export default function DefaultLayout() {
     //Laravel ECHO
     useEffect(() => {
         if(!token) return;
-
+        if(role ==='SME') {
+            console.log('SME role detected, not subscribing to events');
+            navigate('/dashboard');
+            return;
+        }
         //User Management Events (System Admin)
         // echo.channel('Users')
         // .listen('.User-added', (e) => {
@@ -80,11 +84,11 @@ export default function DefaultLayout() {
         },300)
     };
 
-    const update = () => {
-        if(token){
-            localStorage.setItem('LAST_ACTIVITY', Date.now());
-        }
-    };
+    // const update = () => {
+    //     if(token){
+    //         localStorage.setItem('LAST_ACTIVITY', Date.now());
+    //     }
+    // };
 
 
 

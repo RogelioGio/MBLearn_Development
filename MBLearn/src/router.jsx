@@ -33,6 +33,8 @@ import LearnerSelfEnrollment from "./views/LearnerSelfEnrollment";
 import CompeLearnExtension from "./views/CompeLearnExtension";
 import InitialLogin from "./views/InitialLogin";
 import Test from "./views/Test";
+import SME from "./components/SME";
+import SMEDashboard from "./views/Dashboards/SMEDashboard";
 
 const router = createBrowserRouter([
 
@@ -207,6 +209,16 @@ const router = createBrowserRouter([
         ]
     },
 
+    //SME ROUTES
+    {
+        path: "/",
+        element:<SME/>,
+        children: [
+            {
+                path: "/dashboard",
+                element: <SMEDashboard/>
+            }]
+    },
 
     //Login route
     {
@@ -244,7 +256,9 @@ const router = createBrowserRouter([
     {
         path: "/welcome/:id/:role",
         element: <InitialLogin/>
-    }
+    },
+
+
 
 
 ]);

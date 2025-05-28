@@ -234,7 +234,7 @@ const CourseAdminDashboard = ({name, user}) => {
         </div>
 
         {/* Activities */}
-        <div className='col-span-3 row-start-3 mr-5 pt-2 pb-5'>
+        <div className='row-start-3 mr-5 pt-2 pb-5'>
             <div className="flex flex-col w-full h-full gap-2">
                 <div>
                     <h1 className="font-header text-primary text-base">Activities</h1>
