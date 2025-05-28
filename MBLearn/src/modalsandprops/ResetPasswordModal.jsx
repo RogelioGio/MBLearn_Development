@@ -30,7 +30,7 @@ const ResetPasswordModal = ({open, close}) => {
             .then((res) => {
                 console.log(res)
                 setResseting(false)
-            }).else((err) => {
+            }).catch((err) => {
                 console.log(err)
                 setResseting(false)
             })

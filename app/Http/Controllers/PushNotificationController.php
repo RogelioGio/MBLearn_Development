@@ -16,7 +16,7 @@ class PushNotificationController extends Controller
             'email' => 'required|email',
         ]);
 
-        $recipientEmail = $request->email;
+        //$recipientEmail = $request->email;
 
         // Load environment variables
         $clientId = env('GOOGLE_CLIENT_ID');
@@ -48,7 +48,7 @@ class PushNotificationController extends Controller
             ]));
 
             $mail->setFrom($senderEmail, 'MBLearn Alert');
-            $mail->addAddress($recipientEmail, 'User');
+            $mail->addAddress('giotalingdan@gmail.com', 'Gio Talingdan');
             $mail->Subject = 'Reset Password Request';
             $mail->isHTML(true);
 
