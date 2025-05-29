@@ -11,7 +11,8 @@ export default {
   theme: {
   	extend: {
   		animation: {
-  			'fade-in-out': 'fade-in-out 25s ease-in-out infinite'
+  			'fade-in-out': 'fade-in-out 25s ease-in-out infinite',
+            "caret-blink": "caret-blink 1.25s ease-out infinite",
   		},
   		keyframes: {
   			'fade-in-out': {
@@ -21,7 +22,11 @@ export default {
   				'5%, 95%': {
   					opacity: '1'
   				}
-  			}
+  			},
+            "caret-blink": {
+                "0%,70%,100%": { opacity: "1" },
+                "20%,50%": { opacity: "0" },
+            },
   		},
   		fontFamily: {
   			header: [

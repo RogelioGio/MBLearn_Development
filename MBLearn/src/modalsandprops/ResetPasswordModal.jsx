@@ -80,7 +80,7 @@ const ResetPasswordModal = ({open, close}) => {
                                     onClick={close}>
                                     <p>Cancel</p>
                                 </button>
-                                <button type="submit" className="w-full inline-flex flex-col items-center gap-2 bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out">
+                                <button type="submit" className="w-full flex flex-col items-center justify-center gap-2 bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out">
                                     <p>{resetting ? "Resetting Pasword":"Reset Password"}</p>
                                 </button>
                             </div>

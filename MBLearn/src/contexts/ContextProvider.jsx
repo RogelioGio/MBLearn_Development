@@ -7,12 +7,14 @@ const StateContext = createContext({
     availableRoles: [],
     EmployeeID: null,
     profile_image: null,
+    authenticated: false,
     setUser: () => {},
     setToken: () => {},
     setRole: () => {},
     setAvailableRoles: () => {},
     setEmployeeID: () => {},
     setProfile: () => {},
+    SetAuthenticated: () => {},
 });
 
 //passing information into layouts
@@ -23,6 +25,7 @@ export const ContextProvider = ({ children }) => {
     const [availableRoles, setAvailableRoles] = useState([]);
     const [employeeID, setEmployeeID] = useState('');
     const [profile_image, setProfile] = useState('');
+    const [authenticated, _setAuthenticated] = useState(false);
 
     const setToken = (token) => {
 
@@ -51,6 +54,10 @@ export const ContextProvider = ({ children }) => {
         }
     }
 
+    const SetAuthenticated = (authenticated) => {
+        _setAuthenticated(authenticated);
+    }
+
     return(
         //passing information into the layouts and components
         <StateContext.Provider value={{
@@ -60,12 +67,14 @@ export const ContextProvider = ({ children }) => {
             availableRoles,
             employeeID,
             profile_image,
+            authenticated,
             setUser,
             setToken,
             setRole,
             setAvailableRoles,
             setEmployeeID,
-            setProfile
+            setProfile,
+            SetAuthenticated
             }}>
 
             {children}

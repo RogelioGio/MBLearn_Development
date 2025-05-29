@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\MailComponent;
 use App\Http\Requests\LoginRequest;
 use App\Models\UserCredentials;
 use Illuminate\Support\Facades\Auth;
@@ -43,12 +44,22 @@ class AuthController extends Controller
     // }
 
     //New Login to another table
-    public function login(LoginRequest $request){
+    public function login(LoginRequest $request, MailComponent $mailComponent){
 
         $credentials = $request->validated();
         $key = 'login-attempts:'. Str::lower($credentials['MBemail']);
         $user = UserCredentials::where('MBemail', $credentials['MBemail'])->first();
         $remaining = RateLimiter::remaining($key, 5);
+
+        //OTP generation and verification
+        $otp = rand(100000, 999999);
+        $expiresAt = date('Y-m-d H:i:s', strtotime('+2 minutes'));
+
+        $htmlBody = "<h1>Login OTP</h1>
+        <p>Your OTP for login is: <strong>$otp</strong></p>
+        <p>This OTP is valid for 2 minutes".$expiresAt.".</p>";
+
+
 
         if(!$user){
             return response()->json([
@@ -73,11 +84,19 @@ class AuthController extends Controller
             $redirect = $this->redirections($user->userInfos->roles->toArray());
             // $redirect = $this->redirection($user->role);
 
+            //Email OTP to user
+            $result = $mailComponent->send(
+                'giotalingdan@gmail.com',
+                "MBLearn Account Verification",
+                $htmlBody
+            );
+
             return response()->json([
                 'message' => 'Login Successful',
                 'user' => $user,
                 'token' => $token,
-                'redirect' => $redirect
+                'redirect' => $redirect,
+                'OTPsent' => $result,
             ], 200);
         };
 
