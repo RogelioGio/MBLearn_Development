@@ -141,8 +141,17 @@ export default function Login() {
         }),
         onSubmit: (values) => {
             console.log(values.otp);
+            const payload = {
+                user_id: loginRedirect.userCredId,
+                otp: values.otp
+            }
             // Call the verified function to handle OTP verification
-            verified();
+            axiosClient.post('/verifyOtp', payload)
+            .then((res) => {console.log(res)
+                verified()
+            })
+            .err((err)=> console.log(err))
+            ;
         }
     })
 

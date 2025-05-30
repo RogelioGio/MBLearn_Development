@@ -107,4 +107,8 @@ class UserCredentials extends Model implements Authenticatable
 
         return $array;
     }
+
+    public function otp(){
+        return $this->hasOne(UserOtp::class, 'user_credentials_id', 'id');
+    }
 }

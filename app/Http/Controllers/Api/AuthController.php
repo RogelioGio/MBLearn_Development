@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\MailComponent;
 use App\Http\Requests\LoginRequest;
 use App\Models\UserCredentials;
+use App\Models\UserOtp;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
@@ -53,7 +54,7 @@ class AuthController extends Controller
 
         //OTP generation and verification
         $otp = rand(100000, 999999);
-        $expiresAt = date('Y-m-d H:i:s', strtotime('+2 minutes'));
+        $expiresAt = date('Y-m-d H:i:s', strtotime('+5 minutes'));
 
         $htmlBody = "<h1>Login OTP</h1>
         <p>Your OTP for login is: <strong>$otp</strong></p>
@@ -91,6 +92,11 @@ class AuthController extends Controller
                 $htmlBody
             );
 
+            UserOtp::updateOrCreate(
+                ['user_creds_id' => $user->id],
+                ['otp' => Hash::make($otp), 'expires_at' => $expiresAt]
+            );
+
             return response()->json([
                 'message' => 'Login Successful',
                 'user' => $user,
@@ -112,6 +118,40 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Invalid password, you have '. $remaining.' tries remaining',
         ], 401);
+    }
+
+    public function verifyOtp(Request $request){
+
+        $request->validate([
+            'user_id' => 'required|exists:userCredentials,id',
+            'otp' => 'required|digits:6',
+        ]);
+
+        $user_id = $request->input('user_id');
+        $input_otp = $request->input('otp');
+
+        $user = UserCredentials::findOrFail($user_id);
+
+        $userOtp = UserOtp::where('user_creds_id', $user->id)->where('expires_at','>',now())->first();
+
+        //If OTP expire
+        if(!$userOtp){
+            return response()->json(['message' => 'OTP has expired or does not exist'], 400);
+        }
+
+        //Verify OTP
+        if(!Hash::check($input_otp, $userOtp->otp)){
+            return response() -> json([
+                'message' => 'OTP is not matched',
+            ],401);
+        };
+
+        $userOtp -> delete();
+
+        return response() ->json([
+            'message' => 'otp works',
+        ]);
+
     }
 
     public function logout(Request $request){

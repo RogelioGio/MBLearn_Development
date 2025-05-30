@@ -32,6 +32,7 @@ use App\Models\UserInfos;
 
 //New Login routing
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/verifyOtp', [AuthController::class, 'verifyOtp']);
 //Protected Routes
 Route::middleware('auth:sanctum')->group(function(){
     Route::post('/logout', [AuthController::class, 'logout']);
