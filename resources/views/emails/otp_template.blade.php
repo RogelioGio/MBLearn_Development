@@ -16,8 +16,8 @@
                 <table width="100%" style="max-width: 600px; background-color: #fff; padding: 20px;">
                     <tr>
                         <td align="left" style="max-width: 600px; border: 1px;">
-                            <h2 style="margin:0px; color:hsl(218,97%,26%)">Reset Password Request</h2>
-                            <p style="font-size: small; line-height: 2rem;">This is to inform you that {{$user_fullName}} - [{{$user_MBEmail}}] has requested a password reset for their MBLearn account.</p>
+                            <h2 style="margin:0px; color:hsl(218,97%,26%)">Dear {{$user}},</h2>
+                            <p style="font-size: small; line-height: 2rem;">We received a request to log in to your MBLearn account. To complete your login, please use the One-Time Password (OTP) provided below:</p>
                         </td>
                     </tr>
                 </table>
@@ -27,22 +27,16 @@
             <td align="center">
                 <table width="100%" style="max-width: 600px; background-color: #fff; padding: 0px 20px;">
                     <tr>
-                        <td align="left" style="max-width: 600px; border: 1px;">
-                            <h3 style="margin:0px; color:hsl(218,97%,26%)">Request Details:</h3>
-                            <p style="font-size: small;">Employee ID: {{$employeeID}} </p>
-                            <p style="font-size: small;">Full Name: {{$user_fullName}} </p>
-                            <p style="font-size: small;">Division: {{$division}} </p>
-                            <p style="font-size: small;">Department: {{$department}} </p>
-                            <p style="font-size: small;">Section: {{$section}} </p>
-                            <p style="font-size: small;">Branch City and Location: {{$city}} - {{$location}} </p>
-                            <p style="font-size: small;">Account Role: {{$role}} </p>
-                            <p style="font-size: small;">Last-Logged in: {{$last_Logged_in}} </p>
-
-
-                            <p style="font-size: xx-small;">Please review the request and take the appropriate action to reset the password or contact the user if further verification is needed.</p>
-
-                            <p style="font-size: xx-small;">If this request appears suspicious or was not initiated by the user, please escalate it immediately according to your internal security procedures.</p>
-
+                        <td align="center" style="max-width: 600px; border: 1px;">
+                            <p style="font-size: small; margin: 1rem">Account Current One Time Password </p> <p style="font-style: italic; margin: 0rem 0.5rem;">This code is valid for the next 5 minutes.</p>
+                            <table>
+                                <tr>
+                                    <td style="border: 1px solid hsl(0, 0%, 40%); font-size: 32px; font-weight: bold; color: hsl(218, 97%, 26%); text-align: center; padding: 2rem;">
+                                        {{$otp}}
+                                    </td>
+                                </tr>
+                            </table>
+                            <p style="font-size: xx-small; margin: 1rem">If you did not initiate this request, please ignore this email or contact your system administrator immediately.</p>
                         </td>
                     </tr>
                 </table>
@@ -59,7 +53,7 @@
 
                             <p style="color:red;">
                                 Note: </br>
-                                This is an automated notification. Please do not reply directly to this email.
+                                Do not share your OTP with anyone. MBLearn will never ask for your password or OTP via email or phone.
                             </p>
                         </td>
                     </tr>

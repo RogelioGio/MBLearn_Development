@@ -20,8 +20,7 @@ import { InputOTP,
   InputOTPSeparator,
   InputOTPSlot, } from '../components/ui/input-otp'
   import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp"
-
-
+import { set } from 'date-fns'
 
 export default function Login() {
     const {setUser, setToken, setAvailableRoles, setRole, authenticated, SetAuthenticated} = useStateContext();
@@ -30,13 +29,36 @@ export default function Login() {
     const [resetPassword, setResetPassword] = useState(false);
     //const [authenticated, setAuthenticated] = useState(false);
     const [loginRedirect, setLoginRedirect] = useState({
-        token: '',
         role: '',
         isFirstLogin:'',
+        user_email:'',
         userCredId: '',
-        redirect: ''
-
     });
+    const [verify, setVerified] = useState();
+    const [otpError, setOtpError] = useState('');
+    const [requstOTP, setrequestOTP] = useState()
+
+    useEffect(()=>(
+        SetAuthenticated(false)
+    ),[])
+
+    //Expiration Timer
+    const [timeleft, setTimeLeft] = useState();
+    useEffect(()=>{
+        if (timeleft <=0) return;
+
+        const interval = setInterval(()=>{
+            setTimeLeft((prevTime) => prevTime - 1);
+        },1000);
+
+
+        return () => clearInterval(interval)
+    },[timeleft])
+    const formatTime = (seconds) => {
+        const mins = Math.floor(seconds/60);
+        const secs = seconds % 60;
+        return `${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+    }
 
     //loading state
     const [isLoading, setIsLoading] = useState(false);
@@ -98,24 +120,17 @@ export default function Login() {
 
             //API call
             axiosClient.post('/login', payload).then(({data})=>{
-                // setToken(data.token);
-                setLoginRedirect({
-                    token: data.token,
-                    role: data.user.user_infos.roles[0]?.role_name,
+                setLoginRedirect((prev)=> ({
+                    ...prev,
                     isFirstLogin: data.user.first_log_in,
                     userCredId: data.user.id,
-                    redirect: data.redirect
-                })
-                // setRole(data.user.user_infos.roles[0]?.role_name)
-                console.log(data.user.user_infos.roles[0]?.role_name);
+                    user_email: data.user.MBemail,
+                    role: data.user.user_infos.roles[0]?.role_name,
+                }))
                 console.log(data);
                 SetAuthenticated(true);
-
-                // if (!data.user.first_log_in) {
-                //     navigate(`/welcome/${data.user.id}/${data.user.user_infos.roles[0]?.role_name}`);
-                // } else{
-                //     navigate(data.redirect)
-                // }
+                setTimeLeft(5*60);
+                setIsLoading(false)
             })
             .catch(({response})=>{
                 if(response){
@@ -140,34 +155,50 @@ export default function Login() {
                 .matches(REGEXP_ONLY_DIGITS_AND_CHARS, 'OTP must contain only digits and characters')
         }),
         onSubmit: (values) => {
-            console.log(values.otp);
+            setVerified(true)
             const payload = {
                 user_id: loginRedirect.userCredId,
+                user_email:loginRedirect.user_email,
                 otp: values.otp
             }
             // Call the verified function to handle OTP verification
             axiosClient.post('/verifyOtp', payload)
-            .then((res) => {console.log(res)
-                verified()
+            .then(({data}) => {
+                setToken(data.token)
+                setRole(loginRedirect.role)
+                setVerified(false)
+                if(!loginRedirect.isFirstLogin){
+                    navigate(`/welcome/${loginRedirect.userCredId}/${loginRedirect.role}`)
+                }else{
+                    navigate(data.redirect)
+                }
+
             })
-            .err((err)=> console.log(err))
+            .catch((err)=> {
+                setOtpError(err.response.data.message)
+                setVerified(false)
+            }
+            )
             ;
         }
     })
 
-    const verified = () => {
-        // This function will be called when the user submits the OTP
-        // You can implement the logic to verify the OTP here
-        console.log(loginRedirect)
-        setToken(loginRedirect.token);
-        setRole(loginRedirect.role);
-
-        if(!loginRedirect.firstLogin){
-            navigate(loginRedirect.redirect)
-        }else{
-            navigate(`/welcome/${loginRedirect.userCredId}/${loginRedirect.role}`)
+    //Request Another OTP
+    const reqOTP = () => {
+        setrequestOTP(true)
+        const payload = {
+            user_id: loginRedirect.userCredId
         }
+        setOtpError('')
+        axiosClient.post('/reqOtp',payload)
+        .then(({data})=>{
+            setTimeLeft(5*60);
+            setrequestOTP(false)
+        }).catch((err)=>{
+            console.log(err)
+        })
     }
+
 
 
     return (
@@ -321,8 +352,19 @@ export default function Login() {
                 <div className='py-2 flex flex-col items-center justify-center gap-2'>
                     {/* <p className='font-text text-unactive text-xs'>Input one time password</p> */}
                     {
+                        timeleft > 0 ? (
+                            <p className='text-unactive text-xs font-xs'>OTP expires in: {formatTime(timeleft)}</p>
+                        ) : (
+                            <p className='text-unactive text-xs font-xs'>OTP expired! click resend to requerst another new OTP</p>
+                        )
+                    }
+                    {
                         OTPFormik.touched.otp && OTPFormik.errors.otp &&
                         <p className='font-text text-red-600 text-xs'>{OTPFormik.errors.otp}</p>
+                    }
+                    {
+                        otpError &&
+                        <p className='font-text text-red-600 text-xs'>{otpError}</p>
                     }
                     <form onSubmit={OTPFormik.handleSubmit}>
                         <InputOTP maxLength={6} pattern={REGEXP_ONLY_DIGITS_AND_CHARS} value={OTPFormik.values.otp} onChange={(value) => OTPFormik.setFieldValue('otp', value)}>
@@ -335,13 +377,16 @@ export default function Login() {
                             <InputOTPSlot index={5} />
                         </InputOTPGroup>
                         </InputOTP>
-                        <p className='font-text text-xs text-unactive py-2 text-center'>Didn't get the code? click here to <span className='text-primary hover:cursor-pointer'>resend</span></p>
+                        {
+                            !requstOTP &&
+                            <p className='font-text text-xs text-unactive py-2 text-center'>Didn't get the code? click here to <span className='text-primary hover:cursor-pointer' onClick={()=>reqOTP()}>resend</span></p>
+                        }
                     </form>
                 </div>
                 {/* Submit */}
                 <div className='w-full p-2 '>
-                    <div className='font-header text-white bg-primary w-full py-3 rounded-md flex items-center justify-center cursor-pointer hover:bg-primaryhover transition-all ease-in-out' onClick={()=>{OTPFormik.handleSubmit()}}>
-                        <p>Submit</p>
+                    <div className={`font-header text-white bg-primary w-full py-3 rounded-md flex items-center justify-center cursor-pointer hover:bg-primaryhover transition-all ease-in-out uppercase ${verify ? "opacity-50 cursor-not-allowed":""}`} onClick={()=>{OTPFormik.handleSubmit()}}>
+                        <p>{verify ? "verifying...":"submit"}</p>
                     </div>
                 </div>
             </div>

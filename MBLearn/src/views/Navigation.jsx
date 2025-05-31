@@ -55,7 +55,7 @@ const navItems = {
 }
 
 export default function Navigation() {
-    const {user, profile_image, role, availableRoles, setAvailableRoles,setUser, setToken, setRole} = useStateContext();
+    const {user, profile_image, role, availableRoles, setAvailableRoles,setUser, setToken, setRole, setAuthenticated} = useStateContext();
     const navigate = useNavigate();
 
     const Logout = () => {

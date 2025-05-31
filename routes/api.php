@@ -31,8 +31,10 @@ use App\Http\Controllers\Api\TypeController;
 use App\Models\UserInfos;
 
 //New Login routing
-Route::post('/login', [AuthController::class, 'login']);
 Route::post('/verifyOtp', [AuthController::class, 'verifyOtp']);
+Route::post('/reqOtp',[AuthController::class, 'requestOTP']);
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/reset-passowrd-request', [AuthController::class, 'reqResetPassword']);
 //Protected Routes
 Route::middleware('auth:sanctum')->group(function(){
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -161,7 +163,7 @@ Route::middleware('auth:sanctum')->group(function(){
 });
 
 //PUSH NOTIFICATION
-Route::post('/send-reset-password-req', [PushNotificationController::class, 'sendResetPasswordReq']);
+// Route::post('/send-reset-password-req', [PushNotificationController::class, 'sendResetPasswordReq']);
 //Design View PUSH NOTIFICATION
 Route::get('/preview-reset-password-email', function () {
     $data = [
@@ -173,6 +175,15 @@ Route::get('/preview-reset-password-email', function () {
     ];
     return view('emails.reset_password_notification', $data);
 });
+Route::get('/preview-otp-template', function () {
+
+    $data = [
+        'otp' => '123456',
+        'user' => 'Test User',];
+
+    return view('emails.otp_template', $data);
+});
+
 
 Route::apiResource('/carousels', CarouselImageController::class);
 Route::get('/test', [userInfo_controller::class, 'test']);

@@ -6,6 +6,7 @@ import * as React from "react";
 import { useState } from "react";
 import * as Yup from "yup";
 import axiosClient from "../axios-client";
+import { toast } from 'sonner';
 
 
 const ResetPasswordModal = ({open, close}) => {
@@ -26,10 +27,17 @@ const ResetPasswordModal = ({open, close}) => {
             const payload = {
                 email: values.email,
             };
-            axiosClient.post('/send-reset-password-req',payload)
+            axiosClient.post('/reset-passowrd-request',payload)
             .then((res) => {
                 console.log(res)
                 setResseting(false)
+                toast("Request Sent",{
+                        description: "Please wait for the system admin action for your request",
+                    })
+                setTimeout(
+                    formik.resetForm(),1000
+                )
+                close()
             }).catch((err) => {
                 console.log(err)
                 setResseting(false)
@@ -80,7 +88,7 @@ const ResetPasswordModal = ({open, close}) => {
                                     onClick={close}>
                                     <p>Cancel</p>
                                 </button>
-                                <button type="submit" className="w-full flex flex-col items-center justify-center gap-2 bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out">
+                                <button type="submit" className={`w-full flex flex-col items-center justify-center gap-2 bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out ${resetting? "opacity-50 cursor-not-allowed":""}`}>
                                     <p>{resetting ? "Resetting Pasword":"Reset Password"}</p>
                                 </button>
                             </div>

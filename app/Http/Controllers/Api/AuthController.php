@@ -49,18 +49,17 @@ class AuthController extends Controller
 
         $credentials = $request->validated();
         $key = 'login-attempts:'. Str::lower($credentials['MBemail']);
-        $user = UserCredentials::where('MBemail', $credentials['MBemail'])->first();
+        $user = UserCredentials::where('MBemail', $credentials['MBemail'])->with(['userInfos.roles'])->first();
         $remaining = RateLimiter::remaining($key, 5);
 
         //OTP generation and verification
         $otp = rand(100000, 999999);
         $expiresAt = date('Y-m-d H:i:s', strtotime('+5 minutes'));
 
-        $htmlBody = "<h1>Login OTP</h1>
-        <p>Your OTP for login is: <strong>$otp</strong></p>
-        <p>This OTP is valid for 2 minutes".$expiresAt.".</p>";
-
-
+        $htmlBody = view('emails.otp_template', [
+            'otp' => $otp,
+            'user' => $user->userInfos->first_name,
+        ])->render();
 
         if(!$user){
             return response()->json([
@@ -75,20 +74,14 @@ class AuthController extends Controller
         }
 
         if(Auth::attempt($credentials)){
-            $user->update(['timeout_count' => 0, 'last_logged_in' => now('Asia/Hong_Kong')->toDateTimeString()]);
             RateLimiter::clear($key);
-            //Generate Login Token
-            $token = $user->createToken('authToken')->plainTextToken;
-            //Log
             Log::info('User Login: ' . $user->userInfos->MBemail);
-
-            $redirect = $this->redirections($user->userInfos->roles->toArray());
             // $redirect = $this->redirection($user->role);
 
             //Email OTP to user
             $result = $mailComponent->send(
                 'giotalingdan@gmail.com',
-                "MBLearn Account Verification",
+                "MBLearn Account Verification-".$user->userInfos->first_name,
                 $htmlBody
             );
 
@@ -100,8 +93,6 @@ class AuthController extends Controller
             return response()->json([
                 'message' => 'Login Successful',
                 'user' => $user,
-                'token' => $token,
-                'redirect' => $redirect,
                 'OTPsent' => $result,
             ], 200);
         };
@@ -125,13 +116,14 @@ class AuthController extends Controller
         $request->validate([
             'user_id' => 'required|exists:userCredentials,id',
             'otp' => 'required|digits:6',
+            'user_email' => 'required|email',
         ]);
 
+        //$user_info = UserCredentials::where('MBemail', $request->input("user_email"))->first();
         $user_id = $request->input('user_id');
         $input_otp = $request->input('otp');
 
         $user = UserCredentials::findOrFail($user_id);
-
         $userOtp = UserOtp::where('user_creds_id', $user->id)->where('expires_at','>',now())->first();
 
         //If OTP expire
@@ -144,14 +136,52 @@ class AuthController extends Controller
             return response() -> json([
                 'message' => 'OTP is not matched',
             ],401);
+        }else{
+            $user->update(['timeout_count' => 0, 'last_logged_in' => now('Asia/Hong_Kong')->toDateTimeString()]);
+            $token = $user->createToken('authToken')->plainTextToken;
+            $redirect = $this->redirections($user->userInfos->roles->toArray());
         };
 
         $userOtp -> delete();
 
         return response() ->json([
             'message' => 'otp works',
+            'token' => $token,
+            'redirect' => $redirect,
         ]);
 
+    }
+
+    public function requestOTP(Request $request, MailComponent $mailComponent){
+
+        $request -> validate([
+            'user_id' => 'required|exists:userCredentials,id'
+        ]);
+
+        $otp = rand(100000, 999999);
+        $expiresAt = date('Y-m-d H:i:s', strtotime('+5 minutes'));
+        $user = UserCredentials::findOrFail($request->input('user_id'));
+
+
+        $htmlBody = view('emails.otp_template', [
+            'otp' => $otp,
+            'user' => $user->userInfos->first_name,
+        ])->render();
+
+        UserOtp::updateOrCreate(
+            ['user_creds_id' => $user->id],
+            ['otp' => Hash::make($otp), 'expires_at' => $expiresAt]
+        );
+
+        $result = $mailComponent->send(
+                'giotalingdan@gmail.com',
+                "MBLearn Account Verification-".$user->userInfos->first_name,
+                $htmlBody
+            );
+
+        return response() -> json([
+            'message' => 'OTP Requested'
+        ],200);
     }
 
     public function logout(Request $request){
@@ -163,6 +193,52 @@ class AuthController extends Controller
 
         return response()->json(['message' => 'No user to logout'], 400);
     }
+
+    //Request to reset password
+    public function reqResetPassword(Request $request, MailComponent $mailComponent){
+
+        $request->validate([
+            'email' => 'required|email|exists:userCredentials,MBemail',
+        ]);
+        $email = $request->input('email');
+
+        $user = UserCredentials::where('MBemail', $email)->with(['userInfos.division', 'userInfos.section','userInfos.department','userInfos.city','userInfos.branch','userInfos.roles'])->first();
+
+        $fullname = trim($user->userInfos->first_name . ' ' . ($user->userInfos->middle_name ? $user->userInfos->middle_name . ' ' : '') . $user->userInfos->last_name . ' ' . ($user->userInfos->suffix ? $user->userInfos->suffix : ''));
+
+        $htmlBody = view('emails.reset_password_notification',[
+            'user_fullName' => $fullname,
+            'user_MBEmail' => $user->MBemail,
+            'employeeID' => $user->userInfos->employeeID,
+            'division' => $user->userInfos->division ? $user->userInfos->division->division_name : "No Division Assigned",
+            'department' => $user->userInfos->department ? $user->userInfos->department->department_name : "No Department Assigned",
+            'section' => $user->userInfos->section ? $user->userInfos->section->section_name : "No Section Assigned",
+            'city' => $user->userInfos->city ? $user->userInfos->city->city_name : "No City Assigned",
+            'location' => $user->userInfos->branch ? $user->userInfos->branch->branch_name : "No Branch Assigned",
+            'role' => $user->userInfos->roles[0]->role_name,
+            'last_Logged_in' => $user->last_logged_in,
+        ])->render();
+
+        if(!$user){
+            return response()->json([
+                'message' => 'There is no user with that email',
+            ], 404);
+        }
+
+        $result = $mailComponent->send(
+            'giotalingdan@gmail.com',
+            "MBLearn Reset Password Request-".$fullname."-".$user->MBemail ,
+            $htmlBody
+        );
+
+        return response()->json([
+            'message' => 'User Found',
+            'user' => $user,
+            'RequestSent' => $result,
+        ], 200);
+    }
+
+
 
 
 }
