@@ -7,6 +7,7 @@ import { useStateContext } from '../contexts/ContextProvider';
 import { Link, Links, Navigate, NavLink, useNavigate } from 'react-router-dom';
 import { use } from 'react';
 import { toast } from 'sonner';
+import NotificationModal from '../modalsandprops/NotificationModal';
 
 //Icon props
 const Icons = ({icon, text, to}) => (
@@ -57,6 +58,7 @@ const navItems = {
 export default function Navigation() {
     const {user, profile_image, role, availableRoles, setAvailableRoles,setUser, setToken, setRole, setAuthenticated} = useStateContext();
     const navigate = useNavigate();
+    const [openNotficiation, setOpenNotification] = useState(true);
 
     const Logout = () => {
         toast("Logging Out....",{
@@ -131,6 +133,7 @@ export default function Navigation() {
 
 
     return (
+        <>
         <div className="flex flex-col items-center h-screen w-24 place-content-between py-2 z-10">
             <div className='flex flex-col place-content-between w-23 h-full bg-white py-5 px-2 shadow-lg m-1 border-r rounded-full'>
                 <ul className='flex flex-col gap-4 justify-center items-center p-[0.625rem]'>
@@ -149,6 +152,12 @@ export default function Navigation() {
                 <ul className='flex flex-col gap-4 justify-center items-center'>
                     <li><Icons icon={<FontAwesomeIcon icon={faGear}/>} text={"Account Setting"} to={"/systemadmin/accountsettings"}/></li>
                     {/* <li><Icons icon={<FontAwesomeIcon icon={faBell}/>} text={"Notifications"}/></li> */}
+                    <li className='_icon' onClick={() => setOpenNotification(true)}>
+                        <div className='icon group'>
+                            <p className='hover:scale-105 transition-all ease-in-out'><FontAwesomeIcon icon={faBell}/></p>
+                            <p className='icon-name group-hover:scale-100'>Notifications</p>
+                        </div>
+                    </li>
                     <li className='inline-block relative w-auto group p-1'>
                         <img src={user.user_infos.profile_image} alt="" className='w-10 h-10 rounded-full shadow-lg hover:scale-105 transition-all ease-in-out'/>
                         {/* Profile */}
@@ -171,5 +180,7 @@ export default function Navigation() {
             </div>
 
         </div>
+        <NotificationModal open={openNotficiation} close={() => setOpenNotification(false)}/>
+        </>
     )
 }

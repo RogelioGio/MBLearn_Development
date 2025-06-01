@@ -6,7 +6,6 @@ use App\Http\Controllers\Api\CarouselImageController;
 use App\Http\Controllers\Api\CourseContextController;
 use App\Http\Controllers\Api\FilterOptionController;
 use App\Http\Controllers\Api\OptionController;
-use App\Http\Controllers\PushNotificationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
