@@ -72,7 +72,7 @@ export default function DefaultLayout() {
 
 
 
-    }, []);
+    }, [user]);
 
     //User Activity handling
     const logout = () => {

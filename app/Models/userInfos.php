@@ -13,11 +13,13 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Laravel\Scout\Searchable;
 use Znck\Eloquent\Relations\BelongsToThrough;
+use Illuminate\Notifications\Notifiable;
 
 #[ObservedBy([UserInfosObserver::class])]
 class UserInfos extends Model
 {
     use HasFactory, Searchable;
+    use Notifiable;
 
     /**
      * The table associated with the model.
@@ -152,7 +154,7 @@ class UserInfos extends Model
         $array['role_name'] = $this->roles->map(function ($data){
             return $data['role_name'];
         })->toArray();
-        
+
         // Customize the array as needed
         return $array;
     }
