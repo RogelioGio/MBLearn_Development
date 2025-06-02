@@ -58,7 +58,7 @@ const navItems = {
 export default function Navigation() {
     const {user, profile_image, role, availableRoles, setAvailableRoles,setUser, setToken, setRole, setAuthenticated} = useStateContext();
     const navigate = useNavigate();
-    const [openNotficiation, setOpenNotification] = useState(true);
+    const [openNotficiation, setOpenNotification] = useState(false);
 
     const Logout = () => {
         toast("Logging Out....",{

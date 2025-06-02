@@ -1,8 +1,10 @@
 import Echo from 'laravel-echo';
- 
+
 import Pusher from 'pusher-js';
 window.Pusher = Pusher;
- 
+window.Pusher.logToConsole = true;
+
+
 const echo = new Echo({
     broadcaster: 'reverb',
     key: import.meta.env.VITE_REVERB_APP_KEY,
@@ -11,6 +13,15 @@ const echo = new Echo({
     wssPort: import.meta.env.VITE_REVERB_PORT ?? 443,
     forceTLS: (import.meta.env.VITE_REVERB_SCHEME ?? 'https') === 'https',
     enabledTransports: ['ws', 'wss'],
+
+    authEndpoint: 'http://localhost:8081/broadcasting/auth',
+
+    auth: {
+        withCredentials: true,
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('ACCESS_TOKEN')}`, // if using Sanctum or Passport
+        },
+    },
 });
 export default echo; // Allows import where needed
 

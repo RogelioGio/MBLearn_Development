@@ -29,10 +29,16 @@ export default function DefaultLayout() {
     useEffect(() => {
         if(!token) return;
         if(role ==='SME') {
-            console.log('SME role detected, not subscribing to events');
             navigate('/dashboard');
             return;
         }
+        if(user){
+            echo.private(`App.Models.UserCredentials.${user.id}`)
+            .notification((notification) => {
+            console.log('received notification:', notification);
+        });
+        }
+
         //User Management Events (System Admin)
         // echo.channel('Users')
         // .listen('.User-added', (e) => {

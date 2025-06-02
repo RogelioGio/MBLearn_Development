@@ -6,6 +6,8 @@ use App\Http\Controllers\Api\CarouselImageController;
 use App\Http\Controllers\Api\CourseContextController;
 use App\Http\Controllers\Api\FilterOptionController;
 use App\Http\Controllers\Api\OptionController;
+use App\Models\UserCredentials;
+use App\Notifications\TestNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
@@ -164,23 +166,27 @@ Route::middleware('auth:sanctum')->group(function(){
 //PUSH NOTIFICATION
 // Route::post('/send-reset-password-req', [PushNotificationController::class, 'sendResetPasswordReq']);
 //Design View PUSH NOTIFICATION
-Route::get('/preview-reset-password-email', function () {
-    $data = [
-        'username' => 'Test User',
-        'imageUrl' => asset('storage/images/Panel-1.png'),
-        'message' => 'Click the link below to reset your password:',
-        'actionUrl' => 'https://example.com/reset-password?email=test@example.com',
-        'actionText' => 'Reset Password',
-    ];
-    return view('emails.reset_password_notification', $data);
-});
-Route::get('/preview-otp-template', function () {
+// Route::get('/preview-reset-password-email', function () {
+//     $data = [
+//         'username' => 'Test User',
+//         'imageUrl' => asset('storage/images/Panel-1.png'),
+//         'message' => 'Click the link below to reset your password:',
+//         'actionUrl' => 'https://example.com/reset-password?email=test@example.com',
+//         'actionText' => 'Reset Password',
+//     ];
+//     return view('emails.reset_password_notification', $data);
+// });
 
-    $data = [
-        'otp' => '123456',
-        'user' => 'Test User',];
+Route::post('/send-notfication', function (){
+    $user = UserCredentials::find(1); // Replace with the actual user ID
+    $user->notify(new TestNotification());
 
-    return view('emails.otp_template', $data);
+    if($user){
+        $message = 'Notification sent successfully';
+    } else {
+        $message = 'Failed to send notification';
+    }
+    return response()->json(['message' => $message, 'user' => $user], 200);
 });
 
 
