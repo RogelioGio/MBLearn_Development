@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\ActivityLogsController;
 use App\Http\Controllers\Api\CarouselImageController;
 use App\Http\Controllers\Api\CourseContextController;
 use App\Http\Controllers\Api\FilterOptionController;
+use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\OptionController;
 use App\Models\UserCredentials;
 use App\Notifications\TestNotification;
@@ -160,7 +161,8 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('/compECourses/{course}', [CompECourseController::class, 'show']);
 
 
-
+    //Notifcation API
+    Route::get('/index-notifications', [NotificationController::class, 'index']);
 });
 
 //PUSH NOTIFICATION

@@ -35,8 +35,16 @@ export default function DefaultLayout() {
         if(user){
             echo.private(`App.Models.UserCredentials.${user.id}`)
             .notification((notification) => {
-            console.log('received notification:', notification);
-        });
+            toast(notification.title,{
+                description: notification.body,
+            })
+            });
+            axiosClient.get('/index-notifications')
+            .then(({data})=>{
+                console.log('Notifications fetched:', data);
+            }).catch((error) => {
+                console.error('Error fetching notifications:', error);
+            })
         }
 
         //User Management Events (System Admin)

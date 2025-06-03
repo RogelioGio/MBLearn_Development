@@ -44,7 +44,7 @@ class TestNotification extends Notification
         ];
     }
 
-    public function toBrodcast($notifiable){
+    public function toBroadcast($notifiable){
         return new BroadcastMessage([
             'title' => 'Test Notification',
             'body' => 'This is a test notification.',
