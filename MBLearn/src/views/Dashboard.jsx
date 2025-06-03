@@ -26,6 +26,7 @@ import './../index.css';
 import { ArrowLeft, ArrowRight } from "lucide-react"
 import Calendar from '../modalsandprops/dashboardComponents/Calendar';
 import { faCalendar } from '@fortawesome/free-regular-svg-icons';
+import CalendarModal from '../modalsandprops/dashboardComponents/CalendarModal';
 
 
 // Sample configs for chart
@@ -67,9 +68,9 @@ const chartConfig2 = {
 
 //One Dashboard Component for 3 different roles
 const DashboardLayout = ({role,name,user}) => {
-
     const calendarRef = useRef()
     const [monthLabel, setMonthLabel] = useState("")
+    const [openCalendarModal, setOpenCalendarModal] = useState(false);
     const updateMonthLabel = () => {
         const current = calendarRef.current?.getCurrentMonth();
         if (current) {
@@ -80,14 +81,14 @@ const DashboardLayout = ({role,name,user}) => {
         updateMonthLabel(); // set initial label
     }, []);
     const sampleEvents = [
-        { date: "2025-05-20", title: "Meeting with Finance" },
-        { date: "2025-05-25", title: "Payroll Deadline" },
+        { date: "2025-06-25", title: "Meeting with Finance", event_type: "Meeting" },
+        { date: "2025-06-30", title: "Payroll Deadline", event_type: "Deadline" },
+        { date: "2025-06-30", title: "Payroll Deadline", event_type: "Deadline" },
+        { date: "2025-06-30", title: "Payroll Deadline", event_type: "Deadline" },
+        { date: "2025-06-30", title: "Hello", event_type: "Meeting" },
     ];
 
-    const chartData2 = [
-        {systemAdmin: 120, courseAdmin: 600, learner:500 },
-    ]
-    const totalUser = chartData2[0].systemAdmin + chartData2[0].courseAdmin + chartData2[0].learner
+
     //Sample Data
 const chartData = [
   // --- January ---
@@ -149,6 +150,8 @@ const chartData = [
         //System admin Dasboard
         case 'System Admin':
             return (
+                <>
+
             <div className="grid  grid-cols-4 grid-rows-[6.25rem_1fr_1fr] h-full w-full">
                 <Helmet>{/* Title of the mark-up */}
                     <title>MBLearn | System Admin Dashboard</title>
@@ -176,7 +179,7 @@ const chartData = [
                         </div>
                         <div className='flex flex-row gap-2'>
                             <div>
-                                <div className='w-9 h-9 border-2 rounded-md text-primary border-primary flex justify-center items-center hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out'>
+                                <div className='w-9 h-9 border-2 rounded-md text-primary border-primary flex justify-center items-center hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out' onClick={()=>setOpenCalendarModal(true)}>
                                     <FontAwesomeIcon icon={faCalendar} className='text-sm'/>
                                 </div>
                             </div>
@@ -358,6 +361,8 @@ const chartData = [
                 </div>
 
             </div>
+            <CalendarModal open={openCalendarModal} close={()=>setOpenCalendarModal(false)}/>
+            </>
             )
         //Course Admin Dashboard
         case 'Course Admin':
@@ -402,7 +407,9 @@ export default function Dashboard()
     // }, [role])
 
     return (
+        <>
             <DashboardLayout role={role} name={user.user_infos.first_name} user={user}/>
+        </>
     )
 
 }
