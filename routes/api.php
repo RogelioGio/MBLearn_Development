@@ -41,7 +41,7 @@ Route::post('/reset-passowrd-request', [AuthController::class, 'reqResetPassword
 Route::middleware('auth:sanctum')->group(function(){
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', function (Request $request) {
-        return $request->user()->load(['userInfos', 'userInfos.city','userInfos.permissions','userInfos.roles',]);
+        return $request->user()->load(['userInfos', 'userInfos.city','userInfos.permissions','userInfos.roles','userInfos.department','userInfos.branch','userInfos.title','userInfos.division','userInfos.section']);
     });
     Route::get('/status/{userId}/{lessonId}', [LessonsController::class, 'updateLearnerProgress']);
     Route::get('/course-search', [CourseController::class, 'CourseSearch']);

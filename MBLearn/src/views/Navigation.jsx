@@ -70,7 +70,8 @@ export default function Navigation() {
     const OpenProfile = (e) => {
         e.stopPropagation()
         const roleName = user?.user_infos?.roles?.[0]?.role_name?.replace(/\s+/g, '').toLowerCase(); // Remove spaces
-        navigate(`/${roleName}/userdetail/${user?.user_infos?.id}`);
+        //navigate(`/${roleName}/userdetail/${user?.user_infos?.id}`);
+        navigate(`/${roleName}/profile`);
     }
 
 

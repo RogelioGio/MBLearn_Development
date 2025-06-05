@@ -35,6 +35,9 @@ import InitialLogin from "./views/InitialLogin";
 import Test from "./views/Test";
 import SME from "./components/SME";
 import SMEDashboard from "./views/Dashboards/SMEDashboard";
+import Calendar from "./views/Calendar";
+import UserProfile from "./views/UserProfile";
+import { User } from "lucide-react";
 
 const router = createBrowserRouter([
 
@@ -56,16 +59,21 @@ const router = createBrowserRouter([
                         element: <Dashboard/>
                     },
                     {
+                        path:"dashboard/calendar",
+                        element: <Calendar/>
+                    },
+                    {
                         path: "usermanagementmaintenance",
                         element:<UserManagementMaintenance/>,
                     },
-                    {
-                        path: "userdetail/:id",
-                        element:
-                        <SelectedUserProvider>
-                            <SelectUser/>
-                        </SelectedUserProvider>
-                    },
+                    // {
+                    //     path: "userdetail/:id",
+                    //     element:
+                    //     <SelectedUserProvider>
+                    //         <SelectUser/>
+                    //     </SelectedUserProvider>
+                    //     // <UserProfile/>
+                    // },
                     {
                         path: "useraccountsmaintenance",
                         element: <UserAccountSecurityMaintenance/>
@@ -94,9 +102,10 @@ const router = createBrowserRouter([
                         element: <AccountSettings/>
                     },
                     {
-                        path:'test',
-                        element: <Test/>
+                        path:'profile',
+                        element: <UserProfile/>
                     }
+
                 ]
             },
             {
@@ -257,6 +266,11 @@ const router = createBrowserRouter([
         path: "/welcome/:id/:role",
         element: <InitialLogin/>
     },
+
+    {
+        path: "/profile",
+        element: <UserProfile/>
+    }
 
 
 

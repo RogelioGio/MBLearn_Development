@@ -27,6 +27,7 @@ import { ArrowLeft, ArrowRight } from "lucide-react"
 import Calendar from '../modalsandprops/dashboardComponents/Calendar';
 import { faCalendar } from '@fortawesome/free-regular-svg-icons';
 import CalendarModal from '../modalsandprops/dashboardComponents/CalendarModal';
+import { useNavigate } from 'react-router';
 
 
 // Sample configs for chart
@@ -87,6 +88,8 @@ const DashboardLayout = ({role,name,user}) => {
         { date: "2025-06-30", title: "Payroll Deadline", event_type: "Deadline" },
         { date: "2025-06-30", title: "Hello", event_type: "Meeting" },
     ];
+
+    const navigate = useNavigate();
 
 
     //Sample Data
@@ -179,7 +182,7 @@ const chartData = [
                         </div>
                         <div className='flex flex-row gap-2'>
                             <div>
-                                <div className='w-9 h-9 border-2 rounded-md text-primary border-primary flex justify-center items-center hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out' onClick={()=>setOpenCalendarModal(true)}>
+                                <div className='w-9 h-9 border-2 rounded-md text-primary border-primary flex justify-center items-center hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out' onClick={()=>navigate('calendar')}>
                                     <FontAwesomeIcon icon={faCalendar} className='text-sm'/>
                                 </div>
                             </div>
