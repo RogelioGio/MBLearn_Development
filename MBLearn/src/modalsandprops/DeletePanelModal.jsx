@@ -14,7 +14,7 @@ const DeletePanelModal = ({open, close, referesh, refereshPanel, id}) => {
         setPanelId(id)
     }, [id])
 
-    console.log("Panel ID:", panelId)
+    //console.log("Panel ID:", panelId)
 
     const handleDelete = () => {
         setDeleting(true)

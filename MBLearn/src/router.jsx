@@ -38,6 +38,11 @@ import SMEDashboard from "./views/Dashboards/SMEDashboard";
 import Calendar from "./views/Calendar";
 import UserProfile from "./views/UserProfile";
 import { User } from "lucide-react";
+import { useStateContext } from "./contexts/ContextProvider";
+import Redirect from "./contexts/Redirect";
+
+// const {user} = useStateContext()
+// const cleanRole = user.user_infos.role[0].role_name.toLowerCase().replace(/\s+/g, '');
 
 const router = createBrowserRouter([
 
@@ -46,6 +51,10 @@ const router = createBrowserRouter([
         path: "/",
         element: <DefaultLayout />,
         children: [
+            {
+                path: "/",
+                element: <Redirect />
+            },
             {
                 path: "/systemadmin",
                 element: <ProtectedRoutes allowed={["System Admin"]}/>,

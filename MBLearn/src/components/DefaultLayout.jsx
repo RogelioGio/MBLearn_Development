@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { useStateContext } from '../contexts/ContextProvider';
 import { Navigate, Outlet, useNavigate } from 'react-router-dom';
 import Navigation from '../views/Navigation';
@@ -14,14 +14,15 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import echo from 'MBLearn/echo';
 import { toast } from 'sonner';
+import { set } from 'date-fns';
 
 
 
 
 export default function DefaultLayout() {
-    const {token, role, setRole, setUser, setProfile, user} = useStateContext();
+    const {token, role, setRole, setUser, setProfile, user, setToken} = useStateContext();
     const [ loading, setLoading ] = useState(true)
-    const [ warning, setWarning ] = useState(false)
+    const [ warning, setWarning ] = useState()
     const navigate = useNavigate();
 
 
@@ -39,12 +40,12 @@ export default function DefaultLayout() {
                 description: notification.body,
             })
             });
-            axiosClient.get('/index-notifications')
-            .then(({data})=>{
-                console.log('Notifications fetched:', data);
-            }).catch((error) => {
-                console.error('Error fetching notifications:', error);
-            })
+            // axiosClient.get('/index-notifications')
+            // .then(({data})=>{
+            //     console.log('Notifications fetched:', data);
+            // }).catch((error) => {
+            //     console.error('Error fetching notifications:', error);
+            // })
         }
 
         //User Management Events (System Admin)
@@ -83,78 +84,92 @@ export default function DefaultLayout() {
         //     echo.leave('')
         // }
 
-
-
-
     }, [user]);
 
     //User Activity handling
     const logout = () => {
-        console.log('Session ended, user is inactive');
-
-
-        setTimeout(() => {
-            navigate('/login');
-        },300)
+        setToken(null);
+        navigate('/login');
     };
 
-    // const update = () => {
-    //     if(token){
-    //         localStorage.setItem('LAST_ACTIVITY', Date.now());
-    //     }
-    // };
+    const InactivityTimer = useRef(null);
+    const IsInactive = useRef(false);
+    useEffect(()=>{
+        const handleActivity = () => {
+            if(IsInactive.current){
+                console.log('User is active again');
+                IsInactive.current = false;
+                setWarning(false)
+                localStorage.setItem('LOGOUT_WARNING', 'false')
+            }
+
+            clearTimeout(InactivityTimer.current);
+
+            InactivityTimer.current = setTimeout(() => {
+                console.log('User is inactive');
+                IsInactive.current = true;
+                localStorage.setItem('LOGOUT_WARNING', 'true');
+                setWarning(true)
+            },1000*60*15)
+
+        };
+
+        const handleBeforeUnload = () => {
+            localStorage.setItem('SESSION_CLOSED_AT', Date.now().toString());
+        }
+
+        const storedWarning = localStorage.getItem('LOGOUT_WARNING') === 'true'
+        IsInactive.current = storedWarning;
+        setWarning(storedWarning);
 
 
+        const events = ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart'];
+        events.forEach((event) => {
+            window.addEventListener(event, handleActivity);
+        });
+        window.addEventListener('beforeunload',handleBeforeUnload);
 
-    // useEffect(() => {
-    //     if(!token) return;
-    //     if(loading) return;
 
-    //     const inactivityTime = 5*60*60*1000;
-    //     let timeout;
+        if(!storedWarning){
+            handleActivity();
+        }
 
-    //     //Check userEvents
-    //     const checkInactivity = () => {
-    //         const lastActivity = localStorage.getItem('LAST_ACTIVITY');
-    //         if(lastActivity && Date.now() - lastActivity > inactivityTime){
-    //             setWarning(true)
-    //         } else {
-    //             timeout = setTimeout(()=> {checkInactivity()}, 30*60*1000);
-    //         }
-    //     }
+        handleActivity();
 
-    //     //Event Listeners
-    //     const events = ['mousemove', 'click', 'scroll', 'keypress'];
-    //     events.forEach(event => window.addEventListener(event, update));
+        return () => {
+            clearTimeout(InactivityTimer.current);
+            events.forEach((event) => {
+                window.removeEventListener(event, handleActivity);
+            });
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+    },[])
+    useEffect(()=>{
+        if(!token) return
 
-    //     const handleBeforeUnload = () => {
-    //         localStorage.setItem('SESSION_CLOSED_AT', Date.now());
-    //     };
-    //     window.addEventListener('beforeunload', handleBeforeUnload);
+        const SESSION_TIMEOUT = 5 * 60 * 60 * 1000;
+        const closedAt = localStorage.getItem('SESSION_CLOSED_AT');
 
-    //     //Actvity checks
-    //     timeout = setTimeout(checkInactivity, 30*60*1000);
+        if(closedAt){
+            //console.log(parseInt(closedAt, 10))
+            const closedTime = parseInt(closedAt, 10);
+            const now = Date.now();
 
-    //     return () => {
-    //         clearTimeout(timeout);
-    //         events.forEach(event => window.removeEventListener(event, update));
-    //         window.removeEventListener('beforeunload', handleBeforeUnload);
-    //     }
-    // },[token,loading])
+            if(now - closedTime > SESSION_TIMEOUT) {
+                //console.log('Session expired due to tab being closed too long');
+                setToken(null);
+                navigate('/login');
+                localStorage.removeItem('SESSION_CLOSED_AT');
+            } else {
+                //console.log('Tab reopened in time, session still valid');
+                localStorage.removeItem('SESSION_CLOSED_AT');
+            }
+        }
+    },[token])
 
-    //checking the tab inactivity while closed
-    // useEffect(() => {
-    //     if(!token) return;
-
-    //     const closedSession = localStorage.getItem('SESSION_CLOSED_AT');
-    //     const maxClosedTime = 30*60*1000; //30 minutes
-
-    //     if(closedSession && Date.now() - closedSession > maxClosedTime){
-    //         logout();
-    //     }
-    // },[token])
-
-    //countdown to logout after closing the modal
+    useEffect(()=>{
+        console.log('this is the status of warning:', warning)
+    },[warning])
 
     //fetching the logged in user
     useEffect(() => {
@@ -178,7 +193,7 @@ export default function DefaultLayout() {
 
     // Function to check if the user is logged in
     if(!token){
-        return <Navigate to="/login" replace/>
+        navigate('/login')
     }
 
     if(loading){
