@@ -76,12 +76,12 @@ const LearningJourney = ({ user }) => {
             </div>
 
             {/* Courses */}
-            <div className="grid grid-rows-2 grid-cols-4 gap-2 col-span-3">
+            <div className="grid grid-rows-2 grid-cols-3 gap-2 col-span-3">
                 {courses.map((course, index) => (
-                    <div key={index} className='bg-white text-white h-full rounded-md shadow-md hover:scale-105 hover:cursor-pointer transition-all ease-in-out grid grid-rows-[min-content_1fr_1fr_min-content]'>
+                    <div key={index} className='bg-white text-white h-full rounded-md shadow-md hover:scale-105 hover:cursor-pointer transition-all ease-in-out grid grid-rows-[1fr_min-content]'>
                         {/* Course Thumbnail */}
-                        <div className="flex flex-row justify-end bg-gradient-to-b from-[hsl(239,94%,19%)] via-[hsl(214,97%,27%)] to-[hsl(201,100%,36%)] rounded-t-md p-4 gap-2">
-                            {/* <span className="inline-flex items-center rounded-md bg-primarybg px-2 py-1 text-xs font-medium text-primary font-text">Published</span> */}
+                        {/* <div className="flex flex-row justify-end bg-gradient-to-b from-[hsl(239,94%,19%)] via-[hsl(214,97%,27%)] to-[hsl(201,100%,36%)] rounded-t-md p-4 gap-2">
+                            <span className="inline-flex items-center rounded-md bg-primarybg px-2 py-1 text-xs font-medium text-primary font-text">Published</span>
                             <span className="inline-flex items-center rounded-md bg-primarybg px-2 py-1 text-xs font-medium text-primary font-text">{course.training_type}</span>
                         </div>
                         <div className='px-4 py-2 flex flex-col justify-center row-span-2'>
@@ -89,14 +89,34 @@ const LearningJourney = ({ user }) => {
                             <p className='font-text text-primary text-xs'>{course?.types[0]?.type_name} - {course?.categories[0]?.category_name}</p>
                             <p className='font-text text-xs text-unactive'>Course ID: {course.CourseID}</p>
                         </div>
-                            {/* Progress */}
+
                         <div className="px-4 pb-5">
                             <div className="flex flex-row justify-between font-text text-unactive text-xs py-2">
                                 <p>Progress</p>
                                 <p>{course.progress} %</p>
                             </div>
                             <Progress value={course.progress}/>
+                        </div> */}
+                        <div className="bg-gradient-to-b from-[hsl(239,94%,19%)] via-[hsl(214,97%,27%)] to-[hsl(201,100%,36%)] rounded-t-md flex flex-row justify-end gap-2">
+                            <div className="bg-gradient-to-t from-black via-black/80 to-transparent w-full p-4 flex flex-col justify-between">
+                                <div>
+                                    <span className="inline-flex items-center rounded-md bg-primarybg px-2 py-1 text-xs font-medium text-primary font-text">{course.training_type}</span>
+                                </div>
+                                <div>
+                                    <p className='font-text text-white text-xs'>{course?.types[0]?.type_name} - {course?.categories[0]?.category_name}</p>
+                                    <h1 className='font-header text-sm text-white'>{course.name}</h1>
+                                    <p className='font-text text-xs text-white'>Course ID: {course.CourseID}</p>
+                                </div>
+                            </div>
                         </div>
+                        <div className="flex flex-col justify-between h-full p-4">
+                            <div className="flex flex-row justify-between font-text text-unactive text-xs pb-2">
+                                <p>Progress</p>
+                                <p>{course.progress} %</p>
+                            </div>
+                            <Progress value={course.progress}/>
+                        </div>
+
                     </div>
                 ))}
             </div>
