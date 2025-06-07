@@ -20,11 +20,16 @@ import { set } from 'date-fns';
 
 
 export default function DefaultLayout() {
+    // Function to check if the user is logged in
+
     const {token, role, setRole, setUser, setProfile, user, setToken} = useStateContext();
     const [ loading, setLoading ] = useState(true)
     const [ warning, setWarning ] = useState()
     const navigate = useNavigate();
 
+    if(!token){
+        navigate('/login')
+    }
 
     //Laravel ECHO
     useEffect(() => {
@@ -191,10 +196,7 @@ export default function DefaultLayout() {
         setTimeout(logout(), 1000)
     }
 
-    // Function to check if the user is logged in
-    if(!token){
-        navigate('/login')
-    }
+
 
     if(loading){
         return (

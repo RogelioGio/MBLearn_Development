@@ -10,6 +10,7 @@ import { format } from "date-fns";
 import Calendar from "MBLearn/src/modalsandprops/dashboardComponents/Calendar";
 import { faCalendar } from "@fortawesome/free-regular-svg-icons";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import CourseCard from "MBLearn/src/modalsandprops/CourseCard";
 
 
 const CourseAdminDashboard = ({name, user}) => {
@@ -140,9 +141,17 @@ const CourseAdminDashboard = ({name, user}) => {
                     </div>
             </div>
         {/* Courses Carosel */}
-        <div className='row-start-3 col-span-3 px-5 pt-2 p-2 flex flex-col'>
+        <div className='row-start-3 col-span-3 px-5 pt-2 p-2 grid grid-rows-[min-content_1fr] grid-cols-4 gap-2'>
             {/* Header */}
-            <div className="grid grid-cols-[auto] grid-rows-1 gap-10">
+            <div className="col-span-2 flex flex-row justify-between gap-2">
+                    <div className={`w-full group flex flex-row items-center justify-between py-2 px-4 border-2 border-primary rounded-md bg-white shadow-md hover:cursor-pointer hover:bg-primary ease-in-out transition-all ${tab === "myCourses" ? "!bg-primary !text-white":"text-primary"}`} onClick={()=>setTab("myCourses")}>
+                        <p className="font-header text-base group-hover:text-white"><span><FontAwesomeIcon icon={faBookBookmark}/></span> My Courses</p>
+                    </div>
+                    <div className={`w-full group flex flex-row items-center justify-between py-2 px-4 border-2 border-primary rounded-md bg-white shadow-md hover:cursor-pointer hover:bg-primary ease-in-out transition-all ${tab === "assignedCourses" ? "!bg-primary !text-white":"text-primary"}`} onClick={()=>setTab("assignedCourses")}>
+                        <p className="font-header text-base group-hover:text-white"><span><FontAwesomeIcon icon={faBook}/></span> Assigned Courses</p>
+                    </div>
+            </div>
+            {/* <div className="grid grid-cols-[auto] grid-rows-1 gap-10">
                 <div className="grid grid-cols-[1fr_1fr] gap-2 pb-2">
                     <div className={`group flex flex-row items-center justify-between py-2 px-4 border-2 border-primary rounded-md bg-white shadow-md hover:cursor-pointer hover:bg-primary ease-in-out transition-all ${tab === "myCourses" ? "!bg-primary !text-white":"text-primary"}`} onClick={()=>setTab("myCourses")}>
                         <p className="font-header text-base group-hover:text-white"><span><FontAwesomeIcon icon={faBookBookmark}/></span> My Courses</p>
@@ -153,9 +162,9 @@ const CourseAdminDashboard = ({name, user}) => {
                         <p className="font-text text-xs group-hover:text-white">View all your assigned courses in one place</p>
                     </div>
                 </div>
-            </div>
+            </div> */}
             {/* Content */}
-            <div className="w-full h-full grid grid-cols-4 grid-rows-1 gap-2">
+            <div className="row-start-2 col-span-4 grid grid-cols-4 gap-2 h-full">
             {
                     loading ? (
                         Array.from({length: 4}).map((_,i) =>(
@@ -173,28 +182,7 @@ const CourseAdminDashboard = ({name, user}) => {
                     ):(
                         assignedCourse.length > 0 ? (
                             assignedCourse.map((course)=>(
-                            <div className="bg-white w-full h-full shadow-md rounded-md grid grid-cols-1 grid-rows-[min-content_1fr_1fr_min-content] hover:cursor-pointer hover:scale-105 transition-all ease-in-out" onClick={() => navigate(`/courseadmin/course/${course.id}`)}>
-                                <div className="bg-gradient-to-b from-[hsl(239,94%,19%)] via-[hsl(214,97%,27%)] to-[hsl(201,100%,36%)] w-full h-14 rounded-t-md p-3">
-                                    <span className="inline-flex items-center rounded-md bg-primarybg px-2 py-1 text-xs font-medium text-primary font-text">
-                                        {course.training_type}
-                                    </span>
-                                </div>
-                                <div className="flex flex-col justify-center row-span-2 px-3">
-                                    <p className="font-header text-sm text-primary">{course.name}</p>
-                                    <p className="font-text text-unactive text-xs">Course ID: {course.CourseID}</p>
-                                </div>
-                                <div className="grid grid-cols-[1fr_min-content_1fr] gap-1 p-3">
-                                    <div className="flex flex-row items-center font-text justify-between">
-                                        <p className="text-xs text-unactive">On-going Learner</p>
-                                        <p className="font-header text-primary">{course.ongoing}</p>
-                                    </div>
-                                    <div className="w-[1px] h-full bg-divider"/>
-                                    <div className="flex flex-row items-center font-text justify-between">
-                                        <p className="font-header text-primary">{course.enrolled}</p>
-                                        <p className="text-xs text-right text-unactive">Enrolled Learner</p>
-                                    </div>
-                                </div>
-                            </div>
+                            <CourseCard key={course.id} course={course} type='courseAdmin'/>
                         ))
                         ) : (
                             <div className="w-full flex flex-col justify-center items-center col-span-4">
@@ -204,33 +192,16 @@ const CourseAdminDashboard = ({name, user}) => {
                     )
                 }
             </div>
-
-                {
-                    assignedCourse.length > 0 ? (
-                    <div className="flex flex-row justify-between pt-2">
-                                <>
-                                    <div className="border-2 border-primary p-1 px-2 aspect-square rounded-md shadow-md text-primary hover:bg-primary hover:cursor-pointer hover:text-white"
-                                    onClick={back}>
-                                        <FontAwesomeIcon icon={faArrowLeft} />
-                                    </div>
-
-                                    <div className="flex flex-row items-center gap-2">
-                                        {
-                                            Array.from({length: pageState.lastPage}).map((_,i) => (
-                                                <div key={i} className={`w-2 h-2 rounded-full ${i+1 === pageState.currentPage ? 'bg-primary': 'bg-unactive'}`}/>
-                                            ))
-                                        }
-                                    </div>
-
-                                    <div className="border-2 border-primary p-1 px-2 aspect-square rounded-md shadow-md text-primary hover:bg-primary hover:cursor-pointer hover:text-white"
-                                    onClick={next}>
-                                        <FontAwesomeIcon icon={faArrowRight} />
-                                    </div>
-                                </>
-
-                    </div>
-                    ) : (null)
-                }
+            <div className="col-start-4 row-start-1 flex flex-row gap-2 items-center justify-end">
+                <div className="flex justify-center items-center border-2 border-primary w-10 h-10 rounded-md shadow-md text-primary hover:bg-primary hover:cursor-pointer hover:text-white"
+                onClick={back}>
+                    <FontAwesomeIcon icon={faArrowLeft} />
+                </div>
+                <div className="flex justify-center items-center border-2 border-primary w-10 h-10 rounded-md shadow-md text-primary hover:bg-primary hover:cursor-pointer hover:text-white"
+                onClick={next}>
+                    <FontAwesomeIcon icon={faArrowRight} />
+                </div>
+            </div>
         </div>
 
         {/* Activities */}
@@ -243,54 +214,7 @@ const CourseAdminDashboard = ({name, user}) => {
 
                 <div className="w-full h-full grid grid-col-1 grid-rows-3 gap-2 ">
                     {
-                        loading ? (
-                            Array.from({length: 3}).map((index)=>(
-                            <div className="animate-pulse w-full h-full bg-white rounded-md shadow-md px-3 py-1 flex flex-row  justify-start items-center gap-3 hover:cursor-pointer hover:bg-primary group transition-all ease-in-out" />
-                            ))
-                        ) : (
-                            <>
-                            <div className="w-full h-full bg-white border-2 border-primary rounded-md shadow-md p-4 flex flex-row  justify-start items-center gap-3 hover:cursor-pointer hover:bg-primary group transition-all ease-in-out"
-                            //onClick={() => navigate('/learner/learnercoursemanager/enrolled')}
-                            >
-                            {/* icon */}
-                            <div className="group-hover:text-white group-hover:bg-gray-50 group-hover:bg-opacity-20  text-primary flex flex-col item-center justify-center bg-primarybg p-2 aspect-square rounded-full">
-                                <FontAwesomeIcon icon={faGraduationCap} className="text-base"/>
-                            </div>
-                            {/* desc */}
-                            <div className="flex flex-col justify-center items-start">
-                                <p className="group-hover:text-white font-header text-sm text-primary">Self Enrollment Request</p>
-                                <p className="group-hover:text-white font-text text-unactive text-xs">3 Learner's Request to Self-Enroll</p>
 
-                            </div>
-                        </div>
-                        {/* <div className="w-full h-full bg-white border-2 border-primary rounded-md shadow-md px-3 py-1 flex flex-row  justify-start items-center gap-3 hover:cursor-pointer hover:bg-primary group transition-all ease-in-out"
-                            onClick={() => navigate('/learner/learnercoursemanager/ongoing')}>
-                            icon
-                            <div className="group-hover:text-white group-hover:bg-gray-50 group-hover:bg-opacity-20  text-primary flex flex-col item-center justify-center bg-primarybg p-2 aspect-square rounded-full">
-                                <FontAwesomeIcon icon={faClock} className="text-base"/>
-                            </div>
-                            desc
-                            <div className="flex flex-col justify-center items-start">
-                                <p className="group-hover:text-white font-header text-sm text-primary">On-going</p>
-                                <p className="group-hover:text-white font-text text-unactive text-xs">You have 5 courses on-going</p>
-
-                            </div>
-                        </div> */}
-                        <div className="w-full h-fit bg-white border-2 border-primary rounded-md shadow-md p-4 flex flex-row  justify-start items-center gap-3 hover:cursor-pointer hover:bg-primary group transition-all ease-in-out"
-                            //onClick={() => navigate('/learner/learnercoursemanager/duesoon')}
-                            >
-                             {/* icon */}
-                            <div className="group-hover:text-white group-hover:bg-gray-50 group-hover:bg-opacity-20  text-primary flex flex-col item-center justify-center bg-primarybg p-2 aspect-square rounded-full">
-                                <FontAwesomeIcon icon={faTriangleExclamation} className="text-base"/>
-                            </div>
-                            {/* desc */}
-                            <div className="flex flex-col justify-center items-start">
-                                <p className="group-hover:text-white font-header text-sm text-primary">Due soon</p>
-                                <p className="group-hover:text-white font-text text-unactive text-xs">3 Learners are not done to thier course</p>
-                            </div>
-                        </div>
-                            </>
-                        )
                     }
                 </div>
             </div>

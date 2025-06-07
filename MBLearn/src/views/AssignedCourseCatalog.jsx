@@ -22,6 +22,7 @@ import {
 import { useCourseContext } from "../contexts/CourseListProvider"
 import { useFormik } from "formik"
 import { useCourse } from "../contexts/selectedcourseContext"
+import CourseCard from "../modalsandprops/CourseCard"
 
 
 
@@ -414,21 +415,22 @@ export default function AssignedCourseCatalog() {
                     !loading ? (
                         assigned_course && assigned_course.length > 0 ? (
                             assigned_course?.map((course, index) => (
-                                <AssignedCourseCatalogCard key={index}
-                                id={course.id}
-                                name={course.name}
-                                courseId={course?.CourseID}
-                                courseType={course.types[0]?.type_name}
-                                courseCategory={course.categories[0]?.category_name}
-                                trainingMode={course.training_modes[0]?.modes_name}
-                                trainingType={course.training_type}
-                                tab={tab}
-                                adder={course?.adder}
-                                enrolled={course?.enrolled}
-                                ongoing={course?.ongoing}
-                                due_soon={course?.due_soon}
-                                selected={()=> {SetCourse(course)}}
-                                />
+                                // <AssignedCourseCatalogCard key={index}
+                                // id={course.id}
+                                // name={course.name}
+                                // courseId={course?.CourseID}
+                                // courseType={course.types[0]?.type_name}
+                                // courseCategory={course.categories[0]?.category_name}
+                                // trainingMode={course.training_modes[0]?.modes_name}
+                                // trainingType={course.training_type}
+                                // tab={tab}
+                                // adder={course?.adder}
+                                // enrolled={course?.enrolled}
+                                // ongoing={course?.ongoing}
+                                // due_soon={course?.due_soon}
+                                // selected={()=> {SetCourse(course)}}
+                                // />
+                                <CourseCard key={course.id} course={course} type={tab === "myCourses" || tab === "assignedCourses" ? "courseAdminCourseManager" : "general"}/>
                             ))
                         ) :
                         (
