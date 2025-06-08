@@ -11,13 +11,19 @@ import Calendar from "MBLearn/src/modalsandprops/dashboardComponents/Calendar";
 import { faCalendar } from "@fortawesome/free-regular-svg-icons";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import CourseCard from "MBLearn/src/modalsandprops/CourseCard";
+import { useCourse_Context } from "MBLearn/src/contexts/Course_Context";
 
 
 const CourseAdminDashboard = ({name, user}) => {
     const [tab, setTab] = useState("myCourses")
     const [loading, setLoading] = useState(false)
     const [assignedCourse, setAssignedCourse] = useState([])
+    const {setCourse} = useCourse_Context();
     const navigate = useNavigate()
+
+    useState(() =>{
+        setCourse(null)
+    },[])
 
     const [pageState, setPagination] = useState({
             currentPage: 1,
@@ -35,7 +41,6 @@ const CourseAdminDashboard = ({name, user}) => {
                 [key]: value
             }))
         }
-
 
     const fetchCourses = (typeOfCourse) => {
         setLoading(true)
@@ -97,7 +102,6 @@ const CourseAdminDashboard = ({name, user}) => {
             pageChangeState("currentPage", pageState.currentPage + 1)
         }
     }
-
     return(
         <div className="grid grid-cols-4 grid-rows-[6.25rem_1fr_1fr] h-full w-full">
             <div className="flex flex-col justify-center col-span-3 row-span-1 pr-5 border-b ml-5 border-divider">
@@ -151,38 +155,17 @@ const CourseAdminDashboard = ({name, user}) => {
                         <p className="font-header text-base group-hover:text-white"><span><FontAwesomeIcon icon={faBook}/></span> Assigned Courses</p>
                     </div>
             </div>
-            {/* <div className="grid grid-cols-[auto] grid-rows-1 gap-10">
-                <div className="grid grid-cols-[1fr_1fr] gap-2 pb-2">
-                    <div className={`group flex flex-row items-center justify-between py-2 px-4 border-2 border-primary rounded-md bg-white shadow-md hover:cursor-pointer hover:bg-primary ease-in-out transition-all ${tab === "myCourses" ? "!bg-primary !text-white":"text-primary"}`} onClick={()=>setTab("myCourses")}>
-                        <p className="font-header text-base group-hover:text-white"><span><FontAwesomeIcon icon={faBookBookmark}/></span> My Courses</p>
-                        <p className="font-text text-xs group-hover:text-white">View all your inputted courses in one place</p>
-                    </div>
-                    <div className={`group flex flex-row items-center justify-between py-2 px-4 border-2 border-primary rounded-md bg-white shadow-md hover:cursor-pointer hover:bg-primary ease-in-out transition-all ${tab === "assignedCourses" ? "!bg-primary !text-white":"text-primary"}`} onClick={()=>setTab("assignedCourses")}>
-                        <p className="font-header text-base group-hover:text-white"><span><FontAwesomeIcon icon={faBook}/></span> Assigned Courses</p>
-                        <p className="font-text text-xs group-hover:text-white">View all your assigned courses in one place</p>
-                    </div>
-                </div>
-            </div> */}
             {/* Content */}
-            <div className="row-start-2 col-span-4 grid grid-cols-4 gap-2 h-full">
+            <div className="row-start-2 col-span-4 grid grid-cols-4 gap-2 h-full pb-2">
             {
                     loading ? (
                         Array.from({length: 4}).map((_,i) =>(
-                            <div className="animate-pulse w-full h-full grid grid-cols-1 grid-rows-[min-content_1fr_1fr_min-content] bg-white shadow-lg rounded-md">
-                                <div className="bg-gradient-to-b from-[hsl(239,94%,19%)] via-[hsl(214,97%,27%)] to-[hsl(201,100%,36%)] w-full h-14 rounded-t-md p-3">
-                                    <span className="inline-flex items-center rounded-md bg-primarybg px-2 py-1 text-xs font-medium text-primary font-text w-20 h-5">
-                                    </span>
-                                </div>
-                                <div className="flex flex-col justify-center row-span-2 gap-2 px-3">
-                                    <div className="h-5 w-40 bg-slate-500 rounded-full"></div>
-                                    <div className="h-5 w-20 bg-slate-500 rounded-full"></div>
-                                </div>
-                            </div>
+                            <div key={i} className="animate-pulse bg-white w-full h-full rounded-md shadow-md"/>
                         ))
                     ):(
                         assignedCourse.length > 0 ? (
                             assignedCourse.map((course)=>(
-                            <CourseCard key={course.id} course={course} type='courseAdmin'/>
+                            <CourseCard key={course.id} course={course} type='courseAdmin' click={()=>{navigate(`/courseadmin/course/${course.id}`); setCourse(course)}}/>
                         ))
                         ) : (
                             <div className="w-full flex flex-col justify-center items-center col-span-4">
@@ -214,7 +197,14 @@ const CourseAdminDashboard = ({name, user}) => {
 
                 <div className="w-full h-full grid grid-col-1 grid-rows-3 gap-2 ">
                     {
-
+                        loading ? (
+                            Array.from({length: 3}).map((_, i) => (
+                            <div className="animate-pulse bg-white w-full rounded-md shadow-md flex items-center justify-between" key={i}/>
+                        ))
+                        ) : (
+                        Array.from({length: 3}).map((_, i) => (
+                            <div className="border-primary border bg-white w-full rounded-md shadow-md flex items-center justify-between" key={i}/>
+                        )))
                     }
                 </div>
             </div>

@@ -10,12 +10,16 @@ import { Progress } from "MBLearn/src/components/ui/progress"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 import { faCalendar } from "@fortawesome/free-regular-svg-icons"
 import Calendar from "MBLearn/src/modalsandprops/dashboardComponents/Calendar"
+import CourseCard from "MBLearn/src/modalsandprops/CourseCard"
+import { useCourse_Context } from "MBLearn/src/contexts/Course_Context"
 
 
 const LearnerDashboard = ({name,user}) => {
     const [enrolled, setEnrolled] = useState([])
     const [Loading, setLoading] = useState(true)
     const [count, setCount] = useState({})
+    const {setCourse} = useCourse_Context();
+    const navigate = useNavigate();
 
     useEffect(()=>{
         setLoading(true)
@@ -49,11 +53,10 @@ const LearnerDashboard = ({name,user}) => {
         })
     }, [user])
 
-    useEffect(() => {
-        console.log(enrolled)
-    },[setEnrolled,enrolled])
+    // useEffect(() => {
+    //     console.log(enrolled)
+    // },[setEnrolled,enrolled])
 
-    const navigate = useNavigate();
 
     return(
         <div className="grid grid-cols-4 grid-rows-[6.25rem__calc((100vh-6.25rem)/2)__calc((100vh-6.25rem)/2)] h-full w-full">
@@ -103,7 +106,7 @@ const LearnerDashboard = ({name,user}) => {
         </div>
 
         {/* Enrolled */}
-        <div className='col-span-3 row-start-3 ml-5 pr-5 pt-2 pb-5'>
+        <div className='col-span-3 row-start-3 ml-5 pr-5 pt-2 pb-3'>
             <div className="flex flex-col w-full h-full gap-2">
                 <div className="flex flex-row justify-between">
                     <div>
@@ -124,17 +127,7 @@ const LearnerDashboard = ({name,user}) => {
                         <div className="h-full grid grid-cols-4 grid-rows-1 gap-2 animate-pulse">
                             {
                                 Array.from({length: 4}).map((_, entry)=>(
-                                    <div key={entry.id} className="bg-white rounded-md shadow-md">
-                                        <div className="flex justify-start bg-gradient-to-b from-[hsl(239,94%,19%)] via-[hsl(214,97%,27%)] to-[hsl(201,100%,36%)] w-full h-2/5 rounded-t-md p-2">
-                                        {/* Thumbnail */}
-                                        </div>
-                                        <div className="border w-full h-full p-3 grid grid-cols-1 grid-rows-[min-content_1fr_1fr]">
-                                            <div className="flex flex-col justify-center gap-y-1">
-                                                <div className="h-5 w-4/5 bg-gray-400 rounded-full"></div>
-                                                <div className="h-4 w-2/5 bg-gray-400 rounded-full"></div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <div key={entry.id} className="bg-white rounded-md shadow-md"/>
                                 ))
                             }
                         </div>
@@ -143,31 +136,34 @@ const LearnerDashboard = ({name,user}) => {
                             <p className="text-unactive font-text">No Courses Enrolled Yet</p>
                         </div>
                     ) : (
-                        <div className="w-full h-full grid grid-cols-4 grid-rows-1 gap-2">
+                        <div className="w-full h-full grid grid-cols-4 grid-rows-1 gap-3">
+                            {/* filter(item => item.progress !== 100) */}
                             {
-                                enrolled.filter(item => item.progress !== 100).map((course) => {
+                                enrolled.map((course) => {
                                     return (
-                                        <div className="bg-white w-full h-full shadow-md rounded-md grid grid-cols-1 grid-rows-[min-content_1fr_1fr_min-content_min-content] hover:cursor-pointer hover:scale-105 transition-all ease-in-out" onClick={() => navigate(`/learner/course/${course.id}`)}>
-                                            <div className="bg-gradient-to-b from-[hsl(239,94%,19%)] via-[hsl(214,97%,27%)] to-[hsl(201,100%,36%)] w-full h-14 rounded-t-md p-3">
-                                                <span className="inline-flex items-center rounded-md bg-primarybg px-2 py-1 text-xs font-medium text-primary font-text">
-                                                    {course.training_type}
-                                                </span>
-                                            </div>
-                                            <div className="flex flex-col justify-center row-span-2 px-3">
-                                                <p className="font-header text-sm text-primary">{course.name}</p>
-                                                <p className="font-text text-unactive text-xs">Course ID: {course?.CourseID}</p>
-                                            </div>
-                                            <div className="flex flex-col justify-center px-3">
-                                                <p className="font-text text-unactive text-xs">Deadline: {format(new Date(course.deadline), 'MMMM d, yyyy')}</p>
-                                            </div>
-                                            <div className="flex flex-col justify-center p-3">
-                                                <div className="flex flex-row justify-between items-end font-text text-unactive text-xs py-2">
-                                                    <p>Progress: </p>
-                                                    <p className="text-xl">{course.progress}%</p>
-                                                </div>
-                                                <Progress value={course.progress}/>
-                                            </div>
-                                        </div>
+                                        // <div className="bg-white w-full h-full shadow-md rounded-md grid grid-cols-1 grid-rows-[min-content_1fr_1fr_min-content_min-content] hover:cursor-pointer hover:scale-105 transition-all ease-in-out" onClick={}>
+                                        //     <div className="bg-gradient-to-b from-[hsl(239,94%,19%)] via-[hsl(214,97%,27%)] to-[hsl(201,100%,36%)] w-full h-14 rounded-t-md p-3">
+                                        //         <span className="inline-flex items-center rounded-md bg-primarybg px-2 py-1 text-xs font-medium text-primary font-text">
+                                        //             {course.training_type}
+                                        //         </span>
+                                        //     </div>
+                                        //     <div className="flex flex-col justify-center row-span-2 px-3">
+                                        //         <p className="font-header text-sm text-primary">{course.name}</p>
+                                        //         <p className="font-text text-unactive text-xs">Course ID: {course?.CourseID}</p>
+                                        //     </div>
+                                        //     <div className="flex flex-col justify-center px-3">
+                                        //         <p className="font-text text-unactive text-xs">Deadline: {format(new Date(course.deadline), 'MMMM d, yyyy')}</p>
+                                        //     </div>
+                                        //     <div className="flex flex-col justify-center p-3">
+                                        //         <div className="flex flex-row justify-between items-end font-text text-unactive text-xs py-2">
+                                        //             <p>Progress: </p>
+                                        //             <p className="text-xl">{course.progress}%</p>
+                                        //         </div>
+                                        //         <Progress value={course.progress}/>
+                                        //     </div>
+                                        // </div>
+                                        <CourseCard course={course} type='learner' click={() => {console.log("hello"); navigate(`/learner/course/${course.id}`); setCourse(course)}}/>
+                                        //navigate(`/learner/course/${course.id}`)
                                     )
                                 })
                             }
@@ -178,7 +174,7 @@ const LearnerDashboard = ({name,user}) => {
         </div>
 
         {/* Activities */}
-        <div className='col-span-3 row-start-3 mr-5 pt-2 pb-5'>
+        <div className='col-span-3 row-start-3 mr-5 pt-2 pb-3'>
             <div className="flex flex-col w-full h-full gap-2">
                 <div>
                     <h1 className="font-header text-primary text-base">Activities</h1>

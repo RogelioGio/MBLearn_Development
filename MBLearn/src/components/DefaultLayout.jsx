@@ -27,9 +27,6 @@ export default function DefaultLayout() {
     const [ warning, setWarning ] = useState()
     const navigate = useNavigate();
 
-    if(!token){
-        navigate('/login')
-    }
 
     //Laravel ECHO
     useEffect(() => {
@@ -172,13 +169,11 @@ export default function DefaultLayout() {
         }
     },[token])
 
-    useEffect(()=>{
-        console.log('this is the status of warning:', warning)
-    },[warning])
-
     //fetching the logged in user
     useEffect(() => {
-        //console.log('Fetching user data...:', token);
+        if(!token){
+            navigate('/login')
+        }
         axiosClient
         .get('/user')
         .then(({data})=>{
@@ -186,7 +181,6 @@ export default function DefaultLayout() {
             setLoading(false)
         }).catch((e)=>{
             setLoading(false)
-            localStorage.removeItem('ACCESS_TOKEN');
         })
     },[])
 

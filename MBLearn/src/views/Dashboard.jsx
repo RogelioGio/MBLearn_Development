@@ -28,6 +28,7 @@ import Calendar from '../modalsandprops/dashboardComponents/Calendar';
 import { faCalendar } from '@fortawesome/free-regular-svg-icons';
 import CalendarModal from '../modalsandprops/dashboardComponents/CalendarModal';
 import { useNavigate } from 'react-router';
+import { Course_ContexttProvider } from '../contexts/Course_Context';
 
 
 // Sample configs for chart
@@ -374,7 +375,7 @@ const chartData = [
                     <Helmet>{/* Title of the mark-up */}
                     <title>MBLearn | Course Admin Dashboard</title>
                     </Helmet>
-                    <CourseAdminDashboard name={name} user={user}/>
+                        <CourseAdminDashboard name={name} user={user}/>
                 </>
 
             )

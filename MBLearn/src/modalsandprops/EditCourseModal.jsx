@@ -7,14 +7,15 @@ import axiosClient from "../axios-client"
 import { useCourse } from "../contexts/selectedcourseContext"
 import { useFormik } from "formik"
 import { useCourseContext } from "../contexts/CourseListProvider"
+import { useCourse_Context } from "../contexts/Course_Context"
 
 const EditCourseModal = ({open, close, id}) => {
     const [hover, setHover] = useState(false);
     const [loading, setLoading] = useState(false)
-    const {selectedCourse = [] , selectCourse, isFetching, Course} = useCourse()
+    // const {selectedCourse = [] , selectCourse, isFetching, Course} = useCourse()
     const {coursetypes, coursecategories, trainingmodes} = useCourseContext();
     const [tab, setTab] = useState(1);
-
+    const {course} = useCourse_Context()
 
     // useEffect(() => {
     //     if (open && id) {
@@ -50,17 +51,17 @@ const EditCourseModal = ({open, close, id}) => {
                 course_objectives: "Loading...",
                 course_outcome: "Loading...",
             }:{
-                courseName: Course?.name || "",
-                courseType: Course?.types?.[0].id|| "",
-                courseCategories: Course?.categories?.[0]?.id || "",
-                training_type: Course?.training_type || "",
-                training_mode: Course?.training_modes?.[0]?.id || "",
-                shortDescription: Course?.description || "",
-                months: Course?.months || "0",
-                weeks: Course?.weeks || "0",
-                days: Course?.days || "0",
-                course_objectives: Course?.course_objectives || "",
-                course_outcome: Course?.course_outcomes || "",
+                courseName: course?.name || "",
+                courseType: course?.types?.[0].id|| "",
+                courseCategories: course?.categories?.[0]?.id || "",
+                training_type: course?.training_type || "",
+                training_mode: course?.training_modes?.[0]?.id || "",
+                shortDescription: course?.description || "",
+                months: course?.months || "0",
+                weeks: course?.weeks || "0",
+                days: course?.days || "0",
+                course_objectives: course?.course_objectives || "",
+                course_outcome: course?.course_outcomes || "",
             },
             onSubmit: (values) => {
                 console.log(values)

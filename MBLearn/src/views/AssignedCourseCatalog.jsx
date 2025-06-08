@@ -23,6 +23,8 @@ import { useCourseContext } from "../contexts/CourseListProvider"
 import { useFormik } from "formik"
 import { useCourse } from "../contexts/selectedcourseContext"
 import CourseCard from "../modalsandprops/CourseCard"
+import { useCourse_Context } from "../contexts/Course_Context"
+import { useNavigate } from "react-router"
 
 
 
@@ -34,8 +36,13 @@ export default function AssignedCourseCatalog() {
     const [tab, setTab] = useState("myCourses");
     const [openAddCourse, setOpenAddCourse] = useState(false);
     const [isFiltered, setFiltered] = useState(false);
-    const {SetCourse} = useCourse();
-    const [selected, setSelected] = useState();
+    //const {SetCourse} = useCourse();
+    const {setCourse} = useCourse_Context();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        setCourse(null)
+    },[])
 
     // Sort Order State
     const [sort, setSort] = useState({
@@ -430,7 +437,7 @@ export default function AssignedCourseCatalog() {
                                 // due_soon={course?.due_soon}
                                 // selected={()=> {SetCourse(course)}}
                                 // />
-                                <CourseCard key={course.id} course={course} type={tab === "myCourses" || tab === "assignedCourses" ? "courseAdminCourseManager" : "general"}/>
+                                <CourseCard key={course.id} course={course} type={tab === "myCourses" || tab === "assignedCourses" ? "courseAdminCourseManager" : "general"} click={()=>{navigate(`/courseadmin/course/${course.id}`); setCourse(course)}}/>
                             ))
                         ) :
                         (
@@ -439,10 +446,10 @@ export default function AssignedCourseCatalog() {
                             </div>
                         )
                     ) : (
-                        <div className="col-span-4 row-span-2 flex flex-col gap-4 items-center justify-center text-center h-full">
-                                <img src={CourseLoading} alt="" className="w-80"/>
-                                <p className="text-sm font-text text-primary">Hang tight! 🚀 Loading courses for — great things take a second!</p>
-                        </div>
+                            Array.from({length: pageState.perPage}).map((_, index) => (
+                                <div key={index} className="animate-pulse bg-white w-full h-full rounded-md shadow-md"/>
+                            ))
+
                     )
                 }
             </div>

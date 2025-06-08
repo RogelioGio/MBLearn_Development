@@ -13,6 +13,7 @@ import React from "react"
 import { useStateContext } from "../contexts/ContextProvider"
 import { format } from "date-fns"
 import SelfEnrollmentSuccessfullyModal from "../modalsandprops/SelfEnrollmentSuccessfullyModal"
+import CourseCard from "../modalsandprops/CourseCard"
 
 
 
@@ -267,29 +268,29 @@ export default function LearnerSelfEnrollment() {
                     !loading ? (
                         course && course.length > 0 ? (
                             course.map((course, index) => (
-                            <AssignedCourseCatalogCard key={index}
-                                        id={course.id}
-                                        name={course.name}
-                                        courseId={course?.CourseID}
-                                        courseType={course.types[0]?.type_name}
-                                        courseCategory={course.categories[0]?.category_name}
-                                        trainingMode={course.training_modes[0]?.modes_name}
-                                        trainingType={course.training_type}
-                                        tab={"allCourses"}
-                                        adder={course?.adder}
-                                        role={"learner"}
-                                        selfEnroll={()=>{setOpenEnroll(true), setSelectedCourse(course)}}/>
-                                    )
+                            // <AssignedCourseCatalogCard key={index}
+                            //             id={course.id}
+                            //             name={course.name}
+                            //             courseId={course?.CourseID}
+                            //             courseType={course.types[0]?.type_name}
+                            //             courseCategory={course.categories[0]?.category_name}
+                            //             trainingMode={course.training_modes[0]?.modes_name}
+                            //             trainingType={course.training_type}
+                            //             tab={"allCourses"}
+                            //             adder={course?.adder}
+                            //             role={"learner"}
+                            //             selfEnroll={()=>{setOpenEnroll(true), setSelectedCourse(course)}}/>
+                            //         )
+                            <CourseCard index={index} course={course} type='general'/>)
                         )):(
                                 <div className="col-span-4 row-span-2 flex flex-col gap-4 items-center justify-center text-center h-full">
                                     <p className="text-sm font-text text-unactive">No available courses yet</p>
                                 </div>
                         )
                     ): (
-                        <div className="col-span-4 row-span-2 flex flex-col gap-4 items-center justify-center text-center h-full">
-                                <img src={CourseLoading} alt="" className="w-80"/>
-                                <p className="text-sm font-text text-primary">Hang tight! 🚀 Loading courses for — great things take a second!</p>
-                        </div>
+                        Array.from({ length: 8 }).map((_, i) => (
+                            <div key={i} className="animate-pulse bg-white w-full h-full rounded-md shadow-md"/>
+                        ))
                     )
                 }
                 {/* {} */}

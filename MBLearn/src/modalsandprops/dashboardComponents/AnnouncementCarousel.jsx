@@ -25,7 +25,6 @@ const AnnouncmentCarousel = () => {
 
     useEffect(() => {
         setIsLoading(true)
-        console.log(carousels)
         if(carousels) {
             setCarouselData(carousels)
             setIsLoading(false)

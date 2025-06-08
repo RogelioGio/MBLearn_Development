@@ -258,7 +258,7 @@ const CourseModuleProps = ({headers, course, LearnerProgress}) => {
                         ) : (null)
                     }
                     {
-                        course?.lessons.map((lesson, index) => {
+                        course?.lessons?.map((lesson, index) => {
                             let content;
                             switch (lesson.lesson_type) {
                             case "text":

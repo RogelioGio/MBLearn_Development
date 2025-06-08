@@ -1,36 +1,19 @@
 import { useEffect } from "react";
 import axiosClient from "../axios-client";
 import echo from "MBLearn/echo";
+import { useCourse_Context } from "../contexts/Course_Context";
+import { use } from "react";
 
 
 export default function Test(){
-    useEffect(() => {
-        const channel = echo.channel('channel-name').listen('.Test', (e)=>{
-            alert("Hello")
-            console.log(e);
-            console.log('can hear channel')
-        });
+    const {course} = useCourse_Context();
+    console.log('Test component mounted: ', course);
 
-        return () => {
-            echo.leave('channel-name')
-        }
-    }, [])
-
-    const handleClick = () => {
-        axiosClient.get('test')
-        .then((e) => {
-            console.log(e);
-        }).catch((err) => {
-            console.log('error')
-        })
-    };
-
-
-  return (
+return (
     <>
-    <button onClick={handleClick}>
+    <button>
         Call /Test
     </button>
     </>
-  );
+);
 };
