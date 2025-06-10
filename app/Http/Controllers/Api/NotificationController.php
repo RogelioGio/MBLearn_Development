@@ -36,4 +36,20 @@ class NotificationController extends Controller
             'notifications' => $notifications,
         ]);
     }
+
+    public function hasUnreadNotifications(Request $request)
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+        return response()->json(['message' => 'User not found'], 404);
+        }
+
+        $unreadCount = $user->unreadNotifications->count();
+
+        return response()->json([
+            'has_unread' => $unreadCount > 0,
+            'unread_count' => $unreadCount,
+        ]);
+    }
 }

@@ -20,11 +20,12 @@ import { set } from 'date-fns';
 
 
 export default function DefaultLayout() {
-    // Function to check if the user is logged in
 
     const {token, role, setRole, setUser, setProfile, user, setToken} = useStateContext();
     const [ loading, setLoading ] = useState(true)
     const [ warning, setWarning ] = useState()
+    const [unreadNotifications, setUnreadNotifications] = useState(false);
+    const [notifications, setNotifications] = useState([]);
     const navigate = useNavigate();
 
 
@@ -36,15 +37,20 @@ export default function DefaultLayout() {
             return;
         }
         if(user){
+            handleNotifiction();
+
             echo.private(`App.Models.UserCredentials.${user.id}`)
             .notification((notification) => {
-            toast(notification.title,{
-                description: notification.body,
-            })
+                handleNotifiction();
+                toast(notification.title,{
+                    description: notification.body,
+                })
+                setUnreadNotifications(true);
             });
             // axiosClient.get('/index-notifications')
             // .then(({data})=>{
-            //     console.log('Notifications fetched:', data);
+            //     //console.log('Notifications fetched:', data);
+            //     setNotifications(data.notifications);
             // }).catch((error) => {
             //     console.error('Error fetching notifications:', error);
             // })
@@ -87,6 +93,17 @@ export default function DefaultLayout() {
         // }
 
     }, [user]);
+
+    const handleNotifiction = () => {
+        if(!token) return;
+        axiosClient.get('/index-notifications')
+        .then(({data})=>{
+            //console.log('Notifications fetched:', data);
+            setNotifications(data.notifications);
+        }).catch((error) => {
+            console.error('Error fetching notifications:', error);
+        })
+    }
 
     //User Activity handling
     const logout = () => {
@@ -178,7 +195,19 @@ export default function DefaultLayout() {
         .get('/user')
         .then(({data})=>{
             setUser(data)
-            setLoading(false)
+
+            axiosClient.get('has-unread-notifications')
+            .then(({data})=>{
+                console.log('Has unread notifications:', data);
+                setUnreadNotifications(data.has_unread);
+                setLoading(false)
+            })
+            .catch((error) => {
+                console.error('Error checking notifications:', error);
+            })
+
+
+
         }).catch((e)=>{
             setLoading(false)
         })
@@ -203,7 +232,7 @@ export default function DefaultLayout() {
 
     return (
         <div className='flex flex-row items-center h-screen bg-background overflow-hidden'>
-            <Navigation />
+            <Navigation unread_notfications={unreadNotifications} notifications={notifications}/>
             <SelectedUserProvider>
                 <OptionProvider>
                     <Outlet />

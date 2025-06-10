@@ -10,7 +10,21 @@ import { toast } from 'sonner';
 import NotificationModal from '../modalsandprops/NotificationModal';
 
 //Icon props
-const Icons = ({icon, text, to}) => (
+const Icons = ({icon, text, to, notification, unread}) => (
+    notification ?
+    <div className='_icon'>
+        <div className='icon group'>
+            <div className='hover:scale-105 transition-all ease-in-out grid grid-cols-1 place-items-center relative'>
+                {
+                    unread &&
+                    <div className='text-xs font-text bg-primary w-2 h-2 rounded-full mt-[-0.5rem] mr-[-1rem]'></div>
+                }
+                {icon}
+            </div>
+            <p className='icon-name group-hover:scale-100'>{text}</p>
+        </div>
+    </div>
+    :
     <NavLink to={to} className={({isActive}) => isActive ? 'icon_active':'_icon'}>
         <div className='icon group'>
             <p className='hover:scale-105 transition-all ease-in-out'>{icon}</p>
@@ -55,10 +69,11 @@ const navItems = {
     ]
 }
 
-export default function Navigation() {
+export default function Navigation({unread_notfications, notifications}) {
     const {user, profile_image, role, availableRoles, setAvailableRoles,setUser, setToken, setRole, setAuthenticated} = useStateContext();
     const navigate = useNavigate();
     const [openNotficiation, setOpenNotification] = useState(false);
+    const [unread, setUnread] = useState(unread_notfications || false); // Default to false if not provided
 
     const Logout = () => {
         toast("Logging Out....",{
@@ -117,21 +132,40 @@ export default function Navigation() {
     const Items = navItems[role] || [];
 
 
-    const onLogout = async () => {
-        try{
-            Logout()
-            await axiosClient.post('/logout');
-            setRole('');
-            setUser('');
-            setToken(null);
-            toast("Log Out Successfully.",{
-                description: "User account is logged out the system",
-            })
-        }catch (e){
-            console.error(e);
-        }
-    }
+    // const onLogout = async () => {
+    //     try{
+    //         Logout()
+    //         await axiosClient.post('/logout');
+    //         setRole('');
+    //         setUser('');
+    //         setToken(null);
+    //         toast("Log Out Successfully.",{
+    //             description: "User account is logged out the system",
+    //         })
+    //     }catch (e){
+    //         console.error(e);
+    //     }
 
+    const onLogout = () => {
+        Logout();
+        axiosClient.post('/logout')
+            .then(() => {
+                setRole('');
+                setUser('');
+                setToken(null);
+                navigate('/login');
+                toast("Log Out Successfully.", {
+                    description: "User account is logged out of the system",
+                });
+            })
+            .catch((error) => {
+                console.error(error);
+                toast.error("Failed to log out. Please try again.");
+            });
+    }
+    useEffect(() => {
+        setUnread(unread_notfications);
+    }, [unread_notfications]);
 
     return (
         <>
@@ -152,13 +186,15 @@ export default function Navigation() {
 
                 <ul className='flex flex-col gap-4 justify-center items-center'>
                     <li><Icons icon={<FontAwesomeIcon icon={faGear}/>} text={"Account Setting"} to={"/systemadmin/accountsettings"}/></li>
-                    {/* <li><Icons icon={<FontAwesomeIcon icon={faBell}/>} text={"Notifications"}/></li> */}
-                    <li className='_icon' onClick={() => setOpenNotification(true)}>
-                        <div className='icon group'>
-                            <p className='hover:scale-105 transition-all ease-in-out'><FontAwesomeIcon icon={faBell}/></p>
-                            <p className='icon-name group-hover:scale-100'>Notifications</p>
+                    <li onClick={() => setOpenNotification(true)}><Icons icon={<FontAwesomeIcon icon={faBell}/>} text={"Notifications"} notification={true}  unread={unread}/></li>
+                    {/* <li className='_icon' onClick={() => setOpenNotification(true)}>
+                        <div>
+                            <div className='icon group'>
+                                <p className='hover:scale-105 transition-all ease-in-out'><FontAwesomeIcon icon={faBell}/></p>
+                                <p className='icon-name group-hover:scale-100'>Notifications</p>
+                            </div>
                         </div>
-                    </li>
+                    </li> */}
                     <li className='inline-block relative w-auto group p-1'>
                         <img src={user.user_infos.profile_image} alt="" className='w-10 h-10 rounded-full shadow-lg hover:scale-105 transition-all ease-in-out'/>
                         {/* Profile */}
@@ -181,7 +217,7 @@ export default function Navigation() {
             </div>
 
         </div>
-        <NotificationModal open={openNotficiation} close={() => setOpenNotification(false)}/>
+        <NotificationModal open={openNotficiation} close={() => setOpenNotification(false)} notifications={notifications}/>
         </>
     )
 }

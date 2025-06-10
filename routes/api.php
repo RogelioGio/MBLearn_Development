@@ -163,6 +163,7 @@ Route::middleware('auth:sanctum')->group(function(){
 
     //Notifcation API
     Route::get('/index-notifications', [NotificationController::class, 'index']);
+    Route::get('/has-unread-notifications', [NotificationController::class, 'hasUnreadNotifications']);
 });
 
 //PUSH NOTIFICATION
@@ -193,7 +194,7 @@ Route::post('/send-notfication', function (){
 
 
 Route::apiResource('/carousels', CarouselImageController::class);
-Route::get('/test', [userInfo_controller::class, 'test']);
+Route::post('/test', [userInfo_controller::class, 'test']);
 
 //Category API
 Route::get('category',[FilterCategoryController::class, 'index']);

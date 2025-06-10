@@ -951,15 +951,14 @@ class userInfo_controller extends Controller
         // return response()->json([
         //     'data' => "Done"
         // ]);
-        {
-    $mailer = new \App\Http\Controllers\MailComponent();
-    $success = $mailer->send('giotalingdan@gmail.com', 'Test from Gmail API', '<p>Hello, this is a test email via Gmail API!</p>');
 
-    if ($success) {
-        return 'Email sent successfully!';
-    } else {
-        return 'Failed to send email.';
-    }
-}
+
+        {
+            $user = UserCredentials::query()->find(1); // Replace with the actual user ID
+
+            $user->unreadNotifications->markAsRead();
+
+            return response()->json(['message' => 'All notifications marked as read']);
+        }
     }
 }
