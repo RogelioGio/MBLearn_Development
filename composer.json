@@ -9,6 +9,7 @@
         "php": "^8.2",
         "algolia/algoliasearch-client-php": "^4.19",
         "doctrine/dbal": "^4.2",
+        "google/apiclient": "^2.18",
         "http-interop/http-factory-guzzle": "^1.2",
         "inertiajs/inertia-laravel": "^1.0",
         "laravel/framework": "^11.44",

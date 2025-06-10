@@ -945,11 +945,21 @@ class userInfo_controller extends Controller
         // // $perm->permissions()->sync([1,2]);
         // $userInfo = UserInfos::find(128);
         // PermissionToUser::dispatch($userInfo, $existingatedData['permissions'] ?? []);
-        $message = "Hello from laravel";
-        broadcast(new TestEvent($message));
-        TestEvent::broadcast($message);
-        return response()->json([
-            'data' => "Done"
-        ]);
+        // $message = "Hello from laravel";
+        // broadcast(new TestEvent($message));
+        // TestEvent::broadcast($message);
+        // return response()->json([
+        //     'data' => "Done"
+        // ]);
+        {
+    $mailer = new \App\Http\Controllers\MailComponent();
+    $success = $mailer->send('giotalingdan@gmail.com', 'Test from Gmail API', '<p>Hello, this is a test email via Gmail API!</p>');
+
+    if ($success) {
+        return 'Email sent successfully!';
+    } else {
+        return 'Failed to send email.';
+    }
+}
     }
 }
