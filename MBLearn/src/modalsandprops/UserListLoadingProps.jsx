@@ -43,11 +43,8 @@ const UserListLoadingProps = () => {
                         </div>
                     </td>
                     <td className='py-3 px-4'>
-                        <div className='animate-pulse bg-gray-300 h-4 w-20 rounded-md'></div>
-                    </td>
-                    <td className='py-3 px-4'>
                         <div className='flex gap-1 justify-end'>
-                        <div className='animate-pulse bg-gray-300 h-6 w-6 rounded-md'></div>
+                        {/* <div className='animate-pulse bg-gray-300 h-6 w-6 rounded-md'></div> */}
                         <div className='animate-pulse bg-gray-300 h-6 w-6 rounded-md'></div>
                         <div className='animate-pulse bg-gray-300 h-6 w-6 rounded-md'></div>
                         </div>

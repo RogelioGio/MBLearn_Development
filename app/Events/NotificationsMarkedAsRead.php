@@ -45,6 +45,6 @@ class NotificationsMarkedAsRead implements ShouldBroadcast
 }
     public function broadcastAs()
     {
-        return 'notifications.read.all';
+        return 'notifications-read-all';
     }
 }

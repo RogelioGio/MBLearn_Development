@@ -197,7 +197,6 @@ export default function UserManagementMaintenance() {
     }
     const CloseDialog = () => {
         //setUserID('');
-        setSelectedUser();
         toggleModal("isOpen",false);
     }
 
@@ -216,7 +215,7 @@ export default function UserManagementMaintenance() {
         toggleModal("isEdit", true);
     }
     const CloseEdit = () => {
-        setSelectedUser()
+        // setSelectedUser()
         toggleModal("isEdit", false);
     }
 
@@ -573,8 +572,8 @@ export default function UserManagementMaintenance() {
                             <th className='py-4 px-4  w-1/7'>DIVISION</th>
                             <th className='py-4 px-4  w-1/7'>DEPARTMENT</th>
                             <th className='py-4 px-4  w-1/7'>SECTION</th>
-                            <th className='py-4 px-4  w-1/7'>LOCATION</th>
-                            <th className='py-4 px-4  w-1/7'></th>
+                            {/* <th className='py-4 px-4  w-1/7'>LOCATION</th> */}
+                            <th className='py-4 px-4  w-2/7'></th>
                         </tr>
                     </thead>
                     <tbody className='bg-white divide-y divide-divider'>
@@ -588,7 +587,7 @@ export default function UserManagementMaintenance() {
                                 //     </td>
                                 // </tr>
                                 <tr className="font-text text-sm">
-                                    <td colSpan={6} className="text-center py-3 px-4 font-text text-unactive">
+                                    <td colSpan={5} className="text-center py-3 px-4 font-text text-unactive">
                                     There is no users that met the selected criteria
                                     </td>
                                 </tr>

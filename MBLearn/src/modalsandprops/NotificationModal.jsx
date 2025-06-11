@@ -67,9 +67,7 @@ const NotificationModal = ({open, close}) => {
 
         observer.current = new IntersectionObserver(([entry]) => {
             if(entry.isIntersecting){
-                if(loading) {
-                    return
-                }
+                if(loading) return
                 loadMore(page+1)
             }
         });

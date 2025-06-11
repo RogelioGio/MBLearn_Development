@@ -73,28 +73,28 @@ const User = ({re_move,click,userID,name,department,title,branch,city,profile_ur
                 <td className='py-3 px-4'>
                     <p className='text-unactive'>{section}</p>
                 </td>
-                <td className='py-3 px-4'>
-                    <div className='flex flex-col'>
-                    {/* Branch Location */}
+                {/* <td className='py-3 px-4'>
+                    <div className='flex flex-col'> */}
+                    {/* Branch Location
                     <p className='text-unactive'>{branch}</p>
-                    {/* City Location */}
+                    City Location
                     <p className='text-unactive text-xs'>{city}</p>
                     </div>
-                </td>
+                </td> */}
 
                 {/* Action */}
                 <td className='py-3 px-4'>
                     <div className='flex gap-1 justify-end'>
 
-                    <button className='text-primary border border-primary rounded-md px-3 py-2 bg-white hover:bg-primary hover:text-white transition-all ease-in-out'
+                    {/* <button className='text-primary border border-primary rounded-md px-3 py-2 bg-white hover:bg-primary hover:text-white transition-all ease-in-out'
                         onClick={(e) => userDetail(e, userID)}>
                         <FontAwesomeIcon icon={faEllipsis}/>
-                    </button>
+                    </button> */}
 
                     {
                         user.user_infos.permissions?.some((permission)=> permission.permission_name ===  "EditUserInfo")? (
                             <button onClick={(e) => edit(e,userID)}
-                            className='flex justify-center items-center aspect-square p-2 w-fit bg-white shadow-md border border-primary rounded-md text-primary hover:bg-primary cursor-pointer transition-all ease-in-out hover:text-white'>
+                            className='flex justify-center items-center aspect-square h-10 w-10 bg-white shadow-md border border-primary rounded-md text-primary hover:bg-primary cursor-pointer transition-all ease-in-out hover:text-white'>
                                 <FontAwesomeIcon icon={faUserPen}/>
                             </button>
                         ):(null)
@@ -102,7 +102,7 @@ const User = ({re_move,click,userID,name,department,title,branch,city,profile_ur
                     {
                         user.user_infos.permissions?.some((permission)=> permission.permission_name ===  "DeleteUserInfo")  ? (
                             <button onClick={(e) => _delete(e,userID)}
-                            className='inline-flex justify-center items-center aspect-square py-2 px-3 w-fit bg-white shadow-md border border-primary rounded-md text-primary hover:bg-primary cursor-pointer transition-all ease-in-out hover:text-white'>
+                            className='inline-flex justify-center items-center aspect-square h-10 w-10 bg-white shadow-md border border-primary rounded-md text-primary hover:bg-primary cursor-pointer transition-all ease-in-out hover:text-white'>
                                 <FontAwesomeIcon icon={faTrashCan}/>
                             </button>
 

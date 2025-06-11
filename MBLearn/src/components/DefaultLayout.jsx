@@ -27,6 +27,45 @@ export default function DefaultLayout() {
     const [unreadNotifications, setUnreadNotifications] = useState(false);
     const navigate = useNavigate();
 
+    //viewport detection for responsive design
+    const [viewport, setViewport] = useState({
+        width: window.innerWidth,
+        height: window.innerHeight,
+    });
+    useEffect(() => {
+        const handleResize = () => {
+            setViewport({
+                width: window.innerWidth,
+                height: window.innerHeight,
+            });
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+     useEffect(() => {
+    const { width } = viewport;
+    let breakpoint = '';
+
+    if (width < 640) {
+        breakpoint = 'base (mobile)';
+    } else if (width >= 640 && width < 768) {
+        breakpoint = 'sm';
+    } else if (width >= 768 && width < 1024) {
+        breakpoint = 'md';
+    } else if (width >= 1024 && width < 1280) {
+        breakpoint = 'lg';
+    } else if (width >= 1280 && width < 1536) {
+        breakpoint = 'xl';
+    } else {
+        breakpoint = '2xl';
+    }
+
+    console.log(`Viewport: ${width}px — Tailwind Breakpoint: ${breakpoint}`);
+}, [viewport]);
+
 
     //Laravel ECHO
     useEffect(() => {
@@ -47,15 +86,22 @@ export default function DefaultLayout() {
                 setUnreadNotifications(true);
             });
 
-            echo.private(`notifications.${user.id}`)
-            .listen('.notifications.read.all', (e) => {
-                console.log('Event received:', e);
-                setUnreadNotifications(false);
-            })
+            // echo.private(`notifications.${user.id}`)
+            // .listen('.notifications-read-all', (e) => {
+            //     console.log('Event received:', e);
+            //     //setUnreadNotifications(false);
+            // })
 
-            return () => {
-                echo.private(`notifications.${user.id}`).stopListening('notifications.read.all');
-            };
+            // return () => {
+            //     echo.private(`notifications.${user.id}`).stopListening('notifications-read-all');
+            // };
+            echo.private(`notifications.${user.id}`)
+            .listen('.notifications-read-all', (e) => {
+                console.log("📥 Received event:", e);
+            })
+            .subscribed(() => {
+                console.log('✅ Subscribed to private-notifications.' + user.id);
+            });
         }
 
         //User Management Events (System Admin)

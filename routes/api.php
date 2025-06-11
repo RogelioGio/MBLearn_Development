@@ -1,6 +1,7 @@
 <?php
 
 
+use App\Events\NotificationsMarkedAsRead;
 use App\Http\Controllers\Api\ActivityLogsController;
 use App\Http\Controllers\Api\CarouselImageController;
 use App\Http\Controllers\Api\CourseContextController;
@@ -165,6 +166,10 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('/index-notifications', [NotificationController::class, 'index']);
     Route::get('/has-unread-notifications', [NotificationController::class, 'hasUnreadNotifications']);
     Route::post('/mark-as-read',[NotificationController::class, 'markAllAsRead']);
+});
+Route::get('/test-broadcast', function () {
+    broadcast(new NotificationsMarkedAsRead(1));
+    return 'done';
 });
 
 //PUSH NOTIFICATION
