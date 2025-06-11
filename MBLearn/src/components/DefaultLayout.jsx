@@ -25,7 +25,6 @@ export default function DefaultLayout() {
     const [ loading, setLoading ] = useState(true)
     const [ warning, setWarning ] = useState()
     const [unreadNotifications, setUnreadNotifications] = useState(false);
-    const [notifications, setNotifications] = useState([]);
     const navigate = useNavigate();
 
 
@@ -37,23 +36,26 @@ export default function DefaultLayout() {
             return;
         }
         if(user){
-            handleNotifiction();
+            // handleNotifiction();
 
             echo.private(`App.Models.UserCredentials.${user.id}`)
             .notification((notification) => {
-                handleNotifiction();
+                // handleNotifiction();
                 toast(notification.title,{
                     description: notification.body,
                 })
                 setUnreadNotifications(true);
             });
-            // axiosClient.get('/index-notifications')
-            // .then(({data})=>{
-            //     //console.log('Notifications fetched:', data);
-            //     setNotifications(data.notifications);
-            // }).catch((error) => {
-            //     console.error('Error fetching notifications:', error);
-            // })
+
+            echo.private(`notifications.${user.id}`)
+            .listen('.notifications.read.all', (e) => {
+                console.log('Event received:', e);
+                setUnreadNotifications(false);
+            })
+
+            return () => {
+                echo.private(`notifications.${user.id}`).stopListening('notifications.read.all');
+            };
         }
 
         //User Management Events (System Admin)
@@ -93,17 +95,6 @@ export default function DefaultLayout() {
         // }
 
     }, [user]);
-
-    const handleNotifiction = () => {
-        if(!token) return;
-        axiosClient.get('/index-notifications')
-        .then(({data})=>{
-            //console.log('Notifications fetched:', data);
-            setNotifications(data.notifications);
-        }).catch((error) => {
-            console.error('Error fetching notifications:', error);
-        })
-    }
 
     //User Activity handling
     const logout = () => {
@@ -198,7 +189,7 @@ export default function DefaultLayout() {
 
             axiosClient.get('has-unread-notifications')
             .then(({data})=>{
-                console.log('Has unread notifications:', data);
+                //console.log('Has unread notifications:', data);
                 setUnreadNotifications(data.has_unread);
                 setLoading(false)
             })
@@ -232,7 +223,7 @@ export default function DefaultLayout() {
 
     return (
         <div className='flex flex-row items-center h-screen bg-background overflow-hidden'>
-            <Navigation unread_notfications={unreadNotifications} notifications={notifications}/>
+            <Navigation unread_notfications={unreadNotifications}/>
             <SelectedUserProvider>
                 <OptionProvider>
                     <Outlet />

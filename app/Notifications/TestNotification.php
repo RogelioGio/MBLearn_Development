@@ -39,14 +39,15 @@ class TestNotification extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            'title' => 'Test Notification',
+            'title' => 'Sample Test with notification type',
             'body' => 'This is a test notification.',
+            'notification_type' => 'general',
         ];
     }
 
     public function toBroadcast($notifiable){
         return new BroadcastMessage([
-            'title' => 'Test Notification',
+            'title' => 'This is an general notification to be listerd',
             'body' => 'This is a test notification.',
         ]);
     }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\NotificationsMarkedAsRead;
 use App\Http\Controllers\Controller;
 use App\Models\UserCredentials;
 use Illuminate\Http\Request;
@@ -10,30 +11,24 @@ class NotificationController extends Controller
 {
     public function index(Request $request)
     {
-        // $request ->validate([
-        //     'user_id' => 'required|integer',
-        // ]);
-
-        //$user = UserCredentials::find(1);
         $user = auth()->user();
 
         if (!$user) {
         return response()->json(['message' => 'User not found'], 404);
         }
 
-        $notifications = $user->notifications->map(function ($notification) {
-            return [
-                'id' => $notification->id,
-                'type' => $notification->type,
-                'data' => $notification->data,
-                'read_at' => $notification->read_at,
-                'created_at' => $notification->created_at,
-            ];
-        });
+        $limit = $request->input('limit', 5);
+        $page = $request->input('page', 1);
+
+        $notifications = $user->notifications()->orderBy('created_at', 'desc')->paginate($limit);
+
 
         return response()->json([
-            'user' => $user,
-            'notifications' => $notifications,
+        'data' => $notifications->items(),
+        'current_page' => $notifications->currentPage(),
+        'last_page' => $notifications->lastPage(),
+        'per_page' => $notifications->perPage(),
+        'total' => $notifications->total(),
         ]);
     }
 
@@ -51,5 +46,18 @@ class NotificationController extends Controller
             'has_unread' => $unreadCount > 0,
             'unread_count' => $unreadCount,
         ]);
+    }
+
+    public function markAllAsRead(){
+    $user = auth()->user();
+
+    if (!$user) {
+        return response()->json(['message' => 'User not found'], 404);
+    }
+
+    $user->unreadNotifications->markAsRead();
+    event(new NotificationsMarkedAsRead($user->id));
+
+    return response()->json(['message' => 'All notifications marked as read',$user]);
     }
 }

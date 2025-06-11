@@ -69,7 +69,7 @@ const navItems = {
     ]
 }
 
-export default function Navigation({unread_notfications, notifications}) {
+export default function Navigation({unread_notfications}) {
     const {user, profile_image, role, availableRoles, setAvailableRoles,setUser, setToken, setRole, setAuthenticated} = useStateContext();
     const navigate = useNavigate();
     const [openNotficiation, setOpenNotification] = useState(false);
@@ -217,7 +217,7 @@ export default function Navigation({unread_notfications, notifications}) {
             </div>
 
         </div>
-        <NotificationModal open={openNotficiation} close={() => setOpenNotification(false)} notifications={notifications}/>
+        <NotificationModal open={openNotficiation} close={() => setOpenNotification(false)}/>
         </>
     )
 }
