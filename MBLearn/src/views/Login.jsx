@@ -204,8 +204,8 @@ export default function Login() {
     return (
         <>
         {
-            !authenticated ?
-            <div className='bg-white max-w-md h-fit shadow-md rounded-xl px-16 py-10 flex flex-col gap-5'>
+            false ?
+            <div className='max-w-md h-fit shadow-md rounded-xl px-16 py-10 flex flex-col gap-5 bg-white'>
 
                     <img src={Full_Logo} alt="" className='h-7 w-auto p-0 m-0 self-start'/>
                     <h1 className='font-header font-bold text-primary text-3xl'>
@@ -335,7 +335,9 @@ export default function Login() {
                 </div>
 
             :
-            <div className='bg-white w-[30vw] p-5 shadow-md rounded-xl flex flex-col items-center justify-center'>
+            <div className='bg-white w-[70vw] p-5 shadow-md rounded-xl flex flex-col items-center justify-center
+                            sm:w-[70vw]
+                            xl:w-[30vw]'>
                     {/* Header */}
                 <div className='flex flex-col justify-center items-center p-2'>
                     <div className='flex items-center justify-center bg-primarybg w-16 h-16 rounded-full my-2'>

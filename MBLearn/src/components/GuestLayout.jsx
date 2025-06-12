@@ -22,7 +22,7 @@ export default function GuestLayout() {
     }, [token, navigate]);
 
     return (
-        <div className="w-full h-screen flex items-center justify-center bg-primary">
+        <div className="w-full h-screen flex items-center justify-center">
 
             <Helmet>
                 {/* Title of the mark-up */}
@@ -30,11 +30,11 @@ export default function GuestLayout() {
             </Helmet>
 
             {/* Background Aesthetics */}
-            <div className="absolute w-full h-full bg-white md:bg-[url('assets/Login_Background2.png')] bg-cover bg-center">
+            <div className="absolute w-full h-full bg-white bg-[url('assets/Login_Background2.png')] bg-cover bg-center">
             </div>
 
             {/*Login Page Component*/}
-            <div className={`relative z-10 w-full h-full md:flex items-center justify-center`}>
+            <div className={`relative z-10 w-full h-full flex items-center justify-center`}>
             {/*Login Layout Children*/}
             <Outlet/>
             </div>

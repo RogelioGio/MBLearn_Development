@@ -327,21 +327,30 @@ export default function UserManagementMaintenance() {
     }, [checkedUsers, users]);
 
     return (
-        <div className='grid grid-cols-4 grid-rows-[6.25rem_min-content_auto_auto_min-content] h-full w-full'>
+        <div className='grid grid-cols-4 h-full w-full
+                        xl:grid-rows-[6.25rem_min-content_auto_auto_min-content]
+                        sm:grid-rows-[6.25rem_min-content]'>
             <Helmet>
                 {/* Title of the mark-up */}
                 <title>MBLearn | User Management Maintenance</title>
             </Helmet>
 
             {/* Header */}
-            <div className='flex flex-col justify-center col-span-3 row-span-1 pr-5 border-b ml-5 border-divider'>
-                <h1 className='text-primary text-4xl font-header'>User Management Maintenance</h1>
-                <p className='font-text text-sm text-unactive' >Effortlessly manage and add users to ensure seamless access and control.</p>
+            <div className='flex flex-col justify-center row-span-1 pr-5 border-b border-divider
+                            xl:col-span-3
+                            sm:col-span-2'>
+                <h1 className='text-primary font-header
+                                xl:text-4xl'>User Management Maintenance</h1>
+                <p className='font-text text-unactive
+                                xl:text-sm
+                                sm:text-xs'>Effortlessly manage and add users to ensure seamless access and control.</p>
             </div>
 
 
             {/* Add Button */}
-            <div className='col-start-4 row-start-1 flex flex-col justify-center pl-5 mr-5 border-divider border-b'>
+            <div className='row-start-1 flex flex-col justify-center pl-5 mr-5 border-divider border-b
+                            xl:col-start-4
+                            sm:col-span-2 sm:col-start-3 sm:py-2'>
                 {
                     user.user_infos.permissions?.some((permission)=> permission.permission_name === "AddUserInfo") ? (
                         <button className='inline-flex flex-row shadow-md items-center justify-center bg-primary font-header text-white text-base p-4 rounded-full hover:bg-primaryhover hover:scale-105 transition-all ease-in-out' onClick={() => {
@@ -356,7 +365,9 @@ export default function UserManagementMaintenance() {
 
 
             {/* Search bar */}
-            <div className='inline-flex items-center justify-center col-start-4 row-start-2 px-5 py-3 h-full'>
+            <div className='inline-flex items-center justify-center row-start-2  py-3 h-full
+                            sm:col-start-3 sm:col-span-2 sm:pr-5
+                            xl:col-start-4 xl:px-5'>
                 <div className=' inline-flex flex-row place-content-between border-2 border-primary rounded-md w-full font-text shadow-md'>
                     <input type="text" className='focus:outline-none text-sm px-4 w-full rounded-md bg-white' placeholder='Search...'/>
                     <div className='bg-primary py-2 px-4 text-white'>
@@ -367,7 +378,7 @@ export default function UserManagementMaintenance() {
 
 
             {/* User Filter */}
-            <div className='flex flex-row py-3 justify-start items-center px-5 col-span-2 gap-5'>
+            <div className='flex flex-row py-3 justify-start items-center col-span-2 gap-5'>
                 <Sheet>
                     <SheetTrigger>
                         <div className= {`flex flex-row items-center justify-center bg-white text-primary gap-2 border-2 border-primary w-fit py-2 px-4 rounded-md hover:text-white hover:bg-primary transition-all ease-in-out hover:cursor-pointer ${isFiltered ? "!bg-primary text-white":null}`}>
@@ -531,7 +542,7 @@ export default function UserManagementMaintenance() {
 
 
             {/* Userlist Table */}
-            <div className='flex flex-col gap-2 row-start-3 row-span-2 col-start-1 col-span-4 px-5 py-2'>
+            <div className='flex flex-col gap-2 row-start-3 row-span-2 col-start-1 col-span-4 pr-5 py-2'>
                 <div className='w-full border-primary border rounded-md overflow-hidden shadow-md'>
                 <table className='text-left w-full overflow-y-scroll'>
                     <thead className='font-header text-xs text-primary bg-secondaryprimary border-l-2 border-secondaryprimary'>

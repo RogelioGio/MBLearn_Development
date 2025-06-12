@@ -15,6 +15,7 @@ import * as Yup from 'yup';
 import echo from 'MBLearn/echo';
 import { toast } from 'sonner';
 import { set } from 'date-fns';
+import { ScrollArea } from './ui/scroll-area';
 
 
 
@@ -25,6 +26,7 @@ export default function DefaultLayout() {
     const [ loading, setLoading ] = useState(true)
     const [ warning, setWarning ] = useState()
     const [unreadNotifications, setUnreadNotifications] = useState(false);
+    const [breakpoint, setBreakpoint] = useState();
     const navigate = useNavigate();
 
     //viewport detection for responsive design
@@ -32,40 +34,37 @@ export default function DefaultLayout() {
         width: window.innerWidth,
         height: window.innerHeight,
     });
-    useEffect(() => {
+     useEffect(() => {
         const handleResize = () => {
-            setViewport({
-                width: window.innerWidth,
-                height: window.innerHeight,
-            });
+        setViewport({
+            width: window.innerWidth,
+            height: window.innerHeight,
+        });
         };
 
         window.addEventListener('resize', handleResize);
-        return () => {
-            window.removeEventListener('resize', handleResize);
-        };
-    }, []);
-     useEffect(() => {
+        return () => window.removeEventListener('resize', handleResize);
+     }, []);
+
+    useEffect(() => {
     const { width } = viewport;
-    let breakpoint = '';
 
     if (width < 640) {
-        breakpoint = 'base (mobile)';
+        setBreakpoint('base');
     } else if (width >= 640 && width < 768) {
-        breakpoint = 'sm';
+        setBreakpoint('sm');
     } else if (width >= 768 && width < 1024) {
-        breakpoint = 'md';
+        setBreakpoint('md');
     } else if (width >= 1024 && width < 1280) {
-        breakpoint = 'lg';
+        setBreakpoint('lg');
     } else if (width >= 1280 && width < 1536) {
-        breakpoint = 'xl';
+        setBreakpoint('xl');
     } else {
-        breakpoint = '2xl';
+        setBreakpoint('2xl');
     }
 
     console.log(`Viewport: ${width}px — Tailwind Breakpoint: ${breakpoint}`);
 }, [viewport]);
-
 
     //Laravel ECHO
     useEffect(() => {
@@ -261,23 +260,43 @@ export default function DefaultLayout() {
     if(loading){
         return (
             <div className='h-screen w-screen flex flex-col justify-center items-center bg-background gap-3'>
-                <h1 className='font-header text-5xl text-primary'>"Loading your learning journey..."</h1>
-                <p className='font-text'>Empowering you with the knowledge to achieve your goals</p>
+                <h1 className='font-header text-3xl xl:text-5xl text-primary'>"Loading your learning journey..."</h1>
+                <p className='font-text text-xs xl:text-base'>Empowering you with the knowledge to achieve your goals</p>
             </div>
         )
     }
 
     return (
-        <div className='flex flex-row items-center h-screen bg-background overflow-hidden'>
-            <Navigation unread_notfications={unreadNotifications}/>
-            <SelectedUserProvider>
-                <OptionProvider>
-                    <Outlet />
-                </OptionProvider>
-            </SelectedUserProvider>
-            {/* Logout warning */}
-            <LogoutWarningmModal open={warning} close={close}/>
-        </div>
+            <>
+                {
+                    breakpoint === 'xl' ? (
+                        <div className='flex flex-row items-center h-screen bg-background overflow-hidden'>
+                            <Navigation unread_notfications={unreadNotifications}/>
+                            <SelectedUserProvider>
+                                <OptionProvider>
+                                    <Outlet />
+                                </OptionProvider>
+                            </SelectedUserProvider>
+                            {/* Logout warning */}
+                            <LogoutWarningmModal open={warning} close={close}/>
+                        </div>
+                    ) : (
+                        <div className='flex flex-row items-center h-screen bg-background overflow-hidden'>
+                            <Navigation unread_notfications={unreadNotifications}/>
+                            <ScrollArea>
+                                <div className='h-screen'>
+                                    <SelectedUserProvider>
+                                        <OptionProvider>
+                                            <Outlet />
+                                        </OptionProvider>
+                                    </SelectedUserProvider>
+                                </div>
+                            </ScrollArea>
+                        </div>
+                    )
+
+                }
+            </>
     )
 
 }

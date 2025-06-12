@@ -169,7 +169,8 @@ export default function Navigation({unread_notfications}) {
 
     return (
         <>
-        <div className="flex flex-col items-center h-screen w-24 place-content-between py-2 z-10">
+        <div className="flex flex-col items-center h-screen w-24 place-content-between py-2 z-10
+                        sm:px-2">
             <div className='flex flex-col place-content-between w-23 h-full bg-white py-5 px-2 shadow-lg m-1 border-r rounded-full'>
                 <ul className='flex flex-col gap-4 justify-center items-center p-[0.625rem]'>
                     <li><img src={Small_Logo} alt="" className='h-[1.875rem]'/></li>
@@ -196,7 +197,9 @@ export default function Navigation({unread_notfications}) {
                         </div>
                     </li> */}
                     <li className='inline-block relative w-auto group p-1'>
-                        <img src={user.user_infos.profile_image} alt="" className='w-10 h-10 rounded-full shadow-lg hover:scale-105 transition-all ease-in-out'/>
+                        <div className='w-10 h-10 rounded-full shadow-lg hover:scale-105 transition-all ease-in-out'>
+                            <img src={user.user_infos.profile_image} className='rounded-full'/>
+                        </div>
                         {/* Profile */}
                         <div className='bg-tertiary p-4 rounded-md absolute left-9 min-w-max bottom-0 flex flex-row scale-0 group-hover:scale-100'>
                             <ul>

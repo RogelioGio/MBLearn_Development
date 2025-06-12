@@ -156,26 +156,38 @@ const chartData = [
             return (
                 <>
 
-            <div className="grid  grid-cols-4 grid-rows-[6.25rem_1fr_1fr] h-full w-full">
+            <div className="grid h-full w-full grid-cols-4
+                            xl:grid-rows-[6.25rem_1fr_1fr]
+                            sm:grid-rows-[6.25rem_auto_auto]">
                 <Helmet>{/* Title of the mark-up */}
                     <title>MBLearn | System Admin Dashboard</title>
                 </Helmet>
 
-                <div className='flex flex-col justify-center col-span-3 row-span-1 pr-5 border-b ml-5 border-divider'>
-                    <h1 className='text-primary text-4xl font-header'>Good Day! {name} </h1>
-                    <p className='font-text text-sm text-unactive'>System Admin Dashboard, A centralized hub for system administrators to manage users, monitor system activity.</p>
+                <div className='flex flex-col justify-center col-span-3 row-span-1 pr-5 border-b border-divider sm:py-5'>
+                    <h1 className='text-primary font-header
+                                    xl:text-4xl
+                                    sm:text-2xl'>Good Day! {name} </h1>
+                    <p className='font-text text-unactive
+                                    xl:text-sm
+                                    sm:text-xs'>System Admin Dashboard, A centralized hub for system administrators to manage users, monitor system activity.</p>
                 </div>
                 <div className='border-b border-divider mr-5 flex flex-row justify-end items-center'>
-                    <div className='p-6 aspect-square bg-secondaryprimary rounded-full flex justify-center items-center'>
-                        <FontAwesomeIcon icon={faUserShield} className='text-primary text-2xl'/>
+                    <div className='aspect-square bg-secondaryprimary rounded-full flex justify-center items-center
+                                    xl:w-20 xl:h-20
+                                    sm:w-16 sm:h-16'>
+                        <FontAwesomeIcon icon={faUserShield} className='text-primary xl:text-2xl sm:text-xl'/>
                     </div>
                 </div>
 
                 {/* Announcement */}
-                <div className='col-span-3 row-span-1 pl-5 pr-3 py-2 w-full h-full'>
+                <div className='row-span-1 pr-3 py-2 w-full
+                                xl:col-span-3 xl:row-span-1 xl:h-full xl:pr-3
+                                sm:col-span-4 sm:row-span-1 sm:h-60 sm:pr-5'>
                     <AnnouncmentCarousel/>
                 </div>
-                <div className='col-span-1 row-span-1 pr-5 py-2 grid grid-cols-1 grid-rows-[min-content_1fr]'>
+                <div className='row-span-1 py-2 grid grid-cols-1 grid-rows-[min-content_1fr]
+                                xl:col-span-1 xl:pr-5
+                                sm:col-span-4 sm:pr-5 sm:pb-10'>
                     <div className='flex flex-row justify-between items-center'>
                         <div className="pb-3">
                             <p className="font-text text-unactive text-xs">Current Month & Date:</p>
@@ -208,7 +220,9 @@ const chartData = [
 
 
                 {/* Changing Content */}
-                <div className='col-span-3 row-start-3 ml-5 pr-3 pb-5 flex flex-col'>
+                <div className='row-start-3 ml-5 pr-3 flex flex-col
+                                xl:col-span-3 xl:pb-5 xl:h-full
+                                sm:col-span-4 sm:ml-0 sm:h-60 sm:py-2 sm:pr-5'>
                     <div className='pb-3 grid grid-cols-4'>
                         <div className='col-span-2'>
                         <p className="font-header text-primary text-base">Online User Statistics</p>
@@ -332,7 +346,9 @@ const chartData = [
                         </ChartContainer>
                     </div>
                 </div>
-                <div className='col-span-1 row-start-3 mr-5 pb-5 flex flex-col'>
+                <div className='mr-5 pb-5 flex flex-col
+                                xl:col-span-1 xl:row-start-3
+                                sm:col-span-4 sm:row-start-4'>
                     <div className='pb-3 flex flex-row justify-between'>
                         <div>
                             <p className="font-header text-primary text-base">Total MBLearn Users</p>

@@ -216,20 +216,29 @@ export default function UserAccountSecurityMaintenance(){
 
 
     return(
-        <div className='grid  grid-cols-4 grid-rows-[6.25rem_min-content_auto_auto_min-content] h-full w-full'>
+        <div className='grid grid-cols-4 h-full w-full
+                        xl:grid-rows-[6.25rem_min-content_auto_auto_min-content]
+                        sm:grid-rows-[6.25rem_min-content_auto]'>
             <Helmet>
                 {/* Title of the mark-up */}
                 <title>MBLearn | System Access Maintenance</title>
             </Helmet>
 
             {/* Header */}
-            <div className='flex flex-col justify-center col-span-3 row-span-1 pr-5 border-b ml-5 border-divider'>
-                <h1 className='text-primary text-4xl font-header'>System Access Maintenance</h1>
-                <p className='font-text text-sm text-unactive' >Handles user credentials, account status, and last login tracking for secure access management..</p>
+            <div className='flex flex-col justify-center row-span-1 pr-5 border-b border-divider
+                            xl:col-span-3
+                            sm:col-span-2'>
+                <h1 className='text-primary font-header
+                                xl:text-4xl'>System Access Maintenance</h1>
+                <p className='font-text text-unactive
+                                xl:text-sm
+                                sm:text-xs' >Handles user credentials, account status, and last login tracking for secure access management..</p>
             </div>
 
             {/* Search bar */}
-            <div className='col-start-4 row-start-1 mr-5 py-3 border-b border-divider'>
+            <div className='row-start-1 mr-5 py-3 border-b border-divider
+                            xl:col-start-4
+                            sm:col-start-3 sm:col-span-2'>
                 <div className="flex items-center w-full h-full">
                     <div className=' inline-flex flex-row place-content-between border-2 border-primary rounded-md w-full h-fit font-text shadow-md'>
                         <input type="text" className='focus:outline-none text-sm px-4 w-full rounded-md bg-white' placeholder='Search...'/>
@@ -241,7 +250,7 @@ export default function UserAccountSecurityMaintenance(){
             </div>
 
             {/* User Filter */}
-            <form onSubmit={filterformik.handleSubmit} className='col-start-1 col-span-4 row-start-2 row-span-1 px-5 py-3 grid grid-cols-[auto_auto_auto_auto_auto_min-content] w-full gap-2'>
+            <form onSubmit={filterformik.handleSubmit} className='col-start-1 col-span-4 row-start-2 row-span-1 py-3 grid grid-cols-[auto_auto_auto_auto_auto_min-content] w-full gap-2'>
                 {/* <div className="inline-flex flex-col gap-1">
                     <label htmlFor="department" className="font-header text-xs flex flex-row justify-between">
                         <p className="text-xs font-text text-unactive">Department </p>
@@ -355,7 +364,7 @@ export default function UserAccountSecurityMaintenance(){
             </form>
 
             {/* UserList Table */}
-            <div className='row-start-3 row-span-2 col-start-1 col-span-4 px-5 py-4'>
+            <div className='row-start-3 row-span-2 col-start-1 col-span-4 pr-5 py-4'>
                 <div className='w-full border-primary border rounded-md overflow-hidden shadow-md'>
                 <table className='text-left min-w-full table-layout-fixed'>
                     <thead className='font-header text-xs text-primary bg-secondaryprimary uppercase'>
