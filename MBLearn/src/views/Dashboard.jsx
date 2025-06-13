@@ -402,7 +402,9 @@ const chartData = [
                     <Helmet>{/* Title of the mark-up */}
                     <title>MBLearn | Learner Dashboard</title>
                     </Helmet>
-                    <LearnerDashboard name={name} user={user}/>
+                    <Course_ContexttProvider>
+                        <LearnerDashboard name={name} user={user}/>
+                    </Course_ContexttProvider>
                 </>
             )
     }

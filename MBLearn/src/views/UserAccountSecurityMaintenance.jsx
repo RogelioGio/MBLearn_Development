@@ -26,11 +26,43 @@ export default function UserAccountSecurityMaintenance(){
     const [users, setUsers] = useState([])
     const [selectedBranches, setSelectedBranches] = useState([])
     const [SelectedUser, setSelectedUser] = useState()
+    const [search, setSearch] = useState();
 
     const [modalState, setModalState] = useState({
         isEdit:false,
         isEditSuccess: false,
     });
+
+    //SearchFormik
+    const searchFormik = useFormik(({
+        initialValues:{
+            search: '',
+            page: 1,
+            per_page: 5,
+            status: 'Active',
+        },
+        validationSchema: Yup.object({}),
+        onSubmit: values => {
+            console.log(values);
+            const payload = {
+                search: values.search,
+                page: values.page,
+                per_page: values.per_page,
+                status: values.status,
+            };
+            setIsLoading(true);
+            setSearch(true);
+            // axiosClient.get('/user-search', {params: payload})
+            // .then((response) => {
+            //     console.log(response.data);
+            //     setUsers(response.data.data);
+            //     setLoading(false)
+            //     pageChangeState("totalUsers", response.data.total)
+            //     pageChangeState("lastPage", response.data.lastPage)
+
+            // }).catch((e) => {console.log(e)})
+        }
+    }))
 
     //OpenSuccess
     const OpenSuccessFullyEdit = () => {
@@ -226,27 +258,45 @@ export default function UserAccountSecurityMaintenance(){
 
             {/* Header */}
             <div className='flex flex-col justify-center row-span-1 pr-5 border-b border-divider
-                            xl:col-span-3
+                            xl:col-span-2
                             sm:col-span-2'>
                 <h1 className='text-primary font-header
                                 xl:text-4xl'>System Access Maintenance</h1>
                 <p className='font-text text-unactive
                                 xl:text-sm
-                                sm:text-xs' >Handles user credentials, account status, and last login tracking for secure access management..</p>
+                                sm:text-xs' >Handles user credentials, account status, and last login tracking for secure access</p>
             </div>
 
             {/* Search bar */}
-            <div className='row-start-1 mr-5 py-3 border-b border-divider
-                            xl:col-start-4
+            <div className='row-start-1 mr-5 py-3 border-b border-divider flex flex-row justify-end items-center gap-3
+                            xl:col-start-3 xl:col-span-2
                             sm:col-start-3 sm:col-span-2'>
-                <div className="flex items-center w-full h-full">
-                    <div className=' inline-flex flex-row place-content-between border-2 border-primary rounded-md w-full h-fit font-text shadow-md'>
-                        <input type="text" className='focus:outline-none text-sm px-4 w-full rounded-md bg-white' placeholder='Search...'/>
-                        <div className='bg-primary py-2 px-4 text-white'>
-                            <FontAwesomeIcon icon={faSearch}/>
+                {
+                    search ? (
+                        <div className='w-11 h-11 border-primary border-2 rounded-md shadow-md bg-white flex items-center justify-center text-primary hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out' onClick={()=>{setSearch(false), searchFormik.resetForm(), fetchUsers()}}>
+                            <FontAwesomeIcon icon={faXmark}/>
+                        </div>
+                    ) : null
+                }
+                <form onSubmit={searchFormik.handleSubmit}>
+                    <div className="flex items-center h-full w-80">
+                        <div className=' inline-flex flex-row place-content-between border-2 border-primary rounded-md w-full h-fit font-text shadow-md'>
+                            <input type="text" className='focus:outline-none text-sm px-4 w-full rounded-md bg-white' placeholder='Search...'
+                                name='search'
+                                value={searchFormik.values.search}
+                                onChange={searchFormik.handleChange}
+                                onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    searchFormik.handleSubmit();
+                                }
+                                }}/>
+                            <div className='bg-primary py-2 px-4 text-white'>
+                                <FontAwesomeIcon icon={faSearch}/>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </form>
             </div>
 
             {/* User Filter */}

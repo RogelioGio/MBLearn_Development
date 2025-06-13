@@ -398,21 +398,19 @@ export default function UserManagementMaintenance() {
 
 
             {/* Search bar */}
-            <div className='row-start-2 col-start-3 flex flex-row items-center justify-end'>
+            <div className='inline-flex items-center justify-end row-start-2 py-3 h-full gap-3
+                            sm:col-start-3 sm:col-span-2 sm:pr-5
+                            xl:col-start-3 xl:col-span-2 xl:px-5'>
                 {
                     search ? (
-                        <div className='w-10 h-10 border-primary border-2 rounded-md shadow-md bg-white flex items-center justify-center text-primary' onClick={()=>{setSearch(false), searchFormik.resetForm(), fetchUsers()}}>
+                        <div className='w-11 h-11 border-primary border-2 rounded-md shadow-md bg-white flex items-center justify-center text-primary hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out' onClick={()=>{setSearch(false), searchFormik.resetForm(), fetchUsers()}}>
                             <FontAwesomeIcon icon={faXmark}/>
                         </div>
                     ) : null
                 }
-            </div>
-            <div className='inline-flex items-center justify-center row-start-2  py-3 h-full
-                            sm:col-start-3 sm:col-span-2 sm:pr-5
-                            xl:col-start-4 xl:px-5'>
-                <form onSubmit={searchFormik.handleSubmit} className='w-full'>
+                <form onSubmit={searchFormik.handleSubmit}>
                     <div className='inline-flex flex-row place-content-between border-2 border-primary rounded-md w-full font-text shadow-md'>
-                        <input type="text" className='focus:outline-none text-sm px-4 w-full rounded-md bg-white' placeholder='Search...'
+                        <input type="text" className='focus:outline-none text-sm px-4 w-60 rounded-md bg-white' placeholder='Search...'
                             name='search'
                             value={searchFormik.values.search}
                             onChange={searchFormik.handleChange}

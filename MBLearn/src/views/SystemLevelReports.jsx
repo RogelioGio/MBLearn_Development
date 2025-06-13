@@ -48,23 +48,23 @@ export default function SystemLevelReports() {
                     <p>User List Reports</p>
                 </div>
                 <div className={`border-2 border-primary rounded-md font-header px-4 py-2 my-1 text-primary hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out ${tab === 'masterList' ? 'bg-primary text-white':''}`} onClick={()=> setTab('masterList')}>
-                    <p>User Master List Report</p>
+                    <p>Master List Report</p>
                 </div>
                 <div className={`border-2 border-primary rounded-md font-header px-4 py-2 my-1 text-primary hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out ${tab === 'roleDistribution' ? 'bg-primary text-white':''}`} onClick={()=> setTab('roleDistribution')}>
-                    <p>User Role Distributions</p>
+                    <p>Role Distributions</p>
                 </div>
                 <div className={`text-base gap-2 flex items-center font-text text-unactive pt-4 pb-2 transition-all ease-in-out border-divider`}>
                     <FontAwesomeIcon icon={faGears}/>
                     <p>System Access Reports</p>
                 </div>
                 <div className={`border-2 border-primary rounded-md font-header px-4 py-2 my-1 text-primary hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out ${tab === 'accessLog' ? 'bg-primary text-white':''}`} onClick={()=> setTab('accessLog')}>
-                    <p>User Access Logs Report</p>
+                    <p>User Access Logs</p>
                 </div>
                 <div className={`border-2 border-primary rounded-md font-header px-4 py-2 my-1 text-primary hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out ${tab === 'activity' ? 'bg-primary text-white':''}`} onClick={()=> setTab('activity')}>
                     <p>User Activity Report</p>
                 </div>
                 <div className={`border-2 border-primary rounded-md font-header px-4 py-2 my-1 text-primary hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out ${tab === 'accountStatus' ? 'bg-primary text-white':''}`} onClick={()=> setTab('accountStatus')}>
-                    <p>User Account Status Report</p>
+                    <p>Accounts Status Report</p>
                 </div>
                 <div className={`text-base gap-2 flex items-center font-text text-unactive pt-4 pb-2 transition-all ease-in-out border-divider`}>
                     <FontAwesomeIcon icon={faWrench}/>
