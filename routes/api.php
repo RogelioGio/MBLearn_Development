@@ -1,6 +1,7 @@
 <?php
 
 
+use App\Events\fAsRead;
 use App\Events\NotificationsMarkedAsRead;
 use App\Http\Controllers\Api\ActivityLogsController;
 use App\Http\Controllers\Api\CarouselImageController;
@@ -195,7 +196,8 @@ Route::post('/send-notfication', function (){
     } else {
         $message = 'Failed to send notification';
     }
-    return response()->json(['message' => $message, 'user' => $user], 200);
+
+    return response()->json(['message' => $message], 200);
 });
 
 

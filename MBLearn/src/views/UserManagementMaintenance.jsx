@@ -40,8 +40,12 @@ export default function UserManagementMaintenance() {
     const [checkedUsers, setCheckedUser] = useState([]);
     const selectAllRef = useRef(null);
     const [selectAll, setSelectAll] = useState(false);
+    const [search, setSearch] = useState(false)
     const navigate = useNavigate();
     const {user} = useStateContext();
+
+    //User State
+    const [users, setUsers] = useState([]) //Fetching the user list
 
 
     useEffect(()=>{
@@ -93,6 +97,37 @@ export default function UserManagementMaintenance() {
             }).catch((err) => {console.log(err)})
         }
     })
+
+    //SearchFormik
+    const searchFormik = useFormik(({
+        initialValues:{
+            search: '',
+            page: 1,
+            per_page: 5,
+            status: 'Active',
+        },
+        validationSchema: Yup.object({}),
+        onSubmit: values => {
+            console.log(values);
+            const payload = {
+                search: values.search,
+                page: values.page,
+                per_page: values.per_page,
+                status: values.status,
+            };
+            setLoading(true);
+            setSearch(true);
+            // axiosClient.get('/user-search', {params: payload})
+            // .then((response) => {
+            //     console.log(response.data);
+            //     setUsers(response.data.data);
+            //     setLoading(false)
+            //     pageChangeState("totalUsers", response.data.total)
+            //     pageChangeState("lastPage", response.data.lastPage)
+
+            // }).catch((e) => {console.log(e)})
+        }
+    }))
 
     //Modal State
     const [modalState, setModalState] = useState({
@@ -180,8 +215,6 @@ export default function UserManagementMaintenance() {
         }))
     }
 
-    //User State
-    const [users, setUsers] = useState([]) //Fetching the user list
 
     //Loading State
     const [isLoading, setLoading] = useState(true);
@@ -365,15 +398,35 @@ export default function UserManagementMaintenance() {
 
 
             {/* Search bar */}
+            <div className='row-start-2 col-start-3 flex flex-row items-center justify-end'>
+                {
+                    search ? (
+                        <div className='w-10 h-10 border-primary border-2 rounded-md shadow-md bg-white flex items-center justify-center text-primary' onClick={()=>{setSearch(false), searchFormik.resetForm(), fetchUsers()}}>
+                            <FontAwesomeIcon icon={faXmark}/>
+                        </div>
+                    ) : null
+                }
+            </div>
             <div className='inline-flex items-center justify-center row-start-2  py-3 h-full
                             sm:col-start-3 sm:col-span-2 sm:pr-5
                             xl:col-start-4 xl:px-5'>
-                <div className=' inline-flex flex-row place-content-between border-2 border-primary rounded-md w-full font-text shadow-md'>
-                    <input type="text" className='focus:outline-none text-sm px-4 w-full rounded-md bg-white' placeholder='Search...'/>
-                    <div className='bg-primary py-2 px-4 text-white'>
-                        <FontAwesomeIcon icon={faSearch}/>
+                <form onSubmit={searchFormik.handleSubmit} className='w-full'>
+                    <div className='inline-flex flex-row place-content-between border-2 border-primary rounded-md w-full font-text shadow-md'>
+                        <input type="text" className='focus:outline-none text-sm px-4 w-full rounded-md bg-white' placeholder='Search...'
+                            name='search'
+                            value={searchFormik.values.search}
+                            onChange={searchFormik.handleChange}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    searchFormik.handleSubmit();
+                                }
+                            }}/>
+                        <div className='bg-primary py-2 px-4 text-white'>
+                            <FontAwesomeIcon icon={faSearch}/>
+                        </div>
                     </div>
-                </div>
+                </form>
             </div>
 
 
@@ -603,7 +656,7 @@ export default function UserManagementMaintenance() {
                                     </td>
                                 </tr>
                             ):(
-                                users.map(userEntry => {
+                                users?.map(userEntry => {
                                     const { first_name, middle_name, last_name } = userEntry || {};
                                     const fullName = [first_name, middle_name, last_name].filter(Boolean).join(" ");
                                     return(<User

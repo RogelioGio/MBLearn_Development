@@ -79,28 +79,18 @@ export default function DefaultLayout() {
             echo.private(`App.Models.UserCredentials.${user.id}`)
             .notification((notification) => {
                 // handleNotifiction();
+                console.log("Listening to notifications for user:", user.id);
                 toast(notification.title,{
                     description: notification.body,
                 })
                 setUnreadNotifications(true);
             });
 
-            // echo.private(`notifications.${user.id}`)
-            // .listen('.notifications-read-all', (e) => {
-            //     console.log('Event received:', e);
-            //     //setUnreadNotifications(false);
-            // })
-
-            // return () => {
-            //     echo.private(`notifications.${user.id}`).stopListening('notifications-read-all');
-            // };
             echo.private(`notifications.${user.id}`)
             .listen('.notifications-read-all', (e) => {
-                console.log("📥 Received event:", e);
+                setUnreadNotifications(false);
             })
-            .subscribed(() => {
-                console.log('✅ Subscribed to private-notifications.' + user.id);
-            });
+
         }
 
         //User Management Events (System Admin)

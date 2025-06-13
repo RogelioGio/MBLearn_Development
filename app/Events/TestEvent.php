@@ -40,4 +40,8 @@ class TestEvent implements ShouldBroadcast
         ];
     }
 
+    public function broadcastAs(): string
+    {
+        return 'Test';
+    }
 }

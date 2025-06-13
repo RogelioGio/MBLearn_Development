@@ -50,10 +50,10 @@ const NotificationModal = ({open, close}) => {
     useEffect(() => {
         loadMore(1)
 
-        echo.private(`App.Models.UserCredentials.${user.id}`)
-        .notification((notification) => {
-            loadMore(1)
-        });
+        // echo.private(`App.Models.UserCredentials.${user.id}`)
+        // .notification((notification) => {
+        //     loadMore(1)
+        // });
     },[])
     useEffect(() => {
         if(!open) return

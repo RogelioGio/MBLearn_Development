@@ -945,20 +945,20 @@ class userInfo_controller extends Controller
         // // $perm->permissions()->sync([1,2]);
         // $userInfo = UserInfos::find(128);
         // PermissionToUser::dispatch($userInfo, $existingatedData['permissions'] ?? []);
-        // $message = "Hello from laravel";
-        // broadcast(new TestEvent($message));
-        // TestEvent::broadcast($message);
-        // return response()->json([
-        //     'data' => "Done"
-        // ]);
+        $message = "Hello from laravel";
+        broadcast(new TestEvent($message));
+        TestEvent::broadcast($message);
+        return response()->json([
+            'data' => "Done"
+        ]);
 
 
-        {
-            $user = UserCredentials::query()->find(1); // Replace with the actual user ID
+        // {
+        //     $user = UserCredentials::query()->find(1); // Replace with the actual user ID
 
-            $user->unreadNotifications->markAsRead();
+        //     $user->unreadNotifications->markAsRead();
 
-            return response()->json(['message' => 'All notifications marked as read']);
-        }
+        //     return response()->json(['message' => 'All notifications marked as read']);
+        // }
     }
 }
