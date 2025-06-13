@@ -38,13 +38,13 @@ export default function Course() {
     const [openPublish, setOpenPublish] = useState(false);
     const [assign, setAssign] = useState(false);
     // const {selectCourse, selectedCourse, isFetching, resetSelectedCourse, Course} = useCourse();
-    const {course} = useCourse_Context();
+    const {course, setCourse} = useCourse_Context();
     const [learnerProgress, setLearnerProgress] = useState();
 
 
-    useEffect(() => {
-        console.log('the corse is passed is:', course || "none");
-    },[])
+    // useEffect(() => {
+    //     console.log('the corse is passed is:', course || "none");
+    // },[])
 
     useEffect(()=>{
         // if (!course) {
@@ -58,10 +58,12 @@ export default function Course() {
         //     })
         // } else
         if (role === "Learner") {
+            setLoading(true)
             axiosClient.get(`/coursecontext/${id}/${user.user_infos.id}`)
             .then((res) => {
-                console.log(res.data)
                 setLearnerProgress(res.data.completed_lessons);
+                setCourse(res.data);
+                setLoading(false)
             }).catch((e) => console.log(e))
         }
     },[])
@@ -150,7 +152,7 @@ export default function Course() {
                             {tabComponents[tab] || null}
                         </div>
                     </>
-                ) : !isLoading && role === "Learner" ? (
+                ) : role === "Learner" ? (
                     <>
                         <CourseModuleProps headers={<>
                             <div className="flex flex-row col-span-4 items-center gap-4 pl-5">
@@ -160,8 +162,14 @@ export default function Course() {
                                 </div>
                                 {/* Course Name */}
                                 <div >
-                                    <h1 className="font-header text-2xl font-bold text-white">{course?.name} </h1>
-                                    <p className="font-text text-xs text-white">Course ID: {course?.CourseID} </p>
+                                    {
+                                        course && Object.keys(course).length > 0 ? <>
+                                            <h1 className="font-header text-2xl font-bold text-white">{course?.name} </h1>
+                                            <p className="font-text text-xs text-white">Course ID: {course?.CourseID} </p>
+                                        </>:<>
+                                            <h1 className="font-header text-3xl font-bold text-white">Loading...</h1>
+                                        </>
+                                    }
                                 </div>
                                 {/* Course Status */}
                                 {/* <span className="inline-flex items-center rounded-md bg-secondaryprimary px-4 py-2 text-xs font-medium text-primary font-text ring-1 ring-primary gap-1">
@@ -171,21 +179,21 @@ export default function Course() {
                             </div>
                             <div className="flex flex-row gap-1 pr-5">
                                 {/* Action Button */}
-                                <div className={`text-white text-sm border-2 border-white h-full py-2 px-4 rounded-md shadow-md flex flex-row gap-2 items-center transition-all ease-in-out hover:scale-105 hover:bg-white hover:text-primary hover:cursor-pointer`} onClick={()=>setOpenDetails(true)}>
+                                <div className={`text-white text-sm border-2 border-white h-full py-2 px-4 rounded-md shadow-md flex flex-row gap-2 items-center transition-all ease-in-out  ${Object.keys(course).length > 0 ? "hover:scale-105 hover:bg-white hover:text-primary hover:cursor-pointer" : "opacity-50"}`} onClick={()=>{if(Object.keys(course).length > 0){setOpenDetails(true)}else return}}>
                                     <FontAwesomeIcon icon={faCircleInfo} />
                                     <p className="font-header">Detail</p>
                                 </div>
                             </div>
-                        </>} course={course} LearnerProgress={learnerProgress}/>
+                        </>} course={course} LearnerProgress={learnerProgress} setLearnerProgress={setLearnerProgress} fetchingLearnerProgress={isLoading}/>
                     </>
                 ) :
-                isLoading && role === "Learner" ? (
-                    <div className="col-span-2 row-span-4 flex flex-col justify-center items-center">
-                        <img src={CourseLoading} alt="" className="w-80"/>
-                        <p className="text-4xl font-header text-primary">Loading...</p>
-                        <p className="text-sm font-text text-primary">Hang tight! 🚀 Loading courses for — great things take a second!</p>
-                    </div>
-                ) :
+                // isLoading && role === "Learner" ? (
+                //     <div className="col-span-2 row-span-4 flex flex-col justify-center items-center">
+                //         <img src={CourseLoading} alt="" className="w-80"/>
+                //         <p className="text-4xl font-header text-primary">Loading...</p>
+                //         <p className="text-sm font-text text-primary">Hang tight! 🚀 Loading courses for — great things take a second!</p>
+                //     </div>
+                // ) :
                 (
                     <div className="col-span-4 row-span-3 flex flex-col justify-center items-center">
                         <img src={CourseLoading} alt="" className="w-80"/>

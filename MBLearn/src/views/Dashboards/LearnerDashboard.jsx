@@ -162,7 +162,7 @@ const LearnerDashboard = ({name,user}) => {
                                         //         <Progress value={course.progress}/>
                                         //     </div>
                                         // </div>
-                                        <CourseCard course={course} type='learner' click={() => {console.log("hello"); navigate(`/learner/course/${course.id}`); setCourse(course)}}/>
+                                        <CourseCard course={course} type='learner' click={() => {navigate(`/learner/course/${course.id}`); setCourse(course)}}/>
                                         //navigate(`/learner/course/${course.id}`)
                                     )
                                 })

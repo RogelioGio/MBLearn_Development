@@ -66,7 +66,7 @@ const CourseCard = ({ course, type, click}) => {
                                 <div className="flex flex-col justify-between h-full py-3 px-4">
                                     <div className="flex flex-row justify-between font-text text-unactive text-xs pb-2">
                                         <p>Progress</p>
-                                        <p>{course.progress} %</p>
+                                        <p>{Math.round(course.progress)} %</p>
                                     </div>
                                     <Progress value={course.progress}/>
                                 </div>
