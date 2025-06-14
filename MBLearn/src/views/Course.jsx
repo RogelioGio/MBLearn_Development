@@ -153,6 +153,7 @@ export default function Course() {
                         </div>
                     </>
                 ) : role === "Learner" ? (
+
                     <>
                         <CourseModuleProps headers={<>
                             <div className="flex flex-row col-span-4 items-center gap-4 pl-5">

@@ -101,10 +101,10 @@ const CourseModuleProps = ({headers, course, LearnerProgress = [], setLearnerPro
         //console.log('learner progress: ', LearnerProgress)
     },[LearnerProgress])
 
-    useEffect(()=>{
-        // console.log("Course :", course)
-        console.log(loading)
-    },[loading])
+    // useEffect(()=>{
+    //     console.log("Course :", course)
+    //     console.log(loading)
+    // },[loading])
     // useEffect(() => {
     //     console.log("course", course)
     // }, [course])
@@ -289,9 +289,9 @@ const CourseModuleProps = ({headers, course, LearnerProgress = [], setLearnerPro
                                             );
                                         })
                                         }
-                                    {/* <Step stepTitle={"Course Assesment"} stepDesc={"Complete the assesment to complete the course"} icon={faClipboard}>
+                                    <Step stepTitle={"Course Assesment"} stepDesc={"Complete the assesment to complete the course"} icon={faClipboard}>
                                         <CourseAssesment course={course}/>
-                                    </Step> */}
+                                    </Step>
                                     {/* <Step stepTitle={"Course Overview"} stepDesc={"Quick Summary of the course"}>
                                         <CourseOverview/>
                                     </Step>

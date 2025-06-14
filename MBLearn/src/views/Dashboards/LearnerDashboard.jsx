@@ -34,9 +34,7 @@ const LearnerDashboard = ({name,user}) => {
             }
         )
         .then(({data}) => {
-            console.log(data.data)
             setEnrolled(data.data)
-
         })
         .catch((err) => {
             console.log(err)
@@ -46,7 +44,6 @@ const LearnerDashboard = ({name,user}) => {
         axiosClient.get(`/enrollment-status-count/${user.user_infos.id}`)
         .then((res) => {
             setCount(res.data)
-            console.log(res.data)
             setLoading(false)
         }).catch((e)=> {
             console.log(e)

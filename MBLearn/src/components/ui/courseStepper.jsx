@@ -121,9 +121,9 @@ export const Stepper = forwardRef(
                 </>
                 :
                 <>
-                <div className="w-full grid grid-cols-[1fr_20rem] gap-x-2 h-full">
+                <div className="w-full grid grid-cols-[1fr_20rem] gap-x-2 h-[calc(100vh-12.25rem)]">
                 {/* Step Content */}
-                <ScrollArea className="h-[calc(100vh-9.5rem)] pr-5 pl-4">
+                <ScrollArea className="pr-10 pl-4">
                     <div>
                         {isCompleted ? completedStep : steps[active]}
                     </div>

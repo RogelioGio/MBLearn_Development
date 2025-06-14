@@ -21,10 +21,6 @@ const CourseAdminDashboard = ({name, user}) => {
     const {setCourse} = useCourse_Context();
     const navigate = useNavigate()
 
-    useState(() =>{
-        setCourse(null)
-    },[])
-
     const [pageState, setPagination] = useState({
             currentPage: 1,
             perPage: 4,
