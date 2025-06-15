@@ -4,6 +4,7 @@ import PortalToolTip from "MBLearn/src/components/ui/portal"
 import { Progress } from "MBLearn/src/components/ui/progress"
 import { useEffect, useRef, useState } from "react"
 import CourseAssesmentItem from "./courseAssementItem"
+import CircleChart from "MBLearn/src/components/ui/circleChart"
 
 
 const CourseAssesment = ({course,complete}) => {
@@ -394,20 +395,56 @@ const CourseAssesment = ({course,complete}) => {
                         </div>
                     </>
                 ) : quizState === "result" ? (
-                    <div className="row-span-4 grid grid-cols-4 grid-rows-2">
+                    // <div className="row-span-4 flex items-center justify-center gap-5">
+                    //     <CircleChart label="Assesment Performance" size={250}  type="finished"/>
+                    //     <div className="flex flex-col items-center gap-4">
+                    //         <div>
+                    //             <p className="font-header text-primary text-2xl">{course.name}</p>
+                    //             <p className="font-text text-unactive">Course Assessment</p>
+                    //         </div>
+                    //         <div className="flex flex-col items-center">
+                    //             <p className="font-text text-unactive">You got</p>
+                    //             <p className="font-header text-4xl text-primary">10 out of {assessment.assesmentItems.length}</p>
+                    //             <p className="font-text text-unactive">Assessment Score</p>
+                    //         </div>
+                    //         <div className="py-2 px-10 border-2 border-primary text-primary bg-white rounded-md font-header flex items-center justify-center shadow-md hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out"
+                    //             //onClick={complete()}
+                    //             >
+                    //             Complete Course
+                    //         </div>
 
-                        <div className="flex flex-col items-center gap-2 col-span-4 justify-start mb-5 row-start-2">
+                    //     </div>
+                    // </div>
+                    <>
+                    <div className="row-span-3 grid grid-cols-4 grid-rows-[min-content_min-content_1fr]">
+                        <div className="flex flex-col items-end col-start-3 col-span-2">
+                            <p className="font-header text-primary">{course.name}</p>
+                            <p className="font-text text-unactive text-xs">Course Assessment</p>
+                        </div>
+                        <div className="flex flex-col col-start-2 row-start-1">
+                            <p className="font-header text-primary">Result</p>
+                            <p className="font-text text-unactive text-xs">Assessment Review</p>
+                        </div>
+                        <div className="flex flex-col items-center justify-center col-start-1 row-start-1 row-span-3 gap-10">
+                            <CircleChart label="Assesment Performance" size={200}  type="finished"/>
                             <div className="flex flex-col items-center">
-                                <p className="font-text text-primary text-xs">{course.name}</p>
-                                <p className="font-header text-primary text-3xl">Course Assesment</p>
-                            </div>
-                            <div className="py-2 px-10 border-2 border-primary text-primary bg-white rounded-md font-header flex items-center justify-center shadow-md hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out"
-                                onClick={complete()}>
-                                Complete Course
+                                <p className="font-text text-xs text-unactive">You got</p>
+                                <p className="font-header text-2xl text-primary">10 out of {assessment.assesmentItems.length}</p>
+                                <p className="font-text text-xs text-unactive">Assessment Score</p>
                             </div>
                         </div>
-
                     </div>
+                    <div className="grid grid-cols-2 gap-2">
+                        <div className="py-3 border-2 border-primary text-primary bg-white rounded-md font-header flex items-center justify-center shadow-md hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out"
+                            onClick={()=>{setQuizState("on-going")}}>
+                            <p>Review</p>
+                        </div>
+                        <div className={`py-3 border-2 border-primary text-white bg-primary rounded-md font-header flex items-center justify-center shadow-md hover:cursor-pointer`}
+                            onClick={()=>{setQuizState("result")}}>
+                            <p>Submit</p>
+                        </div>
+                    </div>
+                    </>
                 ) : null
             }
         </div>

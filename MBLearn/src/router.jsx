@@ -40,7 +40,7 @@ import UserProfile from "./views/UserProfile";
 import { User } from "lucide-react";
 import { useStateContext } from "./contexts/ContextProvider";
 import Redirect from "./contexts/Redirect";
-import { Course_ContexttProvider } from "./contexts/Course_Context";
+import { Course_ContextProvider } from "./contexts/Course_Context";
 
 // const {user} = useStateContext()
 // const cleanRole = user.user_infos.role[0].role_name.toLowerCase().replace(/\s+/g, '');
@@ -132,9 +132,9 @@ const router = createBrowserRouter([
                     {
                         path: "dashboard",
                         element:
-                        <Course_ContexttProvider>
+                        <Course_ContextProvider>
                             <Dashboard/>
-                        </Course_ContexttProvider>
+                        </Course_ContextProvider>
                     },
                     {
                         path: "bulkenrollment",
@@ -153,16 +153,16 @@ const router = createBrowserRouter([
                         path:"course/:id",
                         element:
 
-                            <Course_ContexttProvider>
+                            <Course_ContextProvider>
                                 <Course/>
-                            </Course_ContexttProvider>
+                            </Course_ContextProvider>
                     },
                     {
                         path: "courses",
                         element:
-                            <Course_ContexttProvider>
+                            <Course_ContextProvider>
                                 <AssignedCourse/>
-                            </Course_ContexttProvider>
+                            </Course_ContextProvider>
 
                     },
                     {
@@ -184,9 +184,9 @@ const router = createBrowserRouter([
                     {
                         path:'test',
                         element:
-                        <Course_ContexttProvider>
+                        <Course_ContextProvider>
                             <Test/>
-                        </Course_ContexttProvider>
+                        </Course_ContextProvider>
                     }
 
                 ]
@@ -205,9 +205,9 @@ const router = createBrowserRouter([
                     {
                         path: "dashboard",
                         element:
-                        <Course_ContexttProvider>
+                        <Course_ContextProvider>
                             <Dashboard/>
-                        </Course_ContexttProvider>
+                        </Course_ContextProvider>
                     },
                     {
                         path: "learnercoursemanager/:coursetype?",
@@ -227,9 +227,9 @@ const router = createBrowserRouter([
                     {
                         path:"course/:id",
                         element:
-                        <Course_ContexttProvider>
+                        <Course_ContextProvider>
                                 <Course/>
-                        </Course_ContexttProvider>
+                        </Course_ContextProvider>
                     },
                     {
                         path:"accountsettings",

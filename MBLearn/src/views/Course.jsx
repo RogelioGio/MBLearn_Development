@@ -42,9 +42,9 @@ export default function Course() {
     const [learnerProgress, setLearnerProgress] = useState();
 
 
-    // useEffect(() => {
-    //     console.log('the corse is passed is:', course || "none");
-    // },[])
+    useEffect(() => {
+        console.log('the corse is passed is:', course || "none");
+    },[course])
 
     useEffect(()=>{
         // if (!course) {
