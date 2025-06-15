@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import CourseOverview from "../modalsandprops/courseComponents/CourseOverview";
 import CourseText from "../modalsandprops/courseComponents/courseText";
 import CourseVideo from "../modalsandprops/courseComponents/courseVideo";
-import { faBackward, faBook, faCircleChevronLeft, faCircleChevronRight, faForward } from "@fortawesome/free-solid-svg-icons";
+import { faBackward, faBook, faCircleChevronLeft, faCircleChevronRight, faForward, faPause } from "@fortawesome/free-solid-svg-icons";
 import { Step, Stepper, StepperCompleted, useStepper } from "../components/ui/courseStepper";
 import { ScrollArea } from "../components/ui/scroll-area";
 import CourseAssesment from "./courseComponents/courseAssesment";
@@ -223,7 +223,6 @@ const CourseModuleProps = ({headers, course, LearnerProgress = [], setLearnerPro
                                 <FontAwesomeIcon icon={faCircleChevronRight} className={`text-primary ${loading || Object.keys(course).length === 0 || fetchingLearnerProgress ? null : "group-hover:text-white"}`}/>
                             </div>
                     </div>
-
                     {/* Course Progress */}
                     <div className="pl-4 pr-3 mt-2 pb-2 border-l border-divider flex flex-col gap-y-2 justify-center row-start-3 col-start-2">
                         <div className="flex flex-row justify-between font-text text-sm text-unactive">
@@ -290,7 +289,7 @@ const CourseModuleProps = ({headers, course, LearnerProgress = [], setLearnerPro
                                         })
                                         }
                                     <Step stepTitle={"Course Assesment"} stepDesc={"Complete the assesment to complete the course"} icon={faClipboard}>
-                                        <CourseAssesment course={course}/>
+                                        <CourseAssesment course={course} complete={()=>{completeModule(activeStepMeta?.stepID)}}/>
                                     </Step>
                                     {/* <Step stepTitle={"Course Overview"} stepDesc={"Quick Summary of the course"}>
                                         <CourseOverview/>

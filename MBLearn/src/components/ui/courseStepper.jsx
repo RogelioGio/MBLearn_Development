@@ -1,9 +1,9 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { createContext, useContext, useState, useImperativeHandle, forwardRef, useEffect,} from "react";
 import { faCircleCheck as faCircleCheckRegular, faSquareCheck } from "@fortawesome/free-regular-svg-icons";
-import { ScrollArea } from "@mantine/core";
 import { useStateContext } from "MBLearn/src/contexts/ContextProvider";
 import { Progress } from "./progress";
+import { ScrollArea } from "./scroll-area";
 
 const StepperContext = createContext();
 
@@ -121,12 +121,10 @@ export const Stepper = forwardRef(
                 </>
                 :
                 <>
-                <div className="w-full grid grid-cols-[1fr_20rem] gap-x-2 h-[calc(100vh-12.25rem)]">
+                <div className="w-full grid grid-cols-[1fr_20rem] h-[calc(100vh-12.25rem)] overflow-auto">
                 {/* Step Content */}
-                <ScrollArea className="pr-10 pl-4">
-                    <div>
+                <ScrollArea className="mr-5 pl-2 overflow-auto">
                         {isCompleted ? completedStep : steps[active]}
-                    </div>
                 </ScrollArea>
 
                 {/* Step Indicators */}
