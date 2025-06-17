@@ -158,37 +158,50 @@ const chartData = [
                 <>
 
             <div className="grid h-full w-full grid-cols-4
+                            grid-rows-[6.25rem_auto_auto]
                             xl:grid-rows-[6.25rem_1fr_1fr]
                             sm:grid-rows-[6.25rem_auto_auto]">
                 <Helmet>{/* Title of the mark-up */}
                     <title>MBLearn | System Admin Dashboard</title>
                 </Helmet>
 
-                <div className='flex flex-col justify-center col-span-3 row-span-1 pr-5 border-b border-divider sm:py-5'>
+                <div className='flex flex-col justify-center col-span-3 row-span-1  border-b border-divider
+                                ml-3
+                                xl:pr-5
+                                sm:ml-4'>
                     <h1 className='text-primary font-header
+                                    text-2xl
                                     xl:text-4xl
                                     sm:text-2xl'>Good Day! {name} </h1>
                     <p className='font-text text-unactive
+                                    text-xs
                                     xl:text-sm
                                     sm:text-xs'>System Admin Dashboard, A centralized hub for system administrators to manage users, monitor system activity.</p>
                 </div>
-                <div className='border-b border-divider mr-5 flex flex-row justify-end items-center'>
+                <div className='border-b border-divider  flex flex-row justify-end items-center
+                                mr-3
+                                sm:mr-4'>
                     <div className='aspect-square bg-secondaryprimary rounded-full flex justify-center items-center
-                                    xl:w-20 xl:h-20
+                                    w-16 h-16
+                                    xl:w-20 xl:h-20 xl:mr-5
                                     sm:w-16 sm:h-16'>
-                        <FontAwesomeIcon icon={faUserShield} className='text-primary xl:text-2xl sm:text-xl'/>
+                        <FontAwesomeIcon icon={faUserShield} className='text-primary text-xl xl:text-2xl sm:text-xl'/>
                     </div>
                 </div>
 
                 {/* Announcement */}
-                <div className='row-span-1 pr-3 py-2 w-full
+                <div className='row-span-1 py-2 w-full
+                                col-span-4 h-80 px-4
                                 xl:col-span-3 xl:row-span-1 xl:h-full xl:pr-3
-                                sm:col-span-4 sm:row-span-1 sm:h-60 sm:pr-5'>
+                                sm:col-span-4 sm:row-span-1 sm:h-60 sm:px-4'>
                     <AnnouncmentCarousel/>
                 </div>
-                <div className='row-span-1 py-2 grid grid-cols-1 grid-rows-[min-content_1fr]
+
+                {/* Calendar */}
+                <div className='row-span-1 grid grid-cols-1 grid-rows-[min-content_1fr]
+                                col-span-4 px-4 py-2
                                 xl:col-span-1 xl:pr-5
-                                sm:col-span-4 sm:pr-5 sm:pb-10'>
+                                sm:col-span-4 sm:pb-5 sm:px-4'>
                     <div className='flex flex-row justify-between items-center'>
                         <div className="pb-3">
                             <p className="font-text text-unactive text-xs">Current Month & Date:</p>
@@ -221,9 +234,10 @@ const chartData = [
 
 
                 {/* Changing Content */}
-                <div className='row-start-3 ml-5 pr-3 flex flex-col
-                                xl:col-span-3 xl:pb-5 xl:h-full
-                                sm:col-span-4 sm:ml-0 sm:h-60 sm:py-2 sm:pr-5'>
+                <div className='row-start-3 flex flex-col
+                                col-span-4 px-4 py-2 h-80
+                                xl:col-span-3 xl:pb-5 xl:h-full xl:pr-3
+                                sm:col-span-4 sm:ml-0 sm:h-60 sm:py-2 sm:px-4'>
                     <div className='pb-3 grid grid-cols-4'>
                         <div className='col-span-2'>
                         <p className="font-header text-primary text-base">Online User Statistics</p>
@@ -347,9 +361,12 @@ const chartData = [
                         </ChartContainer>
                     </div>
                 </div>
-                <div className='mr-5 pb-5 flex flex-col
+
+                {/* Stats */}
+                <div className='py-2 flex flex-col
+                                col-span-4 row-start-4 px-4
                                 xl:col-span-1 xl:row-start-3
-                                sm:col-span-4 sm:row-start-4'>
+                                sm:col-span-4 sm:row-start-4 sm:px-4'>
                     <div className='pb-3 flex flex-row justify-between'>
                         <div>
                             <p className="font-header text-primary text-base">Total MBLearn Users</p>

@@ -273,45 +273,53 @@ export default function DefaultLayout() {
                             {/* Logout warning */}
                             <LogoutWarningmModal open={warning} close={close}/>
                         </div>
-                    ) : (
-                        // <div className='flex flex-row items-center h-screen bg-background overflow-hidden'>
-                        //     <Navigation unread_notfications={unreadNotifications}/>
-                        //     <ScrollArea>
-                        //         <div className='h-screen'>
-                        //             <SelectedUserProvider>
-                        //                 <OptionProvider>
-                        //                     <Outlet />
-                        //                 </OptionProvider>
-                        //             </SelectedUserProvider>
-                        //         </div>
-                        //     </ScrollArea>
-                        // </ div>
-                        <div className='grid h-screen bg-background overflow-hidden grid-cols-1 grid-rows-[min-content_1fr] p-3'>
-                            {/* Header */}
-                            <div className='flex items-center justify-between'>
-                                <Sheet>
-                                    <SheetTrigger>
-                                        <div className='w-10 h-10 text-primary border-2 border-primary rounded-md flex items-center justify-center cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out'>
-                                            <FontAwesomeIcon icon={faBars} className='text-lg'/>
-                                        </div>
-                                    </SheetTrigger>
-                                    <SheetOverlay className="bg-gray-500/75 backdrop-blur-sm transition-all" />
-                                    <SheetContent side='left' className='bg-background backdrop-blur-sm h-'>
-                                        <Navigation unread_notfications={unreadNotifications} size={"sm"}/>
-                                    </SheetContent>
-                                </Sheet>
-                                <div className='w-8 h-8'>
-                                    <img src={smallLogo} alt="" />
-                                </div>
-                                <div className='flex items-center justify-center w-10 h-10 text-unactive'>
-                                    <FontAwesomeIcon icon={faBell} className='text-2xl'/>
-                                </div>
+                    ) : breakpoint === 'lg' || breakpoint === 'md' ?
+                    (
+                        <div className='flex flex-row items-center h-screen bg-background overflow-hidden'>
+                            <Navigation unread_notfications={unreadNotifications} size={"xl"}/>
+                            <div className='w-full'>
+                                <ScrollArea>
+                                    {/* bg-[linear-gradient(to_bottom,_var(--DashboardBackground-Color)_0%,_var(--DashboardBackground-Color)_90%,_transparent_100%)] */}
+                                    <div className='h-screen'>
+                                        <SelectedUserProvider>
+                                            <OptionProvider>
+                                                    <Outlet />
+                                            </OptionProvider>
+                                        </SelectedUserProvider>
+                                    </div>
+                                </ScrollArea>
                             </div>
+                        </div>
+                    )
+                    :(
+                        <div className='grid h-screen bg-background overflow-hidden grid-cols-1 grid-rows-[min-content_1fr]'>
+                            {/* Header */}
                             <ScrollArea>
+                                {/* bg-[linear-gradient(to_bottom,_var(--DashboardBackground-Color)_0%,_var(--DashboardBackground-Color)_90%,_transparent_100%)] */}
+                                {/* bg-gradient-to-b from-background to-transparent */}
                                 <div className='h-screen'>
+                                    <div className='sticky top-0 z-50 flex items-center justify-between px-3 py-2'>
+                                    <Sheet>
+                                        <SheetTrigger>
+                                            <div className='bg-white w-10 h-10 text-primary border-2 border-primary rounded-md flex items-center justify-center cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out'>
+                                                <FontAwesomeIcon icon={faBars} className='text-lg'/>
+                                            </div>
+                                        </SheetTrigger>
+                                        <SheetOverlay className="bg-gray-500/75 backdrop-blur-sm transition-all z-50"/>
+                                        <SheetContent side='left' className='bg-background backdrop-blur-sm h-'>
+                                            <Navigation unread_notfications={unreadNotifications} size={"sm"}/>
+                                        </SheetContent>
+                                    </Sheet>
+                                        <div className='w-8 h-8'>
+                                            <img src={smallLogo} alt="" />
+                                        </div>
+                                        <div className='flex items-center justify-center w-10 h-10 text-unactive'>
+                                            <FontAwesomeIcon icon={faBell} className='text-2xl'/>
+                                        </div>
+                                    </div>
                                     <SelectedUserProvider>
                                         <OptionProvider>
-                                            <Outlet />
+                                                <Outlet />
                                         </OptionProvider>
                                     </SelectedUserProvider>
                                 </div>

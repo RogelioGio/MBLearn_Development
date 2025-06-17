@@ -260,35 +260,26 @@ export default function Navigation({unread_notfications, size}) {
                                 <p className='font-text text-unactive text-sm'>ID: {user.user_infos.employeeID}</p>
                             </div>
                         </div>
-                        <div className='p-2 relative'>
-                            {/* <div ref={buttonRef} onMouseEnter={() => setShowTooltip(true)} onMouseLeave={() => setShowTooltip(false)} className='border-2 border-primary rounded w-10 h-10 flex justify-center items-center' >
-                                <FontAwesomeIcon icon={faEllipsisVertical} className='text-xl'/>
-                            </div>
-                            <PortalToolTip anchorRef={buttonRef} visible={showTooltip} position="right-bottom" offset={10}>
-                                <div className='w-12 h-12 rounded-full shadow-lg hover:scale-105 transition-all ease-in-out'>
-                                <img src={user.user_infos.profile_image} className='rounded-full'/>
+                        <div>
+                            <div className='group relative'>
+                                <div className='border-2 border-primary rounded w-10 h-10 flex justify-center items-center text-primary hover:bg-primary hover:text-white hover:cursor-pointer transition-all ease-in-out' >
+                                    <FontAwesomeIcon icon={faEllipsisVertical} className='text-xl'/>
                                 </div>
-                            </PortalToolTip> */}
-                            {/* <Popover>
-                                <Popover.Trigger>
-                                    <div className='border-2 border-primary rounded w-10 h-10 flex justify-center items-center' >
-                                        <FontAwesomeIcon icon={faEllipsisVertical} className='text-xl'/>
-                                    </div>
-                                </Popover.Trigger>
-
-                            </Popover> */}
-                            <CustomPopover>
-                                <CustomPopover.Trigger>
-                                    <div className='border-2 border-primary rounded w-10 h-10 flex justify-center items-center' >
-                                        <FontAwesomeIcon icon={faEllipsisVertical} className='text-xl'/>
-                                    </div>
-                                </CustomPopover.Trigger>
-                                <CustomPopover.Content>
-                                    <div className='bg-tertiary p-2'>
-                                        Hello
-                                    </div>
-                                </CustomPopover.Content>
-                            </CustomPopover>
+                                <div className=' absolute bg-tertiary rounded-md left-11 bottom-0 scale-0 group-hover:scale-100 p-2'>
+                                    <ul>
+                                        {
+                                            rolesSwitch[role]?.map((option, index) => (
+                                                <li key={index}>
+                                                    <ProfileIcons text={option.text} icon={option.icon} onClick={option.onclick}/>
+                                                </li>
+                                            ))
+                                        }
+                                        <ProfileIcons text={"Logout"} icon={<FontAwesomeIcon icon={faRightFromBracket}/>} onClick={onLogout}/>
+                                        <li><div className='bg-white h-[1px]'></div></li>
+                                <       ProfileIcons text={"View Profile"} icon={<FontAwesomeIcon icon={faUser}/>} onClick={OpenProfile}/>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

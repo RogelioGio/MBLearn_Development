@@ -361,6 +361,7 @@ export default function UserManagementMaintenance() {
 
     return (
         <div className='grid grid-cols-4 h-full w-full
+                        grid-rows-[6.25rem_min-content]
                         xl:grid-rows-[6.25rem_min-content_auto_auto_min-content]
                         sm:grid-rows-[6.25rem_min-content]'>
             <Helmet>
@@ -369,41 +370,60 @@ export default function UserManagementMaintenance() {
             </Helmet>
 
             {/* Header */}
-            <div className='flex flex-col justify-center row-span-1 pr-5 border-b border-divider
+            <div className='flex flex-col justify-center row-span-1 border-b border-divider
+                            col-start-1 row-start-1 col-span-3 ml-3
                             xl:col-span-3
-                            sm:col-span-2'>
+                            sm:col-span-3 sm:ml-4'>
                 <h1 className='text-primary font-header
+                                text-xl
+                                sm:text-2xl
                                 xl:text-4xl'>User Management Maintenance</h1>
                 <p className='font-text text-unactive
+                                text-xs
                                 xl:text-sm
                                 sm:text-xs'>Effortlessly manage and add users to ensure seamless access and control.</p>
             </div>
 
 
             {/* Add Button */}
-            <div className='row-start-1 flex flex-col justify-center pl-5 mr-5 border-divider border-b
-                            xl:col-start-4
-                            sm:col-span-2 sm:col-start-3 sm:py-2'>
+            <div className='row-start-1 flex flex-col justify-center border-divider border-b
+                            items-end mr-3
+                            xl:col-start-4 xl:pl-5 xl:mr-5
+                            sm:col-span-1 sm:col-start-4 sm:py-2 sm:mr-4'>
                 {
                     user.user_infos.permissions?.some((permission)=> permission.permission_name === "AddUserInfo") ? (
-                        <button className='inline-flex flex-row shadow-md items-center justify-center bg-primary font-header text-white text-base p-4 rounded-full hover:bg-primaryhover hover:scale-105 transition-all ease-in-out' onClick={() => {
-                            toggleModal("isOpenAdd",true)}}>
-                            <FontAwesomeIcon icon={faUserPlus} className='mr-2'/>
-                            <p>Add User</p>
-                        </button>
+                        <>
+                        <div className='relative group sm:w-full'>
+                            <button className='inline-flex flex-row shadow-md items-center justify-center bg-primary font-header text-white text-base p-4 rounded-full hover:bg-primaryhover hover:scale-105 transition-all ease-in-out
+                                            w-16 h-16
+                                            sm:w-full'
+                                onClick={() => {
+                                toggleModal("isOpenAdd",true)}}>
+                                <FontAwesomeIcon icon={faUserPlus} className='sm:mr-2'/>
+                                <p className='hidden
+                                            sm:block'>Add User</p>
+                            </button>
+                            <div className='absolute bottom-[-2.5rem] w-full bg-tertiary rounded-md text-white font-text text-xs p-2 items-center justify-center whitespace-nowrap scale-0 group-hover:scale-100 block transition-all ease-in-out
+                                            sm:hidden'>
+                                <p>Add User</p>
+                            </div>
+                        </div>
+                        </>
                     ) : (null)
                 }
 
+
             </div>
 
-
             {/* Search bar */}
-            <div className='inline-flex items-center justify-end row-start-2 py-3 h-full gap-3
-                            sm:col-start-3 sm:col-span-2 sm:pr-5
+            <div className='inline-flex items-center justify-end row-start-2 py-3 gap-3
+                            col-span-3 col-start-2 h-full w-full pr-3
+                            sm:col-start-3 sm:col-span-2 sm:pr-4
                             xl:col-start-3 xl:col-span-2 xl:px-5'>
                 {
-                    search ? (
-                        <div className='w-11 h-11 border-primary border-2 rounded-md shadow-md bg-white flex items-center justify-center text-primary hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out' onClick={()=>{setSearch(false), searchFormik.resetForm(), fetchUsers()}}>
+                    true ? (
+                        <div className='border-primary border-2 rounded-md shadow-md bg-white flex items-center justify-center text-primary hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out w-11 h-11'
+                        onClick={()=>{setSearch(false), searchFormik.resetForm(), fetchUsers()}}>
                             <FontAwesomeIcon icon={faXmark}/>
                         </div>
                     ) : null
@@ -429,12 +449,18 @@ export default function UserManagementMaintenance() {
 
 
             {/* User Filter */}
-            <div className='flex flex-row py-3 justify-start items-center col-span-2 gap-5'>
+            <div className='flex flex-row justify-start items-center gap-5
+                            pl-3
+                            sm:pl-4 sm:col-span-2
+                            xl:py-3'>
                 <Sheet>
                     <SheetTrigger>
-                        <div className= {`flex flex-row items-center justify-center bg-white text-primary gap-2 border-2 border-primary w-fit py-2 px-4 rounded-md hover:text-white hover:bg-primary transition-all ease-in-out hover:cursor-pointer ${isFiltered ? "!bg-primary text-white":null}`}>
+                        <div className= {`flex flex-row items-center justify-center bg-white text-primary gap-2 border-2 border-primary w-fit rounded-md hover:text-white hover:bg-primary transition-all ease-in-out hover:cursor-pointer ${isFiltered ? "!bg-primary text-white":null}
+                                            h-11 aspect-square
+                                            sm:py-2 sm:px-4`}>
                             <FontAwesomeIcon icon={faFilter}/>
-                            <p className='font-header text-sm'>Filter</p>
+                            <p className='font-header text-sm hidden
+                                        sm:block'>Filter</p>
                         </div>
                     </SheetTrigger>
                     <SheetOverlay className="bg-gray-500/75 backdrop-blur-sm transition-all" />
@@ -589,11 +615,11 @@ export default function UserManagementMaintenance() {
                 }
             </div>
 
-
-
-
             {/* Userlist Table */}
-            <div className='flex flex-col gap-2 row-start-3 row-span-2 col-start-1 col-span-4 pr-5 py-2'>
+            <div className='flex flex-col gap-2 row-start-3 row-span-2 col-start-1 col-span-4
+                            px-3
+                            xl:pr-5 xl:py-2
+                            sm:px-4'>
                 <div className='w-full border-primary border rounded-md overflow-hidden shadow-md'>
                 <table className='text-left w-full overflow-y-scroll'>
                     <thead className='font-header text-xs text-primary bg-secondaryprimary border-l-2 border-secondaryprimary'>
