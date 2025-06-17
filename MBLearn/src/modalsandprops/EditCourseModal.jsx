@@ -4,10 +4,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react"
 import { useEffect, useState } from "react"
 import axiosClient from "../axios-client"
-import { useCourse } from "../contexts/selectedcourseContext"
 import { useFormik } from "formik"
 import { useCourseContext } from "../contexts/CourseListProvider"
-import { useCourse_Context } from "../contexts/Course_Context"
+import { useCourse } from "../contexts/CourseContext"
+
 
 const EditCourseModal = ({open, close, id}) => {
     const [hover, setHover] = useState(false);
@@ -15,7 +15,7 @@ const EditCourseModal = ({open, close, id}) => {
     // const {selectedCourse = [] , selectCourse, isFetching, Course} = useCourse()
     const {coursetypes, coursecategories, trainingmodes} = useCourseContext();
     const [tab, setTab] = useState(1);
-    const {course} = useCourse_Context()
+    const {course} = useCourse()
 
     // useEffect(() => {
     //     if (open && id) {

@@ -15,7 +15,6 @@ import CourseLearenerProps from "../modalsandprops/CourseLearnerProps"
 import CourseEnrollmentProps from "../modalsandprops/CourseEnrollmentProps"
 import { use } from "react"
 import EditCourseModal from "../modalsandprops/EditCourseModal"
-import { useCourse } from "../contexts/selectedcourseContext"
 import { set } from "date-fns"
 import AssignCourseAdmin from "../modalsandprops/AssignCourseAdminModal"
 import dayjs from "dayjs"
@@ -24,7 +23,8 @@ import CourseDetailsModal from "../modalsandprops/CourseDetailsModal"
 import CourseCourseAdminAssignmentProps from "../modalsandprops/CourseCourseAdminAssigmentProps"
 import AddAssignCourseAdmin from "../modalsandprops/AddAssignCourseAdmin"
 import CoursePublishingModal from "../modalsandprops/CoursePublishingModal"
-import { useCourse_Context } from "../contexts/Course_Context"
+import { useCourse } from "../contexts/CourseContext"
+
 
 export default function Course() {
     const navigate = useNavigate();
@@ -38,7 +38,7 @@ export default function Course() {
     const [openPublish, setOpenPublish] = useState(false);
     const [assign, setAssign] = useState(false);
     // const {selectCourse, selectedCourse, isFetching, resetSelectedCourse, Course} = useCourse();
-    const {course, setCourse} = useCourse_Context();
+    const {course, setCourse} = useCourse();
     const [learnerProgress, setLearnerProgress] = useState();
 
 

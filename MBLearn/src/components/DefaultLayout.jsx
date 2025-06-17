@@ -8,7 +8,7 @@ import { use } from 'react';
 import LogoutWarningmModal from '../modalsandprops/LogoutWarningModal';
 import { SelectedUserProvider } from '../contexts/selecteduserContext';
 import { OptionProvider } from '../contexts/AddUserOptionProvider';
-import { faClock, faEye, faEyeSlash, faKey, faSquareCheck, faSquareXmark } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faBell, faBurger, faClock, faEye, faEyeSlash, faKey, faSquareCheck, faSquareXmark } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -16,7 +16,10 @@ import echo from 'MBLearn/echo';
 import { toast } from 'sonner';
 import { set } from 'date-fns';
 import { ScrollArea } from './ui/scroll-area';
-
+import smallLogo from "../assets/Small_Logo.svg";
+import fullLogo from "../assets/Full_Logo.svg";
+import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetClose, SheetOverlay, SheetPortal
+} from './ui/sheet';
 
 
 
@@ -261,7 +264,7 @@ export default function DefaultLayout() {
                 {
                     breakpoint === 'xl' ? (
                         <div className='flex flex-row items-center h-screen bg-background overflow-hidden'>
-                            <Navigation unread_notfications={unreadNotifications}/>
+                            <Navigation unread_notfications={unreadNotifications} size={"xl"}/>
                             <SelectedUserProvider>
                                 <OptionProvider>
                                     <Outlet />
@@ -271,8 +274,39 @@ export default function DefaultLayout() {
                             <LogoutWarningmModal open={warning} close={close}/>
                         </div>
                     ) : (
-                        <div className='flex flex-row items-center h-screen bg-background overflow-hidden'>
-                            <Navigation unread_notfications={unreadNotifications}/>
+                        // <div className='flex flex-row items-center h-screen bg-background overflow-hidden'>
+                        //     <Navigation unread_notfications={unreadNotifications}/>
+                        //     <ScrollArea>
+                        //         <div className='h-screen'>
+                        //             <SelectedUserProvider>
+                        //                 <OptionProvider>
+                        //                     <Outlet />
+                        //                 </OptionProvider>
+                        //             </SelectedUserProvider>
+                        //         </div>
+                        //     </ScrollArea>
+                        // </ div>
+                        <div className='grid h-screen bg-background overflow-hidden grid-cols-1 grid-rows-[min-content_1fr] p-3'>
+                            {/* Header */}
+                            <div className='flex items-center justify-between'>
+                                <Sheet>
+                                    <SheetTrigger>
+                                        <div className='w-10 h-10 text-primary border-2 border-primary rounded-md flex items-center justify-center cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out'>
+                                            <FontAwesomeIcon icon={faBars} className='text-lg'/>
+                                        </div>
+                                    </SheetTrigger>
+                                    <SheetOverlay className="bg-gray-500/75 backdrop-blur-sm transition-all" />
+                                    <SheetContent side='left' className='bg-background backdrop-blur-sm h-'>
+                                        <Navigation unread_notfications={unreadNotifications} size={"sm"}/>
+                                    </SheetContent>
+                                </Sheet>
+                                <div className='w-8 h-8'>
+                                    <img src={smallLogo} alt="" />
+                                </div>
+                                <div className='flex items-center justify-center w-10 h-10 text-unactive'>
+                                    <FontAwesomeIcon icon={faBell} className='text-2xl'/>
+                                </div>
+                            </div>
                             <ScrollArea>
                                 <div className='h-screen'>
                                     <SelectedUserProvider>
@@ -282,6 +316,7 @@ export default function DefaultLayout() {
                                     </SelectedUserProvider>
                                 </div>
                             </ScrollArea>
+
                         </div>
                     )
 

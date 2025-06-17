@@ -11,14 +11,15 @@ import Calendar from "MBLearn/src/modalsandprops/dashboardComponents/Calendar";
 import { faCalendar } from "@fortawesome/free-regular-svg-icons";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import CourseCard from "MBLearn/src/modalsandprops/CourseCard";
-import { useCourse_Context } from "MBLearn/src/contexts/Course_Context";
+import { useCourse } from "MBLearn/src/contexts/CourseContext";
+
 
 
 const CourseAdminDashboard = ({name, user}) => {
     const [tab, setTab] = useState("myCourses")
     const [loading, setLoading] = useState(false)
     const [assignedCourse, setAssignedCourse] = useState([])
-    const {setCourse} = useCourse_Context();
+    const {setCourse} = useCourse();
     const navigate = useNavigate()
 
     const [pageState, setPagination] = useState({

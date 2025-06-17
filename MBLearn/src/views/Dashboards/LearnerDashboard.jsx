@@ -11,14 +11,14 @@ import { ArrowLeft, ArrowRight } from "lucide-react"
 import { faCalendar } from "@fortawesome/free-regular-svg-icons"
 import Calendar from "MBLearn/src/modalsandprops/dashboardComponents/Calendar"
 import CourseCard from "MBLearn/src/modalsandprops/CourseCard"
-import { useCourse_Context } from "MBLearn/src/contexts/Course_Context"
+import { useCourse } from "MBLearn/src/contexts/CourseContext"
 
 
 const LearnerDashboard = ({name,user}) => {
     const [enrolled, setEnrolled] = useState([])
     const [Loading, setLoading] = useState(true)
     const [count, setCount] = useState({})
-    const {setCourse} = useCourse_Context();
+    const {setCourse} = useCourse();
     const navigate = useNavigate();
 
     useEffect(()=>{

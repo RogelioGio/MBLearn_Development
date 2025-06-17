@@ -21,9 +21,8 @@ import {
 } from "../components/ui/sheet"
 import { useCourseContext } from "../contexts/CourseListProvider"
 import { useFormik } from "formik"
-import { useCourse } from "../contexts/selectedcourseContext"
 import CourseCard from "../modalsandprops/CourseCard"
-import { useCourse_Context } from "../contexts/Course_Context"
+import { useCourse } from "../contexts/CourseContext"
 import { useNavigate } from "react-router"
 
 
@@ -37,7 +36,7 @@ export default function AssignedCourseCatalog() {
     const [openAddCourse, setOpenAddCourse] = useState(false);
     const [isFiltered, setFiltered] = useState(false);
     //const {SetCourse} = useCourse();
-    const {setCourse} = useCourse_Context();
+    const {setCourse} = useCourse();
     const navigate = useNavigate();
 
     useEffect(() => {

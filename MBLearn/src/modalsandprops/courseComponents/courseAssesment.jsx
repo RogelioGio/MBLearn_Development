@@ -379,7 +379,9 @@ const CourseAssesment = ({course,complete}) => {
                                     <Progress value={progress}/>
                                 </div>
                         </div>
-                        <div></div>
+
+                            <CourseAssesmentItem usedTo="review" assesmentItem={assessment}/>
+
                         <div className="grid grid-cols-2 gap-2">
                             {
                                 timeleft <=0 ? null :
@@ -417,15 +419,17 @@ const CourseAssesment = ({course,complete}) => {
                     // </div>
                     <>
                     <div className="row-span-3 grid grid-cols-4 grid-rows-[min-content_min-content_1fr]">
-                        <div className="flex flex-col items-end col-start-3 col-span-2">
-                            <p className="font-header text-primary">{course.name}</p>
-                            <p className="font-text text-unactive text-xs">Course Assessment</p>
+                        <div className="flex flex-row items-start justify-between col-start-1 col-span-4">
+                            <div>
+                                <p className="font-header text-primary">{course.name}</p>
+                                <p className="font-text text-unactive text-xs">Course Assessment</p>
+                            </div>
+                            <div className="flex flex-col items-end">
+                                <p className="font-text text-unactive text-xs">Attempt:</p>
+                                <p className="font-header text-lg text-primary">1 out of 1 max attempt</p>
+                            </div>
                         </div>
-                        <div className="flex flex-col col-start-2 row-start-1">
-                            <p className="font-header text-primary">Result</p>
-                            <p className="font-text text-unactive text-xs">Assessment Review</p>
-                        </div>
-                        <div className="flex flex-col items-center justify-center col-start-1 row-start-1 row-span-3 gap-10">
+                        <div className="flex flex-col items-center justify-center col-start-1 row-start-2 row-span-2 gap-10">
                             <CircleChart label="Assesment Performance" size={200}  type="finished"/>
                             <div className="flex flex-col items-center">
                                 <p className="font-text text-xs text-unactive">You got</p>
@@ -433,11 +437,14 @@ const CourseAssesment = ({course,complete}) => {
                                 <p className="font-text text-xs text-unactive">Assessment Score</p>
                             </div>
                         </div>
+                        <div className="col-start-2 row-start-3 col-span-3 pl-3">
+                            <CourseAssesmentItem usedTo="review" assesmentItem={assessment}/>
+                        </div>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                         <div className="py-3 border-2 border-primary text-primary bg-white rounded-md font-header flex items-center justify-center shadow-md hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out"
-                            onClick={()=>{setQuizState("on-going")}}>
-                            <p>Review</p>
+                            onClick={()=>{setQuizState("start"), setActive(0), setTimeleft(0)}}>
+                            <p>Try Again</p>
                         </div>
                         <div className={`py-3 border-2 border-primary text-white bg-primary rounded-md font-header flex items-center justify-center shadow-md hover:cursor-pointer`}
                             onClick={()=>{setQuizState("result")}}>
