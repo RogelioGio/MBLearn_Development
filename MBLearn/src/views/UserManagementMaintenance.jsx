@@ -426,7 +426,7 @@ export default function UserManagementMaintenance() {
                             sm:col-start-3 sm:col-span-2 sm:pr-4
                             xl:col-start-3 xl:col-span-2 xl:px-5'>
                 {
-                    true ? (
+                    search ? (
                         <div className='border-primary border-2 rounded-md shadow-md bg-white flex items-center justify-center text-primary hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out w-11 h-11'
                         onClick={()=>{setSearch(false), searchFormik.resetForm(), fetchUsers()}}>
                             <FontAwesomeIcon icon={faXmark}/>

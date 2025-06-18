@@ -14,10 +14,10 @@ const EditUserSuccessfully = ({open,close,classname}) => {
                             <div className='bg-white rounded-md h-full w-fit p-5 flex flex-col items-center justify-center'>
                             {/* Header */}
                                 <div className="py-4 mx-4 border-divider flex flex-col items-center justify-center gap-2">
-                                    <div className="w-fit aspect-square bg-secondaryprimary rounded-full text-center">
-                                        <FontAwesomeIcon icon={faUserPen} className="text-primary text-2xl p-6"/>
+                                    <div className="w-24 aspect-square bg-secondaryprimary rounded-full text-center flex items-center justify-center text-primary">
+                                        <FontAwesomeIcon icon={faUserPen} className="text-4xl"/>
                                     </div>
-                                    <div className="text-center flex-col flex gap-2">
+                                    <div className="text-center flex-col flex gap-1">
                                         <h1 className="text-primary font-header text-3xl">Updated</h1>
                                         <p className="text-unactive font-text text-sm">The selected user is successfuly updated</p>
                                     </div>

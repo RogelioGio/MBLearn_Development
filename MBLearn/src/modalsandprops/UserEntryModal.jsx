@@ -188,7 +188,10 @@ const UserEntryModal = ({open, close, classname,ID ,selectedUser}) =>{
             <div className='fixed inset-0 z-10 w-screen overflow-y-auto'>
                 <div className='flex min-h-full items-center justify-center p-4 text center'>
                     <DialogPanel transition className='relative overflow-hidden transform rounded-md bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in'>
-                        <div className='w-[50vw] grid grid-rows-[170px_min-content]'>
+                        <div className=' grid grid-rows-[170px_min-content]
+                                        w-[75vw]
+                                        lg:w-[50vw]
+                                        xl:w-[50vw]'>
                             {/* Name Header */}
                             <div className='bg-gradient-to-b from-[hsl(239,94%,19%)] via-[hsl(214,97%,27%)] to-[hsl(201,100%,36%)]'>
                                 <div className='bg-gradient-to-b from-transparent to-black p-5 grid grid-rows-[min-content_1fr] h-full'>
@@ -199,49 +202,81 @@ const UserEntryModal = ({open, close, classname,ID ,selectedUser}) =>{
                                             </div>
                                         </div>
                                     </div>
-                                    <div className='flex flex-row gap-5 items-end px-5'>
-                                        <div className='flex flex-row items-center justify-between p-2 rounded-full w-24 h-24 bg-white shadow-md'>
-                                        <img src={selectedUser?.profile_image} alt="" className='rounded-full'/>
+                                    <div className='flex flex-row items-end px-2
+                                                    gap-4
+                                                    md:px-5 md:gap-5'>
+                                        <div className='flex flex-row items-center justify-between p-1 rounded-full bg-white shadow-md
+                                                        w-20 h-20
+                                                        md:w-24 md:h-24'>
+                                            <img src={selectedUser?.profile_image} alt="" className='rounded-full'/>
                                         </div>
                                         <div className='flex flex-col'>
                                             <div className='flex flex-row gap-2'>
                                                 <span className="inline-flex items-center rounded-md bg-primarybg px-2 py-1 text-xs font-medium text-primary font-text">{selectedUser?.roles[0].role_name}</span>
                                                 <span className="inline-flex items-center rounded-md bg-primarybg px-2 py-1 text-xs font-medium text-primary font-text">{selectedUser?.status}</span>
                                             </div>
-                                            <p className='font-header text-3xl text-white'>{selectedUser?.first_name} {selectedUser?.middle_name} {selectedUser?.last_name}</p>
-                                            <p className='font-text text text-white'>ID: {selectedUser?.employeeID}</p>
+                                            <p className='font-header  text-white
+                                                        text-xl
+                                                        md:text-3xl'>{selectedUser?.first_name} {selectedUser?.middle_name} {selectedUser?.last_name}</p>
+                                            <p className='font-text text-xs text-white
+                                                        md:text-base'>ID: {selectedUser?.employeeID}</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div className='mx-5 my-2 py-2 grid grid-cols-3 grid-rows-[min_content-min_content]'>
-                                <div className='py-4 border-b border-r border-divider px-5'>
-                                    <p className='font-text text-xs text-unactive pb-2'>Division:</p>
-                                    <p className='font-text text-primary leading-tight'>{selectedUser?.division.division_name}</p>
+                            <div className='mx-5 my-2 py-2 grid
+                                            md:grid-cols-3 md:grid-rows-[min_content-min_content]'>
+                                <div className='border-divider px-5 py-2
+                                                md:border-b md:border-r md:py-4'>
+                                    <p className='font-text text-xs text-unactive pb-1
+                                                md:pb-2'>Division:</p>
+                                    <p className='font-text leading-tight'>{selectedUser?.division.division_name}</p>
                                 </div>
-                                <div className='py-4 border-b border-r border-divider px-5'>
-                                    <p className='font-text text-xs text-unactive pb-2'>Department & Title:</p>
-                                    <p className='font-text text-primary leading-tight'>{selectedUser?.department.department_name}</p>
-                                    <p className='font-text text-xs text-primary'>{selectedUser?.title.title_name}</p>
+                                <div className='border-divider px-5 py-2
+                                                md:border-b md:border-r md:py-4'>
+                                    <p className='font-text text-xs text-unactive pb-1
+                                                md:pb-2'>Department & Title:</p>
+                                    <p className='font-text  leading-tight'>{selectedUser?.department.department_name}</p>
+                                    <p className='font-text text-xs'>{selectedUser?.title.title_name}</p>
                                 </div>
-                                <div className='py-4 border-b border-divider px-5'>
-                                    <p className='font-text text-xs text-unactive pb-2'>Section:</p>
-                                    <p className='font-text text-primary leading-tight'>{selectedUser?.section.section_name}</p>
+                                <div className='border-divider px-5 py-2
+                                                md:border-b md:py-4'>
+                                    <p className='font-text text-xs text-unactive pb-1
+                                                md:pb-2'>Section:</p>
+                                    <p className='font-text leading-tight'>{selectedUser?.section.section_name}</p>
                                 </div>
-                                <div className='py-4 border-r border-divider px-5'>
-                                    <p className='font-text text-xs text-unactive pb-2'>Location:</p>
-                                    <p className='font-text text-primary leading-tight'>{selectedUser?.city.city_name}</p>
-                                    <p className='font-text text-xs text-primary'>{selectedUser?.branch.branch_name}</p>
+                                <div className='border-divider px-5 py-2
+                                                md:border-r md:py-4'>
+                                    <p className='font-text text-xs text-unactive pb-1
+                                                md:pb-2'>Location:</p>
+                                    <p className='font-text leading-tight'>{selectedUser?.city.city_name}</p>
+                                    <p className='font-text text-xs'>{selectedUser?.branch.branch_name}</p>
                                 </div>
-                                <div className='py-4 border-r border-divider px-5'>
-                                    <p className='font-text text-xs text-unactive pb-2'>Date-Added:</p>
-                                    <p className='font-text text-primary leading-tight'>{selectedUser?.created_at? format(new Date(selectedUser.created_at), "MMMM dd yyyy"): ""}</p>
-                                    <p className='font-text text-xs text-primary'>{selectedUser?.created_at? format(new Date(selectedUser?.created_at||""), "hh:mm a"):""}</p>
+                                <div className='py-4 border-r border-divider px-5 hidden md:block'>
+                                    <p className='font-text text-xs text-unactive pb-1
+                                                md:pb-2'>Date-Added:</p>
+                                    <p className='font-text leading-tight'>{selectedUser?.created_at? format(new Date(selectedUser.created_at), "MMMM dd yyyy"): ""}</p>
+                                    <p className='font-text text-xs'>{selectedUser?.created_at? format(new Date(selectedUser?.created_at||""), "hh:mm a"):""}</p>
                                 </div>
-                                <div className='py-4 border-divider px-5'>
-                                    <p className='font-text text-xs text-unactive pb-2'>Last Login Time-stamp:</p>
+                                <div className='py-4 border-divider px-5 hidden md:block'>
+                                    <p className='font-text text-xs text-unactive pb-1
+                                                md:pb-2'>Last Login Time-stamp:</p>
                                     <p className={`font-text leading-tight ${selectedUser?.user_credentials?.last_logged_in? "text-primary" : "text-unactive"}`}>{selectedUser?.user_credentials?.last_logged_in? format(new Date(selectedUser?.user_credentials?.last_logged_in), "MMMM dd yyyy"): "Not-logged-in yet"}</p>
-                                    <p className='font-text text-xs text-primary'>{selectedUser?.user_credentials?.last_logged_in?  format(new Date(selectedUser?.user_credentials?.last_logged_in), "hh:mm a"):""}</p>
+                                    <p className='font-text text-xs'>{selectedUser?.user_credentials?.last_logged_in?  format(new Date(selectedUser?.user_credentials?.last_logged_in), "hh:mm a"):""}</p>
+                                </div>
+
+                                {/* for Mobile */}
+                                <div className='flex py-4 border-divider px-5 md:hidden justify-between'>
+                                    <div>
+                                        <p className='font-text text-xs text-unactive pb-1'>Date-Added:</p>
+                                        <p className='font-text leading-tight'>{selectedUser?.created_at? format(new Date(selectedUser.created_at), "MMMM dd yyyy"): ""}</p>
+                                        <p className='font-text text-xs'>{selectedUser?.created_at? format(new Date(selectedUser?.created_at||""), "hh:mm a"):""}</p>
+                                    </div>
+                                    <div className='flex flex-col items-end'>
+                                        <p className='font-text text-xs text-unactive pb-1'>Last Login Time-stamp:</p>
+                                        <p className={`font-text leading-tight ${selectedUser?.user_credentials?.last_logged_in? null : "text-unactive"}`}>{selectedUser?.user_credentials?.last_logged_in? format(new Date(selectedUser?.user_credentials?.last_logged_in), "MMMM dd yyyy"): "Not-logged-in yet"}</p>
+                                        <p className='font-text text-xs'>{selectedUser?.user_credentials?.last_logged_in?  format(new Date(selectedUser?.user_credentials?.last_logged_in), "hh:mm a"):""}</p>
+                                    </div>
                                 </div>
 
                             </div>

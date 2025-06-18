@@ -66,7 +66,7 @@ export default function DefaultLayout() {
         setBreakpoint('2xl');
     }
 
-    //console.log(`Viewport: ${width}px — Tailwind Breakpoint: ${breakpoint}`);
+    console.log(`Viewport: ${width}px — Tailwind Breakpoint: ${breakpoint}`);
 }, [viewport]);
 
     //Laravel ECHO
@@ -339,7 +339,7 @@ export default function DefaultLayout() {
                         </div>
                         <ScrollArea>
                             <div className='h-screen'>
-                                <div className='flex flex-row justify-between px-3 py-2 z-30
+                                <div className='flex flex-row justify-between px-3 py-2
                                                 backdrop-blur-md backdrop-saturate-150 bg-background/70
                                                 top-0 sticky
                                                 md:p-0 md:hidden'>
