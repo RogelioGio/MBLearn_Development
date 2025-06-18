@@ -29,8 +29,6 @@ const AddUserModal = ({open, close, updateTable}) => {
 
     const stepperRef = useRef(null);
 
-
-
     const handleBranchesOptions = (e) =>{
         const city = e.target.value;
         formik.setFieldValue('city', city)
@@ -189,6 +187,40 @@ const AddUserModal = ({open, close, updateTable}) => {
         setRoles(roles)
     },[])
 
+    const [formCompleted, setFormCompleted] = useState([])
+
+    const navigateForm = (direction) => {
+        if(!direction) return
+
+        const { stepsMeta } = stepperRef.current
+        const currentStepIndex = stepperRef.current?.activeStep;
+
+        if(direction === 'next') {
+            const currentStepID = stepsMeta?.[currentStepIndex]?.stepID;
+
+            setFormCompleted((prev) => {
+                if(!currentStepID || prev.includes(currentStepID)) return prev
+                return [...prev, currentStepID]
+            })
+
+            stepperRef.current?.next()
+        }else if(direction === 'back'){
+            const currentStepID = stepsMeta?.[currentStepIndex]?.stepID;
+            if(currentStepID === formCompleted[0]){
+                const restart = setTimeout(()=>{setFormCompleted([])},1000)
+                close()
+
+                return () => clearTimeout(restart)
+            }
+            stepperRef.current?.back()
+        }
+
+    }
+
+    useEffect(()=>{
+        console.log(formCompleted)
+    },[formCompleted])
+
 
 
     return(
@@ -231,20 +263,324 @@ const AddUserModal = ({open, close, updateTable}) => {
                             {
                                 state.tab === "single" ? (
                                     <>
-                                        <AddUser ref={stepperRef} initialValues={0}>
+                                    <form onSubmit={formik.handleSubmit}>
+                                        <AddUser ref={stepperRef} initialValues={0} formProgress={formCompleted} enableStepClick={true}>
                                             <Step stepTitle="Employee Information" stepDesc="Enter the user's personal information" stepID="user-info" icon={faUserCircle}>
-                                                Hello
+                                                <div className="grid grid-cols-3 gap-x-2">
+                                                    <div className="inline-flex flex-col gap-1 row-start-2 col-span-1 py-2">
+                                                    <label htmlFor="name" className="font-text text-xs flex flex-row justify-between">
+                                                        <p>Last Name <span className="text-red-500">*</span></p>
+                                                    </label>
+                                                    <input type="text" name="lastname"
+                                                            value={formik.values.lastname}
+                                                            onChange={formik.handleChange}
+                                                            onBlur={formik.handleBlur}
+                                                            maxLength={50}
+                                                            className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
+                                                    {formik.touched.lastname && formik.errors.lastname ? (<div className="text-red-500 text-xs font-text">{formik.errors.lastname}</div>):null}
+                                                    </div>
+                                                    {/* First Name */}
+                                                    <div className="inline-flex flex-col gap-1 row-start-2 col-span-1 py-2">
+                                                    <label htmlFor="name" className="font-text  text-xs flex flex-row justify-between">
+                                                        <p>First Name <span className="text-red-500">*</span></p>
+                                                    </label>
+                                                    <input type="text" name="firstname"
+                                                            value={formik.values.firstname}
+                                                            onChange={formik.handleChange}
+                                                            onBlur={formik.handleBlur}
+                                                            maxLength={50}
+                                                            className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
+                                                    {formik.touched.firstname && formik.errors.firstname ? (<div className="text-red-500 text-xs font-text">{formik.errors.firstname}</div>):null}
+                                                    </div>
+                                                {/* Middle Name & Suffix */}
+                                                <div className="inline-flex flex-row gap-2 row-start-2 col-span-1 w-full py-2">
+                                                    <div className="w-3/4 gap-1 inline-flex flex-col">
+                                                    <label htmlFor="name" className="font-text  text-xs flex flex-row justify-between">
+                                                    <p>Middle Name or Middle Initial</p>
+                                                    </label>
+                                                    <input type="text" name="middlename"
+                                                        value={formik.values.middlename}
+                                                        onChange={formik.handleChange}
+                                                        onBlur={formik.handleBlur}
+                                                        maxLength={20}
+                                                        className="w-full font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
+                                                        {formik.touched.middlename && formik.errors.middlename ? (<div className="text-red-500 text-xs font-text">{formik.errors.middlename}</div>):null}
+                                                    </div>
+                                                    <div className="w-1/4 gap-1 inline-flex flex-col">
+                                                    <label htmlFor="name" className="font-text  text-xs flex flex-row justify-between">
+                                                    <p>Suffix</p>
+                                                    </label>
+                                                    <input type="text" name="suffix"
+                                                        value={formik.values.suffix}
+                                                        onChange={formik.handleChange}
+                                                        onBlur={formik.handleBlur}
+                                                        maxLength={4}
+                                                        className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary w-full"/>
+                                                        {formik.touched.suffix && formik.errors.suffix ? (<div className="text-red-500 text-xs font-text">{formik.errors.suffix}</div>):null}
+                                                    </div>
+                                                </div>
+
+                                                </div>
                                             </Step>
                                             <Step stepTitle="Status and Location" stepDesc="Specify the employee's department and branch location" stepID="user-details" icon={faBuildingUser}>
-                                                Hello
+                                                <div className="grid grid-cols-3 gap-x-2">
+                                                    {/* EmployeeID */}
+                                                    <div className="inline-flex flex-col gap-1 row-start-2 col-start-1 py-2 col-span-2">
+                                                        <label htmlFor="employeeID" className="font-text text-xs flex flex-row justify-between">
+                                                            <p>Employee ID Number <span className="text-red-500">*</span></p>
+                                                        </label>
+                                                        <input type="text" name="employeeID"
+                                                                value={formik.values.employeeID}
+                                                                onChange={formik.handleChange}
+                                                                onBlur={formik.handleBlur}
+                                                                maxLength={11}
+                                                                inputMode="numeric"
+                                                                pattern="\d*"
+                                                                className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
+                                                        {formik.touched.employeeID && formik.errors.employeeID ? (<div className="text-red-500 text-xs font-text">{formik.errors.employeeID}</div>):null}
+                                                    </div>
+                                                    {/* Employee Posistion */}
+                                                    <div className="inline-flex flex-col gap-1 row-start-2 col-span-1 py-2">
+                                                    <label htmlFor="title" className="font-text text-xs">Position <span className="text-red-500">*</span></label>
+                                                    <div className="grid grid-cols-1">
+                                                            <select id="title" name="title" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                                                value={formik.values.title}
+                                                                onChange={formik.handleChange}
+                                                                onBlur={formik.handleBlur}>
+                                                            <option value="">Select Posistion</option>
+                                                                {
+                                                                    titles.map((title) => (
+                                                                        <option key={title.id} value={title.id}>{title.title_name}</option>
+                                                                    ))
+                                                                }
+                                                            </select>
+                                                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                                            <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                                            </svg>
+                                                    </div>
+                                                        {formik.touched.title && formik.errors.title ? (<div className="text-red-500 text-xs font-text">{formik.errors.title}</div>):null}
+                                                    </div>
+                                                    {/*Department*/}
+                                                    <div className="inline-flex flex-col col-start-2 row-start-3 gap-1 py-2">
+                                                        <label htmlFor="department" className="font-text text-xs flex">Deparment <span className="text-red-500">*</span></label>
+                                                        <div className="grid grid-cols-1">
+                                                            <select id="department" name="department" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                                                value={formik.values.department}
+                                                                onChange={formik.handleChange}
+                                                                onBlur={formik.handleBlur}>
+                                                                <option value="">Select Department</option>
+                                                                {
+                                                                    departments.map((department) => (
+                                                                        <option key={department.id} value={department.id}>{department.department_name}</option>
+                                                                    ))
+                                                                }
+                                                            </select>
+                                                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                                            <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                                            </svg>
+                                                        </div>
+                                                            {formik.touched.department && formik.errors.department ? (<div className="text-red-500 text-xs font-text">{formik.errors.department}</div>):null}
+                                                    </div>
+                                                    {/*Division*/}
+                                                    <div className="inline-flex flex-col gap-1 row-start-3 col-span-1 py-2">
+                                                        <label htmlFor="division" className="font-text text-xs flex">Division <span className="text-red-500">*</span></label>
+                                                        <div className="grid grid-cols-1">
+                                                            <select id="division" name="division" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                                                value={formik.values.division}
+                                                                onChange={formik.handleChange}
+                                                                onBlur={formik.handleBlur}>
+                                                                <option value="">Select Division</option>
+                                                                {
+                                                                    division.map((division) => (
+                                                                        <option key={division.id} value={division.id}>{division.division_name}</option>
+                                                                    ))
+                                                                }
+                                                            </select>
+                                                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                                            <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                                            </svg>
+                                                        </div>
+                                                            {formik.touched.division && formik.errors.division ? (<div className="text-red-500 text-xs font-text">{formik.errors.division}</div>):null}
+                                                    </div>
+                                                    {/*Section*/}
+                                                    <div className="inline-flex flex-col gap-1 row-start-3 col-span-1 py-2">
+                                                        <label htmlFor="section" className="font-text text-xs flex">Section <span className="text-red-500">*</span></label>
+                                                        <div className="grid grid-cols-1">
+                                                            <select id="section" name="section" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                                                value={formik.values.section}
+                                                                onChange={formik.handleChange}
+                                                                onBlur={formik.handleBlur}>
+                                                                <option value="">Select Section</option>
+                                                                {
+                                                                    section.map((section) => (
+                                                                        <option key={section.id} value={section.id}>{section.section_name}</option>
+                                                                    ))
+                                                                }
+                                                            </select>
+                                                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                                            <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                                            </svg>
+                                                        </div>
+                                                            {formik.touched.section && formik.errors.section ? (<div className="text-red-500 text-xs font-text">{formik.errors.section}</div>):null}
+                                                    </div>
+                                                    {/* Branch City Location */}
+                                                    <div className="inline-flex flex-col gap-1 row-start-4 col-span-1 py-2">
+                                                    <label htmlFor="city" className="font-text text-xs flex flex-row justify-between">City <span className="text-red-500">*</span></label>
+                                                    <div className="grid grid-cols-1">
+                                                            <select id="city" name="city" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                                            value={formik.values.city}
+                                                            onChange={handleBranchesOptions}
+                                                            onBlur={formik.handleBlur}>
+                                                                <option value="">Select City</option>
+                                                                {
+                                                                    cities.map((city) => (
+                                                                        <option key={city.id} value={city.id}>{city.city_name}</option>
+                                                                    ))
+                                                                }
+                                                            </select>
+                                                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                                            <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                                            </svg>
+                                                    </div>
+                                                    {formik.touched.city && formik.errors.city ? (<div className="text-red-500 text-xs font-text">{formik.errors.city}</div>):null}
+                                                    </div>
+                                                     {/* Branch Location */}
+                                                    <div className="inline-flex flex-col gap-1 row-start-4 col-span-2 py-2">
+                                                        <label htmlFor="branch" className="font-text text-xs">Location <span className="text-red-500">*</span></label>
+                                                        <div className="grid grid-cols-1">
+                                                                <select id="branch" name="branch" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                                                    value={formik.values.branch}
+                                                                    onChange={formik.handleChange}
+                                                                    onBlur={formik.handleBlur}>
+                                                                    <option value="">Select Location</option>
+                                                                    {
+                                                                    selectedBranches.map((location) => (
+                                                                        <option key={location.id} value={location.id}>{location.branch_name}</option>
+                                                                    ))
+                                                                    }
+                                                                </select>
+                                                                <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                                                <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                                                </svg>
+                                                        </div>
+                                                        {formik.touched.location && formik.errors.location ? (<div className="text-red-500 text-xs font-text">{formik.errors.location}</div>):null}
+                                                    </div>
+                                                </div>
                                             </Step>
                                             <Step stepTitle=" Account Status and Role" stepDesc="Assign the appropriate system role to define user access" stepID="account-permissions" icon={faAddressCard}>
-                                                Hello
+                                                <div className="grid grid-cols-3 grid-rows-[1fr_auto] gap-2">
+                                                    <div className="inline-flex flex-col gap-1 col-span-3 py-2">
+                                                        <label htmlFor="role" className="font-header text-xs flex flex-row justify-between">
+                                                            <p className="text-xs font-text">Account Role <span className="text-red-500">*</span></p>
+                                                        </label>
+                                                        <div className="grid grid-cols-1">
+                                                            <select id="role" name="role" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                                                value={formik.values.role}
+                                                                onChange={formik.handleChange}
+                                                                onBlur={formik.handleBlur}>
+                                                                <option value=''>Select Role</option>
+                                                                {
+                                                                    roles.map((role) => (
+                                                                        <option key={role.id} value={role.id}>{role.role_name}</option>
+                                                                    ))
+                                                                }
+                                                            </select>
+                                                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                                            <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                                            </svg>
+                                                        </div>
+                                                        {formik.touched.role && formik.errors.role ? (<div className="text-red-500 text-xs font-text">{formik.errors.role}</div>):null}
+                                                    </div>
+                                                    {
+                                                        formik.values.role ? (
+                                                            <div className="col-span-3">
+                                                                <AccountPermissionProps refPermissions={permission} selectedRole={formik.values.role} role={role} setAccountPerm={setAccountPerm}/>
+                                                            </div>
+                                                        ) : (null)
+                                                    }
+                                                </div>
                                             </Step>
-                                            <Step stepTitle="Review" stepDesc="Review all entered information" stepID="account-permissions" icon={faClipboard}>
-                                                Hello
+                                            <Step stepTitle="Review" stepDesc="Review all entered information" stepID="review" icon={faClipboard}>
+                                                <div className="grid grid-cols-3 gap-x-2 gap-y-4 p-2">
+                                                    <div className="flex flex-col gap-1">
+                                                        <p className="font-text text-xs text-unactive">Last Name:</p>
+                                                        <p className="font-text">{formik.values.lastname.charAt(0).toUpperCase() + formik.values.lastname.slice(1)}</p>
+                                                    </div>
+                                                    <div className="flex flex-col gap-1">
+                                                        <p className="font-text text-xs text-unactive">First Name:</p>
+                                                        <p className="font-text">{formik.values.firstname.charAt(0).toUpperCase() + formik.values.firstname.slice(1)}</p>
+                                                    </div>
+                                                    <div className="inline-flex flex-row">
+                                                        <div className="flex flex-col gap-1 w-3/4">
+                                                            <p className="font-text text-xs text-unactive">Middle Name:</p>
+                                                            <p className="font-text">{formik.values.middlename.charAt(0).toUpperCase() + formik.values.middlename.slice(1)}</p>
+                                                        </div>
+                                                        <div className="flex flex-col gap-1 w-1/4">
+                                                            <p className="font-text text-xs text-unactive">Suffix:</p>
+                                                            <p className="font-text">{formik.values.suffix}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex flex-col col-span-2 gap-1">
+                                                        <p className="font-text text-xs text-unactive">Employee ID Number:</p>
+                                                        <p className="font-text">{formik.values.employeeID}</p>
+                                                    </div>
+                                                    <div className="flex flex-col gap-1">
+                                                        <p className="font-text text-xs text-unactive">Posistion:</p>
+                                                        <p className="font-text">{titles.find(title => title.id === Number(formik.values.title))?.title_name || "Not selected"}</p>
+                                                    </div>
+                                                    <div className="flex flex-col gap-1">
+                                                        <p className="font-text text-xs text-unactive">Division:</p>
+                                                        <p className="font-text">{division.find(division => division.id === Number(formik.values.division))?.division_name || "Not selected"}</p>
+                                                    </div>
+                                                    <div className="flex flex-col gap-1">
+                                                        <p className="font-text text-xs text-unactive">Department:</p>
+                                                        <p className="font-text">{departments.find(department => department.id === Number(formik.values.department))?.department_name || "Not selected"}</p>
+                                                    </div>
+                                                    <div className="flex flex-col gap-1">
+                                                        <p className="font-text text-xs text-unactive">Section:</p>
+                                                        <p className="font-text">{section.find(section => section.id === Number(formik.values.section))?.section_name || "Not selected"}</p>
+                                                    </div>
+                                                    <div className="flex flex-col gap-1">
+                                                        <p className="font-text text-xs text-unactive">City:</p>
+                                                        <p className="font-text">{cities.find(city => city.id === Number(formik.values.city))?.city_name || "Not selected"}</p>
+                                                    </div>
+                                                    <div className="flex flex-col gap-1 col-span-2">
+                                                        <p className="font-text text-xs text-unactive">Location:</p>
+                                                        <p className="font-text">{location.find(location => location.id === Number(formik.values.branch))?.branch_name || "Not selected"}</p>
+                                                    </div>
+                                                    <div className="flex flex-col gap-1 col-span-3">
+                                                        <p className="font-text text-xs text-unactive">Account Role:</p>
+                                                        <p className="font-text">{roles.find(role => role.id === Number(formik.values.role))?.role_name || "Not selected"}</p>
+                                                    </div>
+                                                    <div className="flex flex-col gap-1 col-span-2">
+                                                        <p className="font-text text-xs text-unactive">Email:</p>
+                                                        <p className="font-text"> {`${formik.values.firstname.replace(/\s+/g, '').trim()}.${formik.values.lastname.replace(/\s+/g, '').trim()}@mbtc.com`.toLowerCase()}</p>
+
+                                                    </div>
+                                                    <div className="flex flex-col gap-1">
+                                                        <p className="font-text text-xs text-unactive">Initial Password:</p>
+                                                        <p className="font-text">{`${formik.values.firstname.replace(/\s+/g, '').trim()}_${formik.values.employeeID}`}</p>
+                                                    </div>
+                                                </div>
                                             </Step>
                                         </AddUser>
+                                    </form>
+                                        <div className="flex flex-row justify-between gap-2 mx-4">
+                                            <div className="border-2 border-primary rounded-md py-3 w-full flex flex-row justify-center shadow-md text-primary hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out"
+                                                onClick={()=>{
+                                                    if(formCompleted.length <= 0){
+                                                        close()
+                                                    } else {
+                                                        navigateForm("back")
+                                                    }
+                                                }}>
+                                                <p className="font-header">{formCompleted.length <= 0 ? "Cancel" : "Back"}</p>
+                                            </div>
+                                            <div className="border-2 border-primary rounded-md py-3 w-full flex flex-row justify-center shadow-md bg-primary text-white hover:cursor-pointer hover:bg-primaryhover hover:border-primaryhover transition-all ease-in-out"
+                                                onClick={()=>{navigateForm("next")}}>
+                                                <p className="font-header">Next</p>
+                                            </div>
+                                        </div>
                                     </>
                                 ) : state.tab === "multiple" ? (
                                     // <div>
