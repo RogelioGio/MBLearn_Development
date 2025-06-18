@@ -320,6 +320,11 @@ export default function UserManagementMaintenance() {
     useEffect(()=>{
         fetchUsers()
     },[pageState.currentPage, pageState.perPage])
+    useEffect(()=>{
+        console.log("Triggered")
+    },[pageState.currentPage, pageState.perPage])
+
+
 
     //Next and Previous
     const back = () => {
@@ -657,11 +662,11 @@ export default function UserManagementMaintenance() {
                                     </div>
                                     <p> EMPLOYEE NAME</p>
                             </th>
-                            <th className='py-4 px-4  w-1/7'>DIVISION</th>
-                            <th className='py-4 px-4  w-1/7'>DEPARTMENT</th>
-                            <th className='py-4 px-4  w-1/7'>SECTION</th>
+                            <th className='py-4 px-4  w-1/7 hidden sm:table-cell'>DIVISION</th>
+                            <th className='py-4 px-4  w-1/7 hidden sm:table-cell'>DEPARTMENT</th>
+                            <th className='py-4 px-4  w-1/7 hidden sm:table-cell'>SECTION</th>
                             {/* <th className='py-4 px-4  w-1/7'>LOCATION</th> */}
-                            <th className='py-4 px-4  w-2/7'></th>
+                            <th className='py-4 px-4  w-2/7 hidden sm:table-cell'></th>
                         </tr>
                     </thead>
                     <tbody className='bg-white divide-y divide-divider'>

@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBell, faBook, faBookBookmark, faBookOpen, faBookOpenReader, faChalkboard, faChartGantt, faChartPie, faEllipsis, faEllipsisVertical, faGear, faGears, faGraduationCap, faHouse, faMedal, faMobileButton, faPersonCirclePlus, faRightFromBracket, faUser, faUserGroup, faUserLock, faUserShield, faUsersRays, } from '@fortawesome/free-solid-svg-icons'
+import { faBars, faBell, faBook, faBookBookmark, faBookOpen, faBookOpenReader, faChalkboard, faChartGantt, faChartPie, faEllipsis, faEllipsisVertical, faGear, faGears, faGraduationCap, faHouse, faMedal, faMobileButton, faPersonCirclePlus, faRightFromBracket, faUser, faUserGroup, faUserLock, faUserShield, faUsersRays, } from '@fortawesome/free-solid-svg-icons'
 import Small_Logo from '../assets/Small_Logo.svg'
 import axiosClient from '../axios-client';
 import { useEffect, useRef, useState } from 'react';
@@ -12,6 +12,9 @@ import fullLogo from "../assets/Full_Logo.svg";
 import PortalToolTip from '../components/ui/portal';
 import { Portal } from 'vaul';
 import { CustomPopover} from '../components/ui/mypopover';
+import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetClose, SheetOverlay, SheetPortal} from '../components/ui/sheet';
+
+
 
 //Icon props
 const Icons = ({icon, text, to, notification, unread}) => (
@@ -174,7 +177,74 @@ export default function Navigation({unread_notfications, size}) {
     return (
         <>
         {
-            size === 'xl'?
+            size === 'sm' || size === 'base'?
+            <Sheet>
+                <SheetTrigger>
+                    <div className='bg-white w-10 h-10 text-primary border-2 border-primary rounded-md flex items-center justify-center cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out'>
+                        <FontAwesomeIcon icon={faBars} className='text-lg'/>
+                    </div>
+                </SheetTrigger>
+                <SheetOverlay className="bg-gray-500/75 backdrop-blur-sm transition-all z-50"/>
+                <SheetContent side='left' className='bg-background backdrop-blur-sm h-'>
+                    <div className='py-2 flex flex-col gap-2 justify-between h-full'>
+                        <div className='flex flex-col gap-2'>
+                            <div className='flex items-center w-36 aspect-auto pb-5 pl-1'>
+                                <img src={fullLogo} alt="" />
+                            </div>
+                            {
+                                Items.map((role, index) => (
+                                    <>
+
+                                    <NavLink to={role.to} className={({ isActive }) => `${isActive ? 'text-primary bg-primarybg shadow-md' : 'text-unactive'} group py-2 px-4 flex flex-row items-center gap-5 rounded-md hover:bg-primarybg hover:shadow-md transition-all ease-in-out hover:cursor-pointer`} key={index}>
+                                        <FontAwesomeIcon icon={role.icon}/>
+                                        <p className='font-header'>{role.text}</p>
+                                    </NavLink>
+                                    </>
+                                ))
+                            }
+                        </div>
+                        <div className='flex flex-col gap-2'>
+                            <NavLink to={"/systemadmin/accountsettings"} className={({ isActive }) => `${isActive ? 'text-primary bg-primarybg shadow-md' : 'text-unactive'} group py-2 px-4 flex flex-row items-center gap-5 rounded-md hover:bg-primarybg hover:shadow-md transition-all ease-in-out hover:cursor-pointer`}>
+                                        <FontAwesomeIcon icon={faGear}/>
+                                        <p className='font-header'> AccountSetting</p>
+                                    </NavLink>
+                            <div className='flex flex-row items-center justify-between'>
+                                <div className='flex flex-row gap-3 items-center'>
+                                    <div className='w-12 h-12 rounded-full shadow-lg hover:scale-105 transition-all ease-in-out'>
+                                        <img src={user.user_infos.profile_image} className='rounded-full'/>
+                                    </div>
+                                    <div>
+                                        <p className='font-header text-primary'>{user.user_infos.first_name} {user.user_infos.middle_name || ""} {user.user_infos.last_name || ""} {user.user_infos.name_suffix || ""} </p>
+                                        <p className='font-text text-unactive text-sm'>ID: {user.user_infos.employeeID}</p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div className='group relative'>
+                                        <div className='border-2 border-primary rounded w-10 h-10 flex justify-center items-center text-primary hover:bg-primary hover:text-white hover:cursor-pointer transition-all ease-in-out' >
+                                            <FontAwesomeIcon icon={faEllipsisVertical} className='text-xl'/>
+                                        </div>
+                                        <div className=' absolute bg-tertiary rounded-md left-11 bottom-0 scale-0 group-hover:scale-100 p-2'>
+                                            <ul>
+                                                {
+                                                    rolesSwitch[role]?.map((option, index) => (
+                                                        <li key={index}>
+                                                            <ProfileIcons text={option.text} icon={option.icon} onClick={option.onclick}/>
+                                                        </li>
+                                                    ))
+                                                }
+                                                <ProfileIcons text={"Logout"} icon={<FontAwesomeIcon icon={faRightFromBracket}/>} onClick={onLogout}/>
+                                                <li><div className='bg-white h-[1px]'></div></li>
+                                        <       ProfileIcons text={"View Profile"} icon={<FontAwesomeIcon icon={faUser}/>} onClick={OpenProfile}/>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </SheetContent>
+            </Sheet>
+            :
             <div className="flex flex-col items-center h-screen w-24 place-content-between py-2 z-10
                         sm:px-2">
             <div className='flex flex-col place-content-between w-23 h-full bg-white py-5 px-2 shadow-lg m-1 border-r rounded-full'>
@@ -225,65 +295,12 @@ export default function Navigation({unread_notfications, size}) {
                 </ul>
             </div>
             </div>
-            :
-            <div className='py-2 flex flex-col gap-2 justify-between h-full'>
-                <div className='flex flex-col gap-2'>
-                    <div className='flex items-center w-36 aspect-auto pb-5 pl-1'>
-                        <img src={fullLogo} alt="" />
-                    </div>
-                    {
-                        Items.map((role, index) => (
-                            <>
 
-                            <NavLink to={role.to} className={({ isActive }) => `${isActive ? 'text-primary bg-primarybg shadow-md' : 'text-unactive'} group py-2 px-4 flex flex-row items-center gap-5 rounded-md hover:bg-primarybg hover:shadow-md transition-all ease-in-out hover:cursor-pointer`} key={index}>
-                                <FontAwesomeIcon icon={role.icon}/>
-                                <p className='font-header'>{role.text}</p>
-                            </NavLink>
-                            </>
-                        ))
-                    }
-                </div>
-                <div className='flex flex-col gap-2'>
-                    {/* <li><Icons icon={<FontAwesomeIcon icon={faGear}/>} text={"Account Setting"} </li> */}
 
-                    <NavLink to={"/systemadmin/accountsettings"} className={({ isActive }) => `${isActive ? 'text-primary bg-primarybg shadow-md' : 'text-unactive'} group py-2 px-4 flex flex-row items-center gap-5 rounded-md hover:bg-primarybg hover:shadow-md transition-all ease-in-out hover:cursor-pointer`}>
-                                <FontAwesomeIcon icon={faGear}/>
-                                <p className='font-header'> AccountSetting</p>
-                            </NavLink>
-                    <div className='flex flex-row items-center justify-between'>
-                        <div className='flex flex-row gap-3 items-center'>
-                            <div className='w-12 h-12 rounded-full shadow-lg hover:scale-105 transition-all ease-in-out'>
-                                <img src={user.user_infos.profile_image} className='rounded-full'/>
-                            </div>
-                            <div>
-                                <p className='font-header text-primary'>{user.user_infos.first_name} {user.user_infos.middle_name || ""} {user.user_infos.last_name || ""} {user.user_infos.name_suffix || ""} </p>
-                                <p className='font-text text-unactive text-sm'>ID: {user.user_infos.employeeID}</p>
-                            </div>
-                        </div>
-                        <div>
-                            <div className='group relative'>
-                                <div className='border-2 border-primary rounded w-10 h-10 flex justify-center items-center text-primary hover:bg-primary hover:text-white hover:cursor-pointer transition-all ease-in-out' >
-                                    <FontAwesomeIcon icon={faEllipsisVertical} className='text-xl'/>
-                                </div>
-                                <div className=' absolute bg-tertiary rounded-md left-11 bottom-0 scale-0 group-hover:scale-100 p-2'>
-                                    <ul>
-                                        {
-                                            rolesSwitch[role]?.map((option, index) => (
-                                                <li key={index}>
-                                                    <ProfileIcons text={option.text} icon={option.icon} onClick={option.onclick}/>
-                                                </li>
-                                            ))
-                                        }
-                                        <ProfileIcons text={"Logout"} icon={<FontAwesomeIcon icon={faRightFromBracket}/>} onClick={onLogout}/>
-                                        <li><div className='bg-white h-[1px]'></div></li>
-                                <       ProfileIcons text={"View Profile"} icon={<FontAwesomeIcon icon={faUser}/>} onClick={OpenProfile}/>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+
+
+
+
         }
         <NotificationModal open={openNotficiation} close={() => setOpenNotification(false)}/>
         </>

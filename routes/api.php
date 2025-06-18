@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\OptionController;
 use App\Models\UserCredentials;
 use App\Notifications\TestNotification;
+use App\Services\GmailService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
@@ -218,6 +219,16 @@ Route::get('/aaaa', function(){
     return $user2->permissionsRole;
 
 });
+Route::get('/test-gmail-refresh', function () {
+    try {
+        $gmailService = new GmailService();
+        return 'Gmail service initialized successfully.';
+    } catch (\Exception $e) {
+        return 'Error: ' . $e->getMessage();
+    }
+});
+
+
 // Route::get('/reset-user',[userInfo_controller::class, 'resetUser']); //reset user table
 // Route::get('/reset-user-creds',[userCredentials_controller::class, 'resetUsers']); //reset user table
 

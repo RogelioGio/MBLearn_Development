@@ -33,13 +33,23 @@ class GmailService
 
         // Refresh token if expired
         if ($client->isAccessTokenExpired()) {
-            if ($client->getRefreshToken()) {
-                $client->fetchAccessTokenWithRefreshToken($client->getRefreshToken());
-                file_put_contents($tokenPath, json_encode($client->getAccessToken()));
-            } else {
-                throw new \Exception('No refresh token available. Please re-authenticate.');
+        if ($client->getRefreshToken()) {
+            $newToken = $client->fetchAccessTokenWithRefreshToken($client->getRefreshToken());
+
+            // Check for error
+            if (isset($newToken['error'])) {
+                throw new \Exception('Failed to refresh token: ' . $newToken['error_description']);
             }
+
+            // Merge refresh token back in if not included in new token
+            $updatedToken = array_merge($accessToken, $newToken);
+
+            file_put_contents($tokenPath, json_encode($updatedToken));
+            $client->setAccessToken($updatedToken);
+        } else {
+            throw new \Exception('No refresh token available. Please re-authenticate.');
         }
+    }
 
         $this->service = new GoogleGmail($client);
             }

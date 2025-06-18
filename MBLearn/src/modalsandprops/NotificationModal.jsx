@@ -42,10 +42,10 @@ const NotificationModal = ({open, close}) => {
         setTimeout(setLoading(false),console.log('Loading pa'),300)
     }
 
-    useEffect(()=>{
-        console.log('loading state:', loading);
-        console.log('has more? : ', hasMore)
-    },[loading])
+    // useEffect(()=>{
+    //     console.log('loading state:', loading);
+    //     console.log('has more? : ', hasMore)
+    // },[loading])
 
     const readAll = () => {
         axiosClient.post('/mark-as-read')

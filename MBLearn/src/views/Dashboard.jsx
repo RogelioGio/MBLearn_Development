@@ -158,7 +158,7 @@ const chartData = [
                 <>
 
             <div className="grid h-full w-full grid-cols-4
-                            grid-rows-[6.25rem_auto_auto]
+                            grid-rows-[6.25rem_auto]
                             xl:grid-rows-[6.25rem_1fr_1fr]
                             sm:grid-rows-[6.25rem_auto_auto]">
                 <Helmet>{/* Title of the mark-up */}
@@ -199,8 +199,8 @@ const chartData = [
 
                 {/* Calendar */}
                 <div className='row-span-1 grid grid-cols-1 grid-rows-[min-content_1fr]
-                                col-span-4 px-4 py-2
-                                xl:col-span-1 xl:pr-5
+                                col-span-4 px-4 pt-2 pb-5
+                                xl:col-span-1 xl:pr-5 xl:pb-2
                                 sm:col-span-4 sm:pb-5 sm:px-4'>
                     <div className='flex flex-row justify-between items-center'>
                         <div className="pb-3">

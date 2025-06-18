@@ -19,12 +19,6 @@ const UserEntryModal = ({open, close, classname,ID ,selectedUser}) =>{
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate();
 
-    useEffect(() => {
-        console.log("Selected User: ", selectedUser)
-    },[])
-
-
-
     //branch choice handelling
     // const handleBranchesOptions = (e) =>{
     //     const city = e.target.value;

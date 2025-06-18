@@ -12,10 +12,6 @@ const DeleteUserModal = ({open,close,classname,EmployeeID,close_confirmation, se
     const [loading, setLoading] = useState(false)
     const [deleting, setDeleting] = useState(false)
 
-    useEffect(()=>{
-        console.log(selectedUser)
-    },[])
-
     // useEffect(() => {
     //     if (open && EmployeeID) {
     //         console.log("Modal opened with EmployeeID:", EmployeeID);

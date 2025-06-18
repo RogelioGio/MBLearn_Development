@@ -259,9 +259,7 @@ export default function DefaultLayout() {
         )
     }
 
-    return (
-            <>
-                {
+    {
                     breakpoint === 'xl' ? (
                         <div className='flex flex-row items-center h-screen bg-background overflow-hidden'>
                             <Navigation unread_notfications={unreadNotifications} size={"xl"}/>
@@ -298,13 +296,8 @@ export default function DefaultLayout() {
                                 {/* bg-[linear-gradient(to_bottom,_var(--DashboardBackground-Color)_0%,_var(--DashboardBackground-Color)_90%,_transparent_100%)] */}
                                 {/* bg-gradient-to-b from-background to-transparent */}
                                 <div className='h-screen'>
-                                    <div className='sticky top-0 z-50 flex items-center justify-between px-3 py-2'>
+                                    <div className='sticky top-0 z-50 flex items-center justify-between'>
                                     <Sheet>
-                                        <SheetTrigger>
-                                            <div className='bg-white w-10 h-10 text-primary border-2 border-primary rounded-md flex items-center justify-center cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out'>
-                                                <FontAwesomeIcon icon={faBars} className='text-lg'/>
-                                            </div>
-                                        </SheetTrigger>
                                         <SheetOverlay className="bg-gray-500/75 backdrop-blur-sm transition-all z-50"/>
                                         <SheetContent side='left' className='bg-background backdrop-blur-sm h-'>
                                             <Navigation unread_notfications={unreadNotifications} size={"sm"}/>
@@ -329,6 +322,49 @@ export default function DefaultLayout() {
                     )
 
                 }
+
+
+    return (
+            <>
+
+                    <div className='h-screen bg-background grid
+                                    sm:grid-rows-[min-content_1fr] sm:grid-cols-1
+                                    md:grid-cols-[min-content_1fr] md:grid-rows-1
+                                    overflow-hidden
+                                    '
+                        >
+                        {/* Navigation */}
+                        <div className=' hidden flex-row justify-between px-3 py-2 md:p-0 md:flex'>
+                            <Navigation unread_notfications={unreadNotifications} size={breakpoint}/>
+                        </div>
+                        <ScrollArea>
+                            <div className='h-screen'>
+                                <div className='flex flex-row justify-between px-3 py-2 z-30
+                                                backdrop-blur-md backdrop-saturate-150 bg-background/70
+                                                top-0 sticky
+                                                md:p-0 md:hidden'>
+                                    <Navigation unread_notfications={unreadNotifications} size={breakpoint}/>
+                                    <div className='w-8 h-8 block
+                                        md:hidden
+                                        xl:hidden'>
+                                        <img src={smallLogo} alt="" />
+                                    </div>
+                                    <div className='flex items-center justify-center w-10 h-10 text-unactive
+                                                md:hidden
+                                                xl:hidden'>
+                                        <FontAwesomeIcon icon={faBell} className='text-2xl'/>
+                                    </div>
+                                </div>
+                                <SelectedUserProvider>
+                                    <OptionProvider>
+                                        <Outlet />
+                                    </OptionProvider>
+                                </SelectedUserProvider>
+                            </div>
+                        </ScrollArea>
+                        {/* Logout warning */}
+                        <LogoutWarningmModal open={warning} close={close}/>
+                </div>
             </>
     )
 
