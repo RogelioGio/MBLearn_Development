@@ -320,9 +320,6 @@ export default function UserManagementMaintenance() {
     useEffect(()=>{
         fetchUsers()
     },[pageState.currentPage, pageState.perPage])
-    useEffect(()=>{
-        console.log("Triggered")
-    },[pageState.currentPage, pageState.perPage])
 
 
 
