@@ -1,4 +1,4 @@
-import { faAddressCard, faBuildingUser, faChevronDown, faClapperboard, faClipboard, faFileArrowUp, faSuitcase, faUser, faUserCircle, faUserGroup, faUserPlus, faXmark } from "@fortawesome/free-solid-svg-icons"
+import { faAddressCard, faBuildingUser, faChevronDown, faClapperboard, faClipboard, faD, faFileArrowUp, faSuitcase, faUser, faUserCircle, faUserGroup, faUserPlus, faXmark } from "@fortawesome/free-solid-svg-icons"
 import { faCircleUser as faUserRegular, faCircleCheck as faCircleCheckRegular, faAddressCard as faAddressCardRegular,  faBuilding as faBuildingRegular, faIdBadge as faIdBadgeRegular}  from "@fortawesome/free-regular-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react"
@@ -26,6 +26,7 @@ const AddUserModal = ({open, close, updateTable}) => {
     const [generatedPassword, setGeneratedPassword] = useState('')
     const [role, setRoles] = useState([])
     const [accountPerm, setAccountPerm] = useState([])
+    const [done,setDone] = useState()
 
     const stepperRef = useRef(null);
 
@@ -110,20 +111,26 @@ const AddUserModal = ({open, close, updateTable}) => {
                 password: `${values.firstname.replace(/\s+/g, '').trim()}_${values.employeeID}`,
                 permissions:accountPerm
             }
-            // axiosClient.post('/add-user',payload).
-            // then((res) => {
-            //     console.log(res)
-            //     setLoading(false);
-            //     nextStep();
-            // })
-            // .catch((err)=>{
-            //     setErrorMessage({
-            //         message: err.response.data.message,
-            //         errors: err.response.data.errors
-            //     })
-            //     setError(true)
-            //     setLoading(false);
-            // })
+
+            // setTimeout(()=>{setLoading(false)},2000)
+            // setTimeout(()=>{navigateForm("next")},3000)
+
+            axiosClient.post('/add-user',payload).
+            then((res) => {
+                //console.log(res)
+                setDone(true)
+                setLoading(false);
+                navigateForm("next");
+                setTimeout(()=>{setFormCompleted([]),formik.resetForm()},1000)
+            })
+            .catch((err)=>{
+                setErrorMessage({
+                    message: err.response.data.message,
+                    errors: err.response.data.errors
+                })
+                setError(true)
+                setLoading(false);
+            })
             console.log(payload)
         }
 
@@ -238,17 +245,17 @@ const AddUserModal = ({open, close, updateTable}) => {
                             </div>
 
                             {/* Tabs to add user by import or form */}
-                            <div className="mx-4 py-4">
+                            <div className={`${done ? "hidded": 'p-4'}`}>
                                 <div className="w-full flex flex-row rounded-md shadow-md hover:cursor-pointer">
-                                    <span className={`w-1/2 flex flex-row  items-center font-header ring-2 ring-primary rounded-l-md px-5 py-2 text-primary hover:bg-primary hover:text-white transition-all ease-in-out ${state.tab === "single" ? "bg-primary text-white" : "bg-white text-primary"}
+                                    <span className={`w-1/2 flex flex-row  items-center font-header ring-2 ring-primary rounded-l-md px-5 py-2 text-primary hover:bg-primary hover:text-white transition-all ease-in-out ${state.tab === "single" ? "bg-primary text-white" : "bg-white text-primary"} ${done ? "hidden" : "flex"}
                                                         text-sm gap-2
-                                                        md:text-md md:gap-5`} onClick={()=> toggleState("tab", "single")}>
+                                                        md:text-md md:gap-5`} onClick={()=> {!done ? toggleState("tab", "single") : null }}>
                                         <FontAwesomeIcon icon={faUser}/>
                                         Add Single User
                                     </span>
-                                    <span className={` w-1/2 flex flex-row items-center font-header ring-2 ring-primary rounded-r-md px-5 py-2 text-primary hover:bg-primary hover:text-white transition-all ease-in-out ${state.tab === "multiple" ? "bg-primary text-white" : "bg-white text-primary"}
+                                    <span className={` w-1/2 flex flex-row items-center font-header ring-2 ring-primary rounded-r-md px-5 py-2 text-primary hover:bg-primary hover:text-white transition-all ease-in-out ${state.tab === "multiple" ? "bg-primary text-white" : "bg-white text-primary"} ${done ? "hidden" : "flex"}
                                                         text-sm gap-2
-                                                        md:text-md md:gap-5`} onClick={()=> toggleState("tab", "multiple")}>
+                                                        md:text-md md:gap-5`} onClick={()=> {!done ? toggleState("tab", "multiple") : null}}>
                                         <FontAwesomeIcon icon={faUserGroup}/>
                                         Add Multiple Users
                                     </span>
@@ -604,12 +611,12 @@ const AddUserModal = ({open, close, updateTable}) => {
                                                 }}>
                                                 <p className="font-header">{formCompleted.length <= 0 ? "Cancel" : "Back"}</p>
                                             </div>) }
-                                            <div className="border-2 border-primary rounded-md py-3 w-full flex flex-row justify-center shadow-md bg-primary text-white hover:cursor-pointer hover:bg-primaryhover hover:border-primaryhover transition-all ease-in-out"
+                                            <div className={`border-2 border-primary rounded-md py-3 w-full flex flex-row justify-center shadow-md bg-primary text-white hover:cursor-pointer hover:bg-primaryhover hover:border-primaryhover transition-all ease-in-out ${loading ? "opacity-50 hover:cursor-not-allowed" : null}`}
                                                 onClick={()=>{
                                                         const currentSteps = stepperRef.current?.activeStep;
+                                                        if(loading) return
                                                         if(currentSteps === 3){
                                                             formik.handleSubmit()
-                                                            navigateForm("next")
                                                         }else if(currentSteps === 4){
                                                             setTimeout(()=>{formik.resetForm();setFormCompleted([])},1000)
                                                             close()
@@ -620,7 +627,7 @@ const AddUserModal = ({open, close, updateTable}) => {
                                                             navigateForm("next")
                                                         }
                                                     }}>
-                                                <p className="font-header">{formCompleted.length === 3 ? "Submit"  :formCompleted.length === 4 ? "Confirm":"Next"}</p>
+                                                <p className="font-header">{loading ? "Loading" : formCompleted.length === 3 ? "Submit"  :formCompleted.length === 4 ? "Confirm":"Next"}</p>
                                             </div>
                                         </div>
                                     </>
