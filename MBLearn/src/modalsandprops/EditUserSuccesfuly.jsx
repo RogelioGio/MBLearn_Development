@@ -22,7 +22,7 @@ const EditUserSuccessfully = ({open,close,classname}) => {
                                         <p className="text-unactive font-text text-sm">The selected user is successfuly updated</p>
                                     </div>
                                 </div>
-                                <div className="text-center flex-col flex p-4 w-full bg-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 hover:bg-primaryhover ease-in-out transition-all"
+                                <div className="text-center flex-col flex p-4 w-full bg-primary rounded-md shadow-md hover:cursor-pointer hover:bg-primaryhover ease-in-out transition-all"
                                     onClick={close}>
                                     <p className="font-header text-white">Confirm</p>
                                 </div>

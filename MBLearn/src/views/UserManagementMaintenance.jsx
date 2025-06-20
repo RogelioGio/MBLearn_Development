@@ -659,11 +659,11 @@ export default function UserManagementMaintenance() {
                                     </div>
                                     <p> EMPLOYEE NAME</p>
                             </th>
-                            <th className='py-4 px-4  w-1/7 hidden sm:table-cell'>DIVISION</th>
-                            <th className='py-4 px-4  w-1/7 hidden sm:table-cell'>DEPARTMENT</th>
-                            <th className='py-4 px-4  w-1/7 hidden sm:table-cell'>SECTION</th>
+                            <th className='py-4 px-4  w-1/7 hidden lg:table-cell'>DIVISION</th>
+                            <th className='py-4 px-4  w-1/7 hidden lg:table-cell'>DEPARTMENT</th>
+                            <th className='py-4 px-4  w-1/7 hidden lg:table-cell'>SECTION</th>
                             {/* <th className='py-4 px-4  w-1/7'>LOCATION</th> */}
-                            <th className='py-4 px-4  w-2/7 hidden sm:table-cell'></th>
+                            <th className='py-4 px-4  w-2/7 hidden lg:table-cell'></th>
                         </tr>
                     </thead>
                     <tbody className='bg-white divide-y divide-divider'>

@@ -1,4 +1,4 @@
-import { faBuilding, faBuildingUser, faTruckMonster, faUserCircle, faUserPen } from "@fortawesome/free-solid-svg-icons"
+import { faBuilding, faBuildingUser, faTruckMonster, faUserCircle, faUserPen, faXmark } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react"
 import { Formik, useFormik } from "formik"
@@ -10,6 +10,7 @@ import { useUser } from "../contexts/selecteduserContext"
 import AddUserErrorModal from "./AdduserErrorModal"
 import EditUserCredsModal from "./EditUserCredsModal"
 import EdituserErrorModal from "./EdituserErrorModal"
+import UnsavedEditUserPromptModal from "./UnsaveEditUserPromptModal"
 
 const EditUserModal = ({open, close, classname, ID, close_confirmation, selectedUser}) =>{
     const { roles = [], departments = [], titles = [], location = [], cities = [], division, section} = useOption() || {};
@@ -20,6 +21,9 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation, selected
     const [editing, setEditing] = useState(false)
     const [updating, setUpdating] = useState(false)
     const [tab, setTab] = useState("EmployeeInformation")
+    const [unsave, setUnsave] = useState(false);
+    const [unsavePromt, setUnsavePrompt] = useState(false)
+    const [changes, setChanges] = useState({});
 
     const handleBranchesOptions = (e) => {
         const city = e.target.value;
@@ -29,6 +33,15 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation, selected
         const filteredBranches = location.filter((branch) => branch.city_id.toString() === city)
         setSelectedBranches(filteredBranches)
     }
+
+    useEffect(() => {
+
+        if(selectedUser?.city?.id){
+            const city = selectedUser?.city?.id.toString();
+            const filteredBranches = location.filter((branch) => branch.city_id.toString() === city)
+            setSelectedBranches(filteredBranches)
+        }
+    },[selectedUser])
 
     // useEffect(() => {
     //         if (open && ID) {
@@ -86,8 +99,9 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation, selected
         //validation
         validationSchema: Yup.object({
             employeeID: Yup.string().required('required *').matches(/^\d+$/, 'Numbers only').length(11, 'Employee ID must be exactly 11 characters'),
-            first_name: Yup.string().required('required *'),
-            last_name: Yup.string().required('required *'),
+            last_name: Yup.string().required('required *').matches(/^[A-Za-z.\s]+$/, 'Only letters are allowed'),
+            first_name: Yup.string().required('required *').matches(/^[A-Za-z.\s]+$/, 'Only letters are allowed'),
+            middle_name: Yup.string().matches(/^[A-Za-z]+\.?$/, 'Invalid Special Character'),
             title_id: Yup.string().required('required *'),
             branch_id: Yup.string().required('required *'),
             city: Yup.string().required('required *'),
@@ -98,8 +112,11 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation, selected
             axiosClient.put(`/update-user-info/${selectedUser.id}`,values)
             .then((response) => {console.log(response)
                 setUpdating(false)
-                close_confirmation()
-                close()
+                    close_confirmation()
+                    close()
+                    setTimeout(()=>{
+                        formik.resetForm(), setTab("EmployeeInformation")
+                    },500)
             })
             .catch((err) => {
                 setErrorMessage({
@@ -109,7 +126,6 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation, selected
                 setError(true)
                 setLoading(false);
             })
-
         }
     })
 
@@ -124,7 +140,20 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation, selected
             message: '',
             errors: {}
         })
-
+    //Change Detector
+    useEffect(()=>{
+        const  newChanges= {}
+        for(const key in formik.values){
+            if(Object.prototype.hasOwnProperty.call(formik.values, key)){
+                newChanges[key] = formik.values[key] !== formik.initialValues[key];
+            }
+        }
+        setChanges(newChanges)
+        const isChanged = Object.keys(formik.values).some(
+            (key) => formik.values[key] !== formik.initialValues[key]
+        )
+        setUnsave(isChanged)
+    },[formik.values])
 
     return (
         <>
@@ -146,11 +175,24 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation, selected
                                                         text-xs
                                                         md:text-sm">Enables administrators to update and modify user information and account details.</p>
                                     </div>
-                                    <div className="bg-primarybg p-5 rounded-full">
-                                        <div className="h-full w-fit aspect-square flex items-center justify-center">
-                                            <FontAwesomeIcon icon={faUserPen} className="text-primary text-lg"/>
+                                    <div className="">
+                                        <div className="border-2 border-primary rounded-full flex items-center justify-center text-primary hover:bg-primary hover:text-white hover:cursor-pointer transition-all ease-in-out
+                                                        w-5 h-5 text-xs
+                                                        md:w-8 md:h-8 md:text-base"
+                                            onClick={()=>{
+                                                if(unsave) {
+                                                    setUnsavePrompt(true)
+                                                    return
+                                                }
+
+                                                close()
+                                                setTimeout(()=>{formik.resetForm(), setTab("EmployeeInformation")},500)
+
+                                            }}>
+                                            <FontAwesomeIcon icon={faXmark}/>
                                         </div>
                                     </div>
+
                                 </div>
                                 <div className={`p-4 flex flex-row gap-2 justify-between`}>
                                     <div className={`group flex flex-col gap-2 border-2 text-primary border-primary w-full p-3 rounded-md shadow-md hover:cursor-pointer hover:bg-primaryhover hover:text-white transition-all ease-in-out ${tab === "EmployeeInformation" ? "bg-primary text-white":null}
@@ -192,11 +234,12 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation, selected
                                                         <p>Employee ID:</p>
                                                     </label>
                                                     <input type="text" name="employeeID"
+                                                            maxLength={11}
                                                             value={formik.values.employeeID}
                                                             onChange={formik.handleChange}
                                                             onBlur={formik.handleBlur}
                                                             disabled={loading}
-                                                            className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
+                                                            className={`font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary ${changes?.employeeID ? "border-2 border-primary":""}`}/>
                                                     {formik.touched.employeeID && formik.errors.employeeID ? (<div className="text-red-500 text-xs font-text">{formik.errors.employeeID}</div>):null}
                                                 </div>
 
@@ -211,7 +254,7 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation, selected
                                                             onChange={formik.handleChange}
                                                             onBlur={formik.handleBlur}
                                                             disabled={loading}
-                                                            className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
+                                                            className={`font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary ${changes?.first_name ? "border-2 border-primary":""}`}/>
                                                     {formik.touched.first_name && formik.errors.first_name ? (<div className="text-red-500 text-xs font-text">{formik.errors.first_name}</div>):null}
                                                 </div>
 
@@ -226,7 +269,7 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation, selected
                                                             onChange={formik.handleChange}
                                                             onBlur={formik.handleBlur}
                                                             disabled={loading}
-                                                            className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
+                                                            className={`font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary ${changes?.middle_name ? "border-2 border-primary":""}`}/>
                                                 </div>
 
                                                 <div className="inline-flex flex-col justify-between gap-1
@@ -240,7 +283,7 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation, selected
                                                             onChange={formik.handleChange}
                                                             onBlur={formik.handleBlur}
                                                             disabled={loading}
-                                                            className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
+                                                            className={`font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary ${changes?.last_name ? "border-2 border-primary":""}`}/>
                                                         {formik.touched.last_name && formik.errors.last_name ? (<div className="text-red-500 text-xs font-text">{formik.errors.last_name}</div>):null}
                                                 </div>
                                             </div>
@@ -255,7 +298,7 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation, selected
                                                     {/* Must be dropdown */}
                                                     <label htmlFor="division" className="font-text text-xs flex">Division:</label>
                                                     <div className="grid grid-cols-1">
-                                                                <select id="division_id" name="division_id" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                                                <select id="division_id" name="division_id" className={`${changes?.division_id ? "border-2 border-primary":""} appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary`}
                                                                     value={formik.values.division_id}
                                                                     onChange={formik.handleChange}
                                                                     onBlur={formik.handleBlur}
@@ -280,7 +323,7 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation, selected
                                                 {/* Must be dropdown */}
                                                     <label htmlFor="department" className="font-text text-xs flex">Deparment:</label>
                                                     <div className="grid grid-cols-1">
-                                                                <select id="department_id" name="department_id" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                                                <select id="department_id" name="department_id" className={`${changes?.department_id ? "border-2 border-primary":""} appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary`}
                                                                     value={formik.values.department_id}
                                                                     onChange={formik.handleChange}
                                                                     onBlur={formik.handleBlur}
@@ -305,7 +348,7 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation, selected
                                                     {/* Must be dropdown */}
                                                     <label htmlFor="title" className="font-text text-xs">Title:</label>
                                                     <div className="grid grid-cols-1">
-                                                                <select id="title_id" name="title_id" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                                                <select id="title_id" name="title_id" className={`${changes?.title_id ? "border-2 border-primary":""} appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary`}
                                                                     value={formik.values.title_id}
                                                                     onChange={formik.handleChange}
                                                                     onBlur={formik.handleBlur}
@@ -330,7 +373,7 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation, selected
                                                     {/* Must be dropdown */}
                                                     <label htmlFor="section_id" className="font-text text-xs flex">Section:</label>
                                                     <div className="grid grid-cols-1">
-                                                                <select id="section_id" name="section_id" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                                                <select id="section_id" name="section_id" className={`${changes?.section_id ? "border-2 border-primary":""}  appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary`}
                                                                     value={formik.values.section_id}
                                                                     onChange={formik.handleChange}
                                                                     onBlur={formik.handleBlur}
@@ -358,7 +401,7 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation, selected
                                                         {formik.touched.city && formik.errors.city ? (<div className="text-red-500 text-xs font-text">{formik.errors.city}</div>):null}
                                                     </label>
                                                     <div className="grid grid-cols-1">
-                                                                <select id="city" name="city" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                                                <select id="city" name="city" className={`${changes?.city_id ? "border-2 border-primary":""} appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary`}
                                                                 value={formik.values.city}
                                                                 onChange={handleBranchesOptions}
                                                                 onBlur={formik.handleBlur}
@@ -382,7 +425,7 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation, selected
                                                                 md:col-span-1">
                                                     <label htmlFor="branch" className="font-text text-xs">Branch Location:</label>
                                                     <div className="grid grid-cols-1">
-                                                                    <select id="branch_id" name="branch_id" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                                                    <select id="branch_id" name="branch_id" className={`${changes?.branch_id ? "border-2 border-primary":""}  appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary`}
                                                                         value={formik.values.branch_id}
                                                                         onChange={formik.handleChange}
                                                                         onBlur={formik.handleBlur}
@@ -414,16 +457,32 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation, selected
                                 </div>
                                 <div className="flex flex-row justify-between gap-2 mx-4 py-2 pt-4">
                                     <div className="border-2 border-primary rounded-md py-3 w-full flex flex-row justify-center shadow-md text-primary hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out"
-                                        onClick={()=>{close()}}>
+                                        onClick={()=>{
+                                                if(unsave) {
+                                                    setUnsavePrompt(true)
+                                                    return
+                                                }
+
+                                                setTimeout(()=>{formik.resetForm(), setTab("EmployeeInformation")},500)
+                                                close()
+                                            }}>
                                         <p className="font-header">
                                             {/* {formCompleted.length <= 0 ? "Cancel" : "Back"} */}
                                             Cancel
                                         </p>
                                     </div>
-                                    <div className={`border-2 border-primary rounded-md py-3 w-full flex flex-row justify-center shadow-md bg-primary text-white hover:cursor-pointer hover:bg-primaryhover hover:border-primaryhover transition-all ease-in-out ${loading ? "opacity-50 hover:cursor-not-allowed" : null}`}>
+                                    <div className={`border-2 border-primary rounded-md py-3 w-full flex flex-row justify-center shadow-md bg-primary text-white hover:cursor-pointer hover:bg-primaryhover hover:border-primaryhover transition-all ease-in-out ${!unsave ? "opacity-50 !hover:cursor-not-allowed" : ""} ${updating ? "opacity-50 hover:cursor-not-allowed" : null}`}
+                                        onClick={()=>{
+                                            if(unsave){
+                                                formik.handleSubmit()
+                                            }
+                                            return
+                                        }}>
                                         <p className="font-header">
                                             {/* {loading ? "Loading" : formCompleted.length === 3 ? "Submit"  :formCompleted.length === 4 ? "Confirm":"Next"} */}
-                                            Update
+                                            {
+                                                updating ? "Updating..." : "Update"
+                                            }
                                         </p>
                                     </div>
 
@@ -435,6 +494,7 @@ const EditUserModal = ({open, close, classname, ID, close_confirmation, selected
                 </div>
         </Dialog>
         <EdituserErrorModal error={OpenError} close={()=>setError(false)} message={errorMessage.message} desc={errorMessage.errors}/>
+        <UnsavedEditUserPromptModal open={unsavePromt} close={()=>{setUnsavePrompt(false)}} discardChanges={()=>{setTimeout(()=>{formik.resetForm(), setTab("EmployeeInformation")},500),close(),setUnsavePrompt(false)}}/>
         </>
     )
 }

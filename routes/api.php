@@ -229,6 +229,75 @@ Route::get('/test-gmail-refresh', function () {
 });
 
 
+Route::get('/send-test-email', function () {
+    $mail = new \App\Http\Controllers\MailComponent(
+        new \App\Services\GraphMailService()
+    );
+
+    return $mail->send(
+        'talingdan.304273@novaliches.sti.edu.ph',
+        '✅ Test from GraphMailService via MailComponent',
+        '<p>This was sent using Microsoft Graph from MailComponent!</p>'
+    ) ? '✅ Email Sent' : '❌ Failed to send email';
+});
+
+// Route::get('/auth/login', function () {
+//     $query = http_build_query([
+//         'client_id' => env('MS_GRAPH_CLIENT_ID'),
+//         'response_type' => 'code',
+//         'redirect_uri' => env('MS_GRAPH_REDIRECT_URI'),
+//         'response_mode' => 'query',
+//         'scope' => 'https://graph.microsoft.com/Mail.Send https://graph.microsoft.com/User.Read',
+//     ]);
+
+//     return redirect("https://login.microsoftonline.com/common/oauth2/v2.0/authorize?$query");
+// });
+
+// Route::get('/auth/callback', function (Illuminate\Http\Request $request) {
+//     $code = $request->get('code');
+
+//     $tokenResponse = Http::asForm()->post('https://login.microsoftonline.com/common/oauth2/v2.0/token', [
+//         'client_id' => env('MS_GRAPH_CLIENT_ID'),
+//         'client_secret' => env('MS_GRAPH_CLIENT_SECRET'),
+//         'grant_type' => 'authorization_code',
+//         'code' => $code,
+//         'redirect_uri' => env('MS_GRAPH_REDIRECT_URI'),
+//     ]);
+
+//     $accessToken = $tokenResponse->json()['access_token'];
+
+//     return redirect('api/auth/send-email?token=' . $accessToken);
+// });
+
+// Route::get('/auth/send-email', function (Illuminate\Http\Request $request) {
+//     $token = $request->query('token');
+
+//     $emailPayload = [
+//         'message' => [
+//             'subject' => 'Test Email from MBLEARN ALERT',
+//             'body' => [
+//                 'contentType' => 'HTML',
+//                 'content' => '<p>This is a test email from your Outlook account via Microsoft Graph!</p>'
+//             ],
+//             'toRecipients' => [
+//                 [
+//                     'emailAddress' => [
+//                         'address' => 'talingdan.304273@novaliches.sti.edu.ph'
+//                     ]
+//                 ]
+//             ]
+//         ]
+//     ];
+
+//     $response = Http::withToken($token)
+//         ->withHeaders([
+//             'Content-Type' => 'application/json',
+//         ])
+//         ->post('https://graph.microsoft.com/v1.0/me/sendMail', $emailPayload);
+
+//     return $response->json();
+// });
+
 // Route::get('/reset-user',[userInfo_controller::class, 'resetUser']); //reset user table
 // Route::get('/reset-user-creds',[userCredentials_controller::class, 'resetUsers']); //reset user table
 

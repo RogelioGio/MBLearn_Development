@@ -52,7 +52,7 @@ const User = ({re_move,click,userID,name,department,title,branch,city,profile_ur
     return(
         <tr className={`font-text text-sm hover:bg-gray-200 ${selectedUsers? 'bg-gray-200':''}`} onClick={() => click()}>
             {
-                breakpoint === 'base' ? (<>
+                breakpoint === 'base' || breakpoint === 'sm' || breakpoint === 'md'? (<>
                     <td className={`text-sm py-3 px-4 border-l-2 border-transparent transition-all ease-in-out ${selectedUsers? '!border-primary':''}`}>
                         <div className='items-center gap-2 grid grid-cols-[min-content_auto_auto_auto] grid-rows-2'>
                             {/* Checkbox */}
