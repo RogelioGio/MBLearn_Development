@@ -17,13 +17,13 @@ const UserCredentialsLoadingProps = () => {
                                 </div>
                             </div>
                         </td>
-                        <td className="py-3 px-4 animate-pulse">
+                        <td className="py-3 px-4 animate-pulse hidden lg:table-cell">
                             <div className="bg-gray-300 h-4 w-36 rounded-full"></div>
                         </td>
-                        <td className="py-3 px-4 animate-pulse">
+                        <td className="py-3 px-4 animate-pulse hidden lg:table-cell">
                             <div className="bg-gray-300 h-4 w-36 rounded-full"></div>
                         </td>
-                        <td className="py-3 px-4 animate-pulse">
+                        <td className="py-3 px-4 animate-pulse hidden lg:table-cell">
                             <div className="bg-gray-300 h-4 w-36 rounded-full"></div>
                         </td>
                     </tr>

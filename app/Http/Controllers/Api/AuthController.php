@@ -79,7 +79,7 @@ class AuthController extends Controller
             // $redirect = $this->redirection($user->role);
 
             //Email OTP to user
-            $result = $mailComponent->send(
+            $result = $mailComponent->sendOutlook(
                 'talingdan.304273@novaliches.sti.edu.ph',
                 "MBLearn Account Verification-".$user->userInfos->first_name,
                 $htmlBody
@@ -225,7 +225,7 @@ class AuthController extends Controller
             ], 404);
         }
 
-        $result = $mailComponent->send(
+        $result = $mailComponent->sendOutlook(
             'talingdan.304273@novaliches.sti.edu.ph',
             "MBLearn Reset Password Request-".$fullname."-".$user->MBemail ,
             $htmlBody

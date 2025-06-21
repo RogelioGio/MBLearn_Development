@@ -249,38 +249,44 @@ export default function UserAccountSecurityMaintenance(){
 
     return(
         <div className='grid grid-cols-4 h-full w-full
+                        grid-rows-[6.25rem_min-content]
                         xl:grid-rows-[6.25rem_min-content_auto_auto_min-content]
-                        sm:grid-rows-[6.25rem_min-content_auto]'>
+                        sm:grid-rows-[6.25rem_min-content]'>
             <Helmet>
                 {/* Title of the mark-up */}
                 <title>MBLearn | System Access Maintenance</title>
             </Helmet>
 
             {/* Header */}
-            <div className='flex flex-col justify-center row-span-1 pr-5 border-b border-divider
-                            xl:col-span-2
-                            sm:col-span-2'>
+            <div className='flex flex-col justify-center row-span-1 border-b border-divider
+                            col-start-1 row-start-1 col-span-4 mx-3
+                            xl:col-span-3
+                            lg:mx-0 lg:ml-4 lg:col-span-2'>
                 <h1 className='text-primary font-header
+                                text-xl
+                                sm:text-2xl
                                 xl:text-4xl'>System Access Maintenance</h1>
                 <p className='font-text text-unactive
+                                text-xs
                                 xl:text-sm
                                 sm:text-xs' >Handles user credentials, account status, and last login tracking for secure access</p>
             </div>
 
             {/* Search bar */}
-            <div className='row-start-1 mr-5 py-3 border-b border-divider flex flex-row justify-end items-center gap-3
-                            xl:col-start-3 xl:col-span-2
-                            sm:col-start-3 sm:col-span-2'>
+            <div className='justify-end border-divider gap-1 hidden
+                            xl:col-span-1 xl:p-0
+                            lg:mr-3 lg:border-b lg:pl-3 lg:items-center
+                            sm:flex sm:px-3 sm:col-span-2 sm:items-end sm:py-2'>
                 {
+                    //search
                     search ? (
-                        <div className='w-11 h-11 border-primary border-2 rounded-md shadow-md bg-white flex items-center justify-center text-primary hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out' onClick={()=>{setSearch(false), searchFormik.resetForm(), fetchUsers()}}>
+                        <div className='w-12 aspect-square border-primary border-2 rounded-md shadow-md bg-white flex items-center justify-center text-primary hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out' onClick={()=>{setSearch(false), searchFormik.resetForm(), fetchUsers()}}>
                             <FontAwesomeIcon icon={faXmark}/>
                         </div>
                     ) : null
                 }
-                <form onSubmit={searchFormik.handleSubmit}>
-                    <div className="flex items-center h-full w-80">
-                        <div className=' inline-flex flex-row place-content-between border-2 border-primary rounded-md w-full h-fit font-text shadow-md'>
+                <form onSubmit={searchFormik.handleSubmit} className="w-full">
+                    <div className='w-full inline-flex mr-3 flex-row place-content-between border-2 border-primary rounded-md h-fit font-text shadow-md'>
                             <input type="text" className='focus:outline-none text-sm px-4 w-full rounded-md bg-white' placeholder='Search...'
                                 name='search'
                                 value={searchFormik.values.search}
@@ -295,82 +301,14 @@ export default function UserAccountSecurityMaintenance(){
                                 <FontAwesomeIcon icon={faSearch}/>
                             </div>
                         </div>
-                    </div>
                 </form>
             </div>
 
             {/* User Filter */}
-            <form onSubmit={filterformik.handleSubmit} className='col-start-1 col-span-4 row-start-2 row-span-1 py-3 grid grid-cols-[auto_auto_auto_auto_auto_min-content] w-full gap-2'>
-                {/* <div className="inline-flex flex-col gap-1">
-                    <label htmlFor="department" className="font-header text-xs flex flex-row justify-between">
-                        <p className="text-xs font-text text-unactive">Department </p>
-                    </label>
-                    <div className="grid grid-cols-1">
-                        <select id="department" name="department" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                            value={filterformik.values.department}
-                            onChange={filterformik.handleChange}
-                            onBlur={filterformik.handleBlur}
-                            >
-                            <option value=''>Select Department</option>
-                            {
-                                departments.map((department) => (
-                                    <option key={department.id} value={department.id}>{department.department_name}</option>
-                                ))
-                            }
-                        </select>
-                        <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                        <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
-                </div>
-
-                <div className="inline-flex flex-col gap-1">
-                    <label htmlFor="city" className="font-header text-xs flex flex-row justify-between">
-                        <p className="text-xs font-text text-unactive">City</p>
-                    </label>
-                    <div className="grid grid-cols-1">
-                        <select id="city" name="city" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                            value={filterformik.values.city}
-                            onChange={handleBranchesOptions}
-                            onBlur={filterformik.handleBlur}
-                            >
-                            <option value=''>Select Branch City</option>
-                            {
-                                cities.map((city) => (
-                                    <option key={city.id} value={city.id}>{city.city_name}</option>
-                                ))
-                            }
-                        </select>
-                        <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                        <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
-                </div>
-
-                <div className="inline-flex flex-col gap-1">
-                    <label htmlFor="branch" className="font-header text-xs flex flex-row justify-between">
-                        <p className="text-xs font-text text-unactive"> Location</p>
-                    </label>
-                    <div className="grid grid-cols-1">
-                        <select id="branch" name="branch" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                            value={filterformik.values.branch}
-                            onChange={filterformik.handleChange}
-                            onBlur={filterformik.handleBlur}
-                            >
-                            <option value=''>Select Branch Location</option>
-                            {
-                                selectedBranches.map((location) => (
-                                    <option key={location.id} value={location.id}>{location.branch_name}</option>
-                                ))
-                            }
-                        </select>
-                        <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                        <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
-                </div> */}
-
-                <div className="inline-flex flex-col gap-1">
+            <form onSubmit={filterformik.handleSubmit} className='flex flex-row row-start-2 ml-3 py-2 gap-2
+                col-span-2
+                xl:col-span-1'>
+                <div className="inline-flex flex-col gap-1 w-full">
                     <label htmlFor="role" className="font-header text-xs flex flex-row justify-between">
                         <p className="text-xs font-text text-unactive">Account Role</p>
                     </label>
@@ -394,9 +332,9 @@ export default function UserAccountSecurityMaintenance(){
                 </div>
 
                 {/* Filter Button */}
-                <div className='flex-row flex justify-start py-1 gap-2 items-end'>
+                {/* <div className='flex-row flex justify-start gap-2 items-end'>
                 <button type='submit'>
-                    <div className='aspect-square px-3 flex flex-row justify-center items-center bg-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 ease-in-out transition-all '>
+                    <div className='w-10 h-10 flex flex-row justify-center items-center bg-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 ease-in-out transition-all '>
                         <FontAwesomeIcon icon={faFilter} className='text-white text-sm'/>
                     </div>
                 </button>
@@ -410,26 +348,25 @@ export default function UserAccountSecurityMaintenance(){
                         null
                     )
                 }
-                </div>
+                </div> */}
             </form>
 
             {/* UserList Table */}
-            <div className='row-start-3 row-span-2 col-start-1 col-span-4 pr-5 py-4'>
+            <div className='row-start-3 row-span-2 col-start-1 col-span-4 px-3 py-2
+                            xl:pr-5 xl:py-4'>
                 <div className='w-full border-primary border rounded-md overflow-hidden shadow-md'>
                 <table className='text-left min-w-full table-layout-fixed'>
                     <thead className='font-header text-xs text-primary bg-secondaryprimary uppercase'>
                         <tr>
                             <th className='p-4 w-2/8'>EMPLOYEE NAME</th>
-                            {/* <th className='p-4 w-1/8'>DIVISION</th>
-                            <th className='p-4 w-1/8'>DEPARTMENT</th>
-                            <th className='p-4 w-1/8'>SECTION</th> */}
-                            <th className='p-4 w-1/8'>Metrobank Email</th>
-                            <th className='p-4 w-1/8'>ROLE</th>
-                            <th className='p-4 w-1/8'>Last Login Timestamp</th>
+                            <th className='p-4 w-1/8 hidden lg:table-cell'>Metrobank Email</th>
+                            <th className='p-4 w-1/8 hidden lg:table-cell'>ROLE</th>
+                            <th className='p-4 w-1/8 hidden lg:table-cell'>Last Login Timestamp</th>
                         </tr>
                     </thead>
                     <tbody className='bg-white divide-y divide-divider'>
                         {
+                            //isLoading
                             isLoading ? (
                                 <UserCredentialsLoadingProps/>
                             ) : (

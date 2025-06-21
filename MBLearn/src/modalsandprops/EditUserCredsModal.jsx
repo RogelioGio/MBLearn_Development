@@ -1,4 +1,4 @@
-import { faEye, faEyeSlash, faKey, faUserGroup, faUserLock, faUserPen } from "@fortawesome/free-solid-svg-icons"
+import { faCheckCircle, faEye, faEyeSlash, faKey, faUserGroup, faUserLock, faUserPen, faXmark } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react"
 import { useUser } from "../contexts/selecteduserContext";
@@ -23,6 +23,9 @@ const EditUserCredsModal = ({open, close, User, ID, editSuccess}) => {
     const [selectedUser, setSelectedUser] = useState()
     const [accountPerm, setAccountPerm] =useState([])
     const [reseting, setResetting] = useState(false)
+    const [Reset, setReset] = useState(false);
+    const [unsave,setUnsave] = useState(false)
+    const [changes, setChanges] = useState({})
 
     //Permission Check
     const hasPermission = (user, perms = []) => {
@@ -32,73 +35,52 @@ const EditUserCredsModal = ({open, close, User, ID, editSuccess}) => {
     };
 
     useEffect(() => {
-        setLoading(true)
-        // axiosClient.get(`/select-user-creds/${ID}`)
-        // .then(({data}) => {
-        //     setSelectedUser(data)
-        //     console.log(data)
-        //     setLoading(false)
-        // })
-        // .catch(error => console.error(error));
-        console.log(User)
         setSelectedUser(User)
-        setLoading(false)
     },[User])
     //Handle Password
-        const [showPassword, setShowPassword] = useState(false);
-        const [password, setPassword] = useState('');
 
-        const togglePassword = () =>{
-            setShowPassword(!showPassword);
-        };
-        const handlePassword = (e) =>{
-            const {value} = e.target;
-            formik.setFieldValue('password', value);
-            setPassword(value);
-        }
     useEffect(() => {
         formik.resetForm();
+        setReset(true)
         setUpdating(false)
     },[])
 
     //Must Seperate the formik from the modal
-
     const formik = useFormik({
         enableReinitialize: true,
         initialValues:
         tab === 1 ? {
-            MBEmail: selectedUser?.MBemail || "Loading...",
+            MBEmail: selectedUser?.MBemail.split('@')[0] || "Loading...",
             password: "",
         }:{
             role: selectedUser?.user_infos.roles?.[0].id || "Loading",
         },
 
         onSubmit: (values) => {
-            console.log(values);
-
             setUpdating(true);
 
             if (tab === 1) {
                 const payload = {
-                MBemail: values.MBEmail,
+                MBemail: values.MBEmail+"@mbtc.com",
                 password: values.password,
                 };
 
-                axiosClient.put(`/update-user-creds/${ID}`, payload)
-                .then((res) => {
-                    editSuccess();
-                    close();
-                    setUpdating(false);
-                    console.log(res);
-                })
-                .catch((err) => {
-                    setErrorMessage({
-                    message: err.response?.data?.message,
-                    errors: err.response?.data?.errors,
-                    });
-                    setError(true);
-                    setUpdating(false); // You had setLoading(false); instead
-                });
+                // axiosClient.put(`/update-user-creds/${ID}`, payload)
+                // .then((res) => {
+                //     editSuccess();
+                //     close();
+                //     setUpdating(false);
+                //     console.log(res);
+                // })
+                // .catch((err) => {
+                //     setErrorMessage({
+                //     message: err.response?.data?.message,
+                //     errors: err.response?.data?.errors,
+                //     });
+                //     setError(true);
+                //     setUpdating(false); // You had setLoading(false); instead
+                // });
+                console.log(payload)
             } else {
                 const payload = {
                     ...(selectedUser.user_infos.roles?.[0].id !== values.role && { role: parseInt(values.role) }),
@@ -138,24 +120,34 @@ const EditUserCredsModal = ({open, close, User, ID, editSuccess}) => {
 
     //reset
     const resetPassword = () => {
+        if(!Reset) {
+            setResetting(true);
+            setTimeout(()=>{
+            setResetting(false)
+            setReset(true)
+            formik.setFieldValue("password", "")
+
+        },2000)
+        return}
         setResetting(true);
-        axiosClient.put(`/reset-password/${selectedUser.id}`)
-        .then((res) => {
-            console.log(res);
-            setResetting(false);
-            close();
-            editSuccess();
-        }).catch((err) => {
-            console.log(err);
-        })
+        // axiosClient.put(`/reset-password/${selectedUser.id}`)
+        // .then((res) => {
+        //     console.log(res);
+        //     setResetting(false);
+        //     close();
+        //     editSuccess();
+        // }).catch((err) => {
+        //     console.log(err);
+        // })
+        formik.setFieldValue("password", 1)
+        setTimeout(()=>{
+            setResetting(false)
+            setReset(false)
+        },2000)
     }
 
     //Update Error
     const [OpenError, setError] = useState(false)
-    const reset = () => {
-        close();
-        formik.resetForm();
-    }
     //Data
         const [errorMessage, setErrorMessage] = useState({
             message: '',
@@ -181,165 +173,219 @@ const EditUserCredsModal = ({open, close, User, ID, editSuccess}) => {
     //     }
     // }, [formik.values.role, permission]);
 
+    const content = (section) => {
+        return section === 1 ? (
+            <>
+                <div className="px-4 grid grid-cols-1 gap-y-2 py-2
+                                md:grid-cols-3">
+                    <div>
+                        <p className="font-text text-xs text-unactive">Employee's Full Name:</p>
+                        <p className="font-text">{selectedUser?.user_infos.first_name} {selectedUser?.user_infos.middle_name} {selectedUser?.user_infos.last_name}</p>
+                    </div>
+                    <div>
+                        <p className="font-text text-xs text-unactive">Department & Title:</p>
+                        <p className="font-text">{selectedUser?.user_infos.department?.department_name}</p>
+                        <p className="font-text text-xs">{selectedUser?.user_infos.title?.title_name}</p>
+                    </div>
+                    <div>
+                        <p className="font-text text-xs text-unactive">Metrobank Branch:</p>
+                        <p className="font-text">{selectedUser?.user_infos.branch.branch_name}</p>
+                        <p className="font-text text-xs">{selectedUser?.user_infos.city?.city_name}</p>
+                    </div>
+                </div>
+                <div className="inline-flex flex-col gap-1 w-full px-4 py-2">
+                    <label htmlFor="MBEmail" className="font-text text-xs text-unactive flex flex-row justify-between">
+                        <p>Employee's Metrobank Email *</p>
+                    </label>
+                    <div className={`group border rounded-md font-text flex flex-row
+                                    focus-within:outline focus-within:outline-2
+                                    focus-within:-outline-offset-2 focus-within:outline-primary
+                                    ${changes?.MBEmail ? "border-2 border-primary" : "border-divider"}`}>
+                        <input type="text" name="MBEmail"
+                            value={formik.values.MBEmail}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            className={`font-text w-full rounded-md p-2 focus:outline-none`}/>
+                        <div className={`py-2 px-5 rounded-r-xs group-focus-within:bg-primary group-focus-within:text-white ${changes?.MBEmail ? "bg-primary text-white" : "bg-divider"}`}>
+                            @mbtc.com
+                        </div>
+                    </div>
+                </div>
+                <div className="px-4 pb-2 flex flex-col md:flex-row justify-between">
+                    <div className="col-span-2 flex flex-col justify-center py-2">
+                        <p className="font-text text-unactive text-xs">Reset Employee Password</p>
+                        <p className="text-xs text-unactive font-text">Reset the current password of the selected user</p>
+                    </div>
+                    <div className={`flex flex-row gap-2 justify-center items-center py-3 px-5 rounded-md transition-all ease-in-out shdaow-md ${!Reset ? "border-2 border-primary bg-white text-primary":"bg-primary text-white hover:cursor-pointer hover:bg-primaryhover"}`}
+                        onClick={() =>{
+                            resetPassword()
+                            if(Reset) {
+                            }
+                        }}>
+                        <FontAwesomeIcon icon={!Reset ? faCheckCircle : faKey}/>
+
+                        <p className="font-header">{!Reset && reseting ? "Returning Password" : reseting ? "Reseting....": !Reset ? "Password Reset" :"Reset Password"}</p>
+                    </div>
+                </div>
+            </>
+        ):section === 2 ? (
+            <>
+            <div className="inline-flex flex-col gap-1 py-2 px-3 w-full">
+                <label htmlFor="role" className="font-header text-xs flex flex-row justify-between">
+                    <p className="text-xs font-text">Employee's Account Role <span className="text-red-500">*</span></p>
+                </label>
+                <div className="grid grid-cols-1">
+                    <select id="role" name="role" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                        value={formik.values.role}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        disabled={!hasPermission(user, ["EditUserRoles"])}
+                        >
+                        <option value=''>Select Role</option>
+                        {
+                            roles.map((role) => (
+                                <option key={role.id} value={role.id}>{role.role_name}</option>
+                            ))
+                        }
+                    </select>
+                    <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                    <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                {formik.touched.role && formik.errors.role ? (<div className="text-red-500 text-xs font-text">{formik.errors.role}</div>):null}
+            </div>
+            {
+                <div className="px-3">
+                    <AccountPermissionProps refPermissions={permission} selectedRole={formik.values.role} role={roles} setAccountPerm={setAccountPerm} currentPerm={selectedUser.user_infos.permissions} originalRole={selectedUser.user_infos.roles[0].id}/>
+                </div>
+
+            }
+            </>
+        ) : null
+    }
+
+    useEffect (()=>{
+        const newValues = {}
+        for(const key in formik.values){
+            if(Object.prototype.hasOwnProperty.call(formik.values, key)){
+                newValues[key] = formik.values[key] !== formik.initialValues[key]
+            }
+        }
+        setChanges(newValues)
+        const isChanged = Object.keys(formik.values).some(
+            (key) => formik.values[key] !== formik.initialValues[key]
+        )
+        setUnsave(isChanged)
+    },[formik.values])
+
     return(
         <>
         <Dialog open={open} onClose={()=>{isLoading ? close : null}}>
             <DialogBackdrop transition className="fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in z-30"/>
             <div className='fixed inset-0 z-30 w-screen overflow-y-auto'>
                 <div className='flex min-h-full items-center justify-center p-4 text center'>
-                    <DialogPanel transition className='relative overflow-hidden transform rounded-md bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in'>
-                        <div className='bg-white rounded-md h-full w-fit p-5 flex flex-col justify-center'>
+                    <DialogPanel transition className='relative overflow-hidden transform rounded-md bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in
+                                                        w-[100vw]
+                                                        lg:w-[60vw]'>
+                        <div className='bg-white rounded-md h-full w-full p-5 flex flex-col justify-center'>
                             {/* Header */}
-                                <div className="py-4 mx-4 border-b border-divider flex flex-row justify-between item-center gap-4">
-                                    <div>
-                                        <h1 className="text-primary font-header text-3xl">Edit User Credentials & System Access</h1>
-                                        <p className="text-unactive font-text text-md">Enables administrators to update and modify user credentials and account details.</p>
-                                    </div>
-                                    <div className="bg-primarybg p-5 rounded-full">
-                                        <div className="h-full w-fit aspect-square flex items-center justify-center">
-                                            <FontAwesomeIcon icon={faUserPen} className="text-primary text-lg"/>
-                                        </div>
+                            <div className="py-4 mx-4 border-b border-divider flex flex-row justify-between item-center gap-4">
+                                <div>
+                                    <h1 className="text-primary font-header
+                                                    text-base
+                                                    md:text-2xl">Edit User Credentials & System Access</h1>
+                                    <p className="text-unactive font-text
+                                                    text-xs
+                                                    md:text-sm">Enables administrators to update and modify user credentials and account details.</p>
+                                </div>
+                                <div className="">
+                                    <div className="border-2 border-primary rounded-full flex items-center justify-center text-primary hover:bg-primary hover:text-white hover:cursor-pointer transition-all ease-in-out
+                                                    w-5 h-5 text-xs
+                                                    md:w-8 md:h-8 md:text-base">
+                                        <FontAwesomeIcon icon={faXmark}/>
                                     </div>
                                 </div>
-                                {
-                                    isLoading ? (
-                                        <p className="px-40 py-32 self-center font-text text-unactive">Loading User Credentials....</p>
-                                    ):(
-                                        <>
-                                         {/* Tab for Editing */}
-                                            <div className='row-start-2 col-span-4 w-auto mx-5 py-3 gap-3'>
-                                            <div className="w-full flex flex-row rounded-md shadow-md hover:cursor-pointer">
-                                                <span className={`w-1/2 flex flex-row gap-5 items-center text-md font-header ring-2 ring-primary rounded-l-md px-5 py-2 text-primary hover:bg-primary hover:text-white transition-all ease-in-out ${tab === 1 ? 'bg-primary text-white' : ''}`} onClick={() =>{setTab(1)}}>
-                                                    <FontAwesomeIcon icon={faUserLock}/>
-                                                    Account Credentials
-                                                </span>
-                                                <span className={` w-1/2 flex flex-row gap-5 items-center text-md font-header ring-2 ring-primary rounded-r-md px-5 py-2 text-primary hover:bg-primary hover:text-white transition-all ease-in-out ${tab === 2 ? 'bg-primary text-white' : ''}`} onClick={() =>{setTab(2)}}>
-                                                    <FontAwesomeIcon icon={faUserGroup}/>
-                                                    Roles and Permission
-                                                </span>
-                                            </div>
+                            </div>
+                            {/* Tab for Editing */}
+                            {
+                                hasPermission(user, ["EditUserCredentials"]) &&  hasPermission(user, ["EditUserCredentials"]) ? (
+                                    <div className='row-start-2 col-span-4 w-auto mx-5 py-3 gap-3'>
+                                        <div className="w-full flex flex-row rounded-md shadow-md hover:cursor-pointer">
+                                            <span className={`w-1/2 flex flex-row gap-5 items-center text-md font-header ring-2 ring-primary rounded-l-md py-2 text-primary hover:bg-primary hover:text-white transition-all ease-in-out ${tab === 1 ? 'bg-primary text-white' : ''}
+                                                            text-xs gap-1 justify-center
+                                                            md:text-base md:gap-5 md:px-5 md:justify-start`} onClick={() =>{setTab(1)}}>
+                                                <FontAwesomeIcon icon={faUserLock}/>
+                                                Account Credentials
+                                            </span>
+                                            <span className={`w-1/2 flex flex-row gap-5 items-center text-md font-header ring-2 ring-primary rounded-r-md px-5 py-2 text-primary hover:bg-primary hover:text-white transition-all ease-in-out ${tab === 2 ? 'bg-primary text-white' : ''}
+                                                            text-xs gap-1 justify-center px-0
+                                                            md:text-base md:gap-5 md:px-5 md:justify-start`} onClick={() =>{setTab(2)}}>
+                                                <FontAwesomeIcon icon={faUserGroup}/>
+                                                Roles and Permission
+                                            </span>
                                         </div>
-                                        <div className="mx-4 flex flex-row gap-5">
-                                            <form className="grid grid-cols-3 gap-2  pb-4 w-full" onSubmit={formik.handleSubmit}>
-                                            {
-                                                tab === 1 && hasPermission(user, ["EditUserCredentials"])? (
-                                                    <>
-                                                        {/* Employee Information */}
-                                                        <div className="py-4">
-                                                            <p className="font-text text-xs text-unactive">Employee's Full Name:</p>
-                                                            <p className="font-text">{selectedUser?.user_infos.first_name} {selectedUser?.user_infos.middle_name} {selectedUser?.user_infos.last_name}</p>
-                                                        </div>
-                                                        <div className="py-4">
-                                                            <p className="font-text text-xs text-unactive">Department & Branch:</p>
-                                                            <p className="font-text">{selectedUser?.user_infos.department?.department_name}</p>
-                                                            <p className="font-text text-xs">{selectedUser?.user_infos.title?.title_name}</p>
-                                                        </div>
-                                                        <div className="py-4">
-                                                            <p className="font-text text-xs text-unactive">Metrobank Branch</p>
-                                                            <p className="font-text">{selectedUser?.user_infos.branch.branch_name}</p>
-                                                            <p className="font-text text-xs">{selectedUser?.user_infos.city?.city_name}</p>
-                                                        </div>
-                                                    <div className="inline-flex flex-col gap-1 row-start-2 col-span-3 py-2">
-                                                            <label htmlFor="MBEmail" className="font-text text-xs text-unactive flex flex-row justify-between">
-                                                                <p>Employee's Metrobank Email *</p>
-                                                            </label>
-                                                            <input type="text" name="MBEmail"
-                                                                    value={formik.values.MBEmail}
-                                                                    onChange={formik.handleChange}
-                                                                    onBlur={formik.handleBlur}
-                                                                    className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
-                                                    </div>
-
-                                                    {/* <div className="inline-flex flex-col gap-1 row-start-2 col-span-1 py-2">
-                                                            <label htmlFor="name" className="font-text text-xs flex flex-row justify-between">
-                                                                <p>Employee's Account Password *</p>
-                                                            </label>
-                                                            <div className="flex flex-row border border-divider rounded-md focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary">
-                                                            <input  type={showPassword ? "text" : "password"} name="password"
-                                                                    value={formik.values.password}
-                                                                    onChange={handlePassword}
-                                                                    onBlur={formik.handleBlur}
-                                                                    className="font-text p-2 rounded-md focus:outline-none"/>
-                                                            <div className="flex flex-col justify-center items-center w-11  text-unactive">
-                                                                <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} className='text-primary cursor-pointer' onClick={togglePassword}/>
-                                                            </div>
-                                                            </div>
-                                                    </div> */}
-
-                                                        <div className="col-span-2 flex flex-col justify-center">
-                                                            <p className="font-text text-unactive text-xs">Reset Employee Password</p>
-                                                            <p className="text-xs text-unactive font-text">Reset the current password of the selected user</p>
-                                                        </div>
-                                                        <div className="col-span-1 flex flex-row justify-center items-center">
-                                                            <div className="w-full flex flex-col justify-center items-center text-white p-3 bg-primary rounded-md hover:cursor-pointer hover:bg-primaryhover transition-all ease-in-out" onClick={() => resetPassword()}>
-                                                                <p className="font-header"><span><FontAwesomeIcon icon={faKey}/></span>  {reseting ? "Reseting....":"Reset Password"}</p>
-                                                            </div>
-                                                        </div>
-
-                                                    </>
-                                                ) : tab === 1 ? (
-                                                    <div className="inline-flex flex-col gap-1 row-start-1 row-span-4 col-span-3 py-2 items-center justify-center">
-                                                        <p className="text-unactive font-text p-10">User is not unauthorized to this action</p>
-                                                    </div>
-                                                ) : tab === 2  && hasPermission(user, ["EditUserRoles"] ) ? (
-                                                    <>
-                                                    <div className="inline-flex flex-col gap-1 row-start-1 col-span-3 py-2">
-                                                        <label htmlFor="role" className="font-header text-xs flex flex-row justify-between">
-                                                            <p className="text-xs font-text">Employee's Account Role <span className="text-red-500">*</span></p>
-                                                        </label>
-                                                        <div className="grid grid-cols-1">
-                                                            <select id="role" name="role" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                                                                value={formik.values.role}
-                                                                onChange={formik.handleChange}
-                                                                onBlur={formik.handleBlur}
-                                                                disabled={!hasPermission(user, ["EditUserRoles"])}
-                                                                >
-                                                                <option value=''>Select Role</option>
-                                                                {
-                                                                    roles.map((role) => (
-                                                                        <option key={role.id} value={role.id}>{role.role_name}</option>
-                                                                    ))
-                                                                }
-                                                            </select>
-                                                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                                                            <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                                                            </svg>
-                                                        </div>
-                                                        {formik.touched.role && formik.errors.role ? (<div className="text-red-500 text-xs font-text">{formik.errors.role}</div>):null}
-                                                    </div>
-                                                    {
-                                                        hasPermission(user, ["EditUserRoles"]) ? (<div className="col-span-3">
-                                                            <AccountPermissionProps refPermissions={permission} selectedRole={formik.values.role} role={roles} setAccountPerm={setAccountPerm} currentPerm={selectedUser.user_infos.permissions} originalRole={selectedUser.user_infos.roles[0].id}/>
-                                                        </div>) : (null)
-
-                                                    }
-                                                    </>
-                                                ) : tab === 2 ? (
-                                                    <div className="inline-flex flex-col gap-1 row-start-1 row-span-4 col-span-3 py-2 items-center justify-center">
-                                                        <p className="text-unactive font-text p-10">User is not unauthorized to this action</p>
-                                                    </div>
-                                                ) : (null)
-                                            }
-
-                                                {/* Submit */}
-                                            <div className="row-start-4 col-span-3 py-2 flex flex-row gap-2">
-                                                <button type="button" className="w-full inline-flex flex-col items-center gap-2 p-4 rounded-md font-header uppercase text-primary border-2 border-primary text-xs hover:text-white hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out"
-                                                    onClick={() => {
-                                                        close();
-                                                        setTab(1);
-                                                    }}>
-                                                    <p>Cancel</p>
-                                                </button>
-                                                <button type="submit" className="w-full inline-flex flex-col items-center gap-2 bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out">
-                                                    <p>{updating ? "Updating..." : "Submit"}</p>
-                                                </button>
+                                    </div>
+                                ) : null
+                            }
+                            <form onSubmit={formik.handleSubmit}>
+                                {
+                                    hasPermission(user, ["EditUserCredentials"]) &&  hasPermission(user, ["EditUserRoles"] ) ? (
+                                        content(tab)
+                                    ) : hasPermission(user, ["EditUserCredentials"]) ? (
+                                        <>
+                                        <div className="px-4 grid grid-cols-1 gap-y-2 py-2
+                                                    md:grid-cols-3">
+                                        <div>
+                                            <p className="font-text text-xs text-unactive">Employee's Full Name:</p>
+                                            <p className="font-text">{selectedUser?.user_infos.first_name} {selectedUser?.user_infos.middle_name} {selectedUser?.user_infos.last_name}</p>
+                                        </div>
+                                        <div>
+                                            <p className="font-text text-xs text-unactive">Department & Title:</p>
+                                            <p className="font-text">{selectedUser?.user_infos.department?.department_name}</p>
+                                            <p className="font-text text-xs">{selectedUser?.user_infos.title?.title_name}</p>
+                                        </div>
+                                        <div>
+                                            <p className="font-text text-xs text-unactive">Metrobank Branch:</p>
+                                            <p className="font-text">{selectedUser?.user_infos.branch.branch_name}</p>
+                                            <p className="font-text text-xs">{selectedUser?.user_infos.city?.city_name}</p>
+                                        </div>
+                                        </div>
+                                        <div className="inline-flex flex-col gap-1 w-full px-4 py-2">
+                                            <label htmlFor="MBEmail" className="font-text text-xs text-unactive flex flex-row justify-between">
+                                                <p>Employee's Metrobank Email *</p>
+                                            </label>
+                                            <input type="text" name="MBEmail"
+                                                    value={formik.values.MBEmail}
+                                                    onChange={formik.handleChange}
+                                                    onBlur={formik.handleBlur}
+                                                    className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
+                                        </div>
+                                        <div className="px-4 flex flex-col md:flex-row justify-between">
+                                            <div className="col-span-2 flex flex-col justify-center py-2">
+                                                <p className="font-text text-unactive text-xs">Reset Employee Password</p>
+                                                <p className="text-xs text-unactive font-text">Reset the current password of the selected user</p>
                                             </div>
-                                            </form>
+                                            <div className="flex flex-row gap-2 justify-center items-center text-white py-3 px-5 bg-primary rounded-md hover:cursor-pointer hover:bg-primaryhover transition-all ease-in-out" onClick={() => resetPassword()}>
+                                                <FontAwesomeIcon icon={faKey}/>
+                                                <p className="font-header">{reseting ? "Reseting....":"Reset Password"}</p>
+                                            </div>
                                         </div>
                                         </>
-                                    )
+                                    ) : hasPermission(user, ["EditUserRoles"] ) ? (
+                                        <AccountPermissionProps refPermissions={permission} selectedRole={formik.values.role} role={roles} setAccountPerm={setAccountPerm} currentPerm={selectedUser.user_infos.permissions} originalRole={selectedUser.user_infos.roles[0].id}/>
+                                    ) : null
                                 }
-
+                            </form>
+                            <div className="flex flex-row justify-between gap-2 mx-4 py-2">
+                                <div className="border-2 border-primary rounded-md py-3 w-full flex flex-row justify-center shadow-md text-primary hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out"
+                                    onClick={()=>{close(),setTimeout(()=>{formik.resetForm(),setReset(true)},500)}}>
+                                    <p className="font-header">Cancel</p>
+                                </div>
+                                <div className={`border-2 border-primary rounded-md py-3 w-full flex flex-row justify-center shadow-md bg-primary text-white transition-all ease-in-out ${!unsave ? "opacity-50 hover:cursor-not-allowed":"hover:cursor-pointer hover:bg-primaryhover hover:border-primaryhover"}`}
+                                    onClick={()=>{formik.handleSubmit()}}>
+                                    <p className="font-header">Update</p>
+                                </div>
+                            </div>
                         </div>
                     </DialogPanel>
                 </div>
