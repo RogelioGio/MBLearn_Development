@@ -11,6 +11,7 @@ import AccountPermissionProps from "./AccountPermissionsProps"
 import { DatabaseZap, Edit } from "lucide-react";
 import { useStateContext } from "../contexts/ContextProvider";
 import { parse } from "date-fns";
+import EditAccountPermProps from "./EditAccountPermProps";
 
 
 const EditUserCredsModal = ({open, close, User, ID, editSuccess}) => {
@@ -51,7 +52,7 @@ const EditUserCredsModal = ({open, close, User, ID, editSuccess}) => {
         initialValues:
         tab === 1 ? {
             MBEmail: selectedUser?.MBemail.split('@')[0] || "Loading...",
-            password: "",
+            password: selectedUser?.password,
         }:{
             role: selectedUser?.user_infos.roles?.[0].id || "Loading",
         },
@@ -61,59 +62,84 @@ const EditUserCredsModal = ({open, close, User, ID, editSuccess}) => {
 
             if (tab === 1) {
                 const payload = {
-                MBemail: values.MBEmail+"@mbtc.com",
+                MBemail: values.MBEmail.toLowerCase()+"@mbtc.com",
                 password: values.password,
                 };
 
-                // axiosClient.put(`/update-user-creds/${ID}`, payload)
-                // .then((res) => {
-                //     editSuccess();
-                //     close();
-                //     setUpdating(false);
-                //     console.log(res);
-                // })
-                // .catch((err) => {
-                //     setErrorMessage({
-                //     message: err.response?.data?.message,
-                //     errors: err.response?.data?.errors,
-                //     });
-                //     setError(true);
-                //     setUpdating(false); // You had setLoading(false); instead
-                // });
-                console.log(payload)
+                axiosClient.put(`/update-user-creds/${ID}`, payload)
+                .then((res) => {
+                    console.log(res);
+                    close();
+                    editSuccess();
+                    setTimeout(() => {
+                        setTab(1);
+                        setUpdating(false);
+                        formik.resetForm();
+                        setunsave(false);
+                    },500);
+
+                })
+                .catch((err) => {
+                    setErrorMessage({
+                        message: err.response?.data?.message,
+                        errors: err.response?.data?.errors,
+                    });
+                    setError(true);
+                    setUpdating(false);
+                });
+                //console.log(payload)
             } else {
+                // const payload = {
+                //     ...(selectedUser.user_infos.roles?.[0].id !== values.role && { role: parseInt(values.role) }),
+                //     permissions: accountPerm
+                // }
+                // console.log("Tab 2 submitted:", payload);
+
+                // if(selectedUser.user_infos.roles?.[0].id !== values.role){
+                //     axiosClient.put(`/updateUserPermission/${selectedUser.id}`, payload)
+                //     .then((res) => {
+                //         console.log(res);
+                //         setTimeout(() => {
+                //             setTab(1)
+                //             setUpdating(false)
+                //             close();
+                //             editSuccess();
+                //         }, 1000);
+                //     }).catch((err) => {
+                //         console.log(err);
+                //     })
+
+                // } else {
+                //     axiosClient.put(`/updateUserPermission/${selectedUser.id}`, accountPerm)
+                //     .then((res) => {
+                //         setTimeout(() => {
+                //             setTab(1)
+                //             setUpdating(false)
+                //             close();
+                //             editSuccess();
+                //         }, 1000);
+                //     })
+                // }
                 const payload = {
-                    ...(selectedUser.user_infos.roles?.[0].id !== values.role && { role: parseInt(values.role) }),
-                    permissions: accountPerm
+                    role: values.role,
+                    permissions: [
+                        {permissionId: 1},
+                        {permissionId: 2}
+                    ]
                 }
-                console.log("Tab 2 submitted:", payload);
 
+                axiosClient.put(`/updatetest/${selectedUser.id}`,payload)
+                .then((res)=>{
+                    close();
+                    editSuccess();
+                    setTimeout(() => {
+                        setTab(1);
+                        setUpdating(false);
+                        formik.resetForm();
+                        setunsave(false);
+                    },500);
+                })
 
-                if(selectedUser.user_infos.roles?.[0].id !== values.role){
-                    axiosClient.put(`/updateUserPermission/${selectedUser.id}`, payload)
-                    .then((res) => {
-                        console.log(res);
-                        setTimeout(() => {
-                            setTab(1)
-                            setUpdating(false)
-                            close();
-                            editSuccess();
-                        }, 1000);
-                    }).catch((err) => {
-                        console.log(err);
-                    })
-
-                } else {
-                    axiosClient.put(`/updateUserPermission/${selectedUser.id}`, accountPerm)
-                    .then((res) => {
-                        setTimeout(() => {
-                            setTab(1)
-                            setUpdating(false)
-                            close();
-                            editSuccess();
-                        }, 1000);
-                    })
-                }
             }
         }
     })
@@ -129,17 +155,10 @@ const EditUserCredsModal = ({open, close, User, ID, editSuccess}) => {
 
         },2000)
         return}
+
         setResetting(true);
-        // axiosClient.put(`/reset-password/${selectedUser.id}`)
-        // .then((res) => {
-        //     console.log(res);
-        //     setResetting(false);
-        //     close();
-        //     editSuccess();
-        // }).catch((err) => {
-        //     console.log(err);
-        // })
-        formik.setFieldValue("password", 1)
+        const reset_password = User?.user_infos.first_name.replace(/\s+/g, '').trim() + "_" +  User?.user_infos.employeeID
+        formik.setFieldValue("password", reset_password)
         setTimeout(()=>{
             setResetting(false)
             setReset(false)
@@ -172,6 +191,7 @@ const EditUserCredsModal = ({open, close, User, ID, editSuccess}) => {
     //         console.log("Permissions:", permission);
     //     }
     // }, [formik.values.role, permission]);
+    console.log(selectedUser)
 
     const content = (section) => {
         return section === 1 ? (
@@ -216,7 +236,7 @@ const EditUserCredsModal = ({open, close, User, ID, editSuccess}) => {
                         <p className="font-text text-unactive text-xs">Reset Employee Password</p>
                         <p className="text-xs text-unactive font-text">Reset the current password of the selected user</p>
                     </div>
-                    <div className={`flex flex-row gap-2 justify-center items-center py-3 px-5 rounded-md transition-all ease-in-out shdaow-md ${!Reset ? "border-2 border-primary bg-white text-primary":"bg-primary text-white hover:cursor-pointer hover:bg-primaryhover"}`}
+                    <div className={`flex flex-row gap-2 justify-center items-center py-3 px-5 rounded-md transition-all ease-in-out shdaow-md bg-primary hover:cursor-pointer ${!Reset ? "border-2 border-primary bg-white text-primary hover:bg-primary hover:text-white":"text-white hover:bg-primaryhover"}`}
                         onClick={() =>{
                             resetPassword()
                             if(Reset) {
@@ -230,14 +250,16 @@ const EditUserCredsModal = ({open, close, User, ID, editSuccess}) => {
             </>
         ):section === 2 ? (
             <>
-            <div className="inline-flex flex-col gap-1 py-2 px-3 w-full">
+            <div className="inline-flex flex-col gap-1 py-2 px-4 w-full">
                 <label htmlFor="role" className="font-header text-xs flex flex-row justify-between">
                     <p className="text-xs font-text">Employee's Account Role <span className="text-red-500">*</span></p>
                 </label>
                 <div className="grid grid-cols-1">
                     <select id="role" name="role" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
                         value={formik.values.role}
-                        onChange={formik.handleChange}
+                        onChange={(e)=>{
+                            formik.setFieldValue('role',parseInt(e.target.value)||"")
+                        }}
                         onBlur={formik.handleBlur}
                         disabled={!hasPermission(user, ["EditUserRoles"])}
                         >
@@ -255,8 +277,8 @@ const EditUserCredsModal = ({open, close, User, ID, editSuccess}) => {
                 {formik.touched.role && formik.errors.role ? (<div className="text-red-500 text-xs font-text">{formik.errors.role}</div>):null}
             </div>
             {
-                <div className="px-3">
-                    <AccountPermissionProps refPermissions={permission} selectedRole={formik.values.role} role={roles} setAccountPerm={setAccountPerm} currentPerm={selectedUser.user_infos.permissions} originalRole={selectedUser.user_infos.roles[0].id}/>
+                <div className="px-4">
+                    <EditAccountPermProps selectedRole={formik.values.role} referencePermission={permission} roleWithPermission={roles} currentPermission={selectedUser.user_infos.permissions}/>
                 </div>
 
             }
@@ -372,18 +394,22 @@ const EditUserCredsModal = ({open, close, User, ID, editSuccess}) => {
                                         </div>
                                         </>
                                     ) : hasPermission(user, ["EditUserRoles"] ) ? (
-                                        <AccountPermissionProps refPermissions={permission} selectedRole={formik.values.role} role={roles} setAccountPerm={setAccountPerm} currentPerm={selectedUser.user_infos.permissions} originalRole={selectedUser.user_infos.roles[0].id}/>
+                                        //<AccountPermissionProps refPermissions={permission} selectedRole={formik.values.role} role={roles} setAccountPerm={setAccountPerm} currentPerm={selectedUser.user_infos.permissions} originalRole={selectedUser.user_infos.roles[0].id}/>
+                                        <EditAccopontPermProps/>
                                     ) : null
                                 }
                             </form>
                             <div className="flex flex-row justify-between gap-2 mx-4 py-2">
                                 <div className="border-2 border-primary rounded-md py-3 w-full flex flex-row justify-center shadow-md text-primary hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out"
-                                    onClick={()=>{close(),setTimeout(()=>{formik.resetForm(),setReset(true)},500)}}>
+                                    onClick={()=>{close(),setTimeout(()=>{formik.resetForm(),setReset(true),setTab(1)},500)}}>
                                     <p className="font-header">Cancel</p>
                                 </div>
-                                <div className={`border-2 border-primary rounded-md py-3 w-full flex flex-row justify-center shadow-md bg-primary text-white transition-all ease-in-out ${!unsave ? "opacity-50 hover:cursor-not-allowed":"hover:cursor-pointer hover:bg-primaryhover hover:border-primaryhover"}`}
-                                    onClick={()=>{formik.handleSubmit()}}>
-                                    <p className="font-header">Update</p>
+                                <div className={`border-2 border-primary rounded-md py-3 w-full flex flex-row justify-center shadow-md bg-primary text-white transition-all ease-in-out ${updating ? "opacity-50 hover:cursor-not-allowed" : !unsave ? "opacity-50 hover:cursor-not-allowed":"hover:cursor-pointer hover:bg-primaryhover hover:border-primaryhover"}`}
+                                    onClick={()=>{
+                                            if(updating || !unsave) return;
+                                            formik.handleSubmit()
+                                        }}>
+                                    <p className="font-header">{updating ? "Updating...": "Update"}</p>
                                 </div>
                             </div>
                         </div>

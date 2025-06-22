@@ -946,10 +946,10 @@ class userInfo_controller extends Controller
         // $userInfo = UserInfos::find(128);
         // PermissionToUser::dispatch($userInfo, $existingatedData['permissions'] ?? []);
         $message = "Hello from laravel";
-        broadcast(new TestEvent($message));
-        TestEvent::broadcast($message);
+        // broadcast(new TestEvent($message));
+        // TestEvent::broadcast($message);
         return response()->json([
-            'data' => "Done"
+            'message' => $message
         ]);
 
 

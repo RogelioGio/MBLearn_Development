@@ -59,6 +59,12 @@ class GraphMailService
 
         $token = json_decode(file_get_contents($this->tokenPath), true);
 
+        if (!isset($token['expires_at']) || now()->greaterThan($token['expires_at'])) {
+        $newToken = $this->refreshToken($token['refresh_token']);
+        $this->saveToken($newToken);
+        return $newToken['access_token'];
+        }
+
         if (now()->greaterThan($token['expires_at'])) {
             $newToken = $this->refreshToken($token['refresh_token']);
             $this->saveToken($newToken);
@@ -86,6 +92,7 @@ class GraphMailService
     }
     private function saveToken(array $token)
     {
+        $token['expires_at'] = now()->addSeconds($token['expires_in'])->toDateTimeString();
         file_put_contents($this->tokenPath, json_encode($token, JSON_PRETTY_PRINT));
     }
 

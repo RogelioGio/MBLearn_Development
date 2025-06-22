@@ -158,6 +158,11 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('/updateRolePermission/{role}', [RoleController::class, 'updateRolePermissions']);
     Route::put('/updateUserPermission/{userCredentials}', [userCredentials_controller::class, 'changeUserPermissions']);
     Route::post('/setCoursePermission/{course}', [CourseController::class, 'setCoursePermissions']);
+    Route::put('/updatetest/{userCredentialsId}',[userCredentials_controller::class, 'updateTest']);
+
+
+
+
 
     //CompE Routes
     Route::get('/compECourses', [CompECourseController::class, 'index']);
@@ -203,7 +208,8 @@ Route::post('/send-notfication', function (){
 
 
 Route::apiResource('/carousels', CarouselImageController::class);
-Route::post('/test', [userInfo_controller::class, 'test']);
+Route::get('/test', [userInfo_controller::class, 'test']);
+
 
 //Category API
 Route::get('category',[FilterCategoryController::class, 'index']);
