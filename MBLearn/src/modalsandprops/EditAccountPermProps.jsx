@@ -1,22 +1,34 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import SystemAdminPermissionProps from "./SystemSettingComponents.jsx/SystemAdminPermssionProps";
+import CourseAdmin from "../components/CourseAdmin";
+import CourseAdminPermissionProps from "./SystemSettingComponents.jsx/CourseAdminPermissionProps";
+import LearnerPermissionProps from "./SystemSettingComponents.jsx/LearnerPermissionProps";
 
-const EditAccountPermProps = ({selectedRole,referencePermission,roleWithPermission,currentPermission,setCurrentPermission}) => {
-    const permissions = (roleId) => {
-        return roleWithPermission?.find((r)=>r.id === parseInt(roleId))?.permissions
-    }
-    const isChecked = (permName) => {
-        return currentPermission.some(p => p.permission_name === permName) ?? false
-    }
-
+const EditAccountPermProps = ({initialRole,selectedRole,referencePermission,currentPermission,setCurrentPermission,roleWithPermission}) => {
     //currentPermission is the current permission the user have
     //referencePermission is the all the available permissions
     //isCheck is just a function that is thrown to know if user have the permssio or nah
     //permission is all the permission in the given role, default permissions
-    useEffect(()=>{
-        console.log(currentPermission)
-    },[currentPermission])
 
+    const [initialPerms, setInitialPerms] = useState(currentPermission);
+
+    const permissions = (roleId) => {
+        if(initialRole !== roleId) {
+            const role = roleWithPermission.find(r => r.id === roleId);
+            setCurrentPermission(role?.permissions?.map(p => ({id: p.id, permission_name: p.permission_name})));
+        }if(initialRole === roleId) {
+            setCurrentPermission(initialPerms);
+        }
+
+
+    }
+    useEffect(()=>{
+        permissions(selectedRole);
+    },[selectedRole])
+
+    const isChecked = (permName) => {
+        return currentPermission?.some(p => p.permission_name === permName) ?? false
+    }
     const permissionSwitch = (perm_id,perm_name,checked) => {
         const name = referencePermission.find(p => p.permission_name === perm_name).permission_name;
         const ids = referencePermission.find(p => p.id === perm_id).id;
@@ -34,20 +46,21 @@ const EditAccountPermProps = ({selectedRole,referencePermission,roleWithPermissi
 
     return (
         <>
-            {/* <ul>
-                {
-                    permissions(selectedRole)?.map((i)=>(
-                        <p>{i.permission_name} is {isChecked(i.permission_name) ?  '✔️ checked' : '❌ not checked'}</p>
-                    ))
-                }
-            </ul> */}
-            {/* <ul>
-                {
-                    currentPermission.map((i)=>(<p>{i.permission_name}</p>))
-                }
-            </ul> */}
-
-            <SystemAdminPermissionProps isChecked={isChecked} permissionswitch={permissionSwitch} permissionRef={referencePermission}/>
+            {
+                selectedRole === 1 ?
+                <SystemAdminPermissionProps isChecked={isChecked} permissionswitch={permissionSwitch} permissionRef={referencePermission}/>
+                : selectedRole === 2 ?
+                <CourseAdminPermissionProps isChecked={isChecked} permissionswitch={permissionSwitch} permissionRef={referencePermission}/>
+                : selectedRole === 3 ?
+                <LearnerPermissionProps isChecked={isChecked} permissiongswitch={permissionSwitch} permissionRef={referencePermission}/>
+                : selectedRole === 4?
+                    (
+                        <div className="font-text text-center text-gray-500 py-10">
+                            SME Permission will be added soon
+                        </div>
+                    )
+                :null
+            }
         </>
     )
 }

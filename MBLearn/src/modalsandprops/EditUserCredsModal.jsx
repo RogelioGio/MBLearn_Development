@@ -1,4 +1,4 @@
-import { faCheckCircle, faEye, faEyeSlash, faKey, faUserGroup, faUserLock, faUserPen, faXmark } from "@fortawesome/free-solid-svg-icons"
+import { faCheckCircle, faEye, faEyeSlash, faKey, faMinusCircle, faPlusCircle, faRotateRight, faTurnDown, faUserGroup, faUserLock, faUserPen, faXmark } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react"
 import { useUser } from "../contexts/selecteduserContext";
@@ -12,6 +12,7 @@ import { DatabaseZap, Edit } from "lucide-react";
 import { useStateContext } from "../contexts/ContextProvider";
 import { parse } from "date-fns";
 import EditAccountPermProps from "./EditAccountPermProps";
+import UnsavedEditUserPromptModal from "./UnsaveEditUserPromptModal";
 
 
 const EditUserCredsModal = ({open, close, User, ID, editSuccess}) => {
@@ -28,6 +29,10 @@ const EditUserCredsModal = ({open, close, User, ID, editSuccess}) => {
     const [unsave,setUnsave] = useState(false)
     const [changes, setChanges] = useState({});
     const [selectedUserPermission, setSelectedUserPermissions] = useState([])
+    const [initialPerms, setInitialPerms] = useState([])
+    const [addedPerms, setAddedPerms] = useState()
+    const [removedPerms, setRemovedPerms] = useState()
+    const [unsavePromt, setUnsavePrompt] = useState(false)
 
     //Permission Check
     const hasPermission = (user, perms = []) => {
@@ -39,7 +44,8 @@ const EditUserCredsModal = ({open, close, User, ID, editSuccess}) => {
     useEffect(() => {
         setSelectedUser(User)
         setSelectedUserPermissions(User?.user_infos?.permissions.map(p => ({id: p.id, permission_name: p.permission_name})))
-    },[User,open])
+        setInitialPerms(User?.user_infos?.permissions.map(p => ({id: p.id, permission_name: p.permission_name})))
+    },[User])
     //Handle Password
 
     useEffect(() => {
@@ -89,39 +95,7 @@ const EditUserCredsModal = ({open, close, User, ID, editSuccess}) => {
                     setError(true);
                     setUpdating(false);
                 });
-                //console.log(payload)
             } else {
-                // const payload = {
-                //     ...(selectedUser.user_infos.roles?.[0].id !== values.role && { role: parseInt(values.role) }),
-                //     permissions: accountPerm
-                // }
-                // console.log("Tab 2 submitted:", payload);
-
-                // if(selectedUser.user_infos.roles?.[0].id !== values.role){
-                //     axiosClient.put(`/updateUserPermission/${selectedUser.id}`, payload)
-                //     .then((res) => {
-                //         console.log(res);
-                //         setTimeout(() => {
-                //             setTab(1)
-                //             setUpdating(false)
-                //             close();
-                //             editSuccess();
-                //         }, 1000);
-                //     }).catch((err) => {
-                //         console.log(err);
-                //     })
-
-                // } else {
-                //     axiosClient.put(`/updateUserPermission/${selectedUser.id}`, accountPerm)
-                //     .then((res) => {
-                //         setTimeout(() => {
-                //             setTab(1)
-                //             setUpdating(false)
-                //             close();
-                //             editSuccess();
-                //         }, 1000);
-                //     })
-                // }
                 const payload = {
                     role: values.role,
                     permissions: selectedUserPermission.map(p => ({permissionId: p.id}))
@@ -135,10 +109,8 @@ const EditUserCredsModal = ({open, close, User, ID, editSuccess}) => {
                         setTab(1);
                         setUpdating(false);
                         formik.resetForm();
-                        setunsave(false);
                     },500);
                 })
-
             }
         }
     })
@@ -241,7 +213,7 @@ const EditUserCredsModal = ({open, close, User, ID, editSuccess}) => {
                     <p className="text-xs font-text">Employee's Account Role <span className="text-red-500">*</span></p>
                 </label>
                 <div className="grid grid-cols-1">
-                    <select id="role" name="role" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                    <select id="role" name="role" className={`appearance-none font-text col-start-1 row-start-1 border rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary ${changes?.role ? "border-2 border-primary" : "border-divider"}`}
                         value={formik.values.role}
                         onChange={(e)=>{
                             formik.setFieldValue('role',parseInt(e.target.value)||"")
@@ -265,9 +237,52 @@ const EditUserCredsModal = ({open, close, User, ID, editSuccess}) => {
             </div>
             {
                 <div className="px-4">
-                    <EditAccountPermProps selectedRole={formik.values.role} referencePermission={permission} roleWithPermission={roles} currentPermission={selectedUserPermission} setCurrentPermission={setSelectedUserPermissions}/>
-                </div>
+                    <div>
+                        <div>
+                            <p className="font-text text-xs">Account Role Permissions</p>
+                            <p className="font-text text-xs text-unactive">This is the given account permissions for the selected role.</p>
+                        </div>
+                        <div className="grid grid-cols-3 py-2">
+                            {
+                                addedPerms > 0 ?
+                                <div className="flex flex-row items-center">
+                                    <p className="font-text text-xs text-primary
+                                                    md:text-base"><span className="text-sm"><FontAwesomeIcon icon={faPlusCircle}/></span>  Added: {addedPerms}</p>
+                                </div> : null
+                            }
+                            {
+                                removedPerms > 0 ?
+                                <div className="flex flex-row items-center">
+                                    <p className="font-text text-xs text-primary
+                                                    md:text-base"><span className="text-sm"><FontAwesomeIcon icon={faMinusCircle}/></span>  Removed: {removedPerms}</p>
+                                </div>  : null
+                            }
+                            {
+                                removedPerms > 0 || addedPerms > 0 ?
+                                <div className="col-start-3 flex flex-row justify-end items-center gap-2">
+                                    <div className="border-2 border-primary rounded-md flex items-center justify-center text-white bg-primary hover:cursor-pointer hover:bg-primaryhover transition-all ease-in-out
+                                                    md:py-2 md:px-3 md:w-full
+                                                    w-10 h-10 text-base"
+                                        onClick={()=>{
+                                            setSelectedUserPermissions(initialPerms)
 
+                                            if(formik.initialValues.role !== formik.values.role){
+                                                formik.setFieldValue('role', selectedUser?.user_infos.roles?.[0].id || "")
+                                            }
+                                            }}>
+                                        <p className="font-header md:block hidden">Reset Changes</p>
+                                        <p className="md:hidden"><FontAwesomeIcon icon={faRotateRight}/></p>
+                                    </div>
+                                </div>
+                                : null
+                            }
+
+                        </div>
+                    </div>
+                    <EditAccountPermProps initialRole={selectedUser?.user_infos.roles?.[0].id} selectedRole={formik.values.role} referencePermission={permission} roleWithPermission={roles} currentPermission={selectedUserPermission} setCurrentPermission={setSelectedUserPermissions}/>
+                    <div className="py-2"/>
+
+                </div>
             }
             </>
         ) : null
@@ -285,22 +300,20 @@ const EditUserCredsModal = ({open, close, User, ID, editSuccess}) => {
             (key) => formik.values[key] !== formik.initialValues[key]
         )
         setUnsave(isChanged)
-
+    },[formik.values, selectedUserPermission])
+    useEffect(()=>{
         const initialPerms = User?.user_infos?.permissions.map(p => ({id: p.id, permission_name: p.permission_name}))
         if (!Array.isArray(initialPerms) || !Array.isArray(selectedUserPermission)) return;
-
-        if (initialPerms.length !== selectedUserPermission.length) {
-            setUnsave(true);
-            return;
-        }
 
         const ids1 = initialPerms.map(p=>p.id).sort()
         const ids2 = selectedUserPermission.map(p=>p.id).sort()
 
-        const permChanges = ids1.every((id, index) => id === ids2[index])
-        setUnsave(!permChanges)
+        setAddedPerms(ids2.filter(id => !ids1.includes(id)).length)
+        setRemovedPerms(ids1.filter(id => !ids2.includes(id)).length)
 
-    },[formik.values, selectedUserPermission])
+        const permChanges = ids1.length === ids2.length && ids1.every((id, index) => id === ids2[index])
+        setUnsave(!permChanges)
+    },[selectedUserPermission])
     return(
         <>
         <Dialog open={open} onClose={()=>{isLoading ? close : null}}>
@@ -324,7 +337,13 @@ const EditUserCredsModal = ({open, close, User, ID, editSuccess}) => {
                                 <div className="">
                                     <div className="border-2 border-primary rounded-full flex items-center justify-center text-primary hover:bg-primary hover:text-white hover:cursor-pointer transition-all ease-in-out
                                                     w-5 h-5 text-xs
-                                                    md:w-8 md:h-8 md:text-base">
+                                                    md:w-8 md:h-8 md:text-base"
+                                        onClick={()=>{if(updating) return;
+                                        if(unsave) {
+                                            setUnsavePrompt(true)
+                                            return;
+                                        }
+                                        close(),setTimeout(()=>{formik.resetForm(),setReset(true),setTab(1),setSelectedUserPermissions(initialPerms)},500)}}>
                                         <FontAwesomeIcon icon={faXmark}/>
                                     </div>
                                 </div>
@@ -352,7 +371,7 @@ const EditUserCredsModal = ({open, close, User, ID, editSuccess}) => {
                             }
                             <form onSubmit={formik.handleSubmit}>
                                 {
-                                    hasPermission(user, ["EditUserCredentials"]) &&  hasPermission(user, ["EditUserRoles"] ) ? (
+                                    hasPermission(user, ["EditUserCredentials"]) && hasPermission(user, ["EditUserRoles"] ) ? (
                                         content(tab)
                                     ) : hasPermission(user, ["EditUserCredentials"]) ? (
                                         <>
@@ -374,35 +393,133 @@ const EditUserCredsModal = ({open, close, User, ID, editSuccess}) => {
                                         </div>
                                         </div>
                                         <div className="inline-flex flex-col gap-1 w-full px-4 py-2">
-                                            <label htmlFor="MBEmail" className="font-text text-xs text-unactive flex flex-row justify-between">
-                                                <p>Employee's Metrobank Email *</p>
-                                            </label>
+                                        <label htmlFor="MBEmail" className="font-text text-xs text-unactive flex flex-row justify-between">
+                                            <p>Employee's Metrobank Email *</p>
+                                        </label>
+                                        <div className={`group border rounded-md font-text flex flex-row
+                                                        focus-within:outline focus-within:outline-2
+                                                        focus-within:-outline-offset-2 focus-within:outline-primary
+                                                        ${changes?.MBEmail ? "border-2 border-primary" : "border-divider"}`}>
                                             <input type="text" name="MBEmail"
-                                                    value={formik.values.MBEmail}
-                                                    onChange={formik.handleChange}
-                                                    onBlur={formik.handleBlur}
-                                                    className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"/>
+                                                value={formik.values.MBEmail}
+                                                onChange={formik.handleChange}
+                                                onBlur={formik.handleBlur}
+                                                className={`font-text w-full rounded-md p-2 focus:outline-none`}/>
+                                            <div className={`py-2 px-5 rounded-r-xs group-focus-within:bg-primary group-focus-within:text-white ${changes?.MBEmail ? "bg-primary text-white" : "bg-divider"}`}>
+                                                @mbtc.com
+                                            </div>
                                         </div>
-                                        <div className="px-4 flex flex-col md:flex-row justify-between">
-                                            <div className="col-span-2 flex flex-col justify-center py-2">
-                                                <p className="font-text text-unactive text-xs">Reset Employee Password</p>
-                                                <p className="text-xs text-unactive font-text">Reset the current password of the selected user</p>
-                                            </div>
-                                            <div className="flex flex-row gap-2 justify-center items-center text-white py-3 px-5 bg-primary rounded-md hover:cursor-pointer hover:bg-primaryhover transition-all ease-in-out" onClick={() => resetPassword()}>
-                                                <FontAwesomeIcon icon={faKey}/>
-                                                <p className="font-header">{reseting ? "Reseting....":"Reset Password"}</p>
-                                            </div>
+                                        </div>
+                                        <div className="px-4 pb-2 flex flex-col md:flex-row justify-between">
+                                        <div className="col-span-2 flex flex-col justify-center py-2">
+                                            <p className="font-text text-unactive text-xs">Reset Employee Password</p>
+                                            <p className="text-xs text-unactive font-text">Reset the current password of the selected user</p>
+                                        </div>
+                                        <div className={`flex flex-row gap-2 justify-center items-center py-3 px-5 rounded-md transition-all ease-in-out shdaow-md bg-primary hover:cursor-pointer ${!Reset ? "border-2 border-primary bg-white text-primary hover:bg-primary hover:text-white":"text-white hover:bg-primaryhover"}`}
+                                            onClick={() =>{
+                                                resetPassword()
+                                                if(Reset) {
+                                                }
+                                            }}>
+                                            <FontAwesomeIcon icon={!Reset ? faCheckCircle : faKey}/>
+
+                                            <p className="font-header">{!Reset && reseting ? "Returning Password" : reseting ? "Reseting....": !Reset ? "Password Reset" :"Reset Password"}</p>
+                                        </div>
                                         </div>
                                         </>
                                     ) : hasPermission(user, ["EditUserRoles"] ) ? (
                                         //<AccountPermissionProps refPermissions={permission} selectedRole={formik.values.role} role={roles} setAccountPerm={setAccountPerm} currentPerm={selectedUser.user_infos.permissions} originalRole={selectedUser.user_infos.roles[0].id}/>
-                                        <EditAccopontPermProps/>
+                                        <>
+                                        <div className="inline-flex flex-col gap-1 py-2 px-4 w-full">
+                                            <label htmlFor="role" className="font-header text-xs flex flex-row justify-between">
+                                                <p className="text-xs font-text">Employee's Account Role <span className="text-red-500">*</span></p>
+                                            </label>
+                                            <div className="grid grid-cols-1">
+                                                <select id="role" name="role" className={`appearance-none font-text col-start-1 row-start-1 border rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary ${changes?.role ? "border-2 border-primary" : "border-divider"}`}
+                                                    value={formik.values.role}
+                                                    onChange={(e)=>{
+                                                        formik.setFieldValue('role',parseInt(e.target.value)||"")
+                                                    }}
+
+                                                    onBlur={formik.handleBlur}
+                                                    disabled={!hasPermission(user, ["EditUserRoles"])}
+                                                    >
+                                                    <option value=''>Select Role</option>
+                                                    {
+                                                        roles.map((role) => (
+                                                            <option key={role.id} value={role.id}>{role.role_name}</option>
+                                                        ))
+                                                    }
+                                                </select>
+                                                <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                                <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                                </svg>
+                                            </div>
+                                            {formik.touched.role && formik.errors.role ? (<div className="text-red-500 text-xs font-text">{formik.errors.role}</div>):null}
+                                        </div>
+
+                                        <div className="px-4">
+                                            <div>
+                                                <div>
+                                                    <p className="font-text text-xs">Account Role Permissions</p>
+                                                    <p className="font-text text-xs text-unactive">This is the given account permissions for the selected role.</p>
+                                                </div>
+                                                <div className="grid grid-cols-3 py-2">
+                                                    {
+                                                        addedPerms > 0 ?
+                                                        <div className="flex flex-row items-center">
+                                                            <p className="font-text text-xs text-primary
+                                                                            md:text-base"><span className="text-sm"><FontAwesomeIcon icon={faPlusCircle}/></span>  Added: {addedPerms}</p>
+                                                        </div> : null
+                                                    }
+                                                    {
+                                                        removedPerms > 0 ?
+                                                        <div className="flex flex-row items-center">
+                                                            <p className="font-text text-xs text-primary
+                                                                            md:text-base"><span className="text-sm"><FontAwesomeIcon icon={faMinusCircle}/></span>  Removed: {removedPerms}</p>
+                                                        </div>  : null
+                                                    }
+                                                    {
+                                                        removedPerms > 0 || addedPerms > 0 ?
+                                                        <div className="col-start-3 flex flex-row justify-end items-center gap-2">
+                                                            <div className="border-2 border-primary rounded-md flex items-center justify-center text-white bg-primary hover:cursor-pointer hover:bg-primaryhover transition-all ease-in-out
+                                                                            md:py-2 md:px-3 md:w-full
+                                                                            w-10 h-10 text-base"
+                                                                onClick={()=>{
+                                                                    setSelectedUserPermissions(initialPerms)
+
+                                                                    if(formik.initialValues.role !== formik.values.role){
+                                                                        formik.setFieldValue('role', selectedUser?.user_infos.roles?.[0].id || "")
+                                                                    }
+                                                                    }}>
+                                                                <p className="font-header md:block hidden">Reset Changes</p>
+                                                                <p className="md:hidden"><FontAwesomeIcon icon={faRotateRight}/></p>
+                                                            </div>
+                                                        </div>
+                                                        : null
+                                                    }
+
+                                                </div>
+                                                </div>
+                                                    <EditAccountPermProps initialRole={selectedUser?.user_infos.roles?.[0].id} selectedRole={formik.values.role} referencePermission={permission} roleWithPermission={roles} currentPermission={selectedUserPermission} setCurrentPermission={setSelectedUserPermissions}/>
+                                                    <div className="py-2"/>
+
+                                                </div>
+
+                                        </>
                                     ) : null
                                 }
                             </form>
                             <div className="flex flex-row justify-between gap-2 mx-4 py-2">
                                 <div className="border-2 border-primary rounded-md py-3 w-full flex flex-row justify-center shadow-md text-primary hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out"
-                                    onClick={()=>{close(),setTimeout(()=>{formik.resetForm(),setReset(true),setTab(1),setSelectedUserPermissions([])},500)}}>
+                                    onClick={()=>{
+                                        if(updating) return;
+                                        if(unsave) {
+                                            setUnsavePrompt(true)
+                                            return;
+                                        }
+                                        close(),setTimeout(()=>{formik.resetForm(),setReset(true),setTab(1),setSelectedUserPermissions(initialPerms)},500)}
+                                    }>
                                     <p className="font-header">Cancel</p>
                                 </div>
                                 <div className={`border-2 border-primary rounded-md py-3 w-full flex flex-row justify-center shadow-md bg-primary text-white transition-all ease-in-out ${updating ? "opacity-50 hover:cursor-not-allowed" : !unsave ? "opacity-50 hover:cursor-not-allowed":"hover:cursor-pointer hover:bg-primaryhover hover:border-primaryhover"}`}
@@ -420,6 +537,8 @@ const EditUserCredsModal = ({open, close, User, ID, editSuccess}) => {
 
         </Dialog>
         <EdituserErrorModal error={OpenError} close={()=>setError(false)} message={errorMessage.message} desc={errorMessage.errors}/>
+        <UnsavedEditUserPromptModal open={unsavePromt} close={()=>setUnsavePrompt(false)} discardChanges={()=>{close(),setUnsavePrompt(false),setTimeout(()=>{formik.resetForm(),setReset(true),setTab(1),setSelectedUserPermissions(initialPerms)},500)}}/>
+
         </>
     )
 }

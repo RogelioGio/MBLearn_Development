@@ -121,11 +121,10 @@ const RoleManagementSetting = () => {
 
     return (
         <>
-        <ScrollArea className="col-span-3 row-span-3 max-h-[calc(100vh-6.25rem)] overflow-auto">
-
         <div className="mx-5 py-5 row-span-2 col-span-3 grid grid-cols-2 grid-rows-[min-content_auto] gap-2">
                 {/* Header */}
-                <div className="row-span-1 col-span-2 flex flex-row justify-between items-center pb-2">
+                <div className="row-span-1 col-span-2 flex-row justify-between items-center pb-2 hidden
+                                md:flex">
                     <div>
                         <h1 className="font-header text-primary text-xl">Role Management</h1>
                         <p className="font-text text-unactive text-xs">Create and manage roles function and permission in the system</p>
@@ -261,7 +260,6 @@ const RoleManagementSetting = () => {
 
                 </div>
             </div>
-            </ScrollArea>
             {/* UnsavedWarningModal */}
             <UnsavedWarningModal isOpen={warning} close={() => setWarning(false)} onContinue={continueUnsaved}/>
             </>

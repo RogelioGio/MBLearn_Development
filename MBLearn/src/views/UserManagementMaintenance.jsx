@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Helmet } from 'react-helmet';
 import Navigation from './Navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChevronDown, faChevronLeft, faChevronRight, faChevronUp, faCross, faFilter, faSearch, faTrash, faTrashCan, faUser, faUserPen, faUserPlus, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faChevronDown, faChevronLeft, faChevronRight, faChevronUp, faCross, faFilter, faMagnifyingGlass, faSearch, faTrash, faTrashCan, faUser, faUserPen, faUserPlus, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { Menu, MenuButton, MenuItem, MenuItems, Disclosure, DisclosureButton, DisclosurePanel, Dialog, DialogBackdrop, DialogPanel, DialogTitle} from '@headlessui/react';
 import User from '../modalsandprops/UserEntryProp';
 import UserEntryModal from '../modalsandprops/UserEntryModal';
@@ -422,14 +422,15 @@ export default function UserManagementMaintenance() {
                             col-span-3 col-start-2 h-full w-full pr-3
                             sm:col-start-3 sm:col-span-2 sm:pr-4
                             xl:col-start-3 xl:col-span-2 xl:px-5'>
-                {
-                    search ? (
+                {/* {
+                    //search
+                    true ? (
                         <div className='border-primary border-2 rounded-md shadow-md bg-white flex items-center justify-center text-primary hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out w-11 h-11'
                         onClick={()=>{setSearch(false), searchFormik.resetForm(), fetchUsers()}}>
                             <FontAwesomeIcon icon={faXmark}/>
                         </div>
                     ) : null
-                }
+                } */}
                 <form onSubmit={searchFormik.handleSubmit}>
                     <div className='inline-flex flex-row place-content-between border-2 border-primary rounded-md w-full font-text shadow-md'>
                         <input type="text" className='focus:outline-none text-sm px-4 w-60 rounded-md bg-white' placeholder='Search...'
@@ -442,8 +443,15 @@ export default function UserManagementMaintenance() {
                                     searchFormik.handleSubmit();
                                 }
                             }}/>
-                        <div className='bg-primary py-2 px-4 text-white'>
-                            <FontAwesomeIcon icon={faSearch}/>
+                        <div className={`w-10 h-10 bg-primary text-white flex items-center justify-center ${search ? "hover:cursor-pointer":null}`}
+                            onClick={() => {
+                                if (search) {
+                                    setSearch(false);
+                                    searchFormik.resetForm();
+                                    fetchUsers();
+                                }
+                            }}>
+                            <FontAwesomeIcon icon={search ? faXmark : faMagnifyingGlass}/>
                         </div>
                     </div>
                 </form>
