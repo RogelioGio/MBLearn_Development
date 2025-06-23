@@ -26,7 +26,8 @@ const EditUserCredsModal = ({open, close, User, ID, editSuccess}) => {
     const [reseting, setResetting] = useState(false)
     const [Reset, setReset] = useState(false);
     const [unsave,setUnsave] = useState(false)
-    const [changes, setChanges] = useState({})
+    const [changes, setChanges] = useState({});
+    const [selectedUserPermission, setSelectedUserPermissions] = useState([])
 
     //Permission Check
     const hasPermission = (user, perms = []) => {
@@ -37,7 +38,8 @@ const EditUserCredsModal = ({open, close, User, ID, editSuccess}) => {
 
     useEffect(() => {
         setSelectedUser(User)
-    },[User])
+        setSelectedUserPermissions(User?.user_infos?.permissions.map(p => ({id: p.id, permission_name: p.permission_name})))
+    },[User,open])
     //Handle Password
 
     useEffect(() => {
@@ -122,10 +124,7 @@ const EditUserCredsModal = ({open, close, User, ID, editSuccess}) => {
                 // }
                 const payload = {
                     role: values.role,
-                    permissions: [
-                        {permissionId: 1},
-                        {permissionId: 2}
-                    ]
+                    permissions: selectedUserPermission.map(p => ({permissionId: p.id}))
                 }
 
                 axiosClient.put(`/updatetest/${selectedUser.id}`,payload)
@@ -173,25 +172,12 @@ const EditUserCredsModal = ({open, close, User, ID, editSuccess}) => {
             errors: {}
         })
 
-    //Permission Helper
-        const fetchRoles = () => {
-            axiosClient.get('/roles')
-            .then(({data}) => {
-                setRoles(data.roles)
-            })
-            .catch(error => console.error(error));
-        }
-        useEffect(() => {
-            setRoles(formik.values.role)
-        },[])
-
     // useEffect(() => {
     //     if (formik.values.role) {
     //         console.log("Selected Role ID:", formik.values.role);
     //         console.log("Permissions:", permission);
     //     }
     // }, [formik.values.role, permission]);
-    console.log(selectedUser)
 
     const content = (section) => {
         return section === 1 ? (
@@ -260,6 +246,7 @@ const EditUserCredsModal = ({open, close, User, ID, editSuccess}) => {
                         onChange={(e)=>{
                             formik.setFieldValue('role',parseInt(e.target.value)||"")
                         }}
+
                         onBlur={formik.handleBlur}
                         disabled={!hasPermission(user, ["EditUserRoles"])}
                         >
@@ -278,7 +265,7 @@ const EditUserCredsModal = ({open, close, User, ID, editSuccess}) => {
             </div>
             {
                 <div className="px-4">
-                    <EditAccountPermProps selectedRole={formik.values.role} referencePermission={permission} roleWithPermission={roles} currentPermission={selectedUser.user_infos.permissions}/>
+                    <EditAccountPermProps selectedRole={formik.values.role} referencePermission={permission} roleWithPermission={roles} currentPermission={selectedUserPermission} setCurrentPermission={setSelectedUserPermissions}/>
                 </div>
 
             }
@@ -298,8 +285,22 @@ const EditUserCredsModal = ({open, close, User, ID, editSuccess}) => {
             (key) => formik.values[key] !== formik.initialValues[key]
         )
         setUnsave(isChanged)
-    },[formik.values])
 
+        const initialPerms = User?.user_infos?.permissions.map(p => ({id: p.id, permission_name: p.permission_name}))
+        if (!Array.isArray(initialPerms) || !Array.isArray(selectedUserPermission)) return;
+
+        if (initialPerms.length !== selectedUserPermission.length) {
+            setUnsave(true);
+            return;
+        }
+
+        const ids1 = initialPerms.map(p=>p.id).sort()
+        const ids2 = selectedUserPermission.map(p=>p.id).sort()
+
+        const permChanges = ids1.every((id, index) => id === ids2[index])
+        setUnsave(!permChanges)
+
+    },[formik.values, selectedUserPermission])
     return(
         <>
         <Dialog open={open} onClose={()=>{isLoading ? close : null}}>
@@ -401,7 +402,7 @@ const EditUserCredsModal = ({open, close, User, ID, editSuccess}) => {
                             </form>
                             <div className="flex flex-row justify-between gap-2 mx-4 py-2">
                                 <div className="border-2 border-primary rounded-md py-3 w-full flex flex-row justify-center shadow-md text-primary hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out"
-                                    onClick={()=>{close(),setTimeout(()=>{formik.resetForm(),setReset(true),setTab(1)},500)}}>
+                                    onClick={()=>{close(),setTimeout(()=>{formik.resetForm(),setReset(true),setTab(1),setSelectedUserPermissions([])},500)}}>
                                     <p className="font-header">Cancel</p>
                                 </div>
                                 <div className={`border-2 border-primary rounded-md py-3 w-full flex flex-row justify-center shadow-md bg-primary text-white transition-all ease-in-out ${updating ? "opacity-50 hover:cursor-not-allowed" : !unsave ? "opacity-50 hover:cursor-not-allowed":"hover:cursor-pointer hover:bg-primaryhover hover:border-primaryhover"}`}
