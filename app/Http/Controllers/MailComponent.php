@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
-    use App\Services\GmailService;
+    //use App\Services\GmailService;
     use App\Services\GraphMailService;
 
 
@@ -12,7 +12,7 @@ namespace App\Http\Controllers;
 
         public function __construct(){
             $this->graphService = new GraphMailService();
-            $this->gmailService = new GmailService();
+            // $this->gmailService = new GmailService();
         }
 
         //Send with outlook
@@ -26,16 +26,16 @@ namespace App\Http\Controllers;
             }
         }
 
-        public function send($to, $subject, $body) {
-            try {
+        // public function send($to, $subject, $body) {
+        //     try {
 
-                $this->gmailService->sendEmail($to, $subject, $body);
-                return true;
-            } catch (\Exception $e) {
-                error_log('Mail sending failed: ' . $e->getMessage());
-                return false;
-            }
-        }
+        //         $this->gmailService->sendEmail($to, $subject, $body);
+        //         return true;
+        //     } catch (\Exception $e) {
+        //         error_log('Mail sending failed: ' . $e->getMessage());
+        //         return false;
+        //     }
+        // }
     }
 
 ?>

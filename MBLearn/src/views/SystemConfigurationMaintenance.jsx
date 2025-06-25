@@ -6,19 +6,21 @@ import { act, useEffect, useRef, useState } from "react"
 import RoleManagementSetting from "../modalsandprops/SystemSettingComponents.jsx/RoleManagementSetting"
 import FormInputSetting from "../modalsandprops/SystemSettingComponents.jsx/FormInputSetting"
 import ReactivationAccountSetting from "../modalsandprops/SystemSettingComponents.jsx/ReactivationAccountSetting"
-import { ScrollArea } from "@mantine/core"
 import { useStateContext } from "../contexts/ContextProvider"
 import Test_Notfications from "./Test"
 import ArchiveAndAuditingSetting from "../modalsandprops/SystemSettingComponents.jsx/ArchiveAndAuditingSetting"
 import CourseFormInputSetting from "../modalsandprops/SystemSettingComponents.jsx/CourseFormInputSetting"
 import SystemContentSetting from "../modalsandprops/SystemSettingComponents.jsx/SystemContentSetting"
 import React from "react"
+import { ScrollArea } from "../components/ui/scroll-area"
+import { Sheet, SheetContent, SheetOverlay, SheetTrigger } from "../components/ui/sheet"
 
 
 export default function SystemConfiguration() {
     const {user} = useStateContext();
-    const [tab, setTab] = useState(1)
+    const [tab, setTab] = useState(2)
     const [breakpoint, setBreakpoint] = useState();
+    const [open, setOpen] = useState(false)
     const [viewport, setViewport] = useState({
         width: window.innerWidth,
         height: window.innerHeight,
@@ -51,6 +53,18 @@ export default function SystemConfiguration() {
             setBreakpoint('2xl');
         }
     }, [viewport]);
+    useEffect(() => {
+    const handleResize = () => {
+        if (window.innerWidth >= 1024) {
+            setOpen(false);
+        }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+
+
 
 
     return (
@@ -108,19 +122,127 @@ export default function SystemConfiguration() {
                         <h1 className="uppercase font-text">Archive and Auditing Settings</h1>
                     </div>
             </div>
+
+            {/* Mobile */}
             <div className="flex col-span-4 lg:hidden py-2 mx-3 gap-4 items-center">
-                <div className="flex items-center justify-center w-10 h-10 border-2 border-primary rounded-md text-xl shadow-md text-primary hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out">
-                    <FontAwesomeIcon icon={faChevronRight}/>
+                    <Sheet open={open} onOpenChange={setOpen}>
+                        <SheetTrigger>
+                            <div onClick={()=>setOpen(true)} className="flex items-center justify-center w-10 h-10 border-2 border-primary rounded-md text-xl shadow-md text-primary hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out">
+                                <FontAwesomeIcon icon={faChevronRight}/>
+                            </div>
+                        </SheetTrigger>
+                        <SheetOverlay className="bg-gray-500/75 backdrop-blur-sm transition-all z-50"/>
+                        <SheetContent side='left' className='bg-background backdrop-blur-sm'>
+                            <div className=''>
+                                <h1 className='font-header text-xl text-primary'>System Configuration Modules</h1>
+                            </div>
+                            <div className="py-3 flex flex-col gap-y-2">
+                                <div className= {`flex flex-row  items-center w-full px-3 py-3 gap-4 text-sm text-unactive hover:text-primary hover:bg-divider rounded-md cursor-pointer transition-all ease-in-out ${tab === 1 ? '!bg-divider !text-primary':null}`} onClick={() => setTab(1)}>
+                                    <FontAwesomeIcon icon={faUsersLine}/>
+                                    <h1 className="uppercase font-text">Role Management</h1>
+                                </div>
+                                <div className= {`flex flex-row  items-center w-full px-3 py-3 gap-4 text-sm text-unactive hover:text-primary hover:bg-divider rounded-md cursor-pointer transition-all ease-in-out ${tab === 2 ? '!bg-divider !text-primary':null}`} onClick={() => setTab(2)}>
+                                    <FontAwesomeIcon icon={faFileSignature}/>
+                                    <h1 className="uppercase font-text">Form Input Setting</h1>
+                                </div>
+                                {
+                                    user.user_infos.permissions?.some((permission)=> permission.permission_name === "AccountReactivation") ?
+                                    <div className= {`flex flex-row  items-center w-full px-3 py-3 gap-4 text-sm text-unactive hover:text-primary hover:bg-divider rounded-md cursor-pointer transition-all ease-in-out ${tab === 3 ? '!bg-divider !text-primary':null}`} onClick={() => setTab(3)}>
+                                    <FontAwesomeIcon icon={faUserClock}/>
+                                    <h1 className="uppercase font-text">Re-Activation Account</h1>
+                                    </div>:null
+                                }
+                                <div className= {`flex flex-row  items-center w-full px-3 py-3 gap-4 text-sm text-unactive hover:text-primary hover:bg-divider rounded-md cursor-pointer transition-all ease-in-out ${tab === 4 ? '!bg-divider !text-primary':null}`} onClick={() => setTab(4)}>
+                                    <FontAwesomeIcon icon={faBook}/>
+                                    <h1 className="uppercase font-text">Course Form Input Settings</h1>
+                                </div>
+                                <div className= {`flex flex-row  items-center w-full px-3 py-3 gap-4 text-sm text-unactive hover:text-primary hover:bg-divider rounded-md cursor-pointer transition-all ease-in-out ${tab === 5 ? '!bg-divider !text-primary':null}`} onClick={() => setTab(5)}>
+                                    <FontAwesomeIcon icon={faSliders}/>
+                                    <h1 className="uppercase font-text">System Content Settings</h1>
+                                </div>
+                                <div className= {`flex flex-row  items-center w-full px-3 py-3 gap-4 text-sm text-unactive hover:text-primary hover:bg-divider rounded-md cursor-pointer transition-all ease-in-out ${tab === 6 ? '!bg-divider !text-primary':null}`} onClick={() => setTab(6)}>
+                                    <FontAwesomeIcon icon={faFolderClosed}/>
+                                    <h1 className="uppercase font-text">Archive and Auditing Settings</h1>
+                                </div>
+                            </div>
+                        </SheetContent>
+                    </Sheet>
+                    {
+                        tab === 1 ?
+                        <div>
+                            <h1 className="font-header text-primary text-xl">Role Management</h1>
+                            <p className="font-text text-unactive text-xs">Create and manage roles function and permission in the system</p>
+                        </div>
+                        : tab === 2 ?
+                        <div>
+                            <h1 className="font-header text-primary text-xl">Form-Input Setting</h1>
+                            <p className="font-text text-unactive text-xs">Manage all available inputs that are going to be used in several forms in the system</p>
+                        </div>
+                        : tab === 3 ?
+                        <div>
+                            <h1 className="font-header text-primary text-xl">Re-Activation Account Management</h1>
+                            <p className="font-text text-unactive text-xs">Manage and list all available inactive employee accounts in the system for reactivation</p>
+                        </div>
+                        :null
+
+
+                    }
                 </div>
-                <div>
-                    <h1 className="font-header text-primary text-xl">Role Management</h1>
-                    <p className="font-text text-unactive text-xs">Create and manage roles function and permission in the system</p>
-                </div>
-            </div>
+
+
             {/* Setting Content */}
-            <div className="col-span-4">
-                <ScrollArea className="col-span-3 row-span-3 max-h-[calc(100vh-6.25rem)] overflow-auto">
-                    <RoleManagementSetting/>
+
+            {/* Mobile */}
+            <div className="col-span-4 mx-3 pt-2 pb-5 lg:hidden">
+                {
+                    tab === 1 ? (
+                        <RoleManagementSetting/>
+                    ) : tab === 2 ? (
+                        <FormInputSetting/>
+                    ) : tab === 3 ? (
+                        <ReactivationAccountSetting/>
+                    )
+                    : null
+                }
+            </div>
+
+            {/* Wide-Screen */}
+            <div className="col-span-3 hidden
+                            lg:flex flex-col">
+                <ScrollArea className="col-span-3 row-span-3 overflow-y-auto max-h-[calc(100vh-6.25rem)] px-4">
+                {
+                    tab === 1 ?
+                    <div className="py-5">
+                        <h1 className="font-header text-primary text-xl">Role Management</h1>
+                        <p className="font-text text-unactive text-xs">Create and manage roles function and permission in the system</p>
+                    </div>
+                    : tab === 2 ?
+                    <div className="py-5">
+                        <h1 className="font-header text-primary text-xl">Form-Input Setting</h1>
+                        <p className="font-text text-unactive text-xs">Manage all available inputs that are going to be used in several forms in the system</p>
+                    </div>
+                    : tab === 3 ?
+                    <div className="py-5">
+                        <h1 className="font-header text-primary text-xl">Re-Activation Account Management</h1>
+                        <p className="font-text text-unactive text-xs">Manage and list all available inactive employee accounts in the system for reactivation or permanent deletion</p>
+                    </div>
+                    : null
+                }
+
+                <div className="pb-5">
+                {
+                    tab === 1 ? (
+                        <RoleManagementSetting/>
+                    ) : tab === 2 ? (
+                        <FormInputSetting/>
+                    ) : tab === 3 ? (
+                        <div className="h-[calc(100vh-12.75rem)] grid grid-rows-[min-content_1fr_min-content]">
+                            <ReactivationAccountSetting/>
+                        </div>
+                    )
+                    : null
+                }
+                </div>
                 </ScrollArea>
             </div>
 
