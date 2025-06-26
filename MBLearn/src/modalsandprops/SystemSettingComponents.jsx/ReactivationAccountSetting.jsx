@@ -50,22 +50,22 @@ const ReactivationAccountSetting = () => {
         fetchUsers()
     },[pageState.currentPage, pageState.perPage])
 
-    const openReActivation = (id) => {
-        if (id) {
-            setUsers(id)
-            setReactivate(true)
-        }
-    };
+    // const openReActivation = (id) => {
+    //     if (id) {
+    //         setUsers(id)
+    //         setReactivate(true)
+    //     }
+    // };
 
     const back = () => {
-        if (isLoading) return;
+        if (loading) return;
         if (pageState.currentPage > 1){
             pageChangeState("currentPage", pageState.currentPage - 1)
             pageChangeState("startNumber", pageState.perPage - 4)
         }
     }
     const next = () => {
-        if (isLoading) return;
+        if (loading) return;
         if (pageState.currentPage < pageState.lastPage){
             pageChangeState("currentPage", pageState.currentPage + 1)
         }
@@ -73,7 +73,7 @@ const ReactivationAccountSetting = () => {
 
     //Current page change
     const pageChange = (page) => {
-        if(isLoading) return;
+        if(loading) return;
         if(page > 0 && page <= pageState.lastPage){
             pageChangeState("currentPage", page)
         }
@@ -101,7 +101,7 @@ const ReactivationAccountSetting = () => {
             console.log(e)
         })
     }
-
+    useEffect(()=>{console.log(users)},[users])
 
 
     return(
@@ -187,7 +187,7 @@ const ReactivationAccountSetting = () => {
                                 _section={user.user_infos?.section_id}
                                 _department={user.user_infos?.department_id}
                                 login_time_stamp={user?.last_logged_in}
-                                selected={openReActivation}/>
+                                selected={()=>{setUsers(user),setReactivate(true)}}/>
                             ))
                         )
 
@@ -208,7 +208,7 @@ const ReactivationAccountSetting = () => {
                     </div>
                     {/* Paganation */}
                     <div>
-                        <nav className='isolate inline-flex -space-x-px round-md shadow-xs'>
+                        <nav className='isolate inline-flex -space-x-px round-md shadow-xs cursor-pointer'>
                             {/* Previous */}
                             <a
                                 onClick={back}
@@ -246,7 +246,7 @@ const ReactivationAccountSetting = () => {
                 </>
             }
         </div>
-        <ReactivationAccountModal open={reactivate} close={() => setReactivate(false)} id={user} refresh={()=>fetchUsers()}/>
+        <ReactivationAccountModal open={reactivate} close={() => setReactivate(false)} refresh={()=>fetchUsers()} users={user}/>
         </>
     )
 }

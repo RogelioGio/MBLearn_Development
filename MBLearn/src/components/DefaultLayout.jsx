@@ -252,9 +252,9 @@ export default function DefaultLayout() {
 
     if(loading){
         return (
-            <div className='h-screen w-screen flex flex-col justify-center items-center bg-background gap-3'>
-                <h1 className='font-header text-3xl xl:text-5xl text-primary'>"Loading your learning journey..."</h1>
-                <p className='font-text text-xs xl:text-base'>Empowering you with the knowledge to achieve your goals</p>
+            <div className='h-screen w-screen flex flex-col justify-center items-center bg-background'>
+                <h1 className='font-header text-2xl sm:text-3xl xl:text-5xl text-primary'>"Loading your learning journey..."</h1>
+                <p className='font-text text-xs sm:text-sm xl:text-base'>Empowering you with the knowledge to achieve your goals</p>
             </div>
         )
     }

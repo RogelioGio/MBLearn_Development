@@ -40,16 +40,16 @@ const DeleteUserModal = ({open,close,classname,EmployeeID,close_confirmation, se
 
     const DeleteUser = () => {
         setDeleting(true)
-        // if(!selectedUser) return;
-        // axiosClient.delete(`/delete-user/${selectedUser.id}`, )
-        // .then((res) => {
-        //     setDeleting(false)
-        //     close_confirmation()
-        //     close()
-        // }).catch((err) => {
-        //     console.log(err)
-        // })
-        setTimeout(() => {setDeleting(false); close_confirmation(); close();}, 2000)
+        if(!selectedUser) return;
+        axiosClient.delete(`/delete-user/${selectedUser.id}`, )
+        .then((res) => {
+            setTimeout(()=>{setDeleting(false)},200)
+            close_confirmation()
+            close()
+        }).catch((err) => {
+            console.log(err)
+        })
+        //setTimeout(() => {setDeleting(false); close_confirmation(); close();}, 2000)
     }
 
     return(

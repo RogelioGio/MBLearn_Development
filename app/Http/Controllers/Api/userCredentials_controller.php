@@ -189,7 +189,7 @@ class userCredentials_controller extends Controller
         $query = UserCredentials::whereHas('userInfos', function ($subQuery) {
             $subQuery->where('status', 'Inactive');
         })
-        ->with(['userInfos', 'userInfos.roles'])
+        ->with(['userInfos', 'userInfos.roles', 'userInfos.city', 'userInfos.branch', 'userInfos.department', 'userInfos.section', 'userInfos.division', 'userInfos.title','userInfos.permissions'])
         ->whereNot(function ($query) use ($currentUserId){
             $query->where('id', $currentUserId);
         })

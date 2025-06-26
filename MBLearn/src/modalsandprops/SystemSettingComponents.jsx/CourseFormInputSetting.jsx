@@ -78,16 +78,6 @@ const CourseFormInputSetting = ({}) => {
     } = usePagination(coursecategories, 5)
     return(
         <>
-        <ScrollArea className="col-span-3 row-span-3 overflow-y-auto max-h-[calc(100vh-6.25rem)]">
-            <div className="mx-2 px-3 py-5 row-span-2 col-span-3 grid grid-cols-2 grid-rows-[min-content_auto] gap-8 overflow-y-auto max-h-full">
-                {/* Header */}
-                <div className="row-span-1 col-span-2 flex flex-row justify-between items-center pb-2">
-                    <div>
-                        <h1 className="font-header text-primary text-xl">Course Form Inputs</h1>
-                        <p className="font-text text-unactive text-xs">Defines the fields and input options required when creating or editing a course,that is also neccessary course setup and management.</p>
-                    </div>
-                </div>
-
                 {/* Course Category */}
                 <div className="row-span-1 col-span-2 flex flex-col gap-5">
                     {/* Header */}
@@ -96,12 +86,17 @@ const CourseFormInputSetting = ({}) => {
                             <h1 className="font-header text-primary text-base">Course Category Options</h1>
                             <p className="font-text text-unactive text-xs">List of available course category option for the system inputs and form</p>
                         </div>
-                        <div>
-                            <div className={`flex flex-row justify-center items-center border-2 border-primary py-2 px-8 font-header bg-secondarybackground rounded-md text-primary gap-5 w-full hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md`}
+                        <div className="group relative">
+                            <div className={`flex flex-row justify-center items-center border-2 border-primary font-header bg-secondarybackground rounded-md text-primary gap-5 hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md
+                                            w-10 h-10
+                                            md:py-2 md:px-8 md:h-full md:w-full`}
                                 //onClick={() => handleFormInput("Division")}
                                 >
                                 <FontAwesomeIcon icon={faPlus}/>
-                                <p>Add Course Category</p>
+                                <p className="md:flex hidden">Add Course Category</p>
+                            </div>
+                            <div className="md:hidden absolute text-center top-12 right-0 font-text text-xs bg-tertiary p-2 shadow-md rounded-md text-white whitespace-nowrap scale-0 group-hover:scale-100 transition-all ease-in-out">
+                                Add Course Category
                             </div>
                         </div>
                     </div>
@@ -110,8 +105,8 @@ const CourseFormInputSetting = ({}) => {
                             <thead className='font-header text-xs text-primary bg-secondaryprimary'>
                                 <tr>
                                     <th className='py-4 px-4 uppercase'>Course Category Name</th>
-                                    <th className='py-4 px-4 uppercase'>Date-added</th>
-                                    <th className='py-4 px-4 uppercase'></th>
+                                    <th className='py-4 px-4 uppercase md:table-cell hidden'>Date-added</th>
+                                    <th className='py-4 px-4 uppercase md:table-cell hidden'></th>
                                 </tr>
                             </thead>
                             <tbody className='bg-white divide-y divide-divider'>
@@ -124,10 +119,28 @@ const CourseFormInputSetting = ({}) => {
                                         </tr>
                                     ) : (
                                         currentCategories.map((category)=>(
-                                        <tr key={category.id} className={`font-text text-md text-primary hover:bg-gray-200 cursor-pointer`}>
-                                            <td className={`font-text p-4 flex flex-row items-center gap-4 border-l-2 border-transparent transition-all ease-in-out`}>{category.category_name}</td>
-                                            <td className={`font-text p-4 gap-4 transition-all ease-in-out`}>{format(new Date(category.created_at), "MMMM dd, yyyy")}</td>
-                                            <td className="flex flex-row gap-2 justify-end p-4">
+                                        <tr key={category.id} className={`font-text text-md hover:bg-gray-200 cursor-pointer`}>
+                                            <td className={`font-text p-4 flex flex-row justify-between items-center gap-4 border-l-2 border-transparent transition-all ease-in-out`}>
+                                                <p className="hidden md:flex">{category.category_name}</p>
+                                                <div className="flex flex-col md:hidden">
+                                                    <p>{category.category_name}</p>
+                                                    <p className="text-xs font-text text-unactive">Date Added: {format(new Date(category.created_at), "MMMM dd, yyyy")}</p>
+                                                </div>
+                                                <div className="flex flex-row gap-2 md:hidden">
+                                                    <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all'
+                                                    //</td> onClick={() => handleEditFormInput({ input: "Division", entry: division })}
+                                                        >
+                                                        <FontAwesomeIcon icon={faPenToSquare} className='text-sm'/>
+                                                    </div>
+                                                    <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all'
+                                                        //</tbody>onClick={()=>handleDeleteFormInput("Division",division)}
+                                                        >
+                                                        <FontAwesomeIcon icon={faTrash} className='text-sm'/>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className={`font-text p-4 gap-4 transition-all ease-in-out md:table-cell hidden text-unactive`}>{format(new Date(category.created_at), "MMMM dd, yyyy")}</td>
+                                            <td className="flex-row gap-2 justify-end p-4 md:flex hidden">
                                                 <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all'
                                                 //</td> onClick={() => handleEditFormInput({ input: "Division", entry: division })}
                                                     >
@@ -313,9 +326,6 @@ const CourseFormInputSetting = ({}) => {
 
                     </div>
                 </div>
-
-            </div>
-        </ScrollArea>
         </>
     )
 }

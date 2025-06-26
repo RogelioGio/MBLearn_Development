@@ -183,6 +183,11 @@ export default function SystemConfiguration() {
                             <h1 className="font-header text-primary text-xl">Re-Activation Account Management</h1>
                             <p className="font-text text-unactive text-xs">Manage and list all available inactive employee accounts in the system for reactivation</p>
                         </div>
+                        :tab === 4 ?
+                        <div>
+                            <h1 className="font-header text-primary text-xl">Course Form Inputs</h1>
+                            <p className="font-text text-unactive text-xs">Defines the fields and input options required when creating or editing a course</p>
+                        </div>
                         :null
 
 
@@ -201,6 +206,8 @@ export default function SystemConfiguration() {
                         <FormInputSetting/>
                     ) : tab === 3 ? (
                         <ReactivationAccountSetting/>
+                    ) : tab === 4 ? (
+                        <CourseFormInputSetting/>
                     )
                     : null
                 }
@@ -226,6 +233,12 @@ export default function SystemConfiguration() {
                         <h1 className="font-header text-primary text-xl">Re-Activation Account Management</h1>
                         <p className="font-text text-unactive text-xs">Manage and list all available inactive employee accounts in the system for reactivation or permanent deletion</p>
                     </div>
+                    : tab === 4 ?
+                    <div className="py-5">
+                        <h1 className="font-header text-primary text-xl">Course Form Inputs</h1>
+                        <p className="font-text text-unactive text-xs">Defines the fields and input options required when creating or editing a course,that is also neccessary course setup and management.</p>
+                    </div>
+
                     : null
                 }
 
@@ -239,6 +252,8 @@ export default function SystemConfiguration() {
                         <div className="h-[calc(100vh-12.75rem)] grid grid-rows-[min-content_1fr_min-content]">
                             <ReactivationAccountSetting/>
                         </div>
+                    ) : tab === 4 ? (
+                        <CourseFormInputSetting/>
                     )
                     : null
                 }

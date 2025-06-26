@@ -20,12 +20,21 @@ const UserReactivationProps = ({id,image, name, MBEmail, branch, city, _division
                     </div>
                 </div>
                 <div className="grid grid-cols-3 grid-rows-[min-content_1fr] md:hidden">
-                    <div className="cols-span-3 flex w-full items-center gap-2 pb-3">
+                    <div className="cols-span-2 flex w-full items-center gap-2 pb-3">
                         <img alt="" src={image} className='rounded-full w-10 h-10'/>
                         <div>
                             <p className='font-text'>{name}</p>
                             <p className='text-unactive'>{MBEmail}</p>
                         </div>
+                    </div>
+                    <div className="col-start-3 flex flex-col items-end gap-1">
+                        <p className="text-xs text-unactive">Last Log-in Timestamp</p>
+                        <p>{
+                            login_time_stamp && new Date(login_time_stamp).getTime() !== 0
+                            ? format(new Date(login_time_stamp), 'MMMM dd yyyy')
+                            : "Not logged in yet"
+                        }</p>
+
                     </div>
                     <div className="row-start-2 text-xs flex flex-col justify-end gap-1">
                         <p>{division?.find(d => d.id === _division)?.division_name}</p>
