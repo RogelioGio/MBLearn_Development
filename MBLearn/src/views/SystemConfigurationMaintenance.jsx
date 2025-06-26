@@ -238,7 +238,11 @@ export default function SystemConfiguration() {
                         <h1 className="font-header text-primary text-xl">Course Form Inputs</h1>
                         <p className="font-text text-unactive text-xs">Defines the fields and input options required when creating or editing a course,that is also neccessary course setup and management.</p>
                     </div>
-
+                    : tab === 5 ?
+                    <div className="py-5">
+                        <h1 className="font-header text-primary text-xl">System Content Setting</h1>
+                        <p className="font-text text-unactive text-xs">Settings that handle on system content customizations</p>
+                    </div>
                     : null
                 }
 
@@ -254,6 +258,10 @@ export default function SystemConfiguration() {
                         </div>
                     ) : tab === 4 ? (
                         <CourseFormInputSetting/>
+                    ) : tab === 5 ? (
+                        <div className="h-[calc(100vh-12.75rem)] grid grid-rows-[min-content_1fr_min-content]">
+                            <SystemContentSetting/>
+                        </div>
                     )
                     : null
                 }
