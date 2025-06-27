@@ -12,13 +12,13 @@ const CourseCard = ({ course, type, click}) => {
     return (
         <HoverCard>
             <HoverCardTrigger>
-                <div className="bg-white w-full h-full rounded-md shadow-md hover:scale-105 hover:cursor-pointer transition-all ease-in-out grid grid-rows-[1fr_min-content]" onClick={click}>
+                <div className="bg-white w-full h-full rounded-md shadow-md hover:cursor-pointer transition-all ease-in-out grid grid-rows-[1fr_min-content]" onClick={click}>
                     <div className={`bg-gradient-to-b from-[hsl(239,94%,19%)] via-[hsl(214,97%,27%)] to-[hsl(201,100%,36%)] rounded-t-md flex flex-row justify-end gap-2 ${type === 'general' ? '!rounded-md': ''}`}>
                         <div className={`bg-gradient-to-t from-black via-black/80 to-transparent w-full p-4 flex flex-col justify-between ${type === 'general' ? 'rounded-md' : ''}`}>
                             <div className="flex flex-row justify-between items-start">
-                                <div className={`${type === 'courseAdmin' || type === 'learner' ? '' : 'flex gap-1'}`}>
-                                    <span className="inline-flex items-center rounded-md bg-primarybg px-2 py-1 text-xs font-medium text-primary font-text">{course.training_type}</span>
-                                    <span className="inline-flex items-center rounded-md bg-primarybg px-2 py-1 text-xs font-medium text-primary font-text">{course?.types[0]?.type_name}</span>
+                                <div className={`flex flex-row gap-1
+                                                xl:flex-col`}>
+                                    <span className="inline-flex items-center rounded-md bg-primarybg px-2 py-1 text-xs font-medium text-primary font-text w-fit">{course.training_type}</span>
                                 </div>
                                 {
                                     type === 'courseAdmin' || type === 'courseAdminCourseManager' || type === 'general'? (
@@ -31,7 +31,6 @@ const CourseCard = ({ course, type, click}) => {
                                 }
                             </div>
                             <div>
-                                <p className='font-text text-white text-xs'>{course?.categories[0]?.category_name}</p>
                                 <h1 className='font-header text-sm text-white'>{course.name}</h1>
                                 <p className='font-text text-xs text-white'>Course ID: {course.CourseID}</p>
                             </div>

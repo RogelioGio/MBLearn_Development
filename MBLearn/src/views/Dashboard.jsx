@@ -160,7 +160,7 @@ const chartData = [
             <div className="grid h-full w-full grid-cols-4
                             grid-rows-[6.25rem_auto]
                             xl:grid-rows-[6.25rem_1fr_1fr]
-                            sm:grid-rows-[6.25rem_auto_auto]">
+                            sm:grid-rows-[6.25rem_1fr_1fr]">
                 <Helmet>{/* Title of the mark-up */}
                     <title>MBLearn | System Admin Dashboard</title>
                 </Helmet>
@@ -191,9 +191,9 @@ const chartData = [
 
                 {/* Announcement */}
                 <div className='row-span-1 py-2 w-full
-                                col-span-4 h-80 px-4
+                                col-span-4 px-4
                                 xl:col-span-3 xl:row-span-1 xl:h-full xl:pr-3
-                                sm:col-span-4 sm:row-span-1 sm:h-60 sm:px-4'>
+                                sm:col-span-4 sm:row-span-1 sm:h-full sm:px-4'>
                     <AnnouncmentCarousel/>
                 </div>
 

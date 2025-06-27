@@ -100,20 +100,41 @@ const CourseAdminDashboard = ({name, user}) => {
         }
     }
     return(
-        <div className="grid grid-cols-4 grid-rows-[6.25rem_1fr_1fr] h-full w-full">
-            <div className="flex flex-col justify-center col-span-3 row-span-1 pr-5 border-b ml-5 border-divider">
-                    <h1 className="text-primary text-4xl font-header">Good Day! {name}</h1>
-                    <p className='font-text text-sm text-unactive'>Course Admin Dashboard, A centralized hub for Course administrators to manage Learners, monitor learners progress.</p>
+        <div className="grid h-screen w-full grid-cols-4
+                        grid-rows-[6.25rem_min-content_1fr_min-content_min-content]
+                        xl:grid-rows-[6.25rem_min-content_1fr]">
+            <div className="flex flex-col justify-center col-span-3 row-span-1  border-b border-divider
+                            ml-3
+                            xl:pr-5
+                            sm:ml-4">
+                    <h1 className="text-primary font-header
+                                    text-2xl
+                                    xl:text-4xl
+                                    sm:text-2xl">Good Day! {name}</h1>
+                    <p className='font-text text-unactive
+                                    text-xs
+                                    xl:text-sm
+                                    sm:text-xs'>Course Admin Dashboard, A centralized hub for Course administrators to manage Learners, monitor learners progress.</p>
             </div>
-            <div className='border-b border-divider mr-5 flex flex-row justify-end items-center'>
-                <div className='p-6 aspect-square bg-secondaryprimary rounded-full flex justify-center items-center'>
-                    <FontAwesomeIcon icon={faBookOpenReader} className='text-primary text-2xl'/>
+            <div className='border-b border-divider  flex flex-row justify-end items-center
+                                mr-3
+                                sm:mr-4'>
+                <div className='aspect-square bg-secondaryprimary rounded-full flex justify-center items-center
+                                w-16 h-16
+                                xl:w-20 xl:h-20 xl:mr-5
+                                sm:w-16 sm:h-16'>
+                    <FontAwesomeIcon icon={faBookOpenReader} className='text-primary text-xl xl:text-2xl sm:text-xl'/>
                 </div>
             </div>
-            <div className='col-span-3 row-span-1 px-5 py-2'>
+            <div className='row-span-1 py-2
+                                col-span-4 px-3
+                                xl:col-span-3 xl:row-span-1  xl:pr-3 xl:row-start-2'>
                 <AnnouncmentCarousel/>
             </div>
-            <div className='col-span-1 row-span-1 pr-5 py-2 grid grid-cols-1 grid-rows-[min-content_1fr]'>
+            {/* Calendar */}
+            <div className='grid grid-cols-1 grid-rows-[min-content_1fr] row-start-5
+                            col-span-4 px-3 pb-5
+                            xl:col-span-1 xl:row-span-1 xl:row-start-2 xl:pr-5 xl:py-2'>
             <div className='flex flex-row justify-between items-center'>
                         <div className="pb-3">
                             <p className="font-text text-unactive text-xs">Current Date:</p>
@@ -141,23 +162,40 @@ const CourseAdminDashboard = ({name, user}) => {
                         <Calendar/>
                     </div>
             </div>
+
         {/* Courses Carosel */}
-        <div className='row-start-3 col-span-3 px-5 pt-2 p-2 grid grid-rows-[min-content_1fr] grid-cols-4 gap-2'>
+        <div className='grid grid-rows-[min-content_1fr] grid-cols-4 gap-2
+                        row-start-3 col-span-4 px-3 py-2
+                        xl:row-start-3 xl:col-span-3 xl:py-0'>
             {/* Header */}
-            <div className="col-span-2 flex flex-row justify-between gap-2">
-                    <div className={`w-full group flex flex-row items-center justify-between py-2 px-4 border-2 border-primary rounded-md bg-white shadow-md hover:cursor-pointer hover:bg-primary ease-in-out transition-all ${tab === "myCourses" ? "!bg-primary !text-white":"text-primary"}`} onClick={()=>setTab("myCourses")}>
-                        <p className="font-header text-base group-hover:text-white"><span><FontAwesomeIcon icon={faBookBookmark}/></span> My Courses</p>
+            <div className="flex flex-row md:justify-between
+                            xl:col-span-2 xl:gap-2
+                            col-span-4 gap-1">
+                    <div className={`flex w-full group flex-row items-center justify-between xl:py-2 xl:px-4 border-2 border-primary rounded-md bg-white shadow-md hover:cursor-pointer hover:bg-primary ease-in-out transition-all ${tab === "myCourses" ? "!bg-primary !text-white":"text-primary"}
+                                        text-sm p-2
+                    `} onClick={()=>setTab("myCourses")}>
+                        <p className="font-header xl:text-base group-hover:text-white"><span><FontAwesomeIcon icon={faBookBookmark}/></span> My Courses</p>
                     </div>
-                    <div className={`w-full group flex flex-row items-center justify-between py-2 px-4 border-2 border-primary rounded-md bg-white shadow-md hover:cursor-pointer hover:bg-primary ease-in-out transition-all ${tab === "assignedCourses" ? "!bg-primary !text-white":"text-primary"}`} onClick={()=>setTab("assignedCourses")}>
-                        <p className="font-header text-base group-hover:text-white"><span><FontAwesomeIcon icon={faBook}/></span> Assigned Courses</p>
+                    <div className={`flex w-full group flex-row items-center justify-between xl:py-2 xl:px-4 border-2 border-primary rounded-md bg-white shadow-md hover:cursor-pointer hover:bg-primary ease-in-out transition-all ${tab === "assignedCourses" ? "!bg-primary !text-white":"text-primary"}
+                                        text-sm p-2
+                    `} onClick={()=>setTab("assignedCourses")}>
+                        <p className="font-header xl:text-base group-hover:text-white"><span><FontAwesomeIcon icon={faBook}/></span> Assigned Courses</p>
                     </div>
             </div>
             {/* Content */}
-            <div className="row-start-2 col-span-4 grid grid-cols-4 gap-2 h-full pb-2">
+            <div className="row-start-2 col-span-4 grid gap-2 h-full xl:pb-2
+                            grid-cols-1
+                            md:grid-cols-2
+                            xl:grid-cols-4">
             {
+                // Array.from({length: pageState.perPage}).map((_, i) => (
+                //             <div className="w-full h-full border border-primary" key={i}>
+
+                //             </div>
+                //         ))
                     loading ? (
                         Array.from({length: 4}).map((_,i) =>(
-                            <div key={i} className="animate-pulse bg-white w-full h-full rounded-md shadow-md"/>
+                            <div key={i} className="animate-pulse bg-white w-full h-[10rem] rounded-md shadow-md"/>
                         ))
                     ):(
                         assignedCourse.length > 0 ? (
@@ -172,10 +210,16 @@ const CourseAdminDashboard = ({name, user}) => {
                     )
                 }
             </div>
-            <div className="col-start-4 row-start-1 flex flex-row gap-2 items-center justify-end">
+
+            <div className="flex flex-row gap-2 items-center
+                            xl:row-start-1 xl:col-start-4 xl:col-span-1 xl:justify-end
+                            row-start-3 col-span-4 justify-between">
                 <div className="flex justify-center items-center border-2 border-primary w-10 h-10 rounded-md shadow-md text-primary hover:bg-primary hover:cursor-pointer hover:text-white"
                 onClick={back}>
                     <FontAwesomeIcon icon={faArrowLeft} />
+                </div>
+                <div className="flex xl:hidden ">
+                    #Number of pages
                 </div>
                 <div className="flex justify-center items-center border-2 border-primary w-10 h-10 rounded-md shadow-md text-primary hover:bg-primary hover:cursor-pointer hover:text-white"
                 onClick={next}>
@@ -185,26 +229,36 @@ const CourseAdminDashboard = ({name, user}) => {
         </div>
 
         {/* Activities */}
-        <div className='row-start-3 mr-5 pt-2 pb-5'>
-            <div className="flex flex-col w-full h-full gap-2">
-                <div>
+        <div className='row-start-4 px-3 col-span-4 py-2 flex flex-col gap-2
+                        xl:row-start-3 xl:pr-5 xl:py-0'>
+                <div className="">
                     <h1 className="font-header text-primary text-base">Activities</h1>
                     <p className="font-text text-unactive text-xs">Tracks your learners concerns and activities.</p>
                 </div>
 
-                <div className="w-full h-full grid grid-col-1 grid-rows-3 gap-2 ">
+                {/* <div className="w-full h-full grid gap-1
+                                grid-cols-3 grid-rows-1
+                                xl:grid-cols-1 xl:grid-rows-3 xl:gap-2 ">
                     {
                         loading ? (
                             Array.from({length: 3}).map((_, i) => (
-                            <div className="animate-pulse bg-white w-full rounded-md shadow-md flex items-center justify-between" key={i}/>
+                            <div className="animate-pulse bg-white xl:w-full rounded-md shadow-md flex items-center justify-between" key={i}/>
                         ))
                         ) : (
                         Array.from({length: 3}).map((_, i) => (
-                            <div className="border-primary border bg-white w-full rounded-md shadow-md flex items-center justify-between" key={i}/>
+                            <div className="border-primary border bg-white xl:w-full rounded-md shadow-md flex items-center justify-between" key={i}/>
                         )))
                     }
+                </div> */}
+                <div className="grid grid-cols-3 grid-rows-1 gap-1 h-full
+                                xl:grid-cols-1 xl:grid-rows-3 xl:pb-5 ">
+                    {
+                            Array.from({length: 3}).map((_, i) => (
+                            <div className="border-primary border bg-white rounded-md shadow-md flex items-center justify-between h-20 xl:h-full" key={i}/>
+                        ))
+                    }
+
                 </div>
-            </div>
         </div>
         </div>
     )

@@ -176,8 +176,8 @@ const SystemContentSetting = ({}) => {
                                     <p className="text-unactive">Loading Items</p>
                                     :<>
                                         <p className="text-unactive">Active Panel Details</p>
-                                        <p className="text-sm text-primary">{panels[currentPanel].image_name}</p>
-                                        <p className="text-unactive">Date-Added: {format(new Date(panels[currentPanel].created_at),"MMMM dd yyyy")}</p>
+                                        <p className="text-sm text-primary">{panels[currentPanel]?.image_name || "Loading"}</p>
+                                        <p className="text-unactive">Date-Added: {format(new Date(panels[currentPanel]?.created_at),"MMMM dd yyyy") || "Loading"}</p>
                                     </>
                                 }
                             </div>
@@ -343,11 +343,11 @@ const SystemContentSetting = ({}) => {
                 </div>
 
                 {/* Panel Detail */}
-                <div className="flex flex-col font-text text-xs py-2">
+                {/* <div className="flex flex-col font-text text-xs py-2">
                     <p className="text-unactive">Active Panel Details</p>
-                                        <p className="text-sm text-primary">{panels[currentPanel].image_name}</p>
-                                        <p className="text-unactive">Date-Added: {format(new Date(panels[currentPanel].created_at),"MMMM dd yyyy")}</p>
-                </div>
+                                        <p className="text-sm text-primary">{panels[currentPanel]?.image_name}</p>
+                                        <p className="text-unactive">Date-Added: {format(new Date(panels[currentPanel]?.created_at),"MMMM dd yyyy")}</p>
+                </div> */}
 
             </div>
 
