@@ -103,67 +103,72 @@ const CourseAdminDashboard = ({name, user}) => {
         <div className="grid h-screen w-full grid-cols-4
                         grid-rows-[6.25rem_min-content_1fr_min-content_min-content]
                         xl:grid-rows-[6.25rem_min-content_1fr]">
-            <div className="flex flex-col justify-center col-span-3 row-span-1  border-b border-divider
-                            ml-3
-                            xl:pr-5
-                            sm:ml-4">
-                    <h1 className="text-primary font-header
-                                    text-2xl
-                                    xl:text-4xl
-                                    sm:text-2xl">Good Day! {name}</h1>
-                    <p className='font-text text-unactive
-                                    text-xs
-                                    xl:text-sm
-                                    sm:text-xs'>Course Admin Dashboard, A centralized hub for Course administrators to manage Learners, monitor learners progress.</p>
-            </div>
-            <div className='border-b border-divider  flex flex-row justify-end items-center
-                                mr-3
-                                sm:mr-4'>
-                <div className='aspect-square bg-secondaryprimary rounded-full flex justify-center items-center
-                                w-16 h-16
-                                xl:w-20 xl:h-20 xl:mr-5
-                                sm:w-16 sm:h-16'>
-                    <FontAwesomeIcon icon={faBookOpenReader} className='text-primary text-xl xl:text-2xl sm:text-xl'/>
-                </div>
-            </div>
-            <div className='row-span-1 py-2
-                                col-span-4 px-3
-                                xl:col-span-3 xl:row-span-1  xl:pr-3 xl:row-start-2'>
-                <AnnouncmentCarousel/>
-            </div>
-            {/* Calendar */}
-            <div className='grid grid-cols-1 grid-rows-[min-content_1fr] row-start-5
-                            col-span-4 px-3 pb-5
-                            xl:col-span-1 xl:row-span-1 xl:row-start-2 xl:pr-5 xl:py-2'>
-            <div className='flex flex-row justify-between items-center'>
-                        <div className="pb-3">
-                            <p className="font-text text-unactive text-xs">Current Date:</p>
-                            <p className="font-header text-primary text-base">{format(new Date(), "MMMM d yyy")}</p>
-                        </div>
-                        <div className='flex flex-row gap-2'>
-                            <div>
-                                <div className='w-9 h-9 border-2 rounded-md text-primary border-primary flex justify-center items-center hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out'>
-                                    <FontAwesomeIcon icon={faCalendar} className='text-sm'/>
-                                </div>
-                            </div>
-                            <div>
-                                <div className='w-9 h-9 border-2 rounded-md text-primary border-primary flex justify-center items-center hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out'>
-                                    <ArrowLeft className="h-4 w-4" />
-                                </div>
-                            </div>
-                            <div>
-                                <div className='w-9 h-9 border-2 rounded-md text-primary border-primary flex justify-center items-center hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out'>
-                                <ArrowRight className="h-4 w-4" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="w-full h-full rounded-md shadow-md border-2 border-primary overflow-hidden">
-                        <Calendar/>
-                    </div>
-            </div>
 
-        {/* Courses Carosel */}
+        {/* Header */}
+        <div className="flex flex-col justify-center col-span-3 row-span-1  border-b border-divider
+                        ml-3
+                        xl:pr-5
+                        sm:ml-4">
+                <h1 className="text-primary font-header
+                                text-2xl
+                                xl:text-4xl
+                                sm:text-2xl">Good Day! {name}</h1>
+                <p className='font-text text-unactive
+                                text-xs
+                                xl:text-sm
+                                sm:text-xs'>Course Admin Dashboard, A centralized hub for Course administrators to manage Learners, monitor learners progress.</p>
+        </div>
+        <div className='border-b border-divider  flex flex-row justify-end items-center
+                            mr-3
+                            sm:mr-4'>
+            <div className='aspect-square bg-secondaryprimary rounded-full flex justify-center items-center
+                            w-16 h-16
+                            xl:w-20 xl:h-20 xl:mr-5
+                            sm:w-16 sm:h-16'>
+                <FontAwesomeIcon icon={faBookOpenReader} className='text-primary text-xl xl:text-2xl sm:text-xl'/>
+            </div>
+        </div>
+
+        {/* Annoucenment */}
+        <div className='row-span-1 py-2
+                            col-span-4 px-3
+                            xl:col-span-3 xl:row-span-1  xl:pr-3 xl:row-start-2'>
+            <AnnouncmentCarousel/>
+        </div>
+
+        {/* Calendar */}
+        <div className='grid grid-cols-1 grid-rows-[min-content_1fr] row-start-5
+                        col-span-4 px-3 pb-5
+                        xl:col-span-1 xl:row-span-1 xl:row-start-2 xl:pr-5 xl:py-2'>
+        <div className='flex flex-row justify-between items-center'>
+                    <div className="pb-3">
+                        <p className="font-text text-unactive text-xs">Current Date:</p>
+                        <p className="font-header text-primary text-base">{format(new Date(), "MMMM d yyy")}</p>
+                    </div>
+                    <div className='flex flex-row gap-2'>
+                        <div>
+                            <div className='w-9 h-9 border-2 rounded-md text-primary border-primary flex justify-center items-center hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out'>
+                                <FontAwesomeIcon icon={faCalendar} className='text-sm'/>
+                            </div>
+                        </div>
+                        <div>
+                            <div className='w-9 h-9 border-2 rounded-md text-primary border-primary flex justify-center items-center hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out'>
+                                <ArrowLeft className="h-4 w-4" />
+                            </div>
+                        </div>
+                        <div>
+                            <div className='w-9 h-9 border-2 rounded-md text-primary border-primary flex justify-center items-center hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out'>
+                            <ArrowRight className="h-4 w-4" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div className="w-full h-full rounded-md shadow-md border-2 border-primary overflow-hidden">
+                    <Calendar/>
+                </div>
+        </div>
+
+        {/* Courses Carousel */}
         <div className='grid grid-rows-[min-content_1fr] grid-cols-4 gap-2
                         row-start-3 col-span-4 px-3 py-2
                         xl:row-start-3 xl:col-span-3 xl:py-0'>
@@ -183,9 +188,9 @@ const CourseAdminDashboard = ({name, user}) => {
                     </div>
             </div>
             {/* Content */}
-            <div className="row-start-2 col-span-4 grid gap-2 h-full xl:pb-2
+            <div className="row-start-2 col-span-4 grid gap-2 h-full
                             grid-cols-1
-                            md:grid-cols-2
+                            sm:grid-cols-2
                             xl:grid-cols-4">
             {
                 // Array.from({length: pageState.perPage}).map((_, i) => (
@@ -195,7 +200,7 @@ const CourseAdminDashboard = ({name, user}) => {
                 //         ))
                     loading ? (
                         Array.from({length: 4}).map((_,i) =>(
-                            <div key={i} className="animate-pulse bg-white w-full h-[10rem] rounded-md shadow-md"/>
+                            <div key={i} className="animate-pulse bg-white w-full xl:h-full h-[8.25rem] rounded-md shadow-md"/>
                         ))
                     ):(
                         assignedCourse.length > 0 ? (
@@ -211,18 +216,22 @@ const CourseAdminDashboard = ({name, user}) => {
                 }
             </div>
 
-            <div className="flex flex-row gap-2 items-center
-                            xl:row-start-1 xl:col-start-4 xl:col-span-1 xl:justify-end
-                            row-start-3 col-span-4 justify-between">
-                <div className="flex justify-center items-center border-2 border-primary w-10 h-10 rounded-md shadow-md text-primary hover:bg-primary hover:cursor-pointer hover:text-white"
-                onClick={back}>
+            <div className={`flex flex-row justify-between gap-2 row-start-3 col-span-4 pb-4 ${loading ? "opacity-50": ""}`}>
+                <div className={`flex justify-center items-center border-2 border-primary w-8 h-8 rounded-md shadow-md text-primary text-sm ${loading ? "cursor-auto":"cursor-pointer hover:bg-primary hover:text-white"}`}
+                onClick={() => {
+                        if(loading) return
+                        back()
+                    }}>
                     <FontAwesomeIcon icon={faArrowLeft} />
                 </div>
-                <div className="flex xl:hidden ">
+                <div className="flex flex-row justify-center items-center font-text text-unactive text-xs">
                     #Number of pages
                 </div>
-                <div className="flex justify-center items-center border-2 border-primary w-10 h-10 rounded-md shadow-md text-primary hover:bg-primary hover:cursor-pointer hover:text-white"
-                onClick={next}>
+                <div className={`flex justify-center items-center border-2 border-primary w-8 h-8 rounded-md shadow-md text-primary text-sm ${loading ? "cursor-auto":"cursor-pointer hover:bg-primary hover:text-white"}`}
+                onClick={() => {
+                        if(loading) return
+                        next()
+                    }}>
                     <FontAwesomeIcon icon={faArrowRight} />
                 </div>
             </div>
@@ -236,24 +245,14 @@ const CourseAdminDashboard = ({name, user}) => {
                     <p className="font-text text-unactive text-xs">Tracks your learners concerns and activities.</p>
                 </div>
 
-                {/* <div className="w-full h-full grid gap-1
-                                grid-cols-3 grid-rows-1
-                                xl:grid-cols-1 xl:grid-rows-3 xl:gap-2 ">
-                    {
-                        loading ? (
-                            Array.from({length: 3}).map((_, i) => (
-                            <div className="animate-pulse bg-white xl:w-full rounded-md shadow-md flex items-center justify-between" key={i}/>
-                        ))
-                        ) : (
-                        Array.from({length: 3}).map((_, i) => (
-                            <div className="border-primary border bg-white xl:w-full rounded-md shadow-md flex items-center justify-between" key={i}/>
-                        )))
-                    }
-                </div> */}
                 <div className="grid grid-cols-3 grid-rows-1 gap-1 h-full
                                 xl:grid-cols-1 xl:grid-rows-3 xl:pb-5 ">
                     {
-                            Array.from({length: 3}).map((_, i) => (
+                        loading ?
+                        Array.from({length: 3}).map((_, i) => (
+                            <div className="border bg-white rounded-md shadow-md flex items-center justify-between h-20 xl:h-full" key={i}/>
+                        ))
+                        : Array.from({length: 3}).map((_, i) => (
                             <div className="border-primary border bg-white rounded-md shadow-md flex items-center justify-between h-20 xl:h-full" key={i}/>
                         ))
                     }

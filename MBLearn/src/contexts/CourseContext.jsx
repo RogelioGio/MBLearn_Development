@@ -7,7 +7,6 @@ export const CourseProvider = ({ children }) => {
 
     const setCourse = (course) => {
         _setCourse(course);
-        console.log("Course set:", course);
     };
 
     return (

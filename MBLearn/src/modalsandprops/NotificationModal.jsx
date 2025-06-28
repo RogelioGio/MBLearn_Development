@@ -39,7 +39,6 @@ const NotificationModal = ({open, close}) => {
         // .catch((e) => {
         //     console.log(e)
         // })
-        setTimeout(setLoading(false),console.log('Loading pa'),300)
     }
 
     // useEffect(()=>{
