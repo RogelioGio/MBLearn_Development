@@ -31,7 +31,7 @@ export const AddUser = forwardRef(({children, initialStep = 0, enableStepClick =
         },
         reset: () => setActiveStep(initialStep),
         activeStep,
-        stepsMeta
+        stepsMeta,
     }));
 
     const stepsMeta = steps.map((step) => ({
@@ -60,7 +60,7 @@ export const AddUser = forwardRef(({children, initialStep = 0, enableStepClick =
                     const isCurrent = setCurrent() === index;
 
                     return (
-                        <div key={index} className={`group grid rounded-md  p-3 ${isActive ? 'border-2 border-primary': 'border-2 border-transparent'} ${isCurrent ? 'bg-primarybg':null} hover:border-primary transition-all ease-in-out cursor-pointer hover:shadow-md hover:bg-primarybg
+                        <div key={index} className={`group grid rounded-md p-3 ${isActive ? 'border-2 border-primary': 'border-2 border-transparent'} ${isCurrent ? 'bg-primarybg':null} hover:border-primary transition-all ease-in-out cursor-pointer hover:shadow-md hover:bg-primarybg
                                                     grid-cols-1 w-fit
                                                     md:grid-cols-[min-content_1fr] md:gap-2 md:w-full`}
                                 onClick={() => {

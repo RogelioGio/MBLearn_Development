@@ -2,10 +2,10 @@ import { useFormik } from "formik"
 import * as Yup from 'yup';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Menu, MenuButton, MenuItem, MenuItems, Disclosure, DisclosureButton, DisclosurePanel, Dialog, DialogBackdrop, DialogPanel, DialogTitle} from '@headlessui/react';
-import { faBook, faBookBookmark, faBookOpen, faMagnifyingGlass, faSearch, faSpinner, faXmark, faCircleXmark as solidXmark } from "@fortawesome/free-solid-svg-icons";
+import { faBook, faBookBookmark, faBookOpen, faClipboard, faMagnifyingGlass, faSearch, faSpinner, faXmark, faCircleXmark as solidXmark } from "@fortawesome/free-solid-svg-icons";
 import { faCircleCheck as faCircleCheckRegular, faCircleXmark as regularXmark } from "@fortawesome/free-regular-svg-icons";
 import { Stepper } from '@mantine/core';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import axiosClient from "../axios-client";
 import { useCourseContext } from "../contexts/CourseListProvider";
 import Course from "../views/Course";
@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 import compELearnAxios from "../comp-e-learn-axios";
 import axios from "axios";
 import { toast } from 'sonner';
-import { AddCourse } from "../components/ui/addCourseStepper";
+import { AddCourse, Step, StepperCompleted } from "../components/ui/addCourseStepper";
 
 function normalizationDuration(values, setField) {
     let months = parseInt(values.months) || 0;
@@ -52,7 +52,8 @@ const AddCourseModal = ({open,onClose,tab,refresh}) => {
     const [courseLesson, setCourseLesson] = useState([]) //kapit to
     const [fetchedCourse, setFetchedCourse] = useState({})
     const [exist, setExist] = useState(false);
-
+    const stepperRef = useRef(null);
+    const [formCompleted, setFormCompleted] = useState([]);
     //Final na toh
     // const fetchedCourse = {
     //     id: 1,
@@ -130,24 +131,30 @@ const AddCourseModal = ({open,onClose,tab,refresh}) => {
 
             //Test Case
             if(parseInt(values.courseID, 10) === testfetchedCourse.CourseID){
-                axiosClient.get(`exists/${values.courseID}`)
-                .then((res) =>
-                    {
-                        //setFetching(false);
-                        setTimeout(()=>{
+                // axiosClient.get(`exists/${values.courseID}`)
+                // .then((res) =>
+                //     {
+                //         //setFetching(false);
+                //         setTimeout(()=>{
+                //                 setFetching(false)
+                //                 toast.success("Course exist in the Comp-Elearn database", {
+                //                     description: "You can now proceed to the next step",})
+                //                 setExist(true);
+                //             },2000)
+                //         setFetchedCourse(testfetchedCourse);
+                //         //toggleState("steps", (current) => current + 1)
+                //     }
+                // ).catch((err) => {
+                //     setFetching(false);
+                //     setFieldError("courseID", "The course is already in the system")
+
+                // })
+                setTimeout(()=>{
                                 setFetching(false)
                                 toast.success("Course exist in the Comp-Elearn database", {
                                     description: "You can now proceed to the next step",})
                                 setExist(true);
                             },2000)
-                        setFetchedCourse(testfetchedCourse);
-                        //toggleState("steps", (current) => current + 1)
-                    }
-                ).catch((err) => {
-                    setFetching(false);
-                    setFieldError("courseID", "The course is already in the system")
-
-                })
                 return
             } else {
                 setFetching(false)
@@ -243,6 +250,83 @@ const AddCourseModal = ({open,onClose,tab,refresh}) => {
         },
     });
 
+    const courseFormik = useFormik({
+        enableReinitialize: true,
+        initialValues: {
+            course_id: formik.values.courseID,
+            course_name: fetchedCourse?.CourseName || '',
+            course_type: fetchedCourse?.CourseType || '',
+            course_category: fetchedCourse?.category?.CategoryName || '',
+            training_type: fetchedCourse?.TrainingType || '',
+            months:'',
+            weeks:'',
+            days:'',
+            course_description: fetchedCourse?.CourseDescription || '',
+            course_objectives: fetchedCourse?.CourseObjective || '',
+            course_outcomes: fetchedCourse?.CourseOutcomes || '',
+        },
+        validationSchema: Yup.object({
+            course_id: Yup.string()
+                .required('Input CourseID first'), // Check if course ID is empty
+                //.min(11, 'CourseID must be 11 characters'), // Check if course ID is less than 11 characters
+            course_name: Yup.string()
+                .required('Course name shouldnt be empty') // Check if course name is empty
+                .max(50, 'Course name shouldnt exceed 50 characters') // Check if course name exceeds 50 characters
+                .matches(/^[A-Za-z ]*$/, 'Only letters and spaces allowed'), // Check if course name exceeds 50 characters
+            course_category: Yup.string()
+                .required('Course category shouldnt be empty'), // Check if course name is empty
+            course_type: Yup.string()
+                .required('Course type shouldnt be empty'), // Check if course name is empty
+            months: Yup.number()
+                .typeError('Invalid Input')
+                .positive('Must be a positive number')
+                .integer('Must be a whole number'),
+            weeks: Yup.number()
+                .typeError('Invalid Input')
+                .positive('Must be a positive number')
+                .integer('Must be a whole number'),
+            days: Yup.number()
+                .typeError('Invalid Input')
+                .positive('Must be a positive number')
+                .integer('Must be a whole number'),
+            course_description: Yup.string()
+                .required('Course description should not be empty'),
+            course_objectives: Yup.string()
+                .required('Course objectives should not be empty'),
+            course_outcomes: Yup.string()
+                .required('Course outcomes should not be empty'),
+        }),
+        onSubmit: (values) => {
+            console.log("Final Values: ", values);
+            setCourseLesson(fetchedCourse.lessons)
+            submitCourse();
+        }
+    })
+
+    const navigateForm = (direction) => {
+        if(!direction) return;
+
+        const currentStepIndex = stepperRef.current?.activeStep;
+        const {stepMeta} = stepperRef.current || {};
+        const isCompleted = stepperRef.current?.isCompleted;
+
+        if(direction === "next"){
+            stepperRef.current?.next();
+            const stepId = stepMeta?.[currentStepIndex]?.stepID;
+            setFormCompleted((prev)=>{if(!stepId || prev.includes(stepId)) return prev; return [...prev, stepId]});
+        }else if(direction === "back"){
+            const stepId = stepMeta?.[currentStepIndex]?.stepID;
+            if(isCompleted) return;
+            if(stepId === formCompleted[0]){
+                setTimeout(()=>{
+                    setFormCompleted([]);formik.resetForm();
+                },500)
+                //onClose();
+            }
+            stepperRef.current?.back()
+        }
+    }
+
     //UseState
     const [state, setState] = useState({
         steps: 0,
@@ -277,18 +361,22 @@ const AddCourseModal = ({open,onClose,tab,refresh}) => {
 
     const submitCourse = () => {
         setAdding(true)
-        console.log("Final Values: ", payload);
-        axiosClient.post("/courses", payload)
-        .then((res) => {
+        //console.log("Final Values: ", payload);
+        // axiosClient.post("/courses", payload)
+        // .then((res) => {
+        //     setAdding(false)
+        //     console.log(res.data);
+        //     refresh();
+        //     onClose();
+        // })
+        // .catch((err) => {
+        //     setAdding(false)
+        //     console.log(err);
+        // })
+        setTimeout(()=>{
             setAdding(false)
-            console.log(res.data);
-            refresh();
-            onClose();
-        })
-        .catch((err) => {
-            setAdding(false)
-            console.log(err);
-        })
+            navigateForm("next");
+        },2000)
     }
 
     return(
@@ -326,7 +414,24 @@ const AddCourseModal = ({open,onClose,tab,refresh}) => {
                             {/* Content*/}
                             <div className="mx-4 py-2">
                                 {
-                                    exist ? "form here" : (
+                                    exist ? (
+                                        <form onSubmit={courseFormik.handleSubmit}>
+                                            <AddCourse ref={stepperRef} initialStep={0} eneableStepClick={true} formProgress={formCompleted}>
+                                                <Step stepTitle="Basic Course Information" stepDesc="Input course basic informations" icon={faBookOpen} stepID={1}>Hello</Step>
+                                                <Step stepTitle="Additional Course Details" stepDesc="Input additional course details" icon={faBookBookmark} stepID={2}>Hello</Step>
+                                                <Step stepTitle="Review Details" stepDesc="Review the given informations before submitting" icon={faClipboard} stepID={3}>Hello</Step>
+                                                <StepperCompleted stepTitle="Course Added" stepDesc="The course has been successfully added to the system" icon={faCircleCheckRegular} stepID={4}>
+                                                    <div className="flex flex-col gap-2 items-center pt-4 p-2">
+                                                        <div className="w-20 h-20 flex flex-col items-center justify-center bg-primarybg rounded-full">
+                                                            <FontAwesomeIcon icon={faCircleCheckRegular} className="text-5xl text-primary"/>
+                                                        </div>
+                                                        <p className="font-header text-xl text-primary">Course Added!</p>
+                                                        <p className="text-center font-text text-sm text-unactive">The course has been successfully added to the system. <br /> You can now view it in the course list.</p>
+                                                    </div>
+                                                </StepperCompleted>
+                                            </AddCourse>
+                                        </form>
+                                    ) : (
                                         <form onSubmit={formik.handleSubmit}>
                                             <div className='row-start-2 py-2 col-span-2'>
                                             <label htmlFor="courseID" className="font-header text-xs flex flex-row justify-between pb-2">
@@ -351,12 +456,40 @@ const AddCourseModal = ({open,onClose,tab,refresh}) => {
                                     //exist ?
                                     exist ? (
                                         <div className="flex flex-row justify-between items-center gap-2  mx-4 pb-2 font-header">
-                                            <div className="border-2 border-primary rounded-md py-3 w-full flex flex-row justify-center shadow-md text-primary hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out">
-                                                Cancel
-                                            </div>
-                                            <div className={`border-2 border-primary rounded-md py-3 w-full flex flex-row justify-center shadow-md bg-primary text-white hover:cursor-pointer hover:bg-primaryhover hover:border-primaryhover transition-all ease-in-out`}>
-                                                Next
-                                            </div>
+                                            {
+                                                formCompleted.length !== 3 ?
+                                                <>
+                                                <div className="border-2 border-primary rounded-md py-3 w-full flex flex-row justify-center shadow-md text-primary hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out"
+                                                    onClick={()=>{
+                                                        navigateForm("back");
+                                                    }}>
+                                                    Cancel
+                                                </div>
+                                                <div className={`border-2 border-primary rounded-md py-3 w-full flex flex-row justify-center shadow-md bg-primary text-white  transition-all ease-in-out ${adding ? "opacity-50 hover:cursor-not-allowed" : "hover:cursor-pointer hover:bg-primaryhover hover:border-primaryhover"}`}
+                                                    onClick={()=>{
+                                                        if(adding) return
+                                                        formCompleted.length === 2 ?
+                                                        //courseFormik.handleSubmit() :
+                                                        submitCourse() :
+                                                        navigateForm("next");
+                                                    }}>
+                                                    {/* {adding ? "":formCompleted.length === 2 ? "Submit" : "Next"} */}
+                                                    {adding ?
+                                                    <div className="flex-row flex gap-2 items-center">
+                                                        <FontAwesomeIcon icon={faSpinner} className="animate-spin text-white text-lg"/>
+                                                        <p>Submitting...</p>
+                                                    </div>
+                                                    : formCompleted.length === 2 ? "Submit" : "Next"}
+                                                </div>
+                                                </> :
+                                                <div className={`border-2 border-primary rounded-md py-3 w-full flex flex-row justify-center shadow-md bg-primary text-white hover:cursor-pointer hover:bg-primaryhover hover:border-primaryhover transition-all ease-in-out`}
+                                                    onClick={()=>{
+                                                        setTimeout(()=>{formik.resetForm();setFormCompleted([])},1000)
+                                                        onClose()
+                                                    }}>
+                                                    Confirm
+                                                </div>
+                                            }
                                         </div>
                                     ) : (
                                         <div className="flex flex-row justify-between items-center gap-2  mx-4 pb-2 font-header">

@@ -233,6 +233,7 @@ export default function DefaultLayout() {
             })
             .catch((error) => {
                 console.error('Error checking notifications:', error);
+                navigate('/login');
             })
 
 

@@ -56,16 +56,16 @@ class AuthController extends Controller
         $otp = rand(100000, 999999);
         $expiresAt = date('Y-m-d H:i:s', strtotime('+5 minutes'));
 
-        $htmlBody = view('emails.otp_template', [
-            'otp' => $otp,
-            'user' => $user->userInfos->first_name,
-        ])->render();
-
         if(!$user){
             return response()->json([
                 'message' => 'There is no user with that credentials',
             ], 401);
         }
+
+        $htmlBody = view('emails.otp_template', [
+            'otp' => $otp,
+            'user' => $user->userInfos->first_name,
+        ])->render();
 
         if(!($user->userInfos->status === "Active")){
             return response()->json([
