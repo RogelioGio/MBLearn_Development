@@ -76,7 +76,7 @@ const navItems = {
     ]
 }
 
-export default function Navigation({unread_notfications, size}) {
+export default function Navigation({unread_notfications, size, setLoading}) {
     const {user, profile_image, role, availableRoles, setAvailableRoles,setUser, setToken, setRole, setAuthenticated} = useStateContext();
     const navigate = useNavigate();
     const [openNotficiation, setOpenNotification] = useState(false);
@@ -131,8 +131,13 @@ export default function Navigation({unread_notfications, size}) {
 
     //Role Switching
     const handleRoleSwtiching = (newRole) => {
+        setLoading(true);
         setRole(newRole);
-        navigate(`/${newRole.toLowerCase().replace(" ","")}/dashboard`);
+        setTimeout(()=>{
+            navigate(`/${newRole.toLowerCase().replace(" ","")}/dashboard`);
+            setLoading(false);
+        },2000)
+
     };
 
     //Role-based Navigation
@@ -193,13 +198,12 @@ export default function Navigation({unread_notfications, size}) {
                             </div>
                             {
                                 Items.map((role, index) => (
-                                    <>
-
-                                    <NavLink to={role.to} className={({ isActive }) => `${isActive ? 'text-primary bg-primarybg shadow-md' : 'text-unactive'} group py-2 px-4 flex flex-row items-center gap-5 rounded-md hover:bg-primarybg hover:shadow-md transition-all ease-in-out hover:cursor-pointer`} key={index}>
+                                    <div key={index}>
+                                        <NavLink to={role.to} className={({ isActive }) => `${isActive ? 'text-primary bg-primarybg shadow-md' : 'text-unactive'} group py-2 px-4 flex flex-row items-center gap-5 rounded-md hover:bg-primarybg hover:shadow-md transition-all ease-in-out hover:cursor-pointer`}>
                                         <FontAwesomeIcon icon={role.icon}/>
                                         <p className='font-header'>{role.text}</p>
-                                    </NavLink>
-                                    </>
+                                        </NavLink>
+                                    </div>
                                 ))
                             }
                         </div>

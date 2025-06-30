@@ -12,9 +12,9 @@ const CourseCard = ({ course, type, click}) => {
     return (
         <HoverCard>
             <HoverCardTrigger>
-                <div className="bg-white w-full h-full rounded-md shadow-md hover:cursor-pointer transition-all ease-in-out grid grid-rows-[1fr_min-content]" onClick={click}>
-                    <div className={`bg-gradient-to-b from-[hsl(239,94%,19%)] via-[hsl(214,97%,27%)] to-[hsl(201,100%,36%)] rounded-t-md flex flex-row justify-end gap-2 ${type === 'general' ? '!rounded-md': ''}`}>
-                        <div className={`bg-gradient-to-t from-black via-black/80 to-transparent w-full p-4 flex flex-col justify-between ${type === 'general' ? 'rounded-md' : ''}`}>
+                <div className="group bg-white w-full h-full rounded-md shadow-md hover:cursor-pointer transition-all ease-in-out grid grid-rows-[1fr_min-content]" onClick={click}>
+                    <div className={`bg-gradient-to-b from-[hsl(239,94%,19%)] via-[hsl(214,97%,27%)] to-[hsl(201,100%,36%)] md:rounded-t-md rounded-md flex flex-row justify-end gap-2 ${type === 'general' ? '!rounded-md': ''}`}>
+                        <div className={`bg-gradient-to-t from-black via-black/80 to-transparent w-full p-4 flex flex-col justify-between rounded-md md:rounded-none  ${type === 'general' ? 'rounded-md' : ''}`}>
                             <div className="flex flex-row justify-between items-start">
                                 <div className={`flex flex-row gap-1
                                                 xl:flex-col`}>
@@ -36,7 +36,7 @@ const CourseCard = ({ course, type, click}) => {
                             </div>
                         </div>
                     </div>
-                    <div className={`${type === 'courseAdmin' ? 'p-4' : type === 'courseAdminCourseManager' ? 'px-4 py-3' : ''}`}>
+                    <div className={`${type === 'courseAdmin' ? 'p-4' : type === 'courseAdminCourseManager' ? 'md:px-4 md:py-3' : ''} relative`}>
                         {
                             type === 'courseAdmin' ? (
                                 <div className="flex flex-row justify-between items-center">
@@ -45,7 +45,8 @@ const CourseCard = ({ course, type, click}) => {
                                 </div>
                             ) :
                             type === 'courseAdminCourseManager' ? (
-                                <div className="grid grid-cols-[1fr_min-content_1fr_min-content_1fr] gap-2">
+                                <>
+                                <div className="grid-cols-[1fr_min-content_1fr_min-content_1fr] gap-2 md:grid hidden">
                                     <div className="flex flex-row items-center justify-between">
                                         <p className="text-xs font-text text-unactive">Enrolled</p>
                                         <p className="text-sm font-header text-primary">{course.enrolled}</p>
@@ -61,6 +62,31 @@ const CourseCard = ({ course, type, click}) => {
                                         <p className="text-sm font-header text-primary">{course.due_soon}</p>
                                     </div>
                                 </div>
+                                <div className="absolute top-[0.5rem] group-hover:scale-100 scale-0 border border-primary rounded-md font-text p-2 w-full text-xs transition-all ease-in-out bg-white shadow-md flex flex-col justify-between gap-1
+                                                md:hidden">
+                                    <div className="w-full flex flex-row justify-between">
+                                        <div className="flex flex-row gap-2 items-center">
+                                            <div className="rounded-sm h-3 w-3 bg-primary"/>
+                                            <p className="text-unactive">Enrolled:</p>
+                                        </div>
+                                        <p>{course.enrolled}</p>
+                                    </div>
+                                    <div className="w-full flex flex-row justify-between">
+                                        <div className="flex flex-row gap-2 items-center">
+                                            <div className="rounded-sm h-3 w-3 bg-primary"/>
+                                            <p className="text-unactive">On-going:</p>
+                                        </div>
+                                        <p>{course.ongoing}</p>
+                                    </div>
+                                    <div className="w-full flex flex-row justify-between">
+                                        <div className="flex flex-row gap-2 items-center">
+                                            <div className="rounded-sm h-3 w-3 bg-primary"/>
+                                            <p className="text-unactive">Due-soon:</p>
+                                        </div>
+                                        <p>{course.due_soon}</p>
+                                    </div>
+                                </div>
+                                </>
                             ) : type === 'learner' || type === 'learnerCourseManager' ? (
                                 <div className="flex flex-col justify-between h-full py-3 px-4">
                                     <div className="flex flex-row justify-between font-text text-unactive text-xs pb-2">

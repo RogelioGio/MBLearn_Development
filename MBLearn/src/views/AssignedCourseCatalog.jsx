@@ -306,36 +306,60 @@ export default function AssignedCourseCatalog() {
                             p-3">
                     <div className="flex flex-row justify-between gap-2
                                     sm:w-full">
-                        <div className={`flex flex-row px-3 py-2 border-primary border-2 rounded-md font-header items-center gap-2 hover:cursor-pointer transition-all ease-in-out hover:bg-primaryhover hover:text-white ${tab === "myCourses" ? "bg-primary text-white hover:border-primaryhover":"bg-white text-primary hover:border-primaryhover"}
-                                    sm:w-full
-                                    w-10 h-10`}
-                                    onClick={() => {if(!loading) return setTab("myCourses")}}>
-                            <FontAwesomeIcon icon={faBookBookmark}/>
-                            <p className="sm:flex hidden">My Courses</p>
+                        <div className="relative group sm:w-full">
+                            <div className={`flex flex-row px-3 py-2 border-primary border-2 rounded-md font-header items-center gap-2 hover:cursor-pointer transition-all ease-in-out hover:bg-primaryhover hover:text-white ${tab === "myCourses" ? "bg-primary text-white hover:border-primaryhover":"bg-white text-primary hover:border-primaryhover"}
+                                        sm:w-full
+                                        w-10 h-10`}
+                                        onClick={() => {if(!loading) return setTab("myCourses")}}>
+                                <FontAwesomeIcon icon={faBookBookmark}/>
+                                <p className="sm:flex hidden">My Courses</p>
+                            </div>
+                            <div className="absolute whitespace-nowrap bg-tertiary p-2 rounded-md text-white font-text text-xs bottom-[-2.1rem] left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 transition-all ease-in-out sm:hidden block">
+                                <p>My Courses</p>
+                            </div>
                         </div>
-                        <div className={`flex flex-row px-3 py-2 border-primary border-2 rounded-md font-header items-center gap-2 hover:cursor-pointer transition-all ease-in-out hover:bg-primaryhover hover:text-white ${tab === "assignedCourses" ? "bg-primary text-white hover:border-primaryhover":"bg-white text-primary hover:border-primaryhover"}
+                        <div className="relative group sm:w-full">
+                            <div className={`flex flex-row px-3 py-2 border-primary border-2 rounded-md font-header items-center gap-2 hover:cursor-pointer transition-all ease-in-out hover:bg-primaryhover hover:text-white ${tab === "assignedCourses" ? "bg-primary text-white hover:border-primaryhover":"bg-white text-primary hover:border-primaryhover"}
                                         sm:w-full
                                         w-10 h-10`}
                                         onClick={() => {if(!loading) return setTab("assignedCourses")}}>
-                            <FontAwesomeIcon icon={faBook} className=""/>
-                            <p className="sm:flex hidden">Assigned Courses</p>
+                                <FontAwesomeIcon icon={faBook} className=""/>
+                                <p className="sm:flex hidden">Assigned Courses</p>
+                            </div>
+                            <div className="absolute whitespace-nowrap bg-tertiary p-2 rounded-md text-white font-text text-xs bottom-[-2.1rem] left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 transition-all ease-in-out sm:hidden block">
+                                <p>Assigned Courses</p>
+                            </div>
                         </div>
-                        <div className={`flex flex-row px-3 py-2 border-primary border-2 rounded-md font-header items-center gap-2 hover:cursor-pointer transition-all ease-in-out hover:bg-primaryhover hover:text-white ${tab === "archivedCourses" ? "bg-primary text-white hover:border-primaryhover":"bg-white text-primary hover:border-primaryhover"}
-                                        sm:w-full
-                                        w-10 h-10`}
-                                        onClick={() => {if(!loading) return setTab("archivedCourses")}}>
-                            <FontAwesomeIcon icon={faBookmark} className=""/>
-                            <p className="sm:flex hidden">Archived Courses</p>
+                        <div className="relative group sm:w-full">
+                            <div className={`flex flex-row px-3 py-2 border-primary border-2 rounded-md font-header items-center gap-2 hover:cursor-pointer transition-all ease-in-out hover:bg-primaryhover hover:text-white ${tab === "archivedCourses" ? "bg-primary text-white hover:border-primaryhover":"bg-white text-primary hover:border-primaryhover"}
+                                            sm:w-full
+                                            w-10 h-10`}
+                                            onClick={() => {if(!loading) return setTab("archivedCourses")}}>
+                                <FontAwesomeIcon icon={faBookmark} className=""/>
+                                <p className="sm:flex hidden">Archived Courses</p>
+                            </div>
+                            <div className="absolute whitespace-nowrap bg-tertiary p-2 rounded-md text-white font-text text-xs bottom-[-2.1rem] left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 transition-all ease-in-out sm:hidden block">
+                                <p>Archived Courses</p>
+                            </div>
                         </div>
                     </div>
-                    <div className="sm:hidden font-header text-primary">
+                    <div className="sm:hidden font-header text-primary flex flex-col items-end">
                         {
                             tab === "myCourses" ?
-                            <p>My Courses</p>
+                            <>
+                                <p>My Courses</p>
+                                <p className="text-xs font-text text-unactive">List of your added courses</p>
+                            </>
                             : tab === "assignedCourses" ?
-                            <p>Assigned Courses</p>
+                            <>
+                                <p>Assigned Courses</p>
+                                <p className="text-xs font-text text-unactive">List of assigned courses</p>
+                            </>
                             : tab === "archivedCourses" ?
-                            <p>Archived Courses</p>
+                            <>
+                                <p>Archived Courses</p>
+                                <p className="text-xs font-text text-unactive">List of archived courses</p>
+                            </>
                             : null
                         }
                     </div>
@@ -370,98 +394,100 @@ export default function AssignedCourseCatalog() {
             {/* Filter & Search */}
             <div className="col-span-2 col-start-3 flex flex-row gap-2 pr-3
                             md:pr-5 md:grid md:grid-cols-2">
-                <Sheet>
-                    <SheetTrigger>
-                        <div className={`w-10 h-10 flex justify-center items-center border-2 border-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 hover:bg-primaryhover hover:text-white transition-all ease-in-out ${isFiltered ? "bg-primary text-white":"bg-white text-primary"}`}>
-                            <FontAwesomeIcon icon={faFilter}/>
+                <div className="flex flex-row justify-end items-center gap-2">
+                    <Sheet>
+                        <SheetTrigger>
+                            <div className={`w-10 h-10 flex justify-center items-center border-2 border-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 hover:bg-primaryhover hover:text-white transition-all ease-in-out ${isFiltered ? "bg-primary text-white":"bg-white text-primary"}`}>
+                                <FontAwesomeIcon icon={faFilter}/>
+                            </div>
+                        </SheetTrigger>
+                        <SheetOverlay className="bg-gray-500/75 backdrop-blur-sm transition-all" />
+                        <SheetContent className="h-full flex-col flex">
+                        <div>
+                            <h1 className='font-header text-2xl text-primary'>Course Filter</h1>
+                            <p className='text-md font-text text-unactive text-sm'>Categorize courses</p>
                         </div>
-                    </SheetTrigger>
-                    <SheetOverlay className="bg-gray-500/75 backdrop-blur-sm transition-all" />
-                    <SheetContent className="h-full flex-col flex">
-                    <div>
-                        <h1 className='font-header text-2xl text-primary'>Course Filter</h1>
-                        <p className='text-md font-text text-unactive text-sm'>Categorize courses</p>
-                    </div>
-                    <form onSubmit={formik.handleSubmit}>
-                    <div className="flex flex-col gap-2 w-full">
-                        <div className="inline-flex flex-col gap-2 row-start-4 col-span-1">
-                            <label htmlFor="type" className="font-header text-xs flex flex-row justify-between">
-                                <p className="font-text text-xs text-unactive">Course Type</p>
-                            </label>
-                            <div class="grid grid-cols-1">
-                                <select id="type" name="type" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
-                                    value={formik.values.type}
-                                    onChange={formik.handleChange}
-                                    onBlur={formik.handleBlur}
-                                >
-                                <option value="">Select a course type</option>
-                                {coursetypes.map((type) => (
-                                    <option key={type.id} value={type.id}>{type.type_name}</option>
-                                ))}
-                                </select>
-                                <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                                <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                                </svg>
+                        <form onSubmit={formik.handleSubmit}>
+                        <div className="flex flex-col gap-2 w-full">
+                            <div className="inline-flex flex-col gap-2 row-start-4 col-span-1">
+                                <label htmlFor="type" className="font-header text-xs flex flex-row justify-between">
+                                    <p className="font-text text-xs text-unactive">Course Type</p>
+                                </label>
+                                <div class="grid grid-cols-1">
+                                    <select id="type" name="type" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
+                                        value={formik.values.type}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                    >
+                                    <option value="">Select a course type</option>
+                                    {coursetypes.map((type) => (
+                                        <option key={type.id} value={type.id}>{type.type_name}</option>
+                                    ))}
+                                    </select>
+                                    <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                    <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div className="inline-flex flex-col gap-2 row-start-4 col-span-1">
+                                <label htmlFor="category" className="font-header text-xs flex flex-row justify-between">
+                                    <p className="font-text text-xs text-unactive">Course Category</p>
+                                </label>
+                                <div class="grid grid-cols-1">
+                                    <select id="category" name="category" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
+                                        value={formik.values.category}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                    >
+                                    <option value="">Select a course category</option>
+                                    {coursecategories.map((category) => (
+                                        <option key={category.id} value={category.id}>{category.category_name}</option>
+                                    ))}
+                                    </select>
+                                    <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                    <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                    {/* {formik2.touched.course_type && formik2.errors.course_type ? (<div className="text-red-500 text-xs font-text">{formik2.errors.course_type}</div>):null} */}
+                            </div>
+                            <div className="inline-flex flex-col gap-2 row-start-4 col-span-1">
+                                <label htmlFor="training_type" className="font-header text-xs flex flex-row justify-between">
+                                    <p className="font-text text-xs text-unactive">Training Type</p>
+                                </label>
+                                <div class="grid grid-cols-1">
+                                    <select id="training_type" name="training_type" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
+                                        value={formik.values.training_type}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                    >
+                                    <option value="">Select a Training Type</option>
+                                    <option value="Mandatory">Mandatory</option>
+                                    <option value="Unmandatory">Non-Mandatory</option>
+                                    </select>
+                                    <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                    <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                    {/* {formik2.touched.course_type && formik2.errors.course_type ? (<div className="text-red-500 text-xs font-text">{formik2.errors.course_type}</div>):null} */}
+                            </div>
+                            <div className="flex flex-row gap-2 w-full py-2">
+                            <button
+                            type="submit"
+                            className="border-2 border-primary rounded-md w-full py-2 px-4 font-header text-white bg-primary flex justify-center items-center hover:cursor-pointer hover:bg-primaryhover transition-all ease-in-out shadow-md"
+                            >
+                            <p>Filter</p>
+                            </button>
+                                {
+                                    isFiltered ? (<div className="border-2 border-primary rounded-md w-full py-2 px-4 font-header text-primary bg-white flex justify-center items-center hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out shadow-md" onClick={clearFilter}>
+                                                        <p>Clear</p>
+                                                    </div>) : null
+                                }
                             </div>
                         </div>
-                        <div className="inline-flex flex-col gap-2 row-start-4 col-span-1">
-                            <label htmlFor="category" className="font-header text-xs flex flex-row justify-between">
-                                <p className="font-text text-xs text-unactive">Course Category</p>
-                            </label>
-                            <div class="grid grid-cols-1">
-                                <select id="category" name="category" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
-                                    value={formik.values.category}
-                                    onChange={formik.handleChange}
-                                    onBlur={formik.handleBlur}
-                                >
-                                <option value="">Select a course category</option>
-                                {coursecategories.map((category) => (
-                                    <option key={category.id} value={category.id}>{category.category_name}</option>
-                                ))}
-                                </select>
-                                <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                                <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                                {/* {formik2.touched.course_type && formik2.errors.course_type ? (<div className="text-red-500 text-xs font-text">{formik2.errors.course_type}</div>):null} */}
-                        </div>
-                        <div className="inline-flex flex-col gap-2 row-start-4 col-span-1">
-                            <label htmlFor="training_type" className="font-header text-xs flex flex-row justify-between">
-                                <p className="font-text text-xs text-unactive">Training Type</p>
-                            </label>
-                            <div class="grid grid-cols-1">
-                                <select id="training_type" name="training_type" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
-                                    value={formik.values.training_type}
-                                    onChange={formik.handleChange}
-                                    onBlur={formik.handleBlur}
-                                >
-                                <option value="">Select a Training Type</option>
-                                <option value="Mandatory">Mandatory</option>
-                                <option value="Unmandatory">Non-Mandatory</option>
-                                </select>
-                                <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                                <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                                {/* {formik2.touched.course_type && formik2.errors.course_type ? (<div className="text-red-500 text-xs font-text">{formik2.errors.course_type}</div>):null} */}
-                        </div>
-                        <div className="flex flex-row gap-2 w-full py-2">
-                        <button
-                        type="submit"
-                        className="border-2 border-primary rounded-md w-full py-2 px-4 font-header text-white bg-primary flex justify-center items-center hover:cursor-pointer hover:bg-primaryhover transition-all ease-in-out shadow-md"
-                        >
-                        <p>Filter</p>
-                        </button>
-                            {
-                                isFiltered ? (<div className="border-2 border-primary rounded-md w-full py-2 px-4 font-header text-primary bg-white flex justify-center items-center hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out shadow-md" onClick={clearFilter}>
-                                                    <p>Clear</p>
-                                                </div>) : null
-                            }
-                        </div>
-                    </div>
-                    </form>
-                    </SheetContent>
-                </Sheet>
+                        </form>
+                        </SheetContent>
+                    </Sheet>
+                </div>
 
                 <div className=' inline-flex flex-row place-content-between border-2 border-primary rounded-md font-text shadow-md w-full'>
                     <input type="text" className='focus:outline-none text-sm px-4 w-full rounded-md bg-white' placeholder='Search...'/>
@@ -472,31 +498,21 @@ export default function AssignedCourseCatalog() {
             </div>
 
             {/* Course Catalog */}
-            <div className = {`mx-5 col-span-4 row-start-4 row-span-1 grid grid-cols-4 grid-rows-2 gap-3 py-2`}>
+            {/* {`pr-5 pl-4 col-span-4 row-start-4 row-span-1 grid grid-cols-4 gap-3 py-2
+                                md:grid-cols-4 md:grid-rows-2`}> */}
+            <div className = {`grid px-3 py-2 col-span-4 grid-cols-2 grid-rows-3 gap-2
+                                md:pr-5 md:pl-4
+                                lg:grid-cols-4 lg:grid-rows-2`}>
                 {
                     !loading ? (
                         assigned_course && assigned_course.length > 0 ? (
                             assigned_course?.map((course, index) => (
-                                // <AssignedCourseCatalogCard key={index}
-                                // id={course.id}
-                                // name={course.name}
-                                // courseId={course?.CourseID}
-                                // courseType={course.types[0]?.type_name}
-                                // courseCategory={course.categories[0]?.category_name}
-                                // trainingMode={course.training_modes[0]?.modes_name}
-                                // trainingType={course.training_type}
-                                // tab={tab}
-                                // adder={course?.adder}
-                                // enrolled={course?.enrolled}
-                                // ongoing={course?.ongoing}
-                                // due_soon={course?.due_soon}
-                                // selected={()=> {SetCourse(course)}}
-                                // />
                                 <CourseCard key={course.id} course={course} type={tab === "myCourses" || tab === "assignedCourses" ? "courseAdminCourseManager" : "general"} click={()=>{navigate(`/courseadmin/course/${course.id}`); setCourse(course)}}/>
                             ))
                         ) :
                         (
-                            <div className="col-span-4 row-span-2 flex flex-col gap-4 items-center justify-center text-center h-full">
+                            <div className="flex flex-col gap-4 items-center justify-center text-center h-full col-span-2 row-span-3
+                                            lg:col-span-4 lg:row-span-2">
                                 <p className="text-sm font-text text-unactive">No available courses yet</p>
                             </div>
                         )

@@ -335,7 +335,7 @@ export default function DefaultLayout() {
                         >
                         {/* Navigation */}
                         <div className=' hidden flex-row justify-between px-3 py-2 md:p-0 md:flex'>
-                            <Navigation unread_notfications={unreadNotifications} size={breakpoint}/>
+                            <Navigation unread_notfications={unreadNotifications} size={breakpoint} setLoading={setLoading}/>
                         </div>
                         <ScrollArea className={"h-screen"}>
                             <div className='flex flex-col h-screen'>
@@ -343,7 +343,7 @@ export default function DefaultLayout() {
                                                 backdrop-blur-md backdrop-saturate-150 bg-background/70
                                                 top-0 sticky
                                                 md:p-0 md:hidden'>
-                                    <Navigation unread_notfications={unreadNotifications} size={breakpoint}/>
+                                    <Navigation unread_notfications={unreadNotifications} size={breakpoint} setLoading={setLoading}/>
                                     <div className='w-8 h-8 block
                                         md:hidden
                                         xl:hidden'>
