@@ -24,6 +24,11 @@ export const AddCourse = forwardRef(({children, initialStep = 0,formProgress=[],
         back: () => {
             setActiveStep((prev) => Math.max(prev - 1, 0));
         },
+        goTo: (stepIndex) => {
+            if (stepIndex >= 0 && stepIndex < steps.length) {
+                setActiveStep(stepIndex);
+            }
+        },
         activeStep,
         stepMeta,
         isCompleted,
@@ -41,10 +46,9 @@ export const AddCourse = forwardRef(({children, initialStep = 0,formProgress=[],
     }
     return (
         <AddCourseStepper.Provider value={{activeStep}}>
-            <div className="flex flex-row justify-between gap-x-1
-                            ">
-                {/* lg:flex
-                            hidden */}
+            <div className="flex-row justify-between gap-x-1
+                            xl:flex
+                            hidden">
                 {
                     !isCompleted ? steps.map((step, index) => {
                             const isActive = activeStep === index;
@@ -53,8 +57,8 @@ export const AddCourse = forwardRef(({children, initialStep = 0,formProgress=[],
 
                             return (
                                 <div key={index} className={`group grid rounded-md p-3 ${isActive ? 'shadow-md border-2 border-primary': 'border-2 border-transparent'} ${isCurrent ? 'bg-primarybg':null} hover:border-primary transition-all ease-in-out cursor-pointer hover:shadow-md hover:bg-primarybg
-                                                        grid-cols-1 w-fit
-                                                        md:grid-cols-[min-content_1fr] md:gap-2 md:w-full`}
+                                                            grid-cols-1 w-fit
+                                                            md:grid-cols-[min-content_1fr] md:gap-2 md:w-full`}
                                     onClick={()=>{
                                         if((!isCompleted && eneableStepClick && formProgress.includes(step.props.stepID)) || isCurrent) {
                                             setActiveStep(index);
@@ -74,8 +78,27 @@ export const AddCourse = forwardRef(({children, initialStep = 0,formProgress=[],
                             )
                         }) : null
                 }
-
             </div>
+            {
+                !isCompleted ?
+                <div className="xl:hidden flex justify-between items-center gap-3">
+                    <div className="flex gap-3 ">
+                        <div className="flex py-2">
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center bg-primary`}>
+                                <FontAwesomeIcon icon={steps[activeStep]?.props.icon} className={`text-lg text-white`} />
+                            </div>
+                        </div>
+                        <div className="flex-col justify-center items-center leading-tight py-2">
+                            <p className={`font-header text-sm text-primary`}>{steps[activeStep]?.props.stepTitle}</p>
+                            <p className={`font-text text-xs text-unactive`}>{steps[activeStep]?.props.stepDesc}</p>
+                        </div>
+                    </div>
+                    <div>
+                        <p className="font-header text-primary text-sm">{activeStep+1}/{steps.length}</p>
+                    </div>
+                </div>
+                : null
+            }
             <div className="py-2">
                 {
                     isCompleted ? completedStep : steps[activeStep]
