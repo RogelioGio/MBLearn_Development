@@ -14,9 +14,6 @@ export default function GuestLayout() {
     useEffect(() => {
         if (token) {
             navigate("/");
-        } else {
-            console.log("The user is not logged in");
-            console.log(token);
         }
     }, [token, navigate]);
 

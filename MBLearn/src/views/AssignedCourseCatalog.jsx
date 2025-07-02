@@ -39,9 +39,11 @@ export default function AssignedCourseCatalog() {
     const {setCourse} = useCourse();
     const navigate = useNavigate();
 
+
     useEffect(() => {
         setCourse(null)
     },[])
+
 
     // Sort Order State
     const [sort, setSort] = useState({

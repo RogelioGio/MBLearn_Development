@@ -5,7 +5,7 @@ import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import { useEffect, useState } from "react";
 import axiosClient from "../axios-client";
 
-const DeletePanelModal = ({open, close, referesh, refereshPanel, id}) => {
+const DeletePanelModal = ({open, close, refresh, refreshPanel, id}) => {
 
     const [deleting, setDeleting] = useState()
     const [panelId, setPanelId] = useState(id)
@@ -19,14 +19,12 @@ const DeletePanelModal = ({open, close, referesh, refereshPanel, id}) => {
     const handleDelete = () => {
         setDeleting(true)
         axiosClient.delete(`carousels/${panelId}`)
-        .then(
-            refereshPanel(),
+        .then(()=>{
+            refresh()
+            close(),
             setTimeout(() => {
-                close(),
-                setDeleting(false),
-                referesh()
-            }
-            , 500),
+            setDeleting(false)}, 500)
+        }
         ).catch((error) => {
             setDeleting(false)
             console.log("Error:", error)})

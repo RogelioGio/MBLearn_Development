@@ -45,3 +45,9 @@ axiosClient.interceptors.response.use(
 
 
 export default axiosClient;
+
+export const uploadPhoto = axios.create({
+    baseURL: "https://api.cloudinary.com/v1_1/ddqp4u84v",
+})
+
+

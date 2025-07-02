@@ -22,11 +22,10 @@ const AnnouncmentCarousel = () => {
     const {role} = useStateContext()
     const carousels = useCarouselContext()
 
-
     useEffect(() => {
         setIsLoading(true)
         if(carousels) {
-            setCarouselData(carousels)
+            setCarouselData(carousels.carousels)
             setIsLoading(false)
         }
     }, [carousels])
@@ -68,6 +67,7 @@ const AnnouncmentCarousel = () => {
             </div>
             <CarouselContent>
                 {
+                    carouselData.length === 0 ? null :
                     carouselData.slice(0, 5).map((img, index) => (
                                     <CarouselItem key={index}>
                                     {/* <div
@@ -77,8 +77,9 @@ const AnnouncmentCarousel = () => {
                                         }}
                                         >
                                     </div> */}
+                                    {/* ${import.meta.env.VITE_API_BASE_URL}/storage/carouselimages/${img.image_path} */}
                                     <div className="border-2 border-primary h-[full] rounded-md aspect-[4/1] shadow-sm bg-white bg-center bg-cover">
-                                        <img src={`${import.meta.env.VITE_API_BASE_URL}/storage/carouselimages/${img.image_path}`} alt="" />
+                                        <img src={img.image_path} alt="" />
                                     </div>
                                     </CarouselItem>
                     ))

@@ -8,6 +8,7 @@
     "require": {
         "php": "^8.2",
         "algolia/algoliasearch-client-php": "^4.19",
+        "cloudinary-labs/cloudinary-laravel": "^3.0",
         "doctrine/dbal": "^4.2",
         "google/apiclient": "^2.18",
         "http-interop/http-factory-guzzle": "^1.2",

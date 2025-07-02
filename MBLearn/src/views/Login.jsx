@@ -208,7 +208,7 @@ export default function Login() {
             <div className='max-w-md h-fit shadow-md rounded-xl px-16 py-10 flex flex-col gap-5 bg-white'>
 
                     <img src={Full_Logo} alt="" className='h-7 w-auto p-0 m-0 self-start'/>
-                    <h1 className='font-header font-bold text-primary text-3xl'>
+                    <h1 className='font-header text-primary text-3xl'>
                         Prepare for Success,<br/>
                         Access Your Training!
                     </h1>

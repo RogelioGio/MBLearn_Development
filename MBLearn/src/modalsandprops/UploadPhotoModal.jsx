@@ -1,10 +1,11 @@
-import { faBullhorn, faFileArrowDown, faFileArrowUp, faUpload, faX, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faBullhorn, faFileArrowDown, faFileArrowUp, faSpinner, faUpload, faX, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import * as React from "react";
 import { useEffect } from "react";
 import { useState } from "react";
-import axiosClient from "../axios-client";
+import axiosClient, { uploadPhoto } from "../axios-client";
+import { CarouselContentProvider, useCarouselContext } from "../contexts/CarourselContext";
 
 const UploadPhotoModal = ({open, close, refreshlist, refreshpanel}) => {
 
@@ -37,8 +38,10 @@ const UploadPhotoModal = ({open, close, refreshlist, refreshpanel}) => {
 
 
     const uploadHandler = () => {
+        if(uploading) return
         const image = new FormData();
         image.append("image", photo);
+        //image.append("upload_preset", "mblearn_preset");
         image.append("image_name", filename);
         setUploading(true)
         axiosClient.post('/carousels', image, {
@@ -47,15 +50,27 @@ const UploadPhotoModal = ({open, close, refreshlist, refreshpanel}) => {
             }
         })
         .then((response) => {
-            console.log("Response", response);
             setUploading(false)
             refreshlist()
-            refreshpanel()
             Close();
         }).catch((error) => {
             console.log("Error", error);
             setUploading(false)
         })
+
+        // uploadPhoto.post("/upload", image)
+        // .then((res)=>{
+        //     console.log("Response", res);
+        //     setUploading(false)
+        //     refreshlist()
+        //     refreshpanel()
+        //     Close();
+        // })
+        // .catch((err)=>{
+        //     console.log("Error", err);
+        //     setUploading(false)
+        //     setWrongFile(true)
+        // })
     }
 
     const Close = () => {
@@ -165,10 +180,15 @@ const UploadPhotoModal = ({open, close, refreshlist, refreshpanel}) => {
                                             >
                                             <p>Cancel</p>
                                         </button>
-                                        <button type="submit" className="w-full inline-flex flex-col items-center justify-center gap-2 bg-primary p-3 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out"
+                                        <button type="submit" className={`w-full inline-flex flex-col items-center justify-center gap-2 bg-primary p-3 rounded-md font-header uppercase text-white text-xs transition-all ease-in-out ${uploading ? "opacity-50 cursor-not-allowed" : "hover:cursor-pointer hover:bg-primaryhover hover:scale-105"}`}
                                             onClick={uploadHandler}
                                             disabled={uploading}>
-                                            <p>{uploading ? "Uploading..." : "Upload"}</p>
+                                            <p>{uploading ? <>
+
+                                                <FontAwesomeIcon icon={faSpinner} className="animate-spin text-white"/>
+                                                <span className="ml-2">Uploading...</span>
+
+                                                </> : "Upload"}</p>
                                         </button>
                                     </div>
                                     :

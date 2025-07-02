@@ -23,7 +23,7 @@ class StoreCarouselImageRequest extends FormRequest
     {
         return [
             "image_name" => "required|string|max:255",
-            "image" => "required|image|mimes:jpeg,png,jpg|max:2048",
+            "image" => "required|image|mimes:jpeg,png,jpg|max:10000",
         ];
     }
 }

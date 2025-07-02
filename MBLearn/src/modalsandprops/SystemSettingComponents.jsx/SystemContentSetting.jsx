@@ -10,6 +10,7 @@ import { format } from "date-fns";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, useCarousel } from "MBLearn/src/components/ui/carousel";
 import { useRef } from "react";
 import LoginBackground2 from '../../assets/Login_Background2.png';
+import { CarouselContentProvider, useCarouselContext } from "MBLearn/src/contexts/CarourselContext";
 
 
 
@@ -51,12 +52,13 @@ const usePagination = (data, itemPerpage = 2) => {
 
 const SystemContentSetting = ({}) => {
     const [openUpload, setOpenUpload] = useState(false)
-    const [panels, setPanels] = useState()
+    const [panels, setPanels] = useState([])
     const [isLoading, setIsLoading] = useState(true)
     const [destroy, setDestroy] = useState(false)
     const [deletingID, setDeletingID] = useState()
     const [currentPanel, setCurrentPanel] = useState(0)
     const carouselRef = useRef(null)
+    const {_setCarousel} = useCarouselContext();
 
     //Carousel Pagination
     const {currentPaginated,
@@ -74,6 +76,7 @@ const SystemContentSetting = ({}) => {
             axiosClient.get('/carousels')
             .then(({data}) => {
                 setPanels(data)
+                _setCarousel(data)
                 setIsLoading(false)
             }).catch((err)=> {
                 setIsLoading(false)
@@ -112,13 +115,14 @@ const SystemContentSetting = ({}) => {
     }, [api]);
     }
 
-    useEffect(() => {
-        console.log(currentPanel)
-        console.log(panels)
-    }, [currentPanel])
+    // useEffect(() => {
+    //     console.log(currentPanel)
+    //     console.log(panels)
+    // }, [currentPanel])
 
 
     return (
+        <CarouselContentProvider>
         <>
             <div className="pb-5 border-b border-divider">
                 <div className="flex flex-row justify-between items-center pb-5">
@@ -160,10 +164,11 @@ const SystemContentSetting = ({}) => {
                                         <p></p>
                                     </div>
                                 </CarouselItem>
+                                // ${import.meta.env.VITE_API_BASE_URL}/storage/carouselimages/${img.image_path}
                                 : panels?.slice(0,5).map((img, index) => (
                                     <CarouselItem key={index}>
                                         <div className="border-2 border-primary rounded-md shadow-md aspect-[4/1]">
-                                            <img src={`${import.meta.env.VITE_API_BASE_URL}/storage/carouselimages/${img.image_path}`} alt="Announcment Panel" className="w-full h-full object-cover rounded-sm"/>
+                                            <img src={img.image_path} alt="Announcment Panel" className="w-full h-full object-cover rounded-sm"/>
                                         </div>
                                     </CarouselItem>
                                 ))
@@ -177,7 +182,9 @@ const SystemContentSetting = ({}) => {
                                     :<>
                                         <p className="text-unactive">Active Panel Details</p>
                                         <p className="text-sm text-primary">{panels[currentPanel]?.image_name || "Loading"}</p>
-                                        <p className="text-unactive">Date-Added: {format(new Date(panels[currentPanel]?.created_at),"MMMM dd yyyy") || "Loading"}</p>
+                                        <p className="text-unactive">Date-Added:  {panels?.length > 0 ? null : panels[currentPanel]?.created_at ?
+                                                            format(new Date(panels[currentPanel].created_at), "MMMM dd yyyy")
+                                                            : "Loading"}</p>
                                     </>
                                 }
                             </div>
@@ -224,7 +231,9 @@ const SystemContentSetting = ({}) => {
                                                     <p className="md:block hidden">{panel.image_name}</p>
                                                     <div className="flex flex-col md:hidden">
                                                         <p>{panel.image_name}</p>
-                                                        <p className="text-xs font-text text-unactive">Date-Added: {format(new Date(panel.created_at), "MMMM dd, yyyy")}</p>
+                                                        <p className="text-xs font-text text-unactive">Date-Added:  {panels?.length > 0 ? null : panels[currentPanel]?.created_at ?
+                                                            format(new Date(panels[currentPanel].created_at), "MMMM dd yyyy")
+                                                            : "Loading"}</p>
                                                     </div>
                                                     <div className="md:hidden">
                                                         <div className='aspect-square w-10 flex flex-row justify-center items-center bg-white border-2 border-primary rounded-md shadow-md text-primary hover:text-white hover:cursor-pointer hover:scale-105 hover:bg-primary ease-in-out transition-all'
@@ -352,8 +361,9 @@ const SystemContentSetting = ({}) => {
             </div>
 
             <UploadPhotoModal open={openUpload} close={() => setOpenUpload(false)} refreshlist={fetchPanels}/>
-            <DeletePanelModal open={destroy} close={closeDelete} referesh={fetchPanels} id={deletingID}/>
+            <DeletePanelModal open={destroy} close={closeDelete} refresh={fetchPanels} id={deletingID}/>
         </>
+        </CarouselContentProvider>
     )
 }
 export default SystemContentSetting;
