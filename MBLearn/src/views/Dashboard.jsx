@@ -29,7 +29,8 @@ import { faCalendar } from '@fortawesome/free-regular-svg-icons';
 import CalendarModal from '../modalsandprops/dashboardComponents/CalendarModal';
 import { useNavigate } from 'react-router';
 import Course from './Course';
-import { CourseProvider } from '../contexts/CourseContext';
+import { CourseProvider } from '../contexts/Course';
+
 
 
 // Sample configs for chart
@@ -447,9 +448,7 @@ export default function Dashboard()
 
     return (
         <>
-            <CourseProvider>
-                <DashboardLayout role={role} name={user.user_infos.first_name} user={user}/>
-            </CourseProvider>
+            <DashboardLayout role={role} name={user.user_infos.first_name} user={user}/>
         </>
     )
 

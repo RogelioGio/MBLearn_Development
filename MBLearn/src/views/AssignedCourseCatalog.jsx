@@ -22,8 +22,9 @@ import {
 import { useCourseContext } from "../contexts/CourseListProvider"
 import { useFormik } from "formik"
 import CourseCard from "../modalsandprops/CourseCard"
-import { useCourse } from "../contexts/CourseContext"
+
 import { useNavigate } from "react-router"
+import { useCourse } from "../contexts/Course"
 
 
 
@@ -35,7 +36,6 @@ export default function AssignedCourseCatalog() {
     const [tab, setTab] = useState("myCourses");
     const [openAddCourse, setOpenAddCourse] = useState(false);
     const [isFiltered, setFiltered] = useState(false);
-    //const {SetCourse} = useCourse();
     const {setCourse} = useCourse();
     const navigate = useNavigate();
 
@@ -509,7 +509,7 @@ export default function AssignedCourseCatalog() {
                     !loading ? (
                         assigned_course && assigned_course.length > 0 ? (
                             assigned_course?.map((course, index) => (
-                                <CourseCard key={course.id} course={course} type={tab === "myCourses" || tab === "assignedCourses" ? "courseAdminCourseManager" : "general"} click={()=>{navigate(`/courseadmin/course/${course.id}`); setCourse(course)}}/>
+                                <CourseCard key={course.id} course={course} type={tab === "myCourses" || tab === "assignedCourses" ? "courseAdminCourseManager" : "general"} click={()=>{setCourse(course), navigate(`/courseadmin/course/${course.id}`)}}/>
                             ))
                         ) :
                         (

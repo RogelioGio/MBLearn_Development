@@ -6,16 +6,14 @@ import { useEffect, useState } from "react"
 import axiosClient from "../axios-client"
 import { useFormik } from "formik"
 import { useCourseContext } from "../contexts/CourseListProvider"
-import { useCourse } from "../contexts/CourseContext"
 
 
-const EditCourseModal = ({open, close, id}) => {
+const EditCourseModal = ({open, close, id, course}) => {
     const [hover, setHover] = useState(false);
     const [loading, setLoading] = useState(false)
     // const {selectedCourse = [] , selectCourse, isFetching, Course} = useCourse()
     const {coursetypes, coursecategories, trainingmodes} = useCourseContext();
     const [tab, setTab] = useState(1);
-    const {course} = useCourse()
 
     // useEffect(() => {
     //     if (open && id) {

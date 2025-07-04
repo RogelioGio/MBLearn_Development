@@ -15,7 +15,7 @@ import { Progress } from "../components/ui/progress";
 import Course from "../views/Course";
 import axiosClient from "../axios-client";
 import Loading from "../assets/course_Loading.svg"
-import { useCourse } from "../contexts/CourseContext";
+
 
 
 const CourseModuleProps = ({headers, course, LearnerProgress = [], setLearnerProgress, fetchingLearnerProgress}) => {
@@ -24,7 +24,7 @@ const CourseModuleProps = ({headers, course, LearnerProgress = [], setLearnerPro
     const {role,user} = useStateContext()
     const [loading, setLoading] = useState(false)
     const [miscProgress, setMiscProgress] = useState([])
-    const {setCourse} = useCourse();
+    //const {setCourse} = useCourse();
 
     //Lesson must be in this object structure
     // const LessonObject = {

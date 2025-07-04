@@ -30,7 +30,7 @@ export default function LearnerCourseManager() {
     const {coursetype} = useParams()
     const [duration, setDuration] = useState();
     const navigate = useNavigate();
-    const {SetCourse} = useCourse()
+    //const {SetCourse} = useCourse()
 
     // Sort Order State
         const [sort, setSort] = useState({

@@ -45,7 +45,6 @@ const CourseCard = ({ course, type, click}) => {
             <HoverCardTrigger>
                 <div className="group relative bg-white w-full h-full rounded-md shadow-md hover:cursor-pointer transition-all ease-in-out grid grid-rows-[1fr_min-content]" onClick={click}
                     onMouseMove={handleMouseMove}
-
                     ref={cardRef}>
                     <div className={`bg-gradient-to-b from-[hsl(239,94%,19%)] via-[hsl(214,97%,27%)] to-[hsl(201,100%,36%)] md:rounded-t-md rounded-md flex flex-row justify-end gap-2 ${type === 'general' ? '!rounded-md': ''}`}>
                         <div className={`bg-gradient-to-t from-black via-black/80 to-transparent w-full p-4 flex flex-col justify-between rounded-md md:rounded-none  ${type === 'general' ? 'rounded-md' : ''}`}>
@@ -68,7 +67,7 @@ const CourseCard = ({ course, type, click}) => {
                                 <h1 className='font-header text-sm text-white'>{course.name}</h1>
                                 <p className='font-text text-xs text-white'>Course ID: {course.CourseID}</p>
                             </div>
-                            <div className="absolute md:hidden group-hover:scale-100 scale-0 border border-primary rounded-md font-text p-2 w-fit text-xs transition-all ease-in-out bg-white shadow-md flex flex-col justify-between gap-1 z-10"
+                            <div className="absolute md:hidden group-hover:scale-100 scale-0 border border-primary rounded-md font-text p-2 w-fit text-xs transition-all ease-in-out bg-white shadow-md flex flex-col justify-between gap-1 z-10 pointer-events-none"
                                         style={{
                                             left: pos?.x + 15,
                                             top: pos?.y,

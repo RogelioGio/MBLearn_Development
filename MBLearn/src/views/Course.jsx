@@ -1,5 +1,5 @@
 import { faCircleCheck as faCircleCheckRegular, faCircleLeft as faCircleLeftRegular } from "@fortawesome/free-regular-svg-icons"
-import { faArrowDownShortWide, faArrowDownZA, faArrowLeft, faArrowUpAZ, faArrowUpWideShort, faBook, faBookBookmark, faBookOpenReader, faCakeCandles, faChalkboard, faChalkboardUser, faCircle, faCircleInfo, faClipboard, faClipboardUser, faFile, faFileContract, faGraduationCap, faPencil, faPenToSquare, faPieChart, faSort, faSquareCheck, faTrash, faUser, faUserCircle, faUserGroup, faUserPlus } from "@fortawesome/free-solid-svg-icons"
+import { faArrowDownShortWide, faArrowDownZA, faArrowLeft, faArrowUpAZ, faArrowUpWideShort, faBook, faBookBookmark, faBookOpenReader, faBookReader, faCakeCandles, faChalkboard, faChalkboardUser, faCircle, faCircleInfo, faClipboard, faClipboardUser, faFile, faFileContract, faGraduationCap, faPencil, faPenToSquare, faPieChart, faSort, faSpinner, faSquareCheck, faTrash, faUser, faUserCircle, faUserGraduate, faUserGroup, faUserPlus, faUserTie } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Stepper } from "@mantine/core"
 import React, { useEffect, useState } from "react"
@@ -23,7 +23,8 @@ import CourseDetailsModal from "../modalsandprops/CourseDetailsModal"
 import CourseCourseAdminAssignmentProps from "../modalsandprops/CourseCourseAdminAssigmentProps"
 import AddAssignCourseAdmin from "../modalsandprops/AddAssignCourseAdmin"
 import CoursePublishingModal from "../modalsandprops/CoursePublishingModal"
-import { useCourse } from "../contexts/CourseContext"
+import { useCourse } from "../contexts/Course"
+
 
 
 export default function Course() {
@@ -37,27 +38,24 @@ export default function Course() {
     const [openDetails, setOpenDetails] = useState(false);
     const [openPublish, setOpenPublish] = useState(false);
     const [assign, setAssign] = useState(false);
-    // const {selectCourse, selectedCourse, isFetching, resetSelectedCourse, Course} = useCourse();
-    const {course, setCourse} = useCourse();
+    const {course, setCourse} = useCourse()
     const [learnerProgress, setLearnerProgress] = useState();
 
 
-    useEffect(() => {
-        console.log('the corse is passed is:', course || "none");
-    },[course])
+    // useEffect(() => {
+    //     console.log('the corse is passed is:', course || "none");
+    // },[course])
 
     useEffect(()=>{
-        // if (!course) {
-        //     setLoading(true);
-        //     axiosClient.get(`/coursecontext/${id}`)
-        //     .then((res) => {
-        //         setLoading(false);
-        //     }).catch((e) => {
-        //         console.error("Error fetching course data:", e);
-        //         setLoading(false);
-        //     })
-        // } else
-        if (role === "Learner") {
+        if(!course && role === "Course Admin") {
+            setLoading(true)
+            axiosClient.get(`/coursecontext/${id}`)
+            .then((res) => {
+                setLoading(false);
+                setCourse(res.data)
+            })
+            .catch((e) => console.log(e))
+        } else if(!course && role === "Learner") {
             setLoading(true)
             axiosClient.get(`/coursecontext/${id}/${user.user_infos.id}`)
             .then((res) => {
@@ -66,7 +64,7 @@ export default function Course() {
                 setLoading(false)
             }).catch((e) => console.log(e))
         }
-    },[])
+    },[course])
 
     // useEffect(() => {
         //     console.log("Active Tab:", tab);
@@ -81,7 +79,7 @@ export default function Course() {
 
     return(
         <>
-        <div className={`grid ${role === "Course Admin" ? "grid-cols-4 grid-rows-[min-content_3rem_auto]":"grid-cols-[1fr_20rem] grid-rows-[min-content_min-content_4rem_auto]"} grid-rows-[4rem_3rem_auto] h-full w-full overflow-hidden`}>
+        <div className={`grid ${role === "Course Admin" ? "grid-cols-4 grid-rows-[min-content_min-content_auto]":"grid-cols-[1fr_20rem] grid-rows-[min-content_min-content_4rem_auto]"} grid-rows-[4rem_3rem_auto] h-full w-full overflow-hidden`}>
             <Helmet>
                 {/* Title of the mark-up */}
                 <title>MBLearn | {isLoading ? "Loading..." : course?.name || "No Course Found"}</title>
@@ -89,14 +87,14 @@ export default function Course() {
 
 
             {
-                !isLoading && role === "Course Admin" ? (
+                role === "Course Admin" ? (
                     <>
                         {/* Header */}
                         <div className="py-2 col-span-4 pr-2">
                             <div className="bg-gradient-to-b from-[hsl(239,94%,19%)] via-[hsl(214,97%,27%)] to-[hsl(201,100%,36%)] rounded-xl shadow-md">
                                 <div className="flex flex-col gap-4 bg-gradient-to-b from-transparent to-black rounded-xl">
-                                    <div className="flex flex-row justify-end px-2 pt-4 gap-x-2">
-                                        <div className=" flex flex-row  items-center text-white justify-center border-2 border-white rounded-md px-4 py-2 gap-3 w-fit transition-all ease-in-out hover:cursor-pointer hover:bg-white hover:text-primary">
+                                    <div className="flex flex-row justify-end px-4 pt-4 gap-x-2">
+                                        {/* <div className=" flex flex-row  items-center text-white justify-center border-2 border-white rounded-md px-4 py-2 gap-3 w-fit transition-all ease-in-out hover:cursor-pointer hover:bg-white hover:text-primary">
                                             <FontAwesomeIcon icon={faBookBookmark} />
                                             <p className="font-header">Publish</p>
                                         </div>
@@ -111,49 +109,74 @@ export default function Course() {
                                         <div className=" flex flex-row  items-center text-white justify-center border-2 border-white rounded-md px-4 py-2 gap-3 w-fit transition-all ease-in-out hover:cursor-pointer hover:bg-white hover:text-primary">
                                             <FontAwesomeIcon icon={faCircleInfo} />
                                             <p className="font-header">Details</p>
+                                        </div> */}
+                                        <div className="group relative">
+                                            <div className="border-2 bnorder-primary w-10 h-10 rounded-md flex items-center justify-center text-white hover:cursor-pointer hover:bg-white hover:text-primary transition-all ease-in-out">
+                                                <FontAwesomeIcon icon={faBookBookmark} />
+                                            </div>
+                                            <p className="scale-0 group-hover:scale-100 font-text text-xs p-2 rounded bg-tertiary text-white absolute left-1/2 -translate-x-1/2 -bottom-10 shadow-md transition-all ease-in-out">
+                                                Publish
+                                            </p>
+                                        </div>
+                                        <div className="border-2 bnorder-primary w-10 h-10 rounded-md flex items-center justify-center text-white">
+                                            <FontAwesomeIcon icon={faPenToSquare} />
+                                        </div>
+                                        <div className="border-2 bnorder-primary w-10 h-10 rounded-md flex items-center justify-center text-white">
+                                            <FontAwesomeIcon icon={faBookReader} />
+                                        </div>
+                                        <div className="border-2 bnorder-primary w-10 h-10 rounded-md flex items-center justify-center text-white">
+                                            <FontAwesomeIcon icon={faCircleInfo} />
                                         </div>
                                     </div>
                                     <div className="flex flex-row gap-3 pb-4 px-5">
-                                        <div>
-                                            <div className="w-8 h-8 group aspect-square rounded-full border-white border-2 flex flex-row justify-center items-center hover:bg-white transition-all ease-in-out" onClick={()=>navigate(-1)}>
-                                                <FontAwesomeIcon icon={faArrowLeft} className="text-white cursor-pointer group-hover:text-primary"/>
+                                        {
+                                            !isLoading &&
+                                            <div>
+                                                <div className="w-8 h-8 group aspect-square rounded-full border-white border-2 flex flex-row justify-center items-center hover:bg-white transition-all ease-in-out" onClick={()=>navigate(-1)}>
+                                                    <FontAwesomeIcon icon={faArrowLeft} className="text-white cursor-pointer group-hover:text-primary"/>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div>
+                                        }
+                                        <div className={`${isLoading ? "flex flex-row gap-2 text-white text-2xl items-center":""}`}>
+                                            {
+                                                isLoading ?
+                                                <>
+                                                <FontAwesomeIcon icon={faSpinner} className="animate-spin"/>
+                                                <h1 className="font-header text-2xl text-white">Loading... </h1>
+                                                </>
+                                                :
+                                                <>
                                                 <h1 className="font-header text-2xl text-white">{course?.name} </h1>
                                                 <p className="font-text text-xs text-white">Course ID: {course?.CourseID} </p>
-                                            </div>
+                                                </>
+                                            }
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        {/* Content */}
-                        <div className="col-span-4 row-span-2 grid grid-cols-[min-content_1fr] grid-rows-[min-content_auto]">
-                            {/* Sidebar */}
-                            <div className="col-span-1 row-span-2 p-2 flex flex-col gap-1">
-                                <div className="relative group">
-                                    <div className={`h-10 w-10 border-primary border-2 rounded-md flex justify-center items-center ${tab === "module" ? "bg-primary  text-white hover:bg-primaryhover hover:cursor-pointer hover:border-primaryhover hover:text-white" : "text-primary bg-white hover:bg-primaryhover hover:cursor-pointer hover:text-white"} transition-all ease-in-out`} onClick={()=>setTab("module")}>
-                                        <FontAwesomeIcon icon={faFileContract}/>
-                                    </div>
-                                    <div className="absolute top-12 left-1/2 transform -translate-x-1/2 bg-white p-2 rounded-md shadow-lg hidden group-hover:block">
-                                        <p className="text-xs font-header text-center text-primary">Modules</p>
-                                    </div>
-                                </div>
-                                <div className={`h-10 w-10 border-primary border-2 rounded-md flex justify-center items-center ${tab === "learner" ? "bg-primary text-white hover:bg-primaryhover hover:cursor-pointer hover:border-primaryhover hover:text-white" : "text-primary bg-white hover:bg-primaryhover hover:cursor-pointer hover:text-white"} transition-all ease-in-out`} onClick={()=>setTab("learner")}>
-                                    <FontAwesomeIcon icon={faGraduationCap}/>
-                                </div>
-                                <div className={`h-10 w-10 border-primary border-2 rounded-md flex justify-center items-center ${tab === "courseAdmin" ? "bg-primary text-white hover:bg-primaryhover hover:cursor-pointer hover:border-primaryhover hover:text-white" : "text-primary bg-white hover:bg-primaryhover hover:cursor-pointer hover:text-white"} transition-all ease-in-out`} onClick={()=>setTab("courseAdmin")}>
-                                    <FontAwesomeIcon icon={faChalkboardUser}/>
-                                </div>
-                                <div className={`h-10 w-10 border-primary border-2 rounded-md flex justify-center items-center ${tab === "enroll" ? "bg-primary text-white hover:bg-primaryhover hover:cursor-pointer hover:border-primaryhover hover:text-white" : "text-primary bg-white hover:bg-primaryhover hover:cursor-pointer hover:text-white"} transition-all ease-in-out`} onClick={()=>setTab("enrollment")}>
-                                    <FontAwesomeIcon icon={faUserPlus}/>
-                                </div>
-                                <div className={`h-10 w-10 border-primary border-2 rounded-md flex justify-center items-center ${tab === "report" ? "bg-primary text-white hover:bg-primaryhover hover:cursor-pointer hover:border-primaryhover hover:text-white" : "text-primary bg-white hover:bg-primaryhover hover:cursor-pointer hover:text-white"} transition-all ease-in-out`} onClick={()=>setTab("report")}>
-                                    <FontAwesomeIcon icon={faPieChart}/>
-                                </div>
+
+                        {/* Tabs */}
+                        <div className="col-span-4 flex flex-row gap-2">
+                            <div className={`border-2 border-primary rounded-md shadow-md w-fit py-2 px-4 flex flex-row gap-4 items-center justify-center text-primary hover:cursor-pointer transition-all ease-in-out hover:bg-primaryhover hover:border-primaryhover hover:text-white ${tab === "module" ? "border-b-2 border-primary text-white bg-primary" : 'bg-white text-primary'}`} onClick={()=> setTab("module")}>
+                                <FontAwesomeIcon icon={faFileContract}/>
+                                <p className="font-header">Course Content</p>
                             </div>
-                            <div>
-                                {/*  */}
+                            <div className={`border-2 border-primary rounded-md shadow-md w-fit py-2 px-4 flex flex-row gap-4 items-center justify-center text-primary hover:cursor-pointer transition-all ease-in-out hover:bg-primaryhover hover:border-primaryhover hover:text-white ${tab === "learner" ? "border-b-2 border-primary text-white bg-primary" : 'bg-white text-primary'}`} onClick={()=> setTab("learner")}>
+                                <FontAwesomeIcon icon={faUserGraduate}/>
+                                <p className="font-header">Learners</p>
+                            </div>
+                            <div className={`border-2 border-primary rounded-md shadow-md w-fit py-2 px-4 flex flex-row gap-4 items-center justify-center text-primary hover:cursor-pointer transition-all ease-in-out hover:bg-primaryhover hover:border-primaryhover hover:text-white ${tab === "courseAdmin" ? "border-b-2 border-primary text-white bg-primary" : 'bg-white text-primary'}`} onClick={()=> setTab("courseAdmin")}>
+                                <FontAwesomeIcon icon={faUserTie}/>
+                                <p className="font-header">Course Admin</p>
+                            </div>
+                            <div className={`border-2 border-primary rounded-md shadow-md w-fit py-2 px-4 flex flex-row gap-4 items-center justify-center text-primary hover:cursor-pointer transition-all ease-in-out hover:bg-primaryhover hover:border-primaryhover hover:text-white ${tab === "enrollment" ? "border-b-2 border-primary text-white bg-primary" : 'bg-white text-primary'}`} onClick={()=> setTab("enrollment")}>
+                                <FontAwesomeIcon icon={faUserPlus}/>
+                                <p className="font-header">Enrollment</p>
+                            </div>
+                            <div className={`border-2 border-primary rounded-md shadow-md w-fit py-2 px-4 flex flex-row gap-4 items-center justify-center text-primary hover:cursor-pointer transition-all ease-in-out hover:bg-primaryhover hover:border-primaryhover hover:text-white ${tab === "report" ? "border-b-2 border-primary text-white bg-primary" : 'bg-white text-primary'}`} onClick={()=> setTab("report")}>
+                                <FontAwesomeIcon icon={faPieChart}/>
+                                <p className="font-header">Course Reports</p>
                             </div>
                         </div>
                         {/* Tabs */}
@@ -237,7 +260,7 @@ export default function Course() {
 
         </div>
         {/* Edit */}
-        <EditCourseModal open={open} close={()=>setOpen(false)} id={course?.id}/>
+        <EditCourseModal open={open} close={()=>setOpen(false)} id={course?.id} course={course}/>
         {/* Assign Course Admin */}
         {/* <AssignCourseAdmin open={assign} close={()=>setAssign(false)} id={course?.id}/> */}
         <AddAssignCourseAdmin courseID={course?.id} open={assign}  close={()=>setAssign(false)} />
