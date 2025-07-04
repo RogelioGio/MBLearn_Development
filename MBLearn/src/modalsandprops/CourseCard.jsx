@@ -92,7 +92,7 @@ const CourseCard = ({ course, type, click}) => {
                                             <p className="text-unactive">Due-soon:</p>
                                         </div>
                                         <p>{course.due_soon}</p>
-                                    </div>4
+                                    </div>
                             </div>
                         </div>
                     </div>

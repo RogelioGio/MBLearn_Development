@@ -71,7 +71,7 @@ export default function Course() {
         // }, [tab]);
 
         const tabComponents = {
-            module: <CourseModuleProps course={course}/>,
+            module: <CourseModuleProps course={course} usedTo={"Course Admin"}/>,
             learner: <CourseLearenerProps course={course}/>,
             courseAdmin: <CourseCourseAdminAssignmentProps courseID={course}/>,
             enrollment: <CourseEnrollmentProps course={course}/>,
@@ -90,10 +90,12 @@ export default function Course() {
                 role === "Course Admin" ? (
                     <>
                         {/* Header */}
-                        <div className="py-2 col-span-4 pr-2">
-                            <div className="bg-gradient-to-b from-[hsl(239,94%,19%)] via-[hsl(214,97%,27%)] to-[hsl(201,100%,36%)] rounded-xl shadow-md">
-                                <div className="flex flex-col gap-4 bg-gradient-to-b from-transparent to-black rounded-xl">
-                                    <div className="flex flex-row justify-end px-4 pt-4 gap-x-2">
+                        <div className="col-span-4 pb-2
+                                        md:py-2 md:pr-2">
+                            <div className="bg-gradient-to-b from-[hsl(239,94%,19%)] via-[hsl(214,97%,27%)] to-[hsl(201,100%,36%)]
+                                            md:rounded-xl md:shadow-md">
+                                <div className="flex flex-col gap-4 bg-gradient-to-b from-transparent to-black md:rounded-xl">
+                                    <div className="flex flex-row justify-between px-4 pt-4 gap-x-2">
                                         {/* <div className=" flex flex-row  items-center text-white justify-center border-2 border-white rounded-md px-4 py-2 gap-3 w-fit transition-all ease-in-out hover:cursor-pointer hover:bg-white hover:text-primary">
                                             <FontAwesomeIcon icon={faBookBookmark} />
                                             <p className="font-header">Publish</p>
@@ -110,28 +112,52 @@ export default function Course() {
                                             <FontAwesomeIcon icon={faCircleInfo} />
                                             <p className="font-header">Details</p>
                                         </div> */}
-                                        <div className="group relative">
-                                            <div className="border-2 bnorder-primary w-10 h-10 rounded-md flex items-center justify-center text-white hover:cursor-pointer hover:bg-white hover:text-primary transition-all ease-in-out">
-                                                <FontAwesomeIcon icon={faBookBookmark} />
+                                        <div>
+                                            <div className="flex md:hidden">
+                                                <div className="w-8 h-8 group aspect-square rounded-full border-white border-2 flex flex-row justify-center items-center hover:bg-white transition-all ease-in-out" onClick={()=>navigate(-1)}>
+                                                    <FontAwesomeIcon icon={faArrowLeft} className="text-white cursor-pointer group-hover:text-primary"/>
+                                                </div>
                                             </div>
-                                            <p className="scale-0 group-hover:scale-100 font-text text-xs p-2 rounded bg-tertiary text-white absolute left-1/2 -translate-x-1/2 -bottom-10 shadow-md transition-all ease-in-out">
-                                                Publish
-                                            </p>
                                         </div>
-                                        <div className="border-2 bnorder-primary w-10 h-10 rounded-md flex items-center justify-center text-white">
-                                            <FontAwesomeIcon icon={faPenToSquare} />
-                                        </div>
-                                        <div className="border-2 bnorder-primary w-10 h-10 rounded-md flex items-center justify-center text-white">
-                                            <FontAwesomeIcon icon={faBookReader} />
-                                        </div>
-                                        <div className="border-2 bnorder-primary w-10 h-10 rounded-md flex items-center justify-center text-white">
-                                            <FontAwesomeIcon icon={faCircleInfo} />
+                                        <div className="flex flex-row gap-2">
+                                            <div className="group relative">
+                                                <div className="border-2  w-10 h-10 rounded-md flex items-center justify-center text-white hover:cursor-pointer hover:bg-white hover:text-primary transition-all ease-in-out">
+                                                    <FontAwesomeIcon icon={faBookBookmark} />
+                                                </div>
+                                                <p className="scale-0 group-hover:scale-100 font-text text-xs p-2 rounded bg-tertiary text-white absolute left-1/2 -translate-x-1/2 -bottom-10 shadow-md transition-all ease-in-out">
+                                                    Publish
+                                                </p>
+                                            </div>
+                                            <div className="group relative">
+                                                <div className="border-2  w-10 h-10 rounded-md flex items-center justify-center text-white hover:cursor-pointer hover:bg-white hover:text-primary transition-all ease-in-out">
+                                                    <FontAwesomeIcon icon={faPenToSquare} />
+                                                </div>
+                                                <p className="scale-0 group-hover:scale-100 whitespace-nowrap font-text text-xs p-2 rounded bg-tertiary text-white absolute left-1/2 -translate-x-1/2 -bottom-10 shadow-md transition-all ease-in-out">
+                                                    Edit Course
+                                                </p>
+                                            </div>
+                                            <div className="group relative">
+                                                <div className="border-2  w-10 h-10 rounded-md flex items-center justify-center text-white hover:cursor-pointer hover:bg-white hover:text-primary transition-all ease-in-out">
+                                                    <FontAwesomeIcon icon={faBookReader} />
+                                                </div>
+                                                <p className="scale-0 group-hover:scale-100 whitespace-nowrap font-text text-xs p-2 rounded bg-tertiary text-white absolute left-1/2 -translate-x-1/2 -bottom-10 shadow-md transition-all ease-in-out">
+                                                    Assign Course Admin
+                                                </p>
+                                            </div>
+                                            <div className="group relative">
+                                                <div className="border-2  w-10 h-10 rounded-md flex items-center justify-center text-white hover:cursor-pointer hover:bg-white hover:text-primary transition-all ease-in-out">
+                                                    <FontAwesomeIcon icon={faCircleInfo} />
+                                                </div>
+                                                <p className="scale-0 group-hover:scale-100 whitespace-nowrap font-text text-xs p-2 rounded bg-tertiary text-white absolute left-1/2 -translate-x-1/2 -bottom-10 shadow-md transition-all ease-in-out">
+                                                    Details
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="flex flex-row gap-3 pb-4 px-5">
                                         {
                                             !isLoading &&
-                                            <div>
+                                            <div className="hidden md:flex">
                                                 <div className="w-8 h-8 group aspect-square rounded-full border-white border-2 flex flex-row justify-center items-center hover:bg-white transition-all ease-in-out" onClick={()=>navigate(-1)}>
                                                     <FontAwesomeIcon icon={faArrowLeft} className="text-white cursor-pointer group-hover:text-primary"/>
                                                 </div>
@@ -146,7 +172,8 @@ export default function Course() {
                                                 </>
                                                 :
                                                 <>
-                                                <h1 className="font-header text-2xl text-white">{course?.name} </h1>
+                                                <h1 className="font-header text-white text-sm
+                                                                md:text-2xl">{course?.name} </h1>
                                                 <p className="font-text text-xs text-white">Course ID: {course?.CourseID} </p>
                                                 </>
                                             }
@@ -157,7 +184,7 @@ export default function Course() {
                         </div>
 
                         {/* Tabs */}
-                        <div className="col-span-4 flex flex-row gap-2">
+                        <div className="hidden col-span-4 lg:flex flex-row gap-2">
                             <div className={`border-2 border-primary rounded-md shadow-md w-fit py-2 px-4 flex flex-row gap-4 items-center justify-center text-primary hover:cursor-pointer transition-all ease-in-out hover:bg-primaryhover hover:border-primaryhover hover:text-white ${tab === "module" ? "border-b-2 border-primary text-white bg-primary" : 'bg-white text-primary'}`} onClick={()=> setTab("module")}>
                                 <FontAwesomeIcon icon={faFileContract}/>
                                 <p className="font-header">Course Content</p>
@@ -179,29 +206,28 @@ export default function Course() {
                                 <p className="font-header">Course Reports</p>
                             </div>
                         </div>
-                        {/* Tabs */}
-                        {/* <div className="border-b border-divider col-span-4 mx-5 flex flex-row">
-                            <div className={`group flex justify-center items-center px-5 hover:border-b-2 hover:border-b-primary transition-all ease-in-out hover:cursor-pointer ${tab === "module" ? "border-b-2 border-primary text-primary" : 'text-unactive'}`} onClick={()=> setTab("module")}>
-                                <p className="font-header group-hover:text-primary">Modules</p>
+                        <div className="lg:hidden flex col-span-4 row-span-1 mx-2 flex-row gap-1 p-1 border border-primary rounded-md shadow-md bg-white font-text text-primary text-xs justify-between">
+                            <div className={`flex items-center justify-center px-4 py-2 rounded-md hover:cursor-pointer transition-all ease-in-out ${tab === "module" ? "bg-primary text-white" : "text-primary hover:cursor-pointer hover:bg-primarybg"}`} onClick={()=> setTab("module")}>
+                                Content
                             </div>
-                            <div className= {`group flex justify-center items-center px-5 hover:border-b-2 hover:border-b-primary transition-all ease-in-out hover:cursor-pointer ${tab === "learner" ? "border-b-2 border-primary text-primary" : 'text-unactive'}`} onClick={()=> setTab("learner")}>
-                                <p className="font-header group-hover:text-primary">Learners</p>
+                            <div className={`w-full flex items-center justify-center px-4 py-2 rounded-md hover:cursor-pointer transition-all ease-in-out ${tab === "learner" ? "bg-primary text-white" : "text-primary hover:cursor-pointer hover:bg-primarybg"}`} onClick={()=> setTab("learner")}>
+                                Learner
                             </div>
-                            <div className= {`group flex justify-center items-center px-5 hover:border-b-2 hover:border-b-primary transition-all ease-in-out hover:cursor-pointer ${tab === "courseAdmin" ? "border-b-2 border-primary text-primary" : 'text-unactive'}`} onClick={()=> setTab("courseAdmin")}>
-                                <p className="font-header group-hover:text-primary">Course Admins</p>
+                            <div className={`w-full flex items-center justify-center px-4 py-2 rounded-md hover:cursor-pointer transition-all ease-in-out whitespace-nowrap ${tab === "courseAdmin" ? "bg-primary text-white" : "text-primary hover:cursor-pointer hover:bg-primarybg"}`} onClick={()=> setTab("courseAdmin")}>
+                                Course Admin
                             </div>
-                            <div className= {`group flex justify-center items-center px-5 hover:border-b-2 hover:border-b-primary transition-all ease-in-out hover:cursor-pointer ${tab === "enrollment" ? "border-b-2 border-primary text-primary" : 'text-unactive'}`} onClick={()=> setTab("enrollment")}>
-                                <p className="font-header group-hover:text-primary">Enroll Learner</p>
+                            <div className={`w-full flex items-center justify-center px-4 py-2 rounded-md hover:cursor-pointer transition-all ease-in-out ${tab === "enrollment" ? "bg-primary text-white" : "text-primary hover:cursor-pointer hover:bg-primarybg"}`} onClick={()=> setTab("enrollment")}>
+                                Enrollment
                             </div>
-                            <div className= {`group flex justify-center items-center px-5 hover:border-b-2 hover:border-b-primary transition-all ease-in-out hover:cursor-pointer ${tab === "report" ? "border-b-2 border-primary text-primary" : 'text-unactive'}`} onClick={()=> setTab("report")}>
-                                <p className="font-header group-hover:text-primary">Course-wide Reports</p>
+                            <div className={`w-full flex items-center justify-center px-4 py-2 rounded-md hover:cursor-pointer transition-all ease-in-out ${tab === "report" ? "bg-primary text-white" : "text-primary hover:cursor-pointer hover:bg-primarybg"}`} onClick={()=> setTab("report")}>
+                                Reports
                             </div>
-                        </div> */}
+                        </div>
 
                         {/* Course Content */}
-                        {/* <div className="w-full h-full col-span-4 row-span-1 px-5">
+                        <div className="w-full h-full col-span-4 row-span-1">
                             {tabComponents[tab] || null}
-                        </div> */}
+                        </div>
                     </>
                 ) : role === "Learner" ? (
 
