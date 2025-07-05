@@ -338,7 +338,7 @@ export default function DefaultLayout() {
                         <div className=' hidden flex-row justify-between px-3 py-2 md:p-0 md:flex'>
                             <Navigation unread_notfications={unreadNotifications} size={breakpoint} setLoading={setLoading}/>
                         </div>
-                        <ScrollArea className={"h-screen"}>
+                        <ScrollArea>
                             <div className='flex flex-col h-screen'>
                                 <div className='flex flex-row justify-between px-3 py-2 z-10
                                                 backdrop-blur-md backdrop-saturate-150 bg-background/70

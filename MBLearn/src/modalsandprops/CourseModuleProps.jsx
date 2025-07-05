@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import CourseOverview from "../modalsandprops/courseComponents/CourseOverview";
 import CourseText from "../modalsandprops/courseComponents/courseText";
 import CourseVideo from "../modalsandprops/courseComponents/courseVideo";
-import { faBackward, faBook, faCircleChevronLeft, faCircleChevronRight, faForward, faPause } from "@fortawesome/free-solid-svg-icons";
+import { faBackward, faBook, faCircleChevronLeft, faCircleChevronRight, faForward, faPause, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { Step, Stepper, StepperCompleted, useStepper } from "../components/ui/courseStepper";
 import { ScrollArea } from "../components/ui/scroll-area";
 import CourseAssesment from "./courseComponents/courseAssesment";
@@ -113,7 +113,14 @@ const CourseModuleProps = ({headers, course, LearnerProgress = [], setLearnerPro
     return (
         <>
         {
+            !course ?
+            <div className="flex items-center justify-center h-full w-full gap-4">
+                <FontAwesomeIcon icon={faSpinner} className="animate-spin"/>
+                <p className="text-unactive font-text text-xs">Loading Content...</p>
+            </div>
+            :
             usedTo === "Course Admin" ?
+            <>
             <Stepper initialStep={0} enableStepClick={true} ref={stepperRef} onStepChange={(index,meta) => setActiveMeta(meta)}>
                 {
 
@@ -139,6 +146,7 @@ const CourseModuleProps = ({headers, course, LearnerProgress = [], setLearnerPro
                         })
                         }
             </Stepper>
+            </>
             :
             // Learner
             <>
