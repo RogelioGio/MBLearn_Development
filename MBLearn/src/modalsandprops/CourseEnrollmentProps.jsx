@@ -64,7 +64,7 @@ const CourseEnrollmentProps = ({course}) => {
 
     const [pageState, setPagination] = useState({
         currentPage: 1,
-        perPage: 6,
+        perPage: 5,
         total: 0,
         lastPage:1,
         startNumber: 0,
@@ -216,9 +216,9 @@ const CourseEnrollmentProps = ({course}) => {
 
         }
 
-    return(
-        <>
-        <div className="grid grid-cols-4 grid-rows-[min-content_1fr_min-content] h-full w-full">
+        const content = () => {
+            return () => {
+                <div className="grid grid-cols-4 grid-rows-[min-content_1fr_min-content] h-full w-full">
             {/* Search */}
             <div className='flex flex-row justify-center py-3'>
                 <div className=' inline-flex flex-row place-content-between border-2 border-primary rounded-md w-full font-text shadow-md'>
@@ -643,6 +643,361 @@ const CourseEnrollmentProps = ({course}) => {
                             </a>
                         </nav>
                 </div>
+            </div>
+        </div>
+            }
+        }
+
+    return(
+        <>
+        <div className='grid grid-rows-[min-content_1fr_min-content] grid-cols-4 pr-2 h-full'>
+            {/* Header */}
+            <div className='col-span-1 flex flex-row gap-2 items-center py-2'>
+                <div className=' inline-flex flex-row place-content-between border-2 border-primary rounded-md w-full font-text shadow-md'>
+                    <input type="text" className='focus:outline-none text-sm px-4 w-full rounded-md bg-white' placeholder='Search...'/>
+                    <div className='bg-primary py-2 px-4 text-white'>
+                        <FontAwesomeIcon icon={faSearch}/>
+                    </div>
+                </div>
+            </div>
+            <div className='flex items-center px-2'>
+                <Sheet>
+                    <SheetTrigger>
+                    <div className='h-10 w-10 border-primary border-2 rounded-md shadow-md flex items-center justify-center text-primary hover:cursor-pointer hover:bg-primaryhover hover:border-primaryhover hover:text-white transition-all ease-in-out'>
+                        <FontAwesomeIcon icon={faFilter} className='p-2'/>
+                    </div>
+                    </SheetTrigger>
+                    <SheetOverlay className="bg-gray-500/75 backdrop-blur-sm transition-all" />
+                    <SheetContent className="h-full flex-col flex">
+                    <div>
+                            <h1 className='font-header text-2xl text-primary'>Learner Filter</h1>
+                            <p className='text-md font-text text-unactive text-sm'>Categorize learner to enroll</p>
+                        </div>
+
+                    <div className="inline-flex flex-col gap-1">
+                        <label htmlFor="department" className="font-header text-xs flex flex-row justify-between">
+                            <p className="text-xs font-text text-unactive">Division </p>
+                        </label>
+                        <div className="grid grid-cols-1">
+                            <select id="department" name="department" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                // value={filterformik.values.department}
+                                // onChange={filterformik.handleChange}
+                                // onBlur={filterformik.handleBlur}
+                                >
+                                <option value=''>Select Division</option>
+                                {
+                                    division?.map((division)=> (
+                                        <option key={division.id} value={division.id}>{division.division_name}</option>
+                                    ))
+                                }
+                            </select>
+                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                            <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div className="inline-flex flex-col gap-1">
+                        <label htmlFor="department" className="font-header text-xs flex flex-row justify-between">
+                            <p className="text-xs font-text text-unactive">Department </p>
+                        </label>
+                        <div className="grid grid-cols-1">
+                            <select id="department" name="department" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                // value={filterformik.values.department}
+                                // onChange={filterformik.handleChange}
+                                // onBlur={filterformik.handleBlur}
+                                >
+                                <option value=''>Select Department</option>
+                                {
+                                    departments?.map((department)=> (
+                                        <option key={department.id} value={department.id}>{department.department_name}</option>
+                                    ))
+                                }
+                            </select>
+                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                            <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div className="inline-flex flex-col gap-1">
+                        <label htmlFor="department" className="font-header text-xs flex flex-row justify-between">
+                            <p className="text-xs font-text text-unactive">Section </p>
+                        </label>
+                        <div className="grid grid-cols-1">
+                            <select id="department" name="department" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                // value={filterformik.values.department}
+                                // onChange={filterformik.handleChange}
+                                // onBlur={filterformik.handleBlur}
+                                >
+                                <option value=''>Select Section</option>
+                                {
+                                    section?.map((section)=> (
+                                        <option key={section.id} value={section.id}>{section.section_name}</option>
+                                    ))
+                                }
+                            </select>
+                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                            <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div className="inline-flex flex-col gap-1">
+                        <label htmlFor="department" className="font-header text-xs flex flex-row justify-between">
+                            <p className="text-xs font-text text-unactive">City </p>
+                        </label>
+                        <div className="grid grid-cols-1">
+                            <select id="department" name="department" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                // value={filterformik.values.department}
+                                // onChange={filterformik.handleChange}
+                                // onBlur={filterformik.handleBlur}
+                                >
+                                <option value=''>Select City</option>
+                                {
+                                    cities?.map((city)=> (
+                                        <option key={city.id} value={city.id}>{city.city_name}</option>
+                                    ))
+                                }
+                            </select>
+                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                            <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div className="inline-flex flex-col gap-1">
+                        <label htmlFor="department" className="font-header text-xs flex flex-row justify-between">
+                            <p className="text-xs font-text text-unactive">Branch </p>
+                        </label>
+                        <div className="grid grid-cols-1">
+                            <select id="department" name="department" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                // value={filterformik.values.department}
+                                // onChange={filterformik.handleChange}
+                                // onBlur={filterformik.handleBlur}
+                                >
+                                <option value=''>Select Branch</option>
+                                {
+                                    location?.map((branch)=> (
+                                        <option key={branch.id} value={branch.id}>{branch.branch_name}</option>
+                                    ))
+                                }
+                            </select>
+                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                            <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    </div>
+                    {/* Filter Button */}
+                    <div className="flex flex-row justify-center py-1 gap-2">
+                        <div className="w-full py-2 border-2 border-primary rounded-md shadow-md text-white bg-primary flex flex-row justify-center items-center hover:cursor-pointer transition-all ease-in-out gap-2"
+                            onClick={() => {setFilter(true)}}>
+                            <FontAwesomeIcon icon={faFilter}/>
+                            <p className="font-header">Filter</p>
+                        </div>
+                        {
+                            filter &&
+                            <div className="w-full py-2 border-2 border-primary rounded-md shadow-md text-primary flex flex-row justify-center items-center hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out gap-2"
+                            onClick={() => {setFilter(false)}}>
+                                <FontAwesomeIcon icon={faXmark} className="text-xl"/>
+                                <p className="font-header">Clear</p>
+                            </div>
+                        }
+                    </div>
+                    </SheetContent>
+                </Sheet>
+            </div>
+            <div className='col-span-2 col-start-4 flex flex-row justify-end items-center gap-2 py-2'>
+                <div className='w-full'>
+                    {
+                        selected.length > 0 ? (
+                            <p className='text-sm font-text text-unactive'><span className='text-primary'>{selected.length}</span> users selected to enroll</p>
+                        ) : (null)
+                    }
+                </div>
+
+                <div className='text-white border-2 border-primary py-2 px-5 bg-primary flex flex-row gap-2 justify-center items-center rounded-md shadow-md hover:bg-primaryhover hover:cursor-pointer transition-all ease-in-out'
+                    onClick={handleEnrollment}>
+                    <FontAwesomeIcon icon={faUserPlus}/>
+                    <p className='font-header'>
+                        { enrolling? "Enrolling": "Enroll"}
+                    </p>
+                </div>
+            </div>
+
+            {/* Table */}
+            <div className='col-span-4'>
+                <div className='w-full border-primary border rounded-md overflow-hidden shadow-md'>
+                    <table className='text-left w-full'>
+                        <thead className='font-header text-xs text-primary bg-secondaryprimary border-l-2 border-secondaryprimary'>
+                        <tr>
+                            <th className='py-4 px-4 flex items-center flex-row gap-4'>
+                                 {/* Checkbox */}
+                                    <div className="group grid size-4 grid-cols-1">
+                                        <input
+                                            type="checkbox"
+                                            disabled
+                                            className="col-start-1 row-start-1 appearance-none border border-primary rounded checked:border-primary checked:bg-primary indeterminate:bg-primary focus:ring-2 focus:ring-primary focus:outline-none focus:ring-offset-1"
+                                        />
+                                    </div>
+                                    <p> EMPLOYEE NAME</p>
+                                    </th>
+                                    <th className='py-4 px-4'>DIVISION</th>
+                                    <th className='py-4 px-4'>DEPARTMENT</th>
+                                    <th className='py-4 px-4'>SECTION</th>
+                                </tr>
+                            </thead>
+                            <tbody className='bg-white divide-y divide-divider'>
+                                {
+                                    learnerLoading ?
+                                    Array.from({length: 5}).map((_, index) => (
+                                        <tr key={index} className={`animate-pulse font-text text-sm hover:bg-gray-200`}>
+                                        <td className={`text-sm  py-3 px-4 border-l-2 border-transparent transition-all ease-in-out`}>
+                                            <div className='flex items-center gap-2 flex-row'>
+                                                {/* Checkbox */}
+                                                <div className="group grid size-4 grid-cols-1">
+                                                    <input type="checkbox"
+                                                        className="col-start-1 row-start-1 appearance-none border border-divider rounded checked:border-primary checked:bg-primary focus:ring-2 focus:ring-primary focus:outline-none focus:ring-offset-1"
+                                                        disabled
+                                                    />
+                                                    {/* Custom Checkbox styling */}
+                                                </div>
+                                                {/* User Image */}
+                                                <div className='bg-blue-500 h-10 w-10 rounded-full'>
+                                                    {/* <img src={profile_url} alt="" className='rounded-full'/> */}
+                                                </div>
+                                                {/* Name and employee-id*/}
+                                                <div className="flex flex-col">
+                                                    <p className="font-header text-sm text-primary bg-gray-300 rounded-full w-40 h-4 animate-pulse"></p>
+                                                    <p className="font-text text-unactive text-xs bg-gray-300 rounded-full w-20 h-3 mt-1 animate-pulse"></p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <p className="font-header text-sm text-primary bg-gray-300 rounded-full w-32 h-4 animate-pulse"></p>
+                                            <p className="font-text text-unactive text-xs bg-gray-300 rounded-full w-16 h-3 mt-1 animate-pulse"></p>
+                                        </td>
+                                        <td>
+                                            <p className="font-header text-sm text-primary bg-gray-300 rounded-full w-32 h-4 animate-pulse"></p>
+                                            <p className="font-text text-unactive text-xs bg-gray-300 rounded-full w-16 h-3 mt-1 animate-pulse"></p>
+                                        </td>
+                                        <td>
+                                            <p className="font-header text-sm text-primary bg-gray-300 rounded-full w-32 h-4 animate-pulse"></p>
+                                            <p className="font-text text-unactive text-xs bg-gray-300 rounded-full w-16 h-3 mt-1 animate-pulse"></p>
+                                        </td>
+                                        </tr>
+                                    ))
+                                    :
+                                    learners.length === 0 ?
+                                    <tr className='font-text text-sm hover:bg-gray-200'>
+                                        <td colSpan={5} className='text-center text-unactive py-3 px-4'>
+                                            No Learners found to enroll
+                                        </td>
+                                    </tr>
+                                    :
+                                    learners.map((learner, index) => (
+                                        <tr key={index} className={`font-text text-sm hover:bg-gray-200 hover:cursor-pointer`} onClick={()=>handleCheckbox(learner, course)}>
+                                            <td className={`text-sm  py-3 px-4 border-l-2 border-transparent transition-all ease-in-out`}>
+                                                <div className='flex items-center gap-4 flex-row'>
+                                                    {/* Checkbox */}
+                                                    <div className="group grid size-4 grid-cols-1">
+                                                        <input type="checkbox"
+                                                            className="col-start-1 row-start-1 appearance-none border border-divider rounded checked:border-primary checked:bg-primary focus:ring-2 focus:ring-primary focus:outline-none focus:ring-offset-1"
+                                                            onClick={()=>handleCheckbox(learner, course)}
+                                                            onChange={()=>handleCheckbox(learner, course)}
+                                                            checked={selected.some((entry) => entry.userId === learner.id)} // Updated this line
+                                                        />
+                                                        {/* Custom Checkbox styling */}
+                                                        <svg fill="none" viewBox="0 0 14 14" className="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-[:disabled]:stroke-gray-950/25">
+                                                            {/* Checked */}
+                                                            <path
+                                                                d="M3 8L6 11L11 3.5"
+                                                                strokeWidth={2}
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                                className="opacity-0 group-has-[:checked]:opacity-100"
+                                                            />
+                                                            {/* Indeterminate */}
+                                                            <path
+                                                                d="M3 7H11"
+                                                                strokeWidth={2}
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                                className="opacity-0 group-has-[:indeterminate]:opacity-100"
+                                                                />
+                                                        </svg>
+                                                    </div>
+                                                    {/* User Image */}
+                                                    <div className='bg-blue-500 h-10 w-10 rounded-full overflow-hidden'>
+                                                        <img src={learner.profile_image} alt="" className='w-full'/>
+                                                    </div>
+                                                    {/* Name and employee-id*/}
+                                                    <div>
+                                                        <p className='font-text'>{learner.first_name} {learner.middle_name} {learner.last_name} {learner.name_suffix}</p>
+                                                        <p className='text-unactive text-xs'>ID: {learner.employeeID}</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className='py-3 px-4'>
+                                                <p className='text-unactive'>{learner.division?.division_name}</p>
+                                            </td>
+                                            <td className='py-3 px-4'>
+                                                <p className='text-unactive'>{learner.department?.department_name}</p>
+                                            </td>
+                                            <td className='py-3 px-4'>
+                                                <p className='text-unactive'>{learner.section?.section_name}</p>
+                                            </td>
+                                        </tr>
+                                    ))
+                                }
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {/* Pagination */}
+            <div className="col-span-4 h-full flex flex-row items-center justify-between py-3">
+                <div>
+                    {
+                        learnerLoading ? <p className='text-sm font-text text-unactive'>
+                        Retrieving Learner to be enrolled...
+                        </p> :
+                        <p className='text-sm font-text text-unactive'>
+                            Showing <span className='font-header text-primary'>{pageState.startNumber}</span> to <span className='font-header text-primary'>{pageState.endNumber}</span> of <span className='font-header text-primary'>{pageState.total}</span> <span className='text-primary'>results</span>
+                        </p>
+                    }
+                </div>
+                    <div>
+                        <nav className='isolate inline-flex -space-x-px round-md shadow-xs'>
+                            {/* Previous */}
+                            <a
+                                onClick={back}
+                                className='relative inline-flex items-center rounded-l-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
+                                <FontAwesomeIcon icon={faChevronLeft}/>
+                            </a>
+
+                            {/* Current Page & Dynamic Paging */}
+                            {
+                                learnerLoading ? (
+                                    <a className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset`}>...</a>
+                                ) : (
+                                    Pages.map((page)=>(
+                                        <a
+                                            key={page}
+                                            className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset
+                                                ${
+                                                    page === pageState.currentPage
+                                                    ? 'bg-primary text-white'
+                                                    : 'bg-secondarybackground text-primary hover:bg-primary hover:text-white'
+                                                } transition-all ease-in-out`}
+                                                onClick={() => pageChange(page)}>
+                                            {page}</a>
+                                    ))
+                                )
+                            }
+                            <a
+                                onClick={next}
+                                className='relative inline-flex items-center rounded-r-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
+                                <FontAwesomeIcon icon={faChevronRight}/>
+                            </a>
+                        </nav>
+                    </div>
             </div>
         </div>
 

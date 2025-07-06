@@ -303,24 +303,8 @@ export default function Course() {
                                         md:py-2 md:pr-2">
                             <div className="bg-gradient-to-b from-[hsl(239,94%,19%)] via-[hsl(214,97%,27%)] to-[hsl(201,100%,36%)]
                                             md:rounded-xl md:shadow-md">
-                                <div className="flex flex-col bg-gradient-to-b from-transparent to-black md:rounded-xl">
+                                <div className="flex flex-col bg-gradient-to-b from-transparent to-black md:rounded-xl gap-4 md:gap-0">
                                     <div className="flex flex-row justify-between px-4 pt-4 gap-x-2">
-                                        {/* <div className=" flex flex-row  items-center text-white justify-center border-2 border-white rounded-md px-4 py-2 gap-3 w-fit transition-all ease-in-out hover:cursor-pointer hover:bg-white hover:text-primary">
-                                            <FontAwesomeIcon icon={faBookBookmark} />
-                                            <p className="font-header">Publish</p>
-                                        </div>
-                                        <div className=" flex flex-row  items-center text-white justify-center border-2 border-white rounded-md px-4 py-2 gap-3 w-fit transition-all ease-in-out hover:cursor-pointer hover:bg-white hover:text-primary">
-                                            <FontAwesomeIcon icon={faPenToSquare} />
-                                            <p className="font-header">Edit</p>
-                                        </div>
-                                        <div className=" flex flex-row  items-center text-white justify-center border-2 border-white rounded-md px-4 py-2 gap-3 w-fit transition-all ease-in-out hover:cursor-pointer hover:bg-white hover:text-primary">
-                                            <FontAwesomeIcon icon={faBookOpenReader} />
-                                            <p className="font-header">Assign</p>
-                                        </div>
-                                        <div className=" flex flex-row  items-center text-white justify-center border-2 border-white rounded-md px-4 py-2 gap-3 w-fit transition-all ease-in-out hover:cursor-pointer hover:bg-white hover:text-primary">
-                                            <FontAwesomeIcon icon={faCircleInfo} />
-                                            <p className="font-header">Details</p>
-                                        </div> */}
                                         <div>
                                             <div className="flex md:hidden">
                                                 <div className="w-8 h-8 group aspect-square rounded-full border-white border-2 flex flex-row justify-center items-center hover:bg-white transition-all ease-in-out" onClick={()=>navigate(-1)}>
@@ -330,7 +314,7 @@ export default function Course() {
                                         </div>
                                         <div className="flex flex-row gap-2">
                                             <div className="group relative">
-                                                <div className="border-2  w-10 h-10 rounded-md flex items-center justify-center text-white hover:cursor-pointer hover:bg-white hover:text-primary transition-all ease-in-out">
+                                                <div className="border-2  w-10 h-10 rounded-md flex items-center justify-center text-white hover:cursor-pointer hover:bg-white hover:text-primary transition-all ease-in-out"  onClick={()=>setOpenPublish(true)}>
                                                     <FontAwesomeIcon icon={faBookBookmark} />
                                                 </div>
                                                 <p className="scale-0 group-hover:scale-100 font-text text-xs p-2 rounded bg-tertiary text-white absolute left-1/2 -translate-x-1/2 -bottom-10 shadow-md transition-all ease-in-out">
@@ -338,7 +322,7 @@ export default function Course() {
                                                 </p>
                                             </div>
                                             <div className="group relative">
-                                                <div className="border-2  w-10 h-10 rounded-md flex items-center justify-center text-white hover:cursor-pointer hover:bg-white hover:text-primary transition-all ease-in-out">
+                                                <div className="border-2  w-10 h-10 rounded-md flex items-center justify-center text-white hover:cursor-pointer hover:bg-white hover:text-primary transition-all ease-in-out" onClick={()=>setOpen(true)}>
                                                     <FontAwesomeIcon icon={faPenToSquare} />
                                                 </div>
                                                 <p className="scale-0 group-hover:scale-100 whitespace-nowrap font-text text-xs p-2 rounded bg-tertiary text-white absolute left-1/2 -translate-x-1/2 -bottom-10 shadow-md transition-all ease-in-out">
@@ -346,7 +330,7 @@ export default function Course() {
                                                 </p>
                                             </div>
                                             <div className="group relative">
-                                                <div className="border-2  w-10 h-10 rounded-md flex items-center justify-center text-white hover:cursor-pointer hover:bg-white hover:text-primary transition-all ease-in-out">
+                                                <div className="border-2  w-10 h-10 rounded-md flex items-center justify-center text-white hover:cursor-pointer hover:bg-white hover:text-primary transition-all ease-in-out" onClick={()=>setAssign(true)}>
                                                     <FontAwesomeIcon icon={faBookReader} />
                                                 </div>
                                                 <p className="scale-0 group-hover:scale-100 whitespace-nowrap font-text text-xs p-2 rounded bg-tertiary text-white absolute left-1/2 -translate-x-1/2 -bottom-10 shadow-md transition-all ease-in-out">
@@ -354,7 +338,7 @@ export default function Course() {
                                                 </p>
                                             </div>
                                             <div className="group relative">
-                                                <div className="border-2  w-10 h-10 rounded-md flex items-center justify-center text-white hover:cursor-pointer hover:bg-white hover:text-primary transition-all ease-in-out">
+                                                <div className="border-2  w-10 h-10 rounded-md flex items-center justify-center text-white hover:cursor-pointer hover:bg-white hover:text-primary transition-all ease-in-out" onClick={()=>setOpenDetails(true)}>
                                                     <FontAwesomeIcon icon={faCircleInfo} />
                                                 </div>
                                                 <p className="scale-0 group-hover:scale-100 whitespace-nowrap font-text text-xs p-2 rounded bg-tertiary text-white absolute left-1/2 -translate-x-1/2 -bottom-10 shadow-md transition-all ease-in-out">
@@ -441,7 +425,6 @@ export default function Course() {
                         </div>
                     </>
                 ) : role === "Learner" ? (
-
                     <>
                         <CourseModuleProps headers={<>
                             <div className="flex flex-row col-span-4 items-center gap-4 pl-5">

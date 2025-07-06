@@ -207,7 +207,7 @@ const CourseLearnerProps = ({course}) => {
     }
 
     return(
-        <div className='grid grid-rows-[min-content_min-content_1fr] grid-cols-4 pr-2 h-full'>
+        <div className='grid grid-rows-[min-content_1fr_min-content] grid-cols-4 pr-2 h-full'>
             {/* Headers */}
             <div className='flex flex-col gap-1 py-2'>
                 <p className='text-xs font-text text-unactive'>Learner Types:</p>
@@ -226,14 +226,14 @@ const CourseLearnerProps = ({course}) => {
                     <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
                     </svg>
                 </div> */}
-                <Select>
+                <Select value={tab} onValueChange={setTab} disabled={loading}>
                     <SelectTrigger className="focus:outline-2 focus:-outline-offset-2 focus:outline-primary border-primary border-2 font-header text-primary w-full">
                         <SelectValue placeholder="Learner Type" />
                     </SelectTrigger>
                     <SelectContent className="font-text text-xs text-primary hover:cursor-pointer">
-                        <SelectItem value="light">Enrolled</SelectItem>
-                        <SelectItem value="dark">On-Going</SelectItem>
-                        <SelectItem value="system">Finished</SelectItem>
+                        <SelectItem value="enrolled">Enrolled</SelectItem>
+                        <SelectItem value="ongoing">On-Going</SelectItem>
+                        <SelectItem value="finished">Finished</SelectItem>
                     </SelectContent>
                 </Select>
             </div>
@@ -332,7 +332,7 @@ const CourseLearnerProps = ({course}) => {
             </div>
 
             {/* Paginate */}
-            <div className='flex flex-row items-center justify-between col-span-4'>
+            <div className='flex flex-row items-center justify-between col-span-4 pb-4'>
                 <p className='text-sm font-text text-unactive'>
                     Showing <span className='font-header text-primary'>1</span> to <span className='font-header text-primary'>2</span> of <span className='font-header text-primary'>5</span> <span className='text-primary'>results</span>
                 </p>
