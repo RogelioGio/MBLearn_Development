@@ -22,6 +22,7 @@ const CourseCourseAdminAssignmentProps = ({courseID}) => {
     const [filter, setFilter] = useState(false)
     const [main, setMain] = useState([])
     const [editCoursePermission, setEditCoursePermission] = useState(false)
+    const [courseAdmin, setCourseAdmin] = useState()
 
     // Function to get the assigned
     const fetchAssignedCourseAdmins = () => {
@@ -505,7 +506,7 @@ const CourseCourseAdminAssignmentProps = ({courseID}) => {
                                         <td className='py-3 px-4 '>
                                             <div className="flex flex-row item-center justify-end h-full gap-1">
                                                 <div className="flex justify-center items-center aspect-square p-2 bg-white shadow-md border border-primary rounded-md text-primary hover:bg-primary cursor-pointer transition-all ease-in-out hover:text-white"
-                                                    onClick={()=>{setEditCoursePermission(true)}}>
+                                                    onClick={()=>{setEditCoursePermission(true), setCourseAdmin(admin)}}>
 
                                                     <FontAwesomeIcon icon={faPenToSquare}/>
                                                 </div>
@@ -565,7 +566,7 @@ const CourseCourseAdminAssignmentProps = ({courseID}) => {
             </div>
         </div>
 
-        <EditCourseAdminPermissionModal  open={editCoursePermission} onClose={()=>{setEditCoursePermission(false)}}/>
+        <EditCourseAdminPermissionModal  open={editCoursePermission} onClose={()=>{setEditCoursePermission(false)}} courseAdmin={courseAdmin}/>
         </>
     )
 }

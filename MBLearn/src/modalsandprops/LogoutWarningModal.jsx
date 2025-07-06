@@ -7,8 +7,8 @@ import { useEffect, useState } from "react";
 const LogoutWarningmModal = ({open,close}) => {
     return (
         <Dialog open={open} onClose={()=>{}}>
-            <DialogBackdrop transition className="fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in" />
-                <div className='fixed inset-0 z-10 w-screen overflow-y-auto'>
+            <DialogBackdrop transition className="fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in z-50"/>
+                <div className='fixed inset-0 z-50 w-screen overflow-y-auto'>
                     <div className='flex min-h-full items-center justify-center p-4 text center'>
                         <DialogPanel className='bg-white rounded-lg shadow-lg p-4 max-w'>
                             <div className='flex flex-col items-center p-5 gap-4'>

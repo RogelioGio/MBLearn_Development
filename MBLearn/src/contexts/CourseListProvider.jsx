@@ -7,7 +7,6 @@ export const CourseListProvider = ({children}) => {
     const [courseContext, setCourseContext] = useState({
         coursetypes: [],
         coursecategories: [],
-        trainingmodes:[],
         departments:[],
         cities:[],
         branches:[],

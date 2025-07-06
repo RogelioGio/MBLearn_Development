@@ -22,7 +22,7 @@ import {
 
 const AssignCourseAdmin = ({courseID ,open, close}) => {
     const {departments, cities, branches, } = useCourseContext()
-    const {selectedCourse, selectCourse, isFetching} = useCourse();
+    //const {selectedCourse, selectCourse, isFetching} = useCourse();
     const [isLoading, setLoading] = useState(true);
     const [course, setCourse] = useState();
     const [AssignedCourseAdmins, setAssignedCourseAdmins] = useState([]);

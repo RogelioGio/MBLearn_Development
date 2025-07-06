@@ -1,15 +1,21 @@
 <?php
 
 namespace App\Http\Controllers\Api;
+
+use App\Events\UserPermissionsChange;
+use App\Events\UserRoleChange;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\addUserCredential_request;
 use App\Http\Requests\ChangeUserPasswordRequest;
 use App\Http\Requests\ChangeUserPermissionsRequest;
 use App\Http\Requests\updateUserCreds_info;
+use App\Http\Requests\UserCredsSearchRequest;
 use App\Http\Resources\CourseResource;
+use App\Models\Role;
 use App\Models\UserCredentials;
 use App\Models\UserInfos;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class userCredentials_controller extends Controller
@@ -55,7 +61,9 @@ class userCredentials_controller extends Controller
     }
 
     public function changeUserPermissions(UserCredentials $userCredentials, ChangeUserPermissionsRequest $request){
-        if(!$request['role_id']){
+        $adder = Auth::user()->userInfos->first_name;
+        $affected = $userCredentials->userInfos->first_name;
+        if(!$request['role']){
             $bulk = collect($request['permissions'])->map(function($arr, $key){
             $test = [];
             foreach($arr as $keys => $value){
@@ -65,13 +73,15 @@ class userCredentials_controller extends Controller
             });
             $userCredentials->userInfos->permissions()->sync($bulk);
             $userCredentials->userInfos->roles;
+            UserPermissionsChange::dispatch($adder, $affected);
 
         return response()->json([
             'message' => 'Roles and Permissions changed',
             'user' => $userCredentials->load(['userInfos.permissions', 'userInfos.roles']),
         ]);
         }
-        $userCredentials->userInfos->roles()->sync($request['role_id']);
+        $userCredentials->userInfos->roles()->sync($request['role']);
+        $role_name = Role::find($request['role'])->role_name;
         $bulk = collect($request['permissions'])->map(function($arr, $key){
             $test = [];
             foreach($arr as $keys => $value){
@@ -80,6 +90,7 @@ class userCredentials_controller extends Controller
             return $test;
         });
         $userCredentials->userInfos->permissions()->sync($bulk);
+        UserRoleChange::dispatch($adder, $affected, $role_name);
 
         return response()->json([
             'message' => 'Permissions changed',
@@ -91,12 +102,31 @@ class userCredentials_controller extends Controller
         $userInfo = $userCredentials->userInfos;
         $userCredentials->update([
             'password' => bcrypt(preg_replace('/\s+/', '', $userInfo->first_name)."_".$userInfo->employeeID),
+            'first_log_in' => false
         ]);
 
         return response()->json([
             'message' => 'User Password Updated Successfully',
             'data' => $userCredentials
         ]);
+    }
+
+    public function changePassword(UserCredentials $userCredentials, ChangeUserPasswordRequest $request ){
+        $validated = $request->validated();
+        if(!$userCredentials){
+            return response()->json([
+                'message' => 'User not found'
+            ], 404);
+        }
+
+        $userCredentials->update([
+            'password' => bcrypt($validated['password']),
+            'first_log_in' => true
+        ]);
+        return response()->json([
+            'message' => 'Password has been changed',
+            'user' => $userCredentials
+        ], 200);
     }
 
     //User Credential List
@@ -107,20 +137,14 @@ class userCredentials_controller extends Controller
         $currentUserId = $request->user()->userInfos->id;
         $count = 0;
         $query = UserCredentials::with(['userInfos', 'userInfos.roles', 'userInfos.city', 'userInfos.branch',
-        'userInfos.department', 'userInfos.section', 'userInfos.division', 'userInfos.title'])
+        'userInfos.department', 'userInfos.section', 'userInfos.division', 'userInfos.title','userInfos.permissions'])
         ->orderBy('created_at', 'desc')
-        ->whereHas('userInfos', function ($subQuery) use ($currentUserId) {
+        ->whereHas('userInfos', function ($subQuery) {
             $subQuery->where('status', 'Active');
+        })
+        ->whereNot(function ($query) use ($currentUserId){
+            $query->where('id', $currentUserId);
         });
-
-        // Apply filters based on userInfos attributes
-        if ($request->has('status')) {
-            if(!($request->input('status')['eq'] == "")){
-                $query->whereHas('userInfos', function ($subQuery) use ($request) {
-                    $subQuery->where('status', $request->input('status'));
-                });
-            }
-        }
 
         if ($request->has('department_id')) {
             if(!($request->input('department_id')['eq'] == "")){
@@ -161,53 +185,15 @@ class userCredentials_controller extends Controller
 
         $page = $request->input('page', 1);//Default page
         $perPage = $request->input('perPage',5); //Number of entry per page
-
-        // $userCredentials = UserCredentials::with(['userInfos', 'userInfos.roles'])->paginate($perPage);
-
-        // return response()->json([
-        //     'total' => $userCredentials->total(),
-        //     'lastPage' => $userCredentials->lastPage(),
-        //     'currentPage' => $userCredentials->currentPage(),
-        //     'data' => $userCredentials->items()
-        // ]);
-
-        $query = UserCredentials::with(['userInfos', 'userInfos.roles']) ->whereHas('userInfos', function ($subQuery) {
-            $subQuery->where('status', 'Inactive'); // Ensure only Active users are fetched
+        $currentUserId = $request->user()->userInfos->id;
+        $query = UserCredentials::whereHas('userInfos', function ($subQuery) {
+            $subQuery->where('status', 'Inactive');
+        })
+        ->with(['userInfos', 'userInfos.roles', 'userInfos.city', 'userInfos.branch', 'userInfos.department', 'userInfos.section', 'userInfos.division', 'userInfos.title','userInfos.permissions'])
+        ->whereNot(function ($query) use ($currentUserId){
+            $query->where('id', $currentUserId);
         })
         ->orderBy('created_at', 'desc');
-
-        // Apply filters based on userInfos attributes
-        if ($request->has('status')) {
-            if(!($request->input('status')['eq'] == "")){
-                $query->whereHas('userInfos', function ($subQuery) use ($request) {
-                    $subQuery->where('status', $request->input('status'));
-                });
-            }
-        }
-
-        if ($request->has('department_id')) {
-            if(!($request->input('department_id')['eq'] == "")){
-                $query->whereHas('userInfos', function ($subQuery) use ($request) {
-                    $subQuery->where('department_id', $request->input('department_id'));
-                });
-            }
-        }
-
-        if ($request->has('branch_id')) {
-            if(!($request->input('branch_id')['eq'] == "")){
-                $query->whereHas('userInfos', function ($subQuery) use ($request) {
-                    $subQuery->where('branch_id', $request->input('branch_id'));
-                });
-            }
-        }
-
-        if ($request->has('role_id')){
-            if(!($request->input('role_id')['eq'] == "")){
-                $query->whereHas('roles', function($subQuery) use ($request){
-                    $subQuery->where('role_id', $request->input('role_id'));
-                });
-            }
-        }
 
         // Paginate the filtered results
         $userCredentials = $query->paginate($perPage);
@@ -217,6 +203,27 @@ class userCredentials_controller extends Controller
             'lastPage' => $userCredentials->lastPage(),
             'currentPage' => $userCredentials->currentPage(),
             'data' => $userCredentials->items()
+        ]);
+
+    }
+
+    public function UserCredsSearch(UserCredsSearchRequest $request){
+        $search = $request['search'];
+        $perPage = $request->input('perPage', 5); //Number of entry per page
+        $page = $request->input('page', 1);//Default page
+        $status = $request['status'] ?? 'Active';
+        $result = UserCredentials::search($search);
+
+        $result = $result->whereHas('userInfos', function ($query) use ($status) {
+            $query->where('status', $status)->with(['userInfos', 'userInfos.roles', 'userInfos.city', 'userInfos.branch',
+        'userInfos.department', 'userInfos.section', 'userInfos.division', 'userInfos.title']);
+        })->paginate($perPage);
+
+        return response()->json([
+            'total' => $result->total(),
+            'lastPage' => $result->lastPage(),
+            'currentPage' => $result->currentPage(),
+            'data' => $result->items()
         ]);
 
     }
@@ -273,5 +280,54 @@ class userCredentials_controller extends Controller
             'message' => 'User is now set to inactive'
         ]);
     }
+
+    public function updateOnlyPermissions(UserCredentials $userCredentials, Request $request)
+    {
+    $adder = Auth::user()->userInfos->first_name;
+    $affected = $userCredentials->userInfos->first_name;
+
+    // Validate that permissions is an array of integers
+    $validated = $request->validate([
+        'permissions' => 'required|array',
+        'permissions.*' => 'integer|exists:permissions,id'
+    ]);
+
+    $userCredentials->userInfos->permissions()->sync($validated['permissions']);
+
+    // Dispatch event (optional)
+    UserPermissionsChange::dispatch($adder, $affected);
+
+    return response()->json([
+        'message' => 'Permissions successfully updated.',
+        'user' => $userCredentials->load(['userInfos.permissions']),
+    ]);
+    }
+
+    public function updateTest($userCredentialsId, ChangeUserPermissionsRequest $request) {
+        $user = UserCredentials::with('userInfos', 'userInfos.roles','userInfos.permissions')->findOrFail($userCredentialsId)->userInfos;
+        if (!$user) {
+            return response()->json(['message' => 'UserInfo not found for this user.'], 404);
+        }
+
+
+        if($request->has('role')){
+            $user->roles()->sync([$request->input('role')]);
+            $user->load('roles');
+        }
+
+        if($request->has('permissions')){
+            $permissionIds = collect($request->input('permissions'))
+                ->pluck('permissionId')
+                ->toArray();
+            $user->permissions()->sync($permissionIds);
+            $user->load('permissions');
+        }
+
+        return response() -> json([
+            'message' => "The user and role updated",
+            'User' => $user,
+        ]);
+    }
+
 
 }

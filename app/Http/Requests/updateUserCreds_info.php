@@ -23,7 +23,7 @@ class updateUserCreds_info extends FormRequest
     {
         return [
             'MBemail' => 'required|email|unique:userCredentials,MBemail',
-            'password' => 'required|string|min:8',
+            'password' => 'nullable|string|min:8',
         ];
     }
 }

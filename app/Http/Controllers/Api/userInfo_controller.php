@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Http\Controllers\Api;
-
+use App\Events\NewNotification;
+use App\Events\TestEvent;
 use App\Filters\CourseSort;
 use App\Filters\UserInfosFilter;
 use App\helpers\LessonCountHelper;
@@ -12,6 +13,8 @@ use App\Http\Requests\BulkStoreUserRequest;
 use App\Http\Requests\TestArrayRequest;
 use App\Http\Requests\updateUserInfo;
 use App\Http\Requests\UserInfoSearchRequest;
+use App\Jobs\PermissionToUser;
+use App\Jobs\ResetOptionCache;
 use App\Models\Branch;
 use App\Models\CarouselImage;
 use App\Models\Course;
@@ -19,6 +22,7 @@ use App\Models\CourseUserAssigned;
 use App\Models\Department;
 use App\Models\Division;
 use App\Models\Enrollment;
+use App\Models\Lesson;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\Section;
@@ -30,11 +34,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\UserCredentials;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon as SupportCarbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 class userInfo_controller extends Controller
 {
@@ -44,24 +51,17 @@ class userInfo_controller extends Controller
     public function addUser(AddUsersRequest $addUsersRequest){
 
         $existingatedData = $addUsersRequest->validated();
-        $title = Title::query()->find($existingatedData['title_id']);
-        $department = Department::query()->find($existingatedData['department_id']);
-        $branch = Branch::query()->find($existingatedData['branch_id']);
-        $role = Role::query()->find($existingatedData['role_id']);
-        $division = Division::query()->find($existingatedData['division_id']);
-        $section = Section::query()->find($existingatedData['section_id']);
-        $permissions = [];
 
-        $profile_image = $this -> generateProfileImageurl($existingatedData['first_name'].$existingatedData['last_name']);
-        $status = $existingatedData['status'] ?? 'Active';
-        $existingUser = UserInfos::where('employeeID', $existingatedData['employeeID'])->first();
-        $existingEmail = UserCredentials::where('MBemail', $existingatedData['MBemail'])->first();
-
-        if ($existingUser) {
+        if(UserInfos::where('employeeID', $existingatedData['employeeID'])->exists()){
             return response()->json([
                 'message' => 'User already exists',
-                'user' => $existingUser
-            ], 409); // Use 409 Conflict instead of 200
+            ], 409);
+        }
+
+        if(UserCredentials::where('MBemail', $existingatedData['MBemail'])->exists()){
+            return response()->json([
+                'message' => 'User creds already exists',
+            ], 409);
         }
 
         // Combine first name, middle initial, last name, and suffix into a full name
@@ -73,51 +73,62 @@ class userInfo_controller extends Controller
         // Generate profile image URL (pass the correct name variable)
         $profile_image = $this->generateProfileImageUrl($fullName);
 
-        if($existingEmail){
 
-        }
+        DB::beginTransaction();
 
-        $userCredentials = UserCredentials::create([
-            'MBemail' => $existingatedData['MBemail'],
-            'password' => $existingatedData['password'],
-        ]);
+        try{
+            $options = Cache::get('options');
+            $title = $options['titles']->firstWhere('id', $existingatedData['title_id']);
+            $department = $options['departments']->firstWhere('id', $existingatedData['department_id']);
+            $branch = $options['location']->firstWhere('id', $existingatedData['branch_id']);
+            $division = $options['division']->firstWhere('id', $existingatedData['division_id']);
+            $section = $options['section']->firstWhere('id', $existingatedData['section_id']);
 
-        $userInfo = UserInfos::create([
-            'employeeID' => $existingatedData['employeeID'],
-            'first_name' => $existingatedData['first_name'],
-            'last_name' => $existingatedData['last_name'],
-            'middle_name' => $existingatedData['middle_name'],
-            'name_suffix' => $existingatedData['name_suffix'],
-            'status' =>$status,
-            'profile_image' =>$profile_image
-        ]);
+            $status = $existingatedData['status'] ?? 'Active';
 
-        if($existingatedData['permissions']){
-            foreach($existingatedData['permissions'] as $tests){
-                foreach($tests as $key => $value){
-                    $permissions[] = $value;
-                }
+            $userCredentials = new UserCredentials([
+                'MBemail' => $existingatedData['MBemail'],
+                'password' => $existingatedData['password'],
+            ]);
+
+            $userInfo = new UserInfos([
+                'employeeID' => $existingatedData['employeeID'],
+                'first_name' => $existingatedData['first_name'],
+                'last_name' => $existingatedData['last_name'],
+                'middle_name' => $existingatedData['middle_name'],
+                'name_suffix' => $existingatedData['name_suffix'],
+                'status' =>$status,
+                'profile_image' =>$profile_image
+            ]);
+
+            $userInfo->branch()->associate($branch);
+            $userInfo->title()->associate($title);
+            $userInfo->department()->associate($department);
+            $userInfo->section()->associate($section);
+            $userInfo->division()->associate($division);
+            $userInfo->save();
+            $userInfo->roles()->sync($existingatedData['role_id']);
+            $userCredentials->save();
+            $userCredentials->userInfos()->save($userInfo);
+
+            DB::commit();
+
+            if($existingatedData['permissions'] ?? false){
+                PermissionToUser::dispatch($userInfo, $existingatedData['permissions'] ?? []);
             }
+
+            return response()->json([
+                'message' => 'User registered successfully',
+                'user_info' => $userInfo,
+                'permissions' => $existingatedData['permissions'] ?? false
+            ], 201);
+        } catch(Exception $e){
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Failed to create user',
+                'error' => $e->getMessage()
+            ],400);
         }
-
-
-        $userInfo->branch()->associate($branch);
-        $userInfo->title()->associate($title);
-        $userInfo->department()->associate($department);
-        $userInfo->section()->associate($section);
-        $userInfo->division()->associate($division);
-        $userInfo->roles()->sync($role->id);
-        $userInfo->save();
-        $userCredentials->userInfos()->save($userInfo);
-        $userInfo->permissions()->sync($permissions);
-        // Return a success response
-        return response()->json([
-            'message' => 'User registered successfully',
-            'user_info' => $userInfo->load(['permissions']),
-            'user_role' => $userInfo->roles,
-            'branch' => $userInfo->branch,
-            'user_credentials' => $userCredentials
-        ], 201);
 
     }
 
@@ -161,7 +172,7 @@ class userInfo_controller extends Controller
             return $oneDArray;
         });
         foreach($bulk as $single){
-            $existing = UserInfos::query()->where('employeeID', '=', $single['employeeID'])->first();
+            $existing = UserInfos::query()->where('employeeID', '=', $single['employeeID'])->exists();
             $email = strtolower(preg_replace('/\s+/', '', $single['first_name'])
                         .preg_replace('/\s+/', '', $single['last_name'])
                         ."@mbtc.com");
@@ -257,7 +268,7 @@ class userInfo_controller extends Controller
         $page = $request->input('page', 1);//Default page
         $status = $request['status'] ?? 'Active';
         $course_id = $request['course_id'] ?? null;
-        $relation = $request['relation'] ?? 'enrolled';
+        $relation = $request['relation'] ?? 'enrollments';
         $result = UserInfos::search($search);
 
         if(!$course_id){
@@ -269,12 +280,21 @@ class userInfo_controller extends Controller
 
         }else{
             $result = $result->query(function($query) use($status, $course_id, $relation){
-                $query->where('status', '=', $status)
-                    ->whereHas($relation, function($subquery) use ($course_id){
-                        $subquery->where('courses.id', '=', $course_id);
-                    })
-                    ->with(['roles', 'division', 'section', 'department', 'title', 'branch', 'city']);
-                return $query;
+                if($relation == 'enrolled'){
+                    $query->where('status', '=', $status)
+                        ->whereHas('enrollments', function($subquery) use ($course_id){
+                            $subquery->where('courses.id', '=', $course_id);
+                        })
+                        ->with(['roles', 'division', 'section', 'department', 'title', 'branch', 'city']);
+                    return $query;
+                } else if($relation == 'assigned'){
+                    $query->where('status', '=', $status)
+                        ->whereHas('assignedCourses', function($subquery) use ($course_id){
+                            $subquery->where('courses.id', '=', $course_id);
+                        })
+                        ->with(['roles', 'division', 'section', 'department', 'title', 'branch', 'city']);
+                    return $query;
+                }
             })->paginate($perPage);
         }
 
@@ -313,7 +333,7 @@ class userInfo_controller extends Controller
         ->whereNot(function (Builder $query) use ($user_id){
             $query->where('id', $user_id);
         })
-        ->with('roles','division','section','department','title','branch','city')
+        ->with('roles','division','section','department','title','branch','city','userCredentials')
         ->orderBy('created_at', 'desc')
         ->paginate($perPage);
 
@@ -338,13 +358,10 @@ class userInfo_controller extends Controller
             })->where('status', 'Active')
             ->with('roles','division','section','department','title','branch','city')
             ->orderBy('created_at', 'desc')
-            ->paginate(5);
+            ->get();
 
         return response()->json([
-            'data' => $users->items(),
-            'total' => $users->total(),
-            'lastPage' => $users->lastPage(),
-            'currentPage' => $users->currentPage(),
+            'data' => $users,
         ],200);
     }
 
@@ -374,53 +391,93 @@ class userInfo_controller extends Controller
 
     public function getAssignedCourses(UserInfos $userInfos, Request $request){
 
-        $page = $request->input('page', 1);//Default page
-        $perPage = $request->input('perPage',6); //Number of entry per page
-        $sort = new CourseSort();
-        $builder = $userInfos->assignedCourses();
-        $querySort = $sort->transform($builder, $request);
+        $filterData = [
+            'page' => $request->input('page', 1),
+            'perPage' => $request->input('perPage', 6),
+            'type_id' => $request->input('type_id'),
+            'category_id' => $request->input('category_id'),
+            'training_type' => $request->input('training_type'),
+        ];
+        $cacheKey = 'userInfo'.$userInfos->id.':assignedCourses:'.json_encode($filterData);
 
-        if($request->has('type_id')){
-            if(!($request->input('type_id')['eq'] == "")){
-                $querySort->whereHas('types', function($subQuery) use ($request){
-                    $subQuery->where('type_id', $request->input('type_id'));
+        if(!Cache::has($cacheKey)){
+            $courses = Cache::remember($cacheKey, now(), function() use ($userInfos, $request, $filterData){
+            $page = $filterData['page'];
+            $perPage = $filterData['perPage'];
+
+            $sort = new CourseSort();
+            $builder = $userInfos->assignedCourses();
+            $querySort = $sort->transform($builder, $request);
+
+            if(!empty($filterData['type_id']) && $filterData['type_id'] != ""){
+                $querySort->whereHas('types', function($subQuery) use ($filterData){
+                    $subQuery->where('type_id', $filterData['type_id']);
                 });
             }
-        }
 
-        if($request->has('category_id')){
-            if(!($request->input('category_id')['eq'] == "")){
-                $querySort->whereHas('categories', function($subQuery) use ($request){
-                    $subQuery->where('category_id', $request->input('category_id'));
+            if(!empty($filterData['category_id']) && $filterData['category_id'] != ""){
+                $querySort->whereHas('categories', function($subQuery) use ($filterData){
+                    $subQuery->where('category_id', $filterData['category_id']);
                 });
             }
-        }
 
-        if($request->has('training_type')){
-            if(!($request->input('training_type')['eq'] == "")){
-                $querySort->where('training_type', $request->input('training_type'));
+            if(!empty($filterData['training_type']) && $filterData['training_type'] != ""){
+                $querySort->where('training_type', $filterData['training_type']);
             }
-        }
-        $courses = $querySort->with(['categories', 'types', 'training_modes'])->where('archived', '=', 'active')->paginate($perPage);
 
-        LessonCountHelper::getEnrollmentStatusCount($courses);
-        return response()->json([
-            'data' => $courses->items(),
-            'total' => $courses->total(),
-            'lastPage' => $courses->lastPage(),
-            'currentPage' => $courses->currentPage()
-        ],200);
+            $paginate = $querySort->with(['categories', 'types', 'training_modes','adder','lessons'])
+                ->where('archived', '=', 'active')
+                ->paginate($perPage, ['*'], 'page', $page);
+
+            foreach($paginate as $course){
+                if($course->lessonCount() > 0){
+                    $course->progress = round($userInfos->lessonsCompletedCount($course->id)/$course->lessonCount() * 100, 2);
+                }else{
+                    $course->progress = 0;
+                }
+                $course->deadline = Enrollment::query()
+                    ->where('user_id', '=', $userInfos->id)
+                    ->where('course_id', '=', $course->id)
+                    ->pluck('end_date')
+                    ->first();
+            }
+
+            return $paginate;
+            });
+
+            $courses = LessonCountHelper::getEnrollmentStatusCount($courses);
+            return response() -> json([
+                'data' => $courses->items(),
+                'total' => $courses->total(),
+                'lastPage' => $courses->lastPage(),
+                'currentPage' => $courses->currentPage(),
+            ]);
+        }
+
+        $test = Cache::get($cacheKey);
+        $test = LessonCountHelper::getEnrollmentStatusCount($test);
+
+        return response() -> json([
+            'data' => $test->items(),
+            'total' => $test->total(),
+            'lastPage' => $test->lastPage(),
+            'currentPage' => $test->currentPage(),
+        ]);
     }
 
     public function indexArchivedUsers(Request $request){
         $page = $request->input('page', 1);//Default page
         $perPage = $request->input('perPage',5); //Number of entry per page
+        $currentUserId = $request->user()->userInfos->id;
 
         $filter = new UserInfosFilter();
         $queryItems = $filter->transform($request);
 
         $users =  UserInfos::query()->where($queryItems)
                 ->where('status', '=', 'Inactive')
+                ->whereNot(function($query) use ($currentUserId){
+                    $query->where('id', $currentUserId);
+                })
                 ->orderBy('created_at', 'desc')
                 ->with('roles','division','section','department','title','branch','city')
                 ->paginate($perPage);
@@ -459,45 +516,78 @@ class userInfo_controller extends Controller
     }
 
     public function getAddedCourses(UserInfos $userInfos,Request $request){
+        $filterData = [
+            'page' => $request->input('page', 1),
+            'perPage' => $request->input('perPage', 6),
+            'type_id' => $request->input('type_id'),
+            'category_id' => $request->input('category_id'),
+            'training_type' => $request->input('training_type'),
+        ];
+        $cacheKey = 'userInfo'.$userInfos->id.':addedCourses:'.json_encode($filterData);
 
-        $page = $request->input('page', 1);//Default page
-        $perPage = $request->input('perPage',5); //Number of entry per page
-        $sort = new CourseSort();
-        $builder = $userInfos->addedCourses();
-        $querySort = $sort->transform($builder, $request);
+        if(!Cache::has($cacheKey)){
+            $courses = Cache::remember($cacheKey, now(), function() use ($userInfos, $request, $filterData){
+            $page = $filterData['page'];
+            $perPage = $filterData['perPage'];
 
-        if($request->has('type_id')){
-            if(!($request->input('type_id')['eq'] == "")){
-                $querySort->whereHas('types', function($subQuery) use ($request){
-                    $subQuery->where('type_id', $request->input('type_id'));
+            $sort = new CourseSort();
+            $builder = $userInfos->addedCourses();
+            $querySort = $sort->transform($builder, $request);
+
+            if(!empty($filterData['type_id']) && $filterData['type_id'] != ""){
+                $querySort->whereHas('types', function($subQuery) use ($filterData){
+                    $subQuery->where('type_id', $filterData['type_id']);
                 });
             }
-        }
 
-        if($request->has('category_id')){
-            if(!($request->input('category_id')['eq'] == "")){
-                $querySort->whereHas('categories', function($subQuery) use ($request){
-                    $subQuery->where('category_id', $request->input('category_id'));
+            if(!empty($filterData['category_id']) && $filterData['category_id'] != ""){
+                $querySort->whereHas('categories', function($subQuery) use ($filterData){
+                    $subQuery->where('category_id', $filterData['category_id']);
                 });
             }
-        }
 
-        if($request->has('training_type')){
-            if(!($request->input('training_type')['eq'] == "")){
-                $querySort->where('training_type', $request->input('training_type'));
+            if(!empty($filterData['training_type']) && $filterData['training_type'] != ""){
+                $querySort->where('training_type', $filterData['training_type']);
             }
+
+            $paginate = $querySort->with(['categories', 'types', 'training_modes','adder','lessons'])
+                ->where('archived', '=', 'active')
+                ->paginate($perPage);
+
+            foreach($paginate as $course){
+                if($course->lessonCount() > 0){
+                    $course->progress = round($userInfos->lessonsCompletedCount($course->id)/$course->lessonCount() * 100, 2);
+                }else{
+                    $course->progress = 0;
+                }
+                $course->deadline = Enrollment::query()
+                    ->where('user_id', '=', $userInfos->id)
+                    ->where('course_id', '=', $course->id)
+                    ->pluck('end_date')
+                    ->first();
+            }
+
+            return $paginate;
+            });
+
+            $courses = LessonCountHelper::getEnrollmentStatusCount($courses);
+            return response() -> json([
+                'data' => $courses->items(),
+                'total' => $courses->total(),
+                'lastPage' => $courses->lastPage(),
+                'currentPage' => $courses->currentPage(),
+            ]);
         }
 
-        $courses = $querySort->with(['categories', 'types', 'training_modes'])->where('archived', '=', 'active')->paginate($perPage);
+        $test = Cache::get($cacheKey);
+        $test = LessonCountHelper::getEnrollmentStatusCount($test);
 
-        $final = LessonCountHelper::getEnrollmentStatusCount($courses);
-        return response()->json([
-            'data' => $final->items(),
-            'total' => $final->total(),
-            'lastPage' => $final->lastPage(),
-            'currentPage' => $final->currentPage(),
-            'per' => $final->perPage()
-        ],200);
+        return response() -> json([
+            'data' => $test->items(),
+            'total' => $test->total(),
+            'lastPage' => $test->lastPage(),
+            'currentPage' => $test->currentPage(),
+        ]);
     }
 
     //You add user id then role id in url /addRole/{userInfos}/{role}
@@ -618,48 +708,79 @@ class userInfo_controller extends Controller
     }
 
     public function getUserCourses(UserInfos $userInfos, Request $request){
-        $page = $request->input('page', 1); // default page
-        $perPage = $request->input('per_page', 8); // default per page
-        $sort = new CourseSort();
-        $builder = $userInfos->enrolledCourses();
-        $querySort = $sort->transform($builder, $request);
+        $filterData = [
+            'page' => $request->input('page', 1),
+            'perPage' => $request->input('perPage', 6),
+            'type_id' => $request->input('type_id'),
+            'category_id' => $request->input('category_id'),
+            'training_type' => $request->input('training_type'),
+            'enrollment_status' => $request->input('enrollment_status'),
+        ];
+        $cacheKey = 'userInfo'.$userInfos->id.':enrolledCourses:'.json_encode($filterData);
 
-        if($request->has('type_id')){
-            if(!($request->input('type_id')['eq'] == "")){
-                $querySort->whereHas('types', function($subQuery) use ($request){
-                    $subQuery->where('type_id', $request->input('type_id'));
+        if(!Cache::has($cacheKey)){
+            $courses = Cache::remember($cacheKey, now(), function() use ($userInfos, $request, $filterData){
+            $page = $filterData['page'];
+            $perPage = $filterData['perPage'];
+
+            $sort = new CourseSort();
+            $builder = $userInfos->enrolledCourses();
+            $querySort = $sort->transform($builder, $request);
+
+            if(!empty($filterData['type_id']) && $filterData['type_id'] != ""){
+                $querySort->whereHas('types', function($subQuery) use ($filterData){
+                    $subQuery->where('type_id', $filterData['type_id']);
                 });
             }
-        }
 
-        if($request->has('category_id')){
-            if(!($request->input('category_id')['eq'] == "")){
-                $querySort->whereHas('categories', function($subQuery) use ($request){
-                    $subQuery->where('category_id', $request->input('category_id'));
+            if(!empty($filterData['category_id']) && $filterData['category_id'] != ""){
+                $querySort->whereHas('categories', function($subQuery) use ($filterData){
+                    $subQuery->where('category_id', $filterData['category_id']);
                 });
             }
-        }
 
-        if($request->has('training_type')){
-            if(!($request->input('training_type')['eq'] == "")){
-                $querySort->where('training_type', $request->input('training_type'));
+            if(!empty($filterData['training_type']) && $filterData['training_type'] != ""){
+                $querySort->where('training_type', $filterData['training_type']);
             }
-        }
 
-        if($request->has('enrollment_status')){
-            if(!($request->input('enrollment_status')['eq'] == "")){
-                $querySort->whereHas('enrollments', function($subQuery) use ($request){
-                    $subQuery->where('enrollment_status', $request->input('enrollment_status'));
+            if(!empty($filterData['enrollment_status']) && $filterData['enrollment_status'] != ""){
+                $querySort->whereHas('enrollments', function($subQuery) use ($filterData){
+                    $subQuery->where('enrollment_status', $filterData['enrollment_status']);
                 });
             }
+
+            $paginate = $querySort->with(['categories', 'types', 'training_modes','lessons'])
+                ->where('archived', '=', 'active')
+                ->paginate($perPage);
+
+
+            return $paginate;
+            });
+            foreach($courses as $course){
+            if($course->lessonCount() > 0){
+                $course->progress = round($userInfos->lessonsCompletedCount($course->id)/$course->lessonCount() * 100, 2);
+            }else{
+                $course->progress = 0;
+            }
+            $course->deadline = Enrollment::query()
+                ->where('user_id', '=', $userInfos->id)
+                ->where('course_id', '=', $course->id)
+                ->pluck('end_date')
+                ->first();
+            }
+            LessonCountHelper::getEnrollmentStatusCount($courses);
+            return response() -> json([
+                'data' => $courses->items(),
+                'total' => $courses->total(),
+                'lastPage' => $courses->lastPage(),
+                'currentPage' => $courses->currentPage(),
+            ]);
         }
 
-        $courses = $querySort->with(['categories', 'types', 'training_modes'])->withCount('lessons')->where('archived', '=', 'active')->paginate($perPage);
-        $deadline = [];
-
-        foreach($courses as $index => $course){
-            if($course->lessons_count > 0){
-                $course->progress = round($userInfos->lessonsCompletedCount($course->id)/$course->lessons_count * 100, 2);
+        $test = Cache::get($cacheKey);
+        foreach($test as $course){
+            if($course->lessonCount() > 0){
+                $course->progress = round($userInfos->lessonsCompletedCount($course->id)/$course->lessonCount() * 100, 2);
             }else{
                 $course->progress = 0;
             }
@@ -669,11 +790,13 @@ class userInfo_controller extends Controller
                 ->pluck('end_date')
                 ->first();
         }
+        LessonCountHelper::getEnrollmentStatusCount($test);
+
         return response() -> json([
-            'data' => $courses->items(),
-            'total' => $courses->total(),
-            'lastPage' => $courses->lastPage(),
-            'currentPage' => $courses->currentPage(),
+            'data' => $test->items(),
+            'total' => $test->total(),
+            'lastPage' => $test->lastPage(),
+            'currentPage' => $test->currentPage(),
         ]);
     }
 
@@ -812,21 +935,30 @@ class userInfo_controller extends Controller
         ],200);
     }
 
-    public function test(Request $request){
-        // $course = Course::query()->find($request->input('course_id'));
-        // // $user = UserInfos::query()->find($request->input('user_id'));
-        // // $pivot = $course->assignedCourseAdmins()->where('user_id', $user->id)->first()->pivot;
+    public function test(){
+        // $course = Course::query()->find(71);
+        // $user = UserInfos::query()->find(109);
+        // $pivot = $course->assignedCourseAdmins()->where('user_id', $user->id)->first()->pivot;
         // $permIds = $course->course_permissions->pluck('id')->toArray();
-        // // $perm = CourseUserAssigned::find($pivot->id);
+        // $perm = CourseUserAssigned::find($pivot->id);
 
         // // $perm->permissions()->sync([1,2]);
-        // return response()->json([
-        //     'data' => $permIds,
-        // ]);
-        $result = UserCredentials::search(null)
-            ->paginate(5);
+        // $userInfo = UserInfos::find(128);
+        // PermissionToUser::dispatch($userInfo, $existingatedData['permissions'] ?? []);
+        $message = "Hello from laravel";
+        // broadcast(new TestEvent($message));
+        // TestEvent::broadcast($message);
         return response()->json([
-            'data' => $result
-        ], 200);
+            'message' => $message
+        ]);
+
+
+        // {
+        //     $user = UserCredentials::query()->find(1); // Replace with the actual user ID
+
+        //     $user->unreadNotifications->markAsRead();
+
+        //     return response()->json(['message' => 'All notifications marked as read']);
+        // }
     }
 }

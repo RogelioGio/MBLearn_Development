@@ -7,6 +7,7 @@ use App\Http\Requests\BulkFormInput;
 use App\Models\Department;
 use App\Http\Requests\StoreDepartmentRequest;
 use App\Http\Requests\UpdateDepartmentRequest;
+use App\Jobs\ResetOptionCache;
 use App\Models\Branch;
 use Illuminate\Support\Facades\Gate;
 
@@ -27,6 +28,7 @@ class DepartmentController extends Controller
     {
         $validated = $request->validated();
         $department = Department::create($validated);
+        ResetOptionCache::dispatch();
         return $department;
     }
 

@@ -8,12 +8,13 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Laravel\Scout\Searchable;
 
 class UserCredentials extends Model implements Authenticatable
 {
-    use HasApiTokens,HasFactory, Searchable;
+    use HasApiTokens,HasFactory, Searchable, Notifiable;
 
     /**
      * The table associated with the model.
@@ -30,6 +31,7 @@ class UserCredentials extends Model implements Authenticatable
         'password',
         'last_logged_in',
         'user_info_id',
+        'first_log_in'
     ];
 
     /**
@@ -105,5 +107,9 @@ class UserCredentials extends Model implements Authenticatable
         $array['last_name'] = $this->userInfos->last_name ?? null;
 
         return $array;
+    }
+
+    public function otp(){
+        return $this->hasOne(UserOtp::class, 'user_credentials_id', 'id');
     }
 }

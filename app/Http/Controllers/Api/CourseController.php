@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\BulkAddPermissionsToCourse;
 use App\Http\Requests\BulkAssignCourseAdmins;
 use App\Http\Requests\BulkStoreCourseRequest;
+use App\Http\Requests\CourseSearchRequest;
 use App\Http\Requests\StoreCourseRequest;
 use App\Http\Resources\CourseResource;
 use App\Models\Category;
@@ -101,12 +102,12 @@ class CourseController extends Controller
             $lesson = Lesson::create(['lesson_name' => $lessons['LessonName'],
                         'lesson_content_as_json' => $lessons['LessonContentAsJSON']]);
             $course->lessons()->save($lesson);
-            foreach($lessons['files'] as $files){
-                $file = $request->file('lessons.*.files.*.file');
-                $path = $file->store('/'.$course->name.'/'.$lesson->lesson_name, 'lessonfiles');
-                $file = LessonFile::create(['file_name' => $files['file_name'], 'file_type' => $files['file_type'], 'file_path' => $path]);
-                $file->lesson()->associate($lesson);
-            }
+            // foreach($lessons['files'] as $files){
+            //     $file = $request->file('lessons.*.files.*.file');
+            //     $path = $file->store('/'.$course->name.'/'.$lesson->lesson_name, 'lessonfiles');
+            //     $file = LessonFile::create(['file_name' => $files['file_name'], 'file_type' => $files['file_type'], 'file_path' => $path]);
+            //     $file->lesson()->associate($lesson);
+            // }
         }
 
         $course->types()->syncWithoutDetaching($type->id);
@@ -157,9 +158,17 @@ class CourseController extends Controller
             return $messyArray;
         });
         $course->assignedCourseAdmins()->syncWithoutDetaching($bulk);
-        AssignCourseAdmin::dispatch($course, $bulk);
+        AssignCourseAdmin::dispatch($course, $bulk->toArray());
         return response()->json([
-            'message' => "Course Admins assigned to ".$course->name
+            'message' => "Course Admins assigned to ".$course->name,
+        ]);
+    }
+
+    public function publishCourse(Course $course){
+        $course->update(['published', true]);
+
+        return response()->json([
+            'message' => 'Course has been published'
         ]);
     }
 
@@ -281,7 +290,7 @@ class CourseController extends Controller
                     $ongoing++;
                 } elseif($enrollment->enrollment_status == 'finished'){
                     $finished++;
-                } 
+                }
                 if($enrollment->due_soon == true || !($enrollment->enrollment_status == 'finished')){
                     $due_soon++;
                 }
@@ -297,7 +306,7 @@ class CourseController extends Controller
             'Enrolled' => $enrolled,
             'Ongoing' => $ongoing,
             'Finished' => $finished,
-            'Due Soon' => $due_soon
+            'DueSoon' => $due_soon
         ]);
     }
 
@@ -331,6 +340,47 @@ class CourseController extends Controller
             'currentPage' => $admins->currentPage(),
         ], 200);
 
+    }
+
+    public function CourseSearch(CourseSearchRequest $request){
+        $search = $request['search'];
+        $perPage = $request->input('perPage', 5); //Number of entry per page
+        $page = $request->input('page', 1);//Default page
+        $status = $request['status'] ?? 'active';
+        $user_id = $request['user_id'] ?? null;
+        $relation = $request['relation'] ?? 'enrolled';
+        $result = Course::search($search);
+
+        if(!$user_id){
+            $result = $result->query(function ($query) use ($status){
+                $query->where('archived', '=', $status)
+                    ->with(['categories', 'types']);
+                    return $query;
+            })->paginate($perPage);
+        } else {
+            $result = $result->query(function ($query) use ($status, $user_id, $relation){
+                if($relation == 'enrolled'){
+                    $query->whereHas('enrollments', function($subQuery) use ($user_id){
+                        $subQuery->where('user_id', '=', $user_id);
+                    })->where('archived', '=', $status)
+                    ->with(['categories', 'types']);
+                    return $query;
+                } else if($relation == 'assigned'){
+                    $query->whereHas('enrolledUsers', function($subQuery) use ($user_id){
+                        $subQuery->where('user_id', '=', $user_id);
+                    })->where('archived', '=', $status)
+                    ->with(['categories', 'types']);
+                    return $query;
+                }
+            })->paginate($perPage);
+        }
+
+        return response()->json([
+            'data' => $result->items(),
+            'total' => $result->total(),
+            'lastPage' => $result->lastPage(),
+            'currentPage' => $result->currentPage(),
+        ], 200);
     }
 
     /**

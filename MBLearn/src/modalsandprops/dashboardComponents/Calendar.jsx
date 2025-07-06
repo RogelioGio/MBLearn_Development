@@ -11,8 +11,8 @@ import {
   isSameDay,
   parseISO,
 } from "date-fns";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, } from "MBLearn/src/components/ui/tooltip";
 import { forwardRef, useImperativeHandle, useState } from "react";
-
 
 const Calendar = forwardRef(({events = []}, ref) => {
     const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -42,15 +42,26 @@ const Calendar = forwardRef(({events = []}, ref) => {
         </div>
     )
 
+    const eventDates = events.reduce((acc, event)=> {
+        const key = format(parseISO(event.date), "yyyy-MM-dd");
+        const type = event.event_type || "Event";
+
+        if(!acc[key]) acc[key] = {};
+        if(!acc[key][type]) acc[key][type] = 0;
+
+        acc[key][type] += 1;
+        return acc;
+    },{})
+
     const renderCells = () => {
         const startDate = startOfWeek(startOfMonth(currentMonth));
         const days = [];
         let day = startDate;
 
         //normalize the event dates to read string to dates
-        const eventDates = events.map((e) => (
-            typeof e.date === "string" ? format(parseISO(e.date), "yyyy-MM-dd") :  format(e.date, "yyyy-MM-dd")
-        ))
+        // const eventDates = events.map((e) => (
+        //     typeof e.date === "string" ? format(parseISO(e.date), "yyyy-MM-dd") :  format(e.date, "yyyy-MM-dd")
+        // ))
 
         //6 weeks
         for(let i=0; i<42; i++){
@@ -61,12 +72,35 @@ const Calendar = forwardRef(({events = []}, ref) => {
 
             //event identifiers
             const dayKey = format(day, "yyyy-MM-dd");
-            const hasEvent = eventDates.includes(dayKey)
+            //const hasEvent = eventDates.includes(dayKey)
+            const hasEvent = dayKey in eventDates;
+            const eventTypes = eventDates[dayKey] || {};
 
             days.push(
-                <div key={day} className={`font-text flex items-center justify-center border border-divi ${!isCurrentMonth ? "!text-gray-300" : ""}`}>
-                    <div className={`text-sm w-8 h-7 flex items-center justify-center ${isToday && !isSameDay(day, selectedDate) ? "bg-primary text-white rounded-md shadow-md hover:text-white" : ""} ${hasEvent ? "border-2 border-primary text-primary font-header":""} transition-all hover:border hover:cursor-pointer hover:text-primary border-primary rounded-md`}>{formattedDate}</div>
-                </div>
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <button key={day} className={`font-text flex items-center justify-center border border-division ${!isCurrentMonth ? "!text-gray-300" : ""}`}>
+                                <div className={`text-sm w-8 h-7 flex items-center justify-center ${isToday && !isSameDay(day, selectedDate) ? "bg-primary text-white rounded-md shadow-md hover:text-white" : ""} ${hasEvent ? "border-2 border-primary text-primary font-header":""} transition-all hover:border hover:cursor-pointer hover:text-primary border-primary rounded-md`}>{formattedDate}</div>
+                            </button>
+                        </TooltipTrigger>
+                        {
+                            hasEvent &&
+                            <TooltipContent>
+                                <div className="flex flex-col gap-1 text-unactive font-text">
+                                    {
+                                        Object.entries(eventTypes).map(([type, count], index) => (
+                                            <div className="flex gap-1 items-center">
+                                                <div className="w-3 h-3 bg-primary rounded-sm"/>
+                                                <p className="" key={index}>{type} - {count}</p>
+                                            </div>
+                                        ))
+                                    }
+                                </div>
+                            </TooltipContent>
+                        }
+                    </Tooltip>
+                </TooltipProvider>
             )
             day = addDays(day, 1);
         }

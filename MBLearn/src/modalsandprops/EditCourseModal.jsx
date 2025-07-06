@@ -4,35 +4,34 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react"
 import { useEffect, useState } from "react"
 import axiosClient from "../axios-client"
-import { useCourse } from "../contexts/selectedcourseContext"
 import { useFormik } from "formik"
 import { useCourseContext } from "../contexts/CourseListProvider"
 
-const EditCourseModal = ({open, close, id}) => {
+
+const EditCourseModal = ({open, close, id, course}) => {
     const [hover, setHover] = useState(false);
-    const [loading, setLoading] = useState(true)
-    const {selectedCourse = [] , selectCourse, isFetching} = useCourse()
+    const [loading, setLoading] = useState(false)
+    // const {selectedCourse = [] , selectCourse, isFetching, Course} = useCourse()
     const {coursetypes, coursecategories, trainingmodes} = useCourseContext();
     const [tab, setTab] = useState(1);
 
-
-    useEffect(() => {
-        if (open && id) {
-            formik.resetForm();
-            if (selectedCourse?.id === id) {
-                setLoading(false);
-                } else {
-                    setLoading(true);
-                    selectCourse(id);
-                }
-            }
-        return;
-        }, [id, selectedCourse, open]);
-        useEffect(() => {
-            if (selectedCourse && !isFetching) {
-                setLoading(false);
-            }
-        }, [selectedCourse, isFetching]);
+    // useEffect(() => {
+    //     if (open && id) {
+    //         formik.resetForm();
+    //         if (selectedCourse?.id === id) {
+    //             setLoading(false);
+    //             } else {
+    //                 setLoading(true);
+    //                 selectCourse(id);
+    //             }
+    //         }
+    //     return;
+    //     }, [id, selectedCourse, open]);
+    //     useEffect(() => {
+    //         if (selectedCourse && !isFetching) {
+    //             setLoading(false);
+    //         }
+    //     }, [selectedCourse, isFetching]);
 
 
         const formik = useFormik({
@@ -50,17 +49,17 @@ const EditCourseModal = ({open, close, id}) => {
                 course_objectives: "Loading...",
                 course_outcome: "Loading...",
             }:{
-                courseName: selectedCourse?.name || "",
-                courseType: selectedCourse?.types?.[0].id|| "",
-                courseCategories: selectedCourse?.categories?.[0]?.id || "",
-                training_type: selectCourse?.training_type || "",
-                training_mode: selectedCourse?.training_modes?.[0]?.id || "",
-                shortDescription: selectedCourse?.description || "",
-                months: selectedCourse?.months || "0",
-                weeks: selectedCourse?.weeks || "0",
-                days: selectedCourse?.days || "0",
-                course_objectives: " ",
-                course_outcome: "",
+                courseName: course?.name || "",
+                courseType: course?.types?.[0].id|| "",
+                courseCategories: course?.categories?.[0]?.id || "",
+                training_type: course?.training_type || "",
+                training_mode: course?.training_modes?.[0]?.id || "",
+                shortDescription: course?.description || "",
+                months: course?.months || "0",
+                weeks: course?.weeks || "0",
+                days: course?.days || "0",
+                course_objectives: course?.course_objectives || "",
+                course_outcome: course?.course_outcomes || "",
             },
             onSubmit: (values) => {
                 console.log(values)

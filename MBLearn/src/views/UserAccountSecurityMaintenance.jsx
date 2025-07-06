@@ -1,4 +1,4 @@
-import { faChevronLeft, faChevronRight, faFilter, faSearch, faXmark } from "@fortawesome/free-solid-svg-icons"
+import { faChevronLeft, faChevronRight, faFilter, faMagnifyingGlass, faSearch, faXmark } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Helmet } from "react-helmet"
 import UserListLoadingProps from "../modalsandprops/UserListLoadingProps"
@@ -14,6 +14,8 @@ import * as Yup from "yup"
 import EditUserSuccessfully from '../modalsandprops/EditUserSuccesfuly';
 import { resolvePath } from "react-router-dom"
 import { useStateContext } from "../contexts/ContextProvider"
+import echo from "MBLearn/echo"
+import { toast } from "sonner"
 
 
 export default function UserAccountSecurityMaintenance(){
@@ -23,12 +25,44 @@ export default function UserAccountSecurityMaintenance(){
     const [isReady, setIsReady] = useState(false);
     const [users, setUsers] = useState([])
     const [selectedBranches, setSelectedBranches] = useState([])
-
+    const [SelectedUser, setSelectedUser] = useState()
+    const [search, setSearch] = useState();
 
     const [modalState, setModalState] = useState({
         isEdit:false,
         isEditSuccess: false,
     });
+
+    //SearchFormik
+    const searchFormik = useFormik(({
+        initialValues:{
+            search: '',
+            page: 1,
+            per_page: 5,
+            status: 'Active',
+        },
+        validationSchema: Yup.object({}),
+        onSubmit: values => {
+            console.log(values);
+            const payload = {
+                search: values.search,
+                page: values.page,
+                per_page: values.per_page,
+                status: values.status,
+            };
+            setIsLoading(true);
+            setSearch(true);
+            // axiosClient.get('/user-search', {params: payload})
+            // .then((response) => {
+            //     console.log(response.data);
+            //     setUsers(response.data.data);
+            //     setLoading(false)
+            //     pageChangeState("totalUsers", response.data.total)
+            //     pageChangeState("lastPage", response.data.lastPage)
+
+            // }).catch((e) => {console.log(e)})
+        }
+    }))
 
     //OpenSuccess
     const OpenSuccessFullyEdit = () => {
@@ -100,7 +134,7 @@ export default function UserAccountSecurityMaintenance(){
 
     useEffect(()=>{console.log(userID.isEdit)},[userID.isEdit])
     //Open and CLose Modals
-    const OpenEdit = (e,ID) => {
+    const OpenEdit = (e,ID, User) => {
         const hasPermission = user.user_infos.permissions?.some(
             (permission) =>
                 permission.permission_name === "EditUserRoles" ||
@@ -108,6 +142,8 @@ export default function UserAccountSecurityMaintenance(){
         );
 
         if (!hasPermission) return;
+
+        setSelectedUser(User)
 
         e.stopPropagation();
         toggleUserID("isEdit", ID);
@@ -212,102 +248,75 @@ export default function UserAccountSecurityMaintenance(){
 
 
     return(
-        <div className='grid  grid-cols-4 grid-rows-[6.25rem_min-content_auto_auto_min-content] h-full w-full'>
+        <div className='grid grid-cols-4 h-full w-full
+                        grid-rows-[6.25rem_min-content]
+                        xl:grid-rows-[6.25rem_min-content_auto_auto_min-content]
+                        sm:grid-rows-[6.25rem_min-content]'>
             <Helmet>
                 {/* Title of the mark-up */}
                 <title>MBLearn | System Access Maintenance</title>
             </Helmet>
 
             {/* Header */}
-            <div className='flex flex-col justify-center col-span-3 row-span-1 pr-5 border-b ml-5 border-divider'>
-                <h1 className='text-primary text-4xl font-header'>System Access Maintenance</h1>
-                <p className='font-text text-sm text-unactive' >Handles user credentials, account status, and last login tracking for secure access management..</p>
+            <div className='flex flex-col justify-center row-span-1 border-b border-divider
+                            col-start-1 row-start-1 col-span-4 mx-3
+                            xl:col-span-3
+                            lg:mx-0 lg:ml-4 lg:col-span-2'>
+                <h1 className='text-primary font-header
+                                text-xl
+                                sm:text-2xl
+                                xl:text-4xl'>System Access Maintenance</h1>
+                <p className='font-text text-unactive
+                                text-xs
+                                xl:text-sm
+                                sm:text-xs' >Handles user credentials, account status, and last login tracking for secure access</p>
             </div>
 
             {/* Search bar */}
-            <div className='col-start-4 row-start-1 mr-5 py-3 border-b border-divider'>
-                <div className="flex items-center w-full h-full">
-                    <div className=' inline-flex flex-row place-content-between border-2 border-primary rounded-md w-full h-fit font-text shadow-md'>
-                        <input type="text" className='focus:outline-none text-sm px-4 w-full rounded-md bg-white' placeholder='Search...'/>
-                        <div className='bg-primary py-2 px-4 text-white'>
-                            <FontAwesomeIcon icon={faSearch}/>
+            <div className='justify-end border-divider gap-1 flex
+                            col-span-2 px-3 items-end py-2
+                            xl:col-span-1 xl:p-0
+                            lg:mr-3 lg:border-b lg:pl-3 lg:items-center
+                            sm:flex sm:px-3 sm:col-span-2 sm:items-end sm:py-2'>
+                {/* {
+                    //search
+                    search ? (
+                        <div className='w-12 aspect-square border-primary border-2 rounded-md shadow-md bg-white flex items-center justify-center text-primary hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out' onClick={()=>{setSearch(false), searchFormik.resetForm(), fetchUsers()}}>
+                            <FontAwesomeIcon icon={faXmark}/>
                         </div>
-                    </div>
-                </div>
+                    ) : null
+                } */}
+                <form onSubmit={searchFormik.handleSubmit} className="w-full">
+                    <div className='w-full inline-flex mr-3 flex-row place-content-between border-2 border-primary rounded-md h-fit font-text shadow-md'>
+                            <input type="text" className='focus:outline-none text-sm px-4 w-full rounded-md bg-white' placeholder='Search...'
+                                name='search'
+                                value={searchFormik.values.search}
+                                onChange={searchFormik.handleChange}
+                                onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    searchFormik.handleSubmit();
+                                }
+                                }}/>
+                            <div className={`w-14 h-10 bg-primary text-white flex items-center justify-center ${search ? "hover:cursor-pointer":null}`}
+                                onClick={() => {
+                                    if (search) {
+                                    setSearch(false);
+                                    searchFormik.resetForm();
+                                    fetchUsers();}
+                                }}>
+
+                                <FontAwesomeIcon icon={search ? faXmark : faMagnifyingGlass}/>
+                            </div>
+                        </div>
+                </form>
             </div>
 
             {/* User Filter */}
-            <form onSubmit={filterformik.handleSubmit} className='col-start-1 col-span-4 row-start-2 row-span-1 px-5 py-3 grid grid-cols-[auto_auto_auto_auto_auto_min-content] w-full gap-2'>
-                {/* <div className="inline-flex flex-col gap-1">
-                    <label htmlFor="department" className="font-header text-xs flex flex-row justify-between">
-                        <p className="text-xs font-text text-unactive">Department </p>
-                    </label>
-                    <div className="grid grid-cols-1">
-                        <select id="department" name="department" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                            value={filterformik.values.department}
-                            onChange={filterformik.handleChange}
-                            onBlur={filterformik.handleBlur}
-                            >
-                            <option value=''>Select Department</option>
-                            {
-                                departments.map((department) => (
-                                    <option key={department.id} value={department.id}>{department.department_name}</option>
-                                ))
-                            }
-                        </select>
-                        <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                        <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
-                </div>
-
-                <div className="inline-flex flex-col gap-1">
-                    <label htmlFor="city" className="font-header text-xs flex flex-row justify-between">
-                        <p className="text-xs font-text text-unactive">City</p>
-                    </label>
-                    <div className="grid grid-cols-1">
-                        <select id="city" name="city" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                            value={filterformik.values.city}
-                            onChange={handleBranchesOptions}
-                            onBlur={filterformik.handleBlur}
-                            >
-                            <option value=''>Select Branch City</option>
-                            {
-                                cities.map((city) => (
-                                    <option key={city.id} value={city.id}>{city.city_name}</option>
-                                ))
-                            }
-                        </select>
-                        <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                        <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
-                </div>
-
-                <div className="inline-flex flex-col gap-1">
-                    <label htmlFor="branch" className="font-header text-xs flex flex-row justify-between">
-                        <p className="text-xs font-text text-unactive"> Location</p>
-                    </label>
-                    <div className="grid grid-cols-1">
-                        <select id="branch" name="branch" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                            value={filterformik.values.branch}
-                            onChange={filterformik.handleChange}
-                            onBlur={filterformik.handleBlur}
-                            >
-                            <option value=''>Select Branch Location</option>
-                            {
-                                selectedBranches.map((location) => (
-                                    <option key={location.id} value={location.id}>{location.branch_name}</option>
-                                ))
-                            }
-                        </select>
-                        <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                        <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
-                </div> */}
-
-                <div className="inline-flex flex-col gap-1">
+            <form onSubmit={filterformik.handleSubmit} className='flex flex-row row-start-2 ml-3 py-2 gap-2
+                col-span-2
+                xl:col-span-1'>
+                <div className="inline-flex flex-col gap-1 w-full">
                     <label htmlFor="role" className="font-header text-xs flex flex-row justify-between">
                         <p className="text-xs font-text text-unactive">Account Role</p>
                     </label>
@@ -331,9 +340,9 @@ export default function UserAccountSecurityMaintenance(){
                 </div>
 
                 {/* Filter Button */}
-                <div className='flex-row flex justify-start py-1 gap-2 items-end'>
+                {/* <div className='flex-row flex justify-start gap-2 items-end'>
                 <button type='submit'>
-                    <div className='aspect-square px-3 flex flex-row justify-center items-center bg-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 ease-in-out transition-all '>
+                    <div className='w-10 h-10 flex flex-row justify-center items-center bg-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 ease-in-out transition-all '>
                         <FontAwesomeIcon icon={faFilter} className='text-white text-sm'/>
                     </div>
                 </button>
@@ -347,26 +356,25 @@ export default function UserAccountSecurityMaintenance(){
                         null
                     )
                 }
-                </div>
+                </div> */}
             </form>
 
             {/* UserList Table */}
-            <div className='row-start-3 row-span-2 col-start-1 col-span-4 px-5 py-4'>
+            <div className='row-start-3 row-span-2 col-start-1 col-span-4 px-3 py-2
+                            xl:pr-5 xl:py-4'>
                 <div className='w-full border-primary border rounded-md overflow-hidden shadow-md'>
                 <table className='text-left min-w-full table-layout-fixed'>
                     <thead className='font-header text-xs text-primary bg-secondaryprimary uppercase'>
                         <tr>
                             <th className='p-4 w-2/8'>EMPLOYEE NAME</th>
-                            {/* <th className='p-4 w-1/8'>DIVISION</th>
-                            <th className='p-4 w-1/8'>DEPARTMENT</th>
-                            <th className='p-4 w-1/8'>SECTION</th> */}
-                            <th className='p-4 w-1/8'>Metrobank Email</th>
-                            <th className='p-4 w-1/8'>ROLE</th>
-                            <th className='p-4 w-1/8'>Last Login Timestamp</th>
+                            <th className='p-4 w-1/8 hidden lg:table-cell'>Metrobank Email</th>
+                            <th className='p-4 w-1/8 hidden lg:table-cell'>ROLE</th>
+                            <th className='p-4 w-1/8 hidden lg:table-cell'>Last Login Timestamp</th>
                         </tr>
                     </thead>
                     <tbody className='bg-white divide-y divide-divider'>
                         {
+                            //isLoading
                             isLoading ? (
                                 <UserCredentialsLoadingProps/>
                             ) : (
@@ -387,6 +395,7 @@ export default function UserAccountSecurityMaintenance(){
                                         status={user.user_infos?.status}
                                         lastLogin={user?.last_logged_in}
                                         edit={OpenEdit}
+                                        select={user}
                                         />
                                 ))
                             )
@@ -451,7 +460,7 @@ export default function UserAccountSecurityMaintenance(){
             </div>
 
             {/* View User Credentials Modal */}
-            <EditUserCredsModal open={modalState.isEdit} close={CloseEdit} ID={userID.isEdit} editSuccess={OpenSuccessFullyEdit}/>
+            <EditUserCredsModal open={modalState.isEdit} close={CloseEdit} ID={userID.isEdit} editSuccess={OpenSuccessFullyEdit} User={SelectedUser}/>
             <EditUserSuccessfully open={modalState.isEditSuccess} close={CloseSuccessFullyEdit}/>
         </div>
     )

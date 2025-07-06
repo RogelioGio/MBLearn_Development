@@ -7,6 +7,7 @@ use App\Http\Requests\BulkFormInput;
 use App\Models\Title;
 use App\Http\Requests\StoreTitleRequest;
 use App\Http\Requests\UpdateTitleRequest;
+use App\Jobs\ResetOptionCache;
 use Illuminate\Support\Facades\Gate;
 
 class TitleController extends Controller
@@ -25,6 +26,7 @@ class TitleController extends Controller
     public function store(StoreTitleRequest $request)
     {
         $title = Title::create($request->validated());
+        ResetOptionCache::dispatch();
         return $title;
     }
 

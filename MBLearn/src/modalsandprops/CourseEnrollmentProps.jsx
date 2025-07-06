@@ -193,8 +193,8 @@ const CourseEnrollmentProps = ({course}) => {
             setProcessing(true)
             const enrolees = selected.map(e => ({
                 ...e,
-                start_date: format(new Date(date.from), 'yyyy-MM-dd HH:mm:ss'),
-                end_date: format(new Date(date.to), 'yyyy-MM-dd HH:mm:ss')
+                start_date: format(new Date(date.from), 'yyyy-MM-dd' + ' 00:00:00'),
+                end_date: format(new Date(date.to), 'yyyy-MM-dd' + ' 23:59:59')
             }))
             console.log(enrolees)
 

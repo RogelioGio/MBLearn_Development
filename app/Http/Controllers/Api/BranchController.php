@@ -10,6 +10,7 @@ use App\Http\Requests\CityBranchRequest;
 use App\Models\Branch;
 use App\Http\Requests\StoreBranchRequest;
 use App\Http\Requests\UpdateBranchRequest;
+use App\Jobs\ResetOptionCache;
 use App\Models\City;
 use App\Models\Department;
 use Illuminate\Support\Facades\Gate;
@@ -52,6 +53,7 @@ class BranchController extends Controller
         $branch = Branch::create(["branch_name" => $validated['branch_name']]);
         $branch->city()->associate($city);
         $branch->save();
+        ResetOptionCache::dispatch();
         return $branch;
     }
 

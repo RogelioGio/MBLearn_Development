@@ -10,6 +10,9 @@ import { format } from "date-fns";
 import Calendar from "MBLearn/src/modalsandprops/dashboardComponents/Calendar";
 import { faCalendar } from "@fortawesome/free-regular-svg-icons";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import CourseCard from "MBLearn/src/modalsandprops/CourseCard";
+
+
 
 
 const CourseAdminDashboard = ({name, user}) => {
@@ -35,10 +38,6 @@ const CourseAdminDashboard = ({name, user}) => {
             }))
         }
 
-
-    useEffect(() => {
-        fetchCourses(tab)
-    },[tab])
     const fetchCourses = (typeOfCourse) => {
         setLoading(true)
         if(typeOfCourse === "myCourses"){
@@ -84,7 +83,7 @@ const CourseAdminDashboard = ({name, user}) => {
 
     useEffect(()=>{
         fetchCourses(tab)
-    },[pageState.currentPage, pageState.perPage])
+    },[pageState.currentPage, pageState.perPage, tab])
 
     const back = () => {
         if (loading) return;
@@ -99,192 +98,165 @@ const CourseAdminDashboard = ({name, user}) => {
             pageChangeState("currentPage", pageState.currentPage + 1)
         }
     }
-
     return(
-        <div className="grid grid-cols-4 grid-rows-[6.25rem_1fr_1fr] h-full w-full">
-            <div className="flex flex-col justify-center col-span-3 row-span-1 pr-5 border-b ml-5 border-divider">
-                    <h1 className="text-primary text-4xl font-header">Good Day! {name}</h1>
-                    <p className='font-text text-sm text-unactive'>Course Admin Dashboard, A centralized hub for Course administrators to manage Learners, monitor learners progress.</p>
+        <div className="grid h-screen w-full grid-cols-4
+                        grid-rows-[6.25rem_min-content_1fr_min-content_min-content]
+                        xl:grid-rows-[6.25rem_min-content_1fr]">
+
+        {/* Header */}
+        <div className="flex flex-col justify-center col-span-3 row-span-1  border-b border-divider
+                        ml-3
+                        xl:pr-5
+                        sm:ml-4">
+                <h1 className="text-primary font-header
+                                text-2xl
+                                xl:text-4xl
+                                sm:text-2xl">Good Day! {name}</h1>
+                <p className='font-text text-unactive
+                                text-xs
+                                xl:text-sm
+                                sm:text-xs'>Course Admin Dashboard, A centralized hub for Course administrators to manage Learners, monitor learners progress.</p>
+        </div>
+        <div className='border-b border-divider  flex flex-row justify-end items-center
+                            mr-3
+                            sm:mr-4'>
+            <div className='aspect-square bg-secondaryprimary rounded-full flex justify-center items-center
+                            w-16 h-16
+                            xl:w-20 xl:h-20 xl:mr-5
+                            sm:w-16 sm:h-16'>
+                <FontAwesomeIcon icon={faBookOpenReader} className='text-primary text-xl xl:text-2xl sm:text-xl'/>
             </div>
-            <div className='border-b border-divider mr-5 flex flex-row justify-end items-center'>
-                <div className='p-6 aspect-square bg-secondaryprimary rounded-full flex justify-center items-center'>
-                    <FontAwesomeIcon icon={faBookOpenReader} className='text-primary text-2xl'/>
+        </div>
+
+        {/* Annoucenment */}
+        <div className='row-span-1 py-2
+                            col-span-4 px-3
+                            xl:col-span-3 xl:row-span-1  xl:pr-3 xl:row-start-2'>
+            <AnnouncmentCarousel/>
+        </div>
+
+        {/* Calendar */}
+        <div className='grid grid-cols-1 grid-rows-[min-content_1fr] row-start-5
+                        col-span-4 px-3 pb-5
+                        xl:col-span-1 xl:row-span-1 xl:row-start-2 xl:pr-5 xl:py-2'>
+        <div className='flex flex-row justify-between items-center'>
+                    <div className="pb-3">
+                        <p className="font-text text-unactive text-xs">Current Date:</p>
+                        <p className="font-header text-primary text-base">{format(new Date(), "MMMM d yyy")}</p>
+                    </div>
+                    <div className='flex flex-row gap-2'>
+                        <div>
+                            <div className='w-9 h-9 border-2 rounded-md text-primary border-primary flex justify-center items-center hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out'>
+                                <FontAwesomeIcon icon={faCalendar} className='text-sm'/>
+                            </div>
+                        </div>
+                        <div>
+                            <div className='w-9 h-9 border-2 rounded-md text-primary border-primary flex justify-center items-center hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out'>
+                                <ArrowLeft className="h-4 w-4" />
+                            </div>
+                        </div>
+                        <div>
+                            <div className='w-9 h-9 border-2 rounded-md text-primary border-primary flex justify-center items-center hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out'>
+                            <ArrowRight className="h-4 w-4" />
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div className='col-span-3 row-span-1 px-5 py-2'>
-                <AnnouncmentCarousel/>
-            </div>
-            <div className='col-span-1 row-span-1 pr-5 py-2 grid grid-cols-1 grid-rows-[min-content_1fr]'>
-            <div className='flex flex-row justify-between items-center'>
-                        <div className="pb-3">
-                            <p className="font-text text-unactive text-xs">Current Date:</p>
-                            <p className="font-header text-primary text-base">{format(new Date(), "MMMM d yyy")}</p>
-                        </div>
-                        <div className='flex flex-row gap-2'>
-                            <div>
-                                <div className='w-9 h-9 border-2 rounded-md text-primary border-primary flex justify-center items-center hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out'>
-                                    <FontAwesomeIcon icon={faCalendar} className='text-sm'/>
-                                </div>
-                            </div>
-                            <div>
-                                <div className='w-9 h-9 border-2 rounded-md text-primary border-primary flex justify-center items-center hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out'>
-                                    <ArrowLeft className="h-4 w-4" />
-                                </div>
-                            </div>
-                            <div>
-                                <div className='w-9 h-9 border-2 rounded-md text-primary border-primary flex justify-center items-center hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out'>
-                                <ArrowRight className="h-4 w-4" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="w-full h-full rounded-md shadow-md border-2 border-primary overflow-hidden">
-                        <Calendar/>
-                    </div>
-            </div>
-        {/* Courses Carosel */}
-        <div className='row-start-3 col-span-3 px-5 pt-2 p-2 flex flex-col'>
+                <div className="w-full h-full rounded-md shadow-md border-2 border-primary overflow-hidden">
+                    <Calendar/>
+                </div>
+        </div>
+
+        {/* Courses Carousel */}
+        <div className='grid grid-rows-[min-content_1fr] grid-cols-4 gap-2
+                        row-start-3 col-span-4 px-3 py-2
+                        xl:row-start-3 xl:col-span-3 xl:py-0'>
             {/* Header */}
-            <div className="grid grid-cols-[auto] grid-rows-1 gap-10">
-                <div className="grid grid-cols-[1fr_1fr] gap-2 pb-2">
-                    <div className={`group flex flex-row items-center justify-between py-2 px-4 border-2 border-primary rounded-md bg-white shadow-md hover:cursor-pointer hover:bg-primary ease-in-out transition-all ${tab === "myCourses" ? "!bg-primary !text-white":"text-primary"}`} onClick={()=>setTab("myCourses")}>
-                        <p className="font-header text-base group-hover:text-white"><span><FontAwesomeIcon icon={faBookBookmark}/></span> My Courses</p>
-                        <p className="font-text text-xs group-hover:text-white">View all your inputted courses in one place</p>
+            <div className="flex flex-row md:justify-between
+                            xl:col-span-2 xl:gap-2
+                            col-span-4 gap-1">
+                    <div className={`flex w-full group flex-row items-center justify-between xl:py-2 xl:px-4 border-2 border-primary rounded-md bg-white shadow-md hover:cursor-pointer hover:bg-primary ease-in-out transition-all ${tab === "myCourses" ? "!bg-primary !text-white":"text-primary"}
+                                        text-sm p-2
+                    `} onClick={()=>setTab("myCourses")}>
+                        <p className="font-header xl:text-base group-hover:text-white"><span><FontAwesomeIcon icon={faBookBookmark}/></span> My Courses</p>
                     </div>
-                    <div className={`group flex flex-row items-center justify-between py-2 px-4 border-2 border-primary rounded-md bg-white shadow-md hover:cursor-pointer hover:bg-primary ease-in-out transition-all ${tab === "assignedCourses" ? "!bg-primary !text-white":"text-primary"}`} onClick={()=>setTab("assignedCourses")}>
-                        <p className="font-header text-base group-hover:text-white"><span><FontAwesomeIcon icon={faBook}/></span> Assigned Courses</p>
-                        <p className="font-text text-xs group-hover:text-white">View all your assigned courses in one place</p>
+                    <div className={`flex w-full group flex-row items-center justify-between xl:py-2 xl:px-4 border-2 border-primary rounded-md bg-white shadow-md hover:cursor-pointer hover:bg-primary ease-in-out transition-all ${tab === "assignedCourses" ? "!bg-primary !text-white":"text-primary"}
+                                        text-sm p-2
+                    `} onClick={()=>setTab("assignedCourses")}>
+                        <p className="font-header xl:text-base group-hover:text-white"><span><FontAwesomeIcon icon={faBook}/></span> Assigned Courses</p>
                     </div>
-                </div>
-                {/* <div className="col-start-2 flex flex-row gap-2 items-center pb-2">
-                    <div className="border-2 border-primary p-1 px-2 aspect-square rounded-md shadow-md text-primary hover:bg-primary hover:cursor-pointer hover:text-white">
-                        <FontAwesomeIcon icon={faArrowLeft} />
-                    </div>
-                    <div className="font-header text-primary">{pageState.currentPage}/{pageState.lastPage}</div>
-                    <div className="border-2 border-primary p-1 px-2 aspect-square rounded-md shadow-md text-primary hover:bg-primary hover:cursor-pointer hover:text-white">
-                        <FontAwesomeIcon icon={faArrowRight} />
-                        </div>
-                </div> */}
             </div>
             {/* Content */}
-            <div className="w-full h-full grid grid-cols-4 grid-rows-1 gap-2">
+            <div className="row-start-2 col-span-4 grid gap-2 h-full
+                            grid-cols-1
+                            sm:grid-cols-2
+                            xl:grid-cols-4">
             {
+                // Array.from({length: pageState.perPage}).map((_, i) => (
+                //             <div className="w-full h-full border border-primary" key={i}>
+
+                //             </div>
+                //         ))
                     loading ? (
                         Array.from({length: 4}).map((_,i) =>(
-                            <div className="animate-pulse w-full h-full grid grid-cols-1 grid-rows-[min-content_1fr_1fr_min-content] bg-white shadow-lg rounded-md">
-                                <div className="bg-gradient-to-b from-[hsl(239,94%,19%)] via-[hsl(214,97%,27%)] to-[hsl(201,100%,36%)] w-full h-14 rounded-t-md p-3">
-                                    <span className="inline-flex items-center rounded-md bg-primarybg px-2 py-1 text-xs font-medium text-primary font-text w-20 h-5">
-                                    </span>
-                                </div>
-                                <div className="flex flex-col justify-center row-span-2 gap-2 px-3">
-                                    <div className="h-5 w-40 bg-slate-500 rounded-full"></div>
-                                    <div className="h-5 w-20 bg-slate-500 rounded-full"></div>
-                                </div>
-                            </div>
+                            <div key={i} className="animate-pulse bg-white w-full xl:h-full h-[8.25rem] rounded-md shadow-md"/>
                         ))
                     ):(
-                        assignedCourse.map((course)=>(
-                            <div className="bg-white w-full h-full shadow-md rounded-md grid grid-cols-1 grid-rows-[min-content_1fr_1fr_min-content] hover:cursor-pointer hover:scale-105 transition-all ease-in-out" onClick={() => navigate(`/courseadmin/course/${course.id}`)}>
-                                <div className="bg-gradient-to-b from-[hsl(239,94%,19%)] via-[hsl(214,97%,27%)] to-[hsl(201,100%,36%)] w-full h-14 rounded-t-md p-3">
-                                    <span className="inline-flex items-center rounded-md bg-primarybg px-2 py-1 text-xs font-medium text-primary font-text">
-                                        {course.training_type}
-                                    </span>
-                                </div>
-                                <div className="flex flex-col justify-center row-span-2 px-3">
-                                    <p className="font-header text-sm text-primary">{course.name}</p>
-                                    <p className="font-text text-unactive text-xs">Course ID: {course.CourseID}</p>
-                                </div>
-                                <div className="grid grid-cols-[1fr_min-content_1fr] gap-1 p-3">
-                                    <div className="flex flex-row items-center font-text justify-between">
-                                        <p className="text-xs text-unactive">On-going Learner</p>
-                                        <p className="font-header text-primary">{course.ongoing}</p>
-                                    </div>
-                                    <div className="w-[1px] h-full bg-divider"/>
-                                    <div className="flex flex-row items-center font-text justify-between">
-                                        <p className="font-header text-primary">{course.enrolled}</p>
-                                        <p className="text-xs text-right text-unactive">Enrolled Learner</p>
-                                    </div>
-                                </div>
-                            </div>
+                        assignedCourse.length > 0 ? (
+                            assignedCourse.map((course)=>(
+                            <CourseCard key={course.id} course={course} type='courseAdmin' click={()=>{navigate(`/courseadmin/course/${course.id}`); setCourse(course)}}/>
                         ))
+                        ) : (
+                            <div className="w-full flex flex-col justify-center items-center col-span-4">
+                                <p className="font-text text-unactive">No Courses Available</p>
+                            </div>
+                        )
                     )
                 }
             </div>
 
-            <div className="flex flex-row justify-between pt-2">
-                <div className="border-2 border-primary p-1 px-2 aspect-square rounded-md shadow-md text-primary hover:bg-primary hover:cursor-pointer hover:text-white"
-                onClick={back}>
+            <div className={`flex flex-row justify-between gap-2 row-start-3 col-span-4 pb-4 ${loading ? "opacity-50": ""}`}>
+                <div className={`flex justify-center items-center border-2 border-primary w-8 h-8 rounded-md shadow-md text-primary text-sm ${loading ? "cursor-auto":"cursor-pointer hover:bg-primary hover:text-white"}`}
+                onClick={() => {
+                        if(loading) return
+                        back()
+                    }}>
                     <FontAwesomeIcon icon={faArrowLeft} />
                 </div>
-
-                <div className="flex flex-row items-center gap-2">
-                    {
-                        Array.from({length: pageState.lastPage}).map((_,i) => (
-                            <div key={i} className={`w-2 h-2 rounded-full ${i+1 === pageState.currentPage ? 'bg-primary': 'bg-unactive'}`}/>
-                        ))
-                    }
+                <div className="flex flex-row justify-center items-center font-text text-unactive text-xs">
+                    #Number of pages
                 </div>
-
-                <div className="border-2 border-primary p-1 px-2 aspect-square rounded-md shadow-md text-primary hover:bg-primary hover:cursor-pointer hover:text-white"
-                onClick={next}>
+                <div className={`flex justify-center items-center border-2 border-primary w-8 h-8 rounded-md shadow-md text-primary text-sm ${loading ? "cursor-auto":"cursor-pointer hover:bg-primary hover:text-white"}`}
+                onClick={() => {
+                        if(loading) return
+                        next()
+                    }}>
                     <FontAwesomeIcon icon={faArrowRight} />
                 </div>
             </div>
         </div>
 
         {/* Activities */}
-        <div className='col-span-3 row-start-3 mr-5 pt-2 pb-5'>
-            <div className="flex flex-col w-full h-full gap-2">
-                <div>
+        <div className='row-start-4 px-3 col-span-4 py-2 flex flex-col gap-2
+                        xl:row-start-3 xl:pr-5 xl:py-0'>
+                <div className="">
                     <h1 className="font-header text-primary text-base">Activities</h1>
                     <p className="font-text text-unactive text-xs">Tracks your learners concerns and activities.</p>
                 </div>
 
-                {
-                    <div className="w-full h-full flex flex-col gap-2">
-                        <div className="w-full h-fit bg-white border-2 border-primary rounded-md shadow-md p-4 flex flex-row  justify-start items-center gap-3 hover:cursor-pointer hover:bg-primary group transition-all ease-in-out"
-                            //onClick={() => navigate('/learner/learnercoursemanager/enrolled')}
-                            >
-                            {/* icon */}
-                            <div className="group-hover:text-white group-hover:bg-gray-50 group-hover:bg-opacity-20  text-primary flex flex-col item-center justify-center bg-primarybg p-2 aspect-square rounded-full">
-                                <FontAwesomeIcon icon={faGraduationCap} className="text-base"/>
-                            </div>
-                            {/* desc */}
-                            <div className="flex flex-col justify-center items-start">
-                                <p className="group-hover:text-white font-header text-sm text-primary">Self Enrollment Request</p>
-                                <p className="group-hover:text-white font-text text-unactive text-xs">3 Learner's Request to Self-Enroll</p>
+                <div className="grid grid-cols-3 grid-rows-1 gap-1 h-full
+                                xl:grid-cols-1 xl:grid-rows-3 xl:pb-5 ">
+                    {
+                        loading ?
+                        Array.from({length: 3}).map((_, i) => (
+                            <div className="border bg-white rounded-md shadow-md flex items-center justify-between h-20 xl:h-full" key={i}/>
+                        ))
+                        : Array.from({length: 3}).map((_, i) => (
+                            <div className="border-primary border bg-white rounded-md shadow-md flex items-center justify-between h-20 xl:h-full" key={i}/>
+                        ))
+                    }
 
-                            </div>
-                        </div>
-                        {/* <div className="w-full h-full bg-white border-2 border-primary rounded-md shadow-md px-3 py-1 flex flex-row  justify-start items-center gap-3 hover:cursor-pointer hover:bg-primary group transition-all ease-in-out"
-                            onClick={() => navigate('/learner/learnercoursemanager/ongoing')}>
-                             icon
-                            <div className="group-hover:text-white group-hover:bg-gray-50 group-hover:bg-opacity-20  text-primary flex flex-col item-center justify-center bg-primarybg p-2 aspect-square rounded-full">
-                                <FontAwesomeIcon icon={faClock} className="text-base"/>
-                            </div>
-                            desc
-                            <div className="flex flex-col justify-center items-start">
-                                <p className="group-hover:text-white font-header text-sm text-primary">On-going</p>
-                                <p className="group-hover:text-white font-text text-unactive text-xs">You have 5 courses on-going</p>
-
-                            </div>
-                        </div> */}
-                        <div className="w-full h-fit bg-white border-2 border-primary rounded-md shadow-md p-4 flex flex-row  justify-start items-center gap-3 hover:cursor-pointer hover:bg-primary group transition-all ease-in-out"
-                            //onClick={() => navigate('/learner/learnercoursemanager/duesoon')}
-                            >
-                             {/* icon */}
-                            <div className="group-hover:text-white group-hover:bg-gray-50 group-hover:bg-opacity-20  text-primary flex flex-col item-center justify-center bg-primarybg p-2 aspect-square rounded-full">
-                                <FontAwesomeIcon icon={faTriangleExclamation} className="text-base"/>
-                            </div>
-                            {/* desc */}
-                            <div className="flex flex-col justify-center items-start">
-                                <p className="group-hover:text-white font-header text-sm text-primary">Due soon</p>
-                                <p className="group-hover:text-white font-text text-unactive text-xs">3 Learners are not done to thier course</p>
-                            </div>
-                        </div>
-                    </div>
-                }
-            </div>
+                </div>
         </div>
         </div>
     )

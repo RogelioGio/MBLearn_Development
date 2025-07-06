@@ -18,7 +18,7 @@ const UserListLoadingProps = () => {
                             </div>
                         </div>
                     </td>
-                    <td className='py-3 px-4'>
+                    <td className='py-3 px-4 hidden lg:table-cell'>
                         <div className='flex flex-col gap-1'>
                             {/* Department */}
                             <div className='animate-pulse bg-gray-300 h-4 w-20 rounded-md'></div>
@@ -26,7 +26,7 @@ const UserListLoadingProps = () => {
                             <div className='animate-pulse bg-gray-300 h-3 w-10 rounded-md'></div>
                         </div>
                     </td>
-                    <td className='py-3 px-4'>
+                    <td className='py-3 px-4 hidden lg:table-cell'>
                         <div className='flex flex-col gap-1'>
                             {/* Department */}
                             <div className='animate-pulse bg-gray-300 h-4 w-20 rounded-md'></div>
@@ -34,7 +34,7 @@ const UserListLoadingProps = () => {
                             <div className='animate-pulse bg-gray-300 h-3 w-10 rounded-md'></div>
                         </div>
                     </td>
-                    <td className='py-3 px-4'>
+                    <td className='py-3 px-4 hidden lg:table-cell'>
                         <div className='flex flex-col gap-1'>
                         {/* Branch Location */}
                         <div className='animate-pulse bg-gray-300 h-4 w-20 rounded-md'></div>
@@ -42,12 +42,9 @@ const UserListLoadingProps = () => {
                         <div className='animate-pulse bg-gray-300 h-3 w-10 rounded-md'></div>
                         </div>
                     </td>
-                    <td className='py-3 px-4'>
-                        <div className='animate-pulse bg-gray-300 h-4 w-20 rounded-md'></div>
-                    </td>
-                    <td className='py-3 px-4'>
+                    <td className='py-3 px-4 hidden lg:table-cell'>
                         <div className='flex gap-1 justify-end'>
-                        <div className='animate-pulse bg-gray-300 h-6 w-6 rounded-md'></div>
+                        {/* <div className='animate-pulse bg-gray-300 h-6 w-6 rounded-md'></div> */}
                         <div className='animate-pulse bg-gray-300 h-6 w-6 rounded-md'></div>
                         <div className='animate-pulse bg-gray-300 h-6 w-6 rounded-md'></div>
                         </div>

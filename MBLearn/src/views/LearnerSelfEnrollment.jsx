@@ -1,6 +1,6 @@
 import { Helmet } from "react-helmet"
 import axiosClient from "../axios-client"
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { FerrisWheel } from "lucide-react"
 import { faArrowDownShortWide, faArrowDownZA, faArrowUpAZ, faArrowUpWideShort, faChevronLeft, faChevronRight, faFilter, faSearch, faSort } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -10,16 +10,24 @@ import CourseLoading from "../assets/Course_Loading.svg"
 import SelfEnrollmentModal from "../modalsandprops/SelfEnrollmentModal"
 import TraningDurationModal from "../modalsandprops/TrainingDurationModal"
 import React from "react"
+import { useStateContext } from "../contexts/ContextProvider"
+import { format } from "date-fns"
+import SelfEnrollmentSuccessfullyModal from "../modalsandprops/SelfEnrollmentSuccessfullyModal"
+import CourseCard from "../modalsandprops/CourseCard"
+
 
 
 
 export default function LearnerSelfEnrollment() {
+    const {user} = useStateContext()
     const {coursetypes, coursecategories} = useCourseContext()
     const [course, setCourse] = useState([])
     const [selectedCourse, setSelectedCourse] = useState()
     const [loading, setLoading] = useState(true)
     const [openEnroll, setOpenEnroll] = useState(false)
     const [duration, setDuration] = useState(false)
+    const [enrolling, setEnrolling] = useState()
+    const [enrolled, setEnrolled] = useState(false)
 
     const [date, setDate] = React.useState({
         from: new Date(),
@@ -116,6 +124,29 @@ export default function LearnerSelfEnrollment() {
             },[pageState.currentPage, pageState.perPage])
 
 
+    //Handle Enrollment
+    const handleEnrollment = (course) => {
+        setEnrolling(true)
+        const payload = [
+            {
+            userId: user.user_infos.id,
+            courseId: course.id,
+            enrollerId: user.user_infos.id,
+            start_date: format(new Date(date.from), 'yyyy-MM-dd' + ' 00:00:00'),
+            end_date: format(new Date(date.to), 'yyyy-MM-dd' + ' 23:59:59')
+            }
+        ]
+
+        axiosClient.post('enrollments/bulk', payload)
+                    .then(({data}) => {
+                        setEnrolling(false)
+                        setOpenEnroll(false)
+                        setDuration(false)
+                        setEnrolled(true)
+                    })
+                    .catch((err)=>console.log(err));
+    }
+
     return(
     <>
         <div className='grid grid-cols-4 grid-rows-[6.25rem_min-content_1fr_min-content] h-full w-full'>
@@ -175,7 +206,7 @@ export default function LearnerSelfEnrollment() {
                                 <option value=''>Select Type</option>
                                 {
                                     coursetypes.map((c) => (
-                                        <option key={c.id} value={role.id}>{c.type_name}</option>
+                                        <option key={c.id} value={""}>{c.type_name}</option>
                                     ))
                                 }
                             </select>
@@ -237,29 +268,29 @@ export default function LearnerSelfEnrollment() {
                     !loading ? (
                         course && course.length > 0 ? (
                             course.map((course, index) => (
-                            <AssignedCourseCatalogCard key={index}
-                                        id={course.id}
-                                        name={course.name}
-                                        courseId={course?.CourseID}
-                                        courseType={course.types[0]?.type_name}
-                                        courseCategory={course.categories[0]?.category_name}
-                                        trainingMode={course.training_modes[0]?.modes_name}
-                                        trainingType={course.training_type}
-                                        tab={"allCourses"}
-                                        adder={course?.adder}
-                                        role={"learner"}
-                                        selfEnroll={()=>{setOpenEnroll(true), setSelectedCourse(course)}}/>
-                                    )
+                            // <AssignedCourseCatalogCard key={index}
+                            //             id={course.id}
+                            //             name={course.name}
+                            //             courseId={course?.CourseID}
+                            //             courseType={course.types[0]?.type_name}
+                            //             courseCategory={course.categories[0]?.category_name}
+                            //             trainingMode={course.training_modes[0]?.modes_name}
+                            //             trainingType={course.training_type}
+                            //             tab={"allCourses"}
+                            //             adder={course?.adder}
+                            //             role={"learner"}
+                            //             selfEnroll={()=>{setOpenEnroll(true), setSelectedCourse(course)}}/>
+                            //         )
+                            <CourseCard index={index} course={course} type='general'/>)
                         )):(
                                 <div className="col-span-4 row-span-2 flex flex-col gap-4 items-center justify-center text-center h-full">
                                     <p className="text-sm font-text text-unactive">No available courses yet</p>
                                 </div>
                         )
                     ): (
-                        <div className="col-span-4 row-span-2 flex flex-col gap-4 items-center justify-center text-center h-full">
-                                <img src={CourseLoading} alt="" className="w-80"/>
-                                <p className="text-sm font-text text-primary">Hang tight! 🚀 Loading courses for — great things take a second!</p>
-                        </div>
+                        Array.from({ length: 8 }).map((_, i) => (
+                            <div key={i} className="animate-pulse bg-white w-full h-full rounded-md shadow-md"/>
+                        ))
                     )
                 }
                 {/* {} */}
@@ -317,7 +348,8 @@ export default function LearnerSelfEnrollment() {
         </div>
 
         <SelfEnrollmentModal open={openEnroll} onClose={()=>{setOpenEnroll(false)}} course={selectedCourse} setDuration={()=>{setDuration(true)}}/>
-        <TraningDurationModal open={duration} close={()=>{setDuration(false)}} enroll={""} date={date} _setDate={setDate} course={selectedCourse}/>
+        <SelfEnrollmentSuccessfullyModal open={enrolled} close={()=> {setEnrolled(false), setSelectedCourse(),fetchCourses()}} course={selectedCourse}/>
+        <TraningDurationModal open={duration} close={()=>{setDuration(false)}} enroll={()=>handleEnrollment(selectedCourse)} date={date} _setDate={setDate} course={selectedCourse} enrolling={enrolling}/>
         </>
     )
 }

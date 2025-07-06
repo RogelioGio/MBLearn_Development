@@ -22,13 +22,14 @@ const AccountPermissionProps = ({refPermissions, selectedRole, role, setAccountP
         }
     }, [selectedRole]);
 
-    const [accountPerm, _setAccountPerm] = useState()
+    const [accountPerm, _setAccountPerm] = useState([])
 
 
     const [permission, setPermissions] = useState([]);
     const availablePermission = () => {
         const selected = role?.find((r) => r.id === parseInt(selectedRole));
         if (selected) {
+            console.log(selected)
             setPermissions(selected?.permissions)
             _setAccountPerm((selected?.permissions || []).map(p => ({
                 permission_Id: p.id
@@ -54,6 +55,9 @@ const AccountPermissionProps = ({refPermissions, selectedRole, role, setAccountP
     const permissionswitch = (perm_id,permission_name ,checked) => {
             const perm = refPermissions.find(p => p.permission_name === permission_name);
             const _perm = refPermissions.find(p =>p.id === perm_id)
+
+            console.log("Permission Switch Called", perm, _perm);
+            console.log(accountPerm)
 
         setPermissions(prev => {
             const exists = prev.some(p => p.permission_name === permission_name);
@@ -94,7 +98,10 @@ const AccountPermissionProps = ({refPermissions, selectedRole, role, setAccountP
                 <CourseAdminPermissionProps isChecked={isChecked} permissionswitch={permissionswitch} permissionRef={refPermissions}/>
             ) : (selectedRole ===  "3"||selectedRole === 3) ? (
                 <LearnerPermissionProps isChecked={isChecked} permissionswitch={permissionswitch} permissionRef={refPermissions}/>
-            ): (null)
+            ):(selectedRole ===  "4"||selectedRole === 4) ? (
+                <SystemAdminPermissionProps isChecked={isChecked} permissionswitch={permissionswitch} permissionRef={refPermissions}/>
+            ) :
+            (null)
         }
         </>
     );

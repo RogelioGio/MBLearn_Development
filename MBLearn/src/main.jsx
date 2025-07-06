@@ -8,8 +8,8 @@ import '@mantine/core/styles.css';
 import { MantineProvider } from '@mantine/core';
 import { Toaster } from './components/ui/sonner';
 import { BrowserRouter } from "react-router-dom";
-
-
+import { CarouselContentProvider } from './contexts/CarourselContext'
+import '../../MBLearn/bootstrap.js';
 
 createRoot(document.getElementById("root")).render(
     <MantineProvider
@@ -34,8 +34,10 @@ createRoot(document.getElementById("root")).render(
     }}
     >
     <ContextProvider>
-        <RouterProvider router={router} />
-        <Toaster/>
+        <CarouselContentProvider>
+            <RouterProvider router={router} />
+            <Toaster/>
+        </CarouselContentProvider>
     </ContextProvider>
     </MantineProvider>
 );

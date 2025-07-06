@@ -7,6 +7,7 @@ use App\Http\Requests\BulkFormInput;
 use App\Models\Section;
 use App\Http\Requests\StoreSectionRequest;
 use App\Http\Requests\UpdateSectionRequest;
+use App\Jobs\ResetOptionCache;
 use Illuminate\Support\Facades\Gate;
 
 class SectionController extends Controller
@@ -25,6 +26,7 @@ class SectionController extends Controller
     public function store(StoreSectionRequest $request)
     {
         $validated = $request->validated();
+        ResetOptionCache::dispatch();
         return Section::create($validated);
     }
 

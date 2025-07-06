@@ -31,6 +31,19 @@ import LearnerCourseManager from "./views/LearnerCourseManager";
 import LearnerCertficates from "./views/LearnerCertificates";
 import LearnerSelfEnrollment from "./views/LearnerSelfEnrollment";
 import CompeLearnExtension from "./views/CompeLearnExtension";
+import InitialLogin from "./views/InitialLogin";
+import Test from "./views/Test";
+import SME from "./components/SME";
+import SMEDashboard from "./views/Dashboards/SMEDashboard";
+import Calendar from "./views/Calendar";
+import UserProfile from "./views/UserProfile";
+import { User } from "lucide-react";
+import { useStateContext } from "./contexts/ContextProvider";
+import Redirect from "./contexts/Redirect";
+import { CourseProvider } from "./contexts/Course";
+
+// const {user} = useStateContext()
+// const cleanRole = user.user_infos.role[0].role_name.toLowerCase().replace(/\s+/g, '');
 
 const router = createBrowserRouter([
 
@@ -39,6 +52,10 @@ const router = createBrowserRouter([
         path: "/",
         element: <DefaultLayout />,
         children: [
+            {
+                path: "/",
+                element: <Redirect />
+            },
             {
                 path: "/systemadmin",
                 element: <ProtectedRoutes allowed={["System Admin"]}/>,
@@ -52,23 +69,31 @@ const router = createBrowserRouter([
                         element: <Dashboard/>
                     },
                     {
+                        path:"dashboard/calendar",
+                        element: <Calendar/>
+                    },
+                    {
                         path: "usermanagementmaintenance",
                         element:<UserManagementMaintenance/>,
                     },
-                    {
-                        path: "userdetail/:id",
-                        element:
-                        <SelectedUserProvider>
-                            <SelectUser/>
-                        </SelectedUserProvider>
-                    },
+                    // {
+                    //     path: "userdetail/:id",
+                    //     element:
+                    //     <SelectedUserProvider>
+                    //         <SelectUser/>
+                    //     </SelectedUserProvider>
+                    //     // <UserProfile/>
+                    // },
                     {
                         path: "useraccountsmaintenance",
                         element: <UserAccountSecurityMaintenance/>
                     },
                     {
                         path: "systemconfigurationmaintenance",
-                        element: <SystemConfiguration/>
+                        element:
+                        <CourseListProvider>
+                            <SystemConfiguration/>
+                        </CourseListProvider>
                     },
                     {
                         path: "systemlevelreports",
@@ -85,12 +110,22 @@ const router = createBrowserRouter([
                     {
                         path:"accountsettings",
                         element: <AccountSettings/>
+                    },
+                    {
+                        path:'profile',
+                        element: <UserProfile/>
                     }
+
                 ]
             },
             {
                 path:"/courseadmin",
-                element: <ProtectedRoutes allowed={["System Admin","Course Admin"]}/>,
+                element:
+                <CourseListProvider>
+                        <CourseProvider>
+                            <ProtectedRoutes allowed={["System Admin","Course Admin"]}/>
+                        </CourseProvider>
+                </CourseListProvider>,
                 children: [
                     {
                         path: "/courseadmin",
@@ -98,36 +133,37 @@ const router = createBrowserRouter([
                     },
                     {
                         path: "dashboard",
-                        element: <Dashboard/>
+                        element:
+
+                            <Dashboard/>
+
                     },
                     {
                         path: "bulkenrollment",
                         element: <BulkEnrollment/>
                     },
-                    {
-                        path: "courselistmaintenance",
-                        element:
-                        <SelectedCourseProvider>
-                        <CourseListProvider>
-                            <CourseListMaintenance/>,
-                        </CourseListProvider>
-                        </SelectedCourseProvider>
-                    },
+                    // {
+                    //     path: "courselistmaintenance",
+                    //     element:
+                    //     <SelectedCourseProvider>
+                    //         <Course_ContexttProvider>
+                    //             <CourseListMaintenance/>,
+                    //         </Course_ContexttProvider>
+                    //     </SelectedCourseProvider>
+                    // },
                     {
                         path:"course/:id",
                         element:
-                        <SelectedCourseProvider>
-                            <CourseListProvider>
+
+
                                 <Course/>
-                            </CourseListProvider>
-                        </SelectedCourseProvider>
+
                     },
                     {
                         path: "courses",
                         element:
-                        <CourseListProvider>
                                 <AssignedCourse/>
-                        </CourseListProvider>
+
                     },
                     {
                         path: "coursereports",
@@ -141,12 +177,28 @@ const router = createBrowserRouter([
                     //     path: "courses/comp_e_learn",
                     //     element: <CompeLearnExtension/>
                     // }
+                    {
+                        path:"accountsettings",
+                        element: <AccountSettings/>
+                    },
+                    {
+                        path:'test',
+                        element:
+                        <CourseProvider>
+                            <Test/>
+                        </CourseProvider>
+                    }
 
                 ]
             },
             {
                 path:"/learner",
-                element: <Learner/>,
+                element:
+                <CourseListProvider>
+                        <CourseProvider>
+                            <Learner/>
+                        </CourseProvider>
+                </CourseListProvider>,
                 children: [
                     {
                         path: "/learner",
@@ -154,14 +206,13 @@ const router = createBrowserRouter([
                     },
                     {
                         path: "dashboard",
-                        element: <Dashboard/>
+                        element:
+                            <Dashboard/>
                     },
                     {
                         path: "learnercoursemanager/:coursetype?",
                         element: <SelectedCourseProvider>
-                                    <CourseListProvider>
                                         <LearnerCourseManager/>
-                                    </CourseListProvider>
                             </SelectedCourseProvider>
                     },
                     {
@@ -170,25 +221,35 @@ const router = createBrowserRouter([
                     },
                     {
                         path: "learnerselfenrollment",
-                        element: <CourseListProvider>
+                        element:
                             <LearnerSelfEnrollment/>
-                        </CourseListProvider>
                     },
                     {
                         path:"course/:id",
                         element:
-                        <SelectedCourseProvider>
-                            <CourseListProvider>
                                 <Course/>
-                            </CourseListProvider>
-                        </SelectedCourseProvider>
+
                     },
+                    {
+                        path:"accountsettings",
+                        element: <AccountSettings/>
+                    }
 
                 ]
             },
         ]
     },
 
+    //SME ROUTES
+    {
+        path: "/",
+        element:<SME/>,
+        children: [
+            {
+                path: "/dashboard",
+                element: <SMEDashboard/>
+            }]
+    },
 
     //Login route
     {
@@ -221,7 +282,19 @@ const router = createBrowserRouter([
         // <ProtectedRoutes allowed={["System Admin","Course Admin"]}>
         //             <CompeLearnExtension/>
         //         </ProtectedRoutes>
+    },
+
+    {
+        path: "/welcome/:id/:role",
+        element: <InitialLogin/>
+    },
+
+    {
+        path: "/profile",
+        element: <UserProfile/>
     }
+
+
 
 
 ]);

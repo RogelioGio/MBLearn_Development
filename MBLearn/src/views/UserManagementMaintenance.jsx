@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Helmet } from 'react-helmet';
 import Navigation from './Navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChevronDown, faChevronLeft, faChevronRight, faChevronUp, faCross, faFilter, faSearch, faTrash, faTrashCan, faUser, faUserPen, faUserPlus, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faChevronDown, faChevronLeft, faChevronRight, faChevronUp, faCross, faFilter, faMagnifyingGlass, faSearch, faTrash, faTrashCan, faUser, faUserPen, faUserPlus, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { Menu, MenuButton, MenuItem, MenuItems, Disclosure, DisclosureButton, DisclosurePanel, Dialog, DialogBackdrop, DialogPanel, DialogTitle} from '@headlessui/react';
 import User from '../modalsandprops/UserEntryProp';
 import UserEntryModal from '../modalsandprops/UserEntryModal';
@@ -30,6 +30,8 @@ import {
     SheetTitle,
     SheetTrigger,
 } from "../components/ui/sheet"
+import echo from 'MBLearn/echo';
+import { toast } from 'sonner';
 
 
 
@@ -38,12 +40,18 @@ export default function UserManagementMaintenance() {
     const [checkedUsers, setCheckedUser] = useState([]);
     const selectAllRef = useRef(null);
     const [selectAll, setSelectAll] = useState(false);
+    const [search, setSearch] = useState(false)
     const navigate = useNavigate();
     const {user} = useStateContext();
+
+    //User State
+    const [users, setUsers] = useState([]) //Fetching the user list
+
 
     useEffect(()=>{
         setCheckedUser([])
     },[])
+
 
     const [selectedBranches, setSelectedBranches] = useState([])
     const handleBranchesOptions = (e) =>{
@@ -89,6 +97,37 @@ export default function UserManagementMaintenance() {
             }).catch((err) => {console.log(err)})
         }
     })
+
+    //SearchFormik
+    const searchFormik = useFormik(({
+        initialValues:{
+            search: '',
+            page: 1,
+            per_page: 5,
+            status: 'Active',
+        },
+        validationSchema: Yup.object({}),
+        onSubmit: values => {
+            console.log(values);
+            const payload = {
+                search: values.search,
+                page: values.page,
+                per_page: values.per_page,
+                status: values.status,
+            };
+            setLoading(true);
+            setSearch(true);
+            // axiosClient.get('/user-search', {params: payload})
+            // .then((response) => {
+            //     console.log(response.data);
+            //     setUsers(response.data.data);
+            //     setLoading(false)
+            //     pageChangeState("totalUsers", response.data.total)
+            //     pageChangeState("lastPage", response.data.lastPage)
+
+            // }).catch((e) => {console.log(e)})
+        }
+    }))
 
     //Modal State
     const [modalState, setModalState] = useState({
@@ -176,19 +215,21 @@ export default function UserManagementMaintenance() {
         }))
     }
 
-    //User State
-    const [users, setUsers] = useState([]) //Fetching the user list
 
     //Loading State
     const [isLoading, setLoading] = useState(true);
 
+    //Selected User Object
+    const [selectedUser, setSelectedUser] = useState()
+
     //Open and Closing User Description
-    const OpenDialog = (ID) => {
-        setUserID(ID);
+    const OpenDialog = (user) => {
+        setSelectedUser(user);
+        //setUserID(ID);
         toggleModal("isOpen",true);
     }
     const CloseDialog = () => {
-        setUserID('');
+        //setUserID('');
         toggleModal("isOpen",false);
     }
 
@@ -200,19 +241,22 @@ export default function UserManagementMaintenance() {
 
 
     // Open and Close Edit User Modal
-    const OpenEdit = (e, ID) => {
+    const OpenEdit = (e, user) => {
         e.stopPropagation();
-        toggleUserID("isEdit", ID);
+        //toggleUserID("isEdit", ID);
+        setSelectedUser(user)
         toggleModal("isEdit", true);
     }
     const CloseEdit = () => {
+        // setSelectedUser()
         toggleModal("isEdit", false);
     }
 
     // Open and Close Delete User Modal
-    const OpenDelete = (e, EmployeeID) => {
+    const OpenDelete = (e, user) => {
         e.stopPropagation();
-        toggleUserID("isDelete", EmployeeID);
+        setSelectedUser(user)
+        //toggleUserID("isDelete", EmployeeID);
         toggleModal("isDelete", true);
     }
 
@@ -277,6 +321,8 @@ export default function UserManagementMaintenance() {
         fetchUsers()
     },[pageState.currentPage, pageState.perPage])
 
+
+
     //Next and Previous
     const back = () => {
         if (isLoading) return;
@@ -316,51 +362,115 @@ export default function UserManagementMaintenance() {
     }, [checkedUsers, users]);
 
     return (
-        <div className='grid grid-cols-4 grid-rows-[6.25rem_min-content_auto_auto_min-content] h-full w-full'>
+        <div className='grid grid-cols-4 h-full w-full
+                        grid-rows-[6.25rem_min-content]
+                        xl:grid-rows-[6.25rem_min-content_auto_auto_min-content]
+                        sm:grid-rows-[6.25rem_min-content]'>
             <Helmet>
                 {/* Title of the mark-up */}
                 <title>MBLearn | User Management Maintenance</title>
             </Helmet>
 
             {/* Header */}
-            <div className='flex flex-col justify-center col-span-3 row-span-1 pr-5 border-b ml-5 border-divider'>
-                <h1 className='text-primary text-4xl font-header'>User Management Maintenance</h1>
-                <p className='font-text text-sm text-unactive' >Effortlessly manage and add users to ensure seamless access and control.</p>
+            <div className='flex flex-col justify-center row-span-1 border-b border-divider
+                            col-start-1 row-start-1 col-span-3 ml-3
+                            xl:col-span-3
+                            sm:col-span-3 sm:ml-4'>
+                <h1 className='text-primary font-header
+                                text-xl
+                                sm:text-2xl
+                                xl:text-4xl'>User Management Maintenance</h1>
+                <p className='font-text text-unactive
+                                text-xs
+                                xl:text-sm
+                                sm:text-xs'>Effortlessly manage and add users to ensure seamless access and control.</p>
             </div>
 
 
             {/* Add Button */}
-            <div className='col-start-4 row-start-1 flex flex-col justify-center pl-5 mr-5 border-divider border-b'>
+            <div className='row-start-1 flex flex-col justify-center border-divider border-b
+                            items-end mr-3
+                            xl:col-start-4 xl:pl-5 xl:mr-5
+                            sm:col-span-1 sm:col-start-4 sm:py-2 sm:mr-4'>
                 {
                     user.user_infos.permissions?.some((permission)=> permission.permission_name === "AddUserInfo") ? (
-                        <button className='inline-flex flex-row shadow-md items-center justify-center bg-primary font-header text-white text-base p-4 rounded-full hover:bg-primaryhover hover:scale-105 transition-all ease-in-out' onClick={() => toggleModal("isOpenAdd",true)}>
-                            <FontAwesomeIcon icon={faUserPlus} className='mr-2'/>
-                            <p>Add User</p>
-                        </button>
+                        <>
+                        <div className='relative group sm:w-full'>
+                            <button className='inline-flex flex-row shadow-md items-center justify-center bg-primary font-header text-white text-base p-4 rounded-full hover:bg-primaryhover hover:scale-105 transition-all ease-in-out
+                                            w-16 h-16
+                                            sm:w-full'
+                                onClick={() => {
+                                toggleModal("isOpenAdd",true)}}>
+                                <FontAwesomeIcon icon={faUserPlus} className='sm:mr-2'/>
+                                <p className='hidden
+                                            sm:block'>Add User</p>
+                            </button>
+                            <div className='absolute bottom-[-2.5rem] w-full bg-tertiary rounded-md text-white font-text text-xs p-2 items-center justify-center whitespace-nowrap scale-0 group-hover:scale-100 block transition-all ease-in-out
+                                            sm:hidden'>
+                                <p>Add User</p>
+                            </div>
+                        </div>
+                        </>
                     ) : (null)
                 }
 
+
             </div>
 
-
             {/* Search bar */}
-            <div className='inline-flex items-center justify-center col-start-4 row-start-2 px-5 py-3 h-full'>
-                <div className=' inline-flex flex-row place-content-between border-2 border-primary rounded-md w-full font-text shadow-md'>
-                    <input type="text" className='focus:outline-none text-sm px-4 w-full rounded-md bg-white' placeholder='Search...'/>
-                    <div className='bg-primary py-2 px-4 text-white'>
-                        <FontAwesomeIcon icon={faSearch}/>
+            <div className='inline-flex items-center justify-end row-start-2 py-3 gap-3
+                            col-span-3 col-start-2 h-full w-full pr-3
+                            sm:col-start-3 sm:col-span-2 sm:pr-4
+                            xl:col-start-3 xl:col-span-2 xl:px-5'>
+                {/* {
+                    //search
+                    true ? (
+                        <div className='border-primary border-2 rounded-md shadow-md bg-white flex items-center justify-center text-primary hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out w-11 h-11'
+                        onClick={()=>{setSearch(false), searchFormik.resetForm(), fetchUsers()}}>
+                            <FontAwesomeIcon icon={faXmark}/>
+                        </div>
+                    ) : null
+                } */}
+                <form onSubmit={searchFormik.handleSubmit}>
+                    <div className='inline-flex flex-row place-content-between border-2 border-primary rounded-md w-full font-text shadow-md'>
+                        <input type="text" className='focus:outline-none text-sm px-4 w-60 rounded-md bg-white' placeholder='Search...'
+                            name='search'
+                            value={searchFormik.values.search}
+                            onChange={searchFormik.handleChange}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    searchFormik.handleSubmit();
+                                }
+                            }}/>
+                        <div className={`w-10 h-10 bg-primary text-white flex items-center justify-center ${search ? "hover:cursor-pointer":null}`}
+                            onClick={() => {
+                                if (search) {
+                                    setSearch(false);
+                                    searchFormik.resetForm();
+                                    fetchUsers();
+                                }
+                            }}>
+                            <FontAwesomeIcon icon={search ? faXmark : faMagnifyingGlass}/>
+                        </div>
                     </div>
-                </div>
+                </form>
             </div>
 
 
             {/* User Filter */}
-            <div className='flex flex-row py-3 justify-start items-center px-5 col-span-2 gap-5'>
+            <div className='flex flex-row justify-start items-center gap-5
+                            pl-3
+                            sm:pl-4 sm:col-span-2
+                            xl:py-3'>
                 <Sheet>
                     <SheetTrigger>
-                        <div className= {`flex flex-row items-center justify-center bg-white text-primary gap-2 border-2 border-primary w-fit py-2 px-4 rounded-md hover:text-white hover:bg-primary transition-all ease-in-out hover:cursor-pointer ${isFiltered ? "!bg-primary text-white":null}`}>
+                        <div className= {`flex flex-row items-center justify-center bg-white text-primary gap-2 border-2 border-primary w-fit rounded-md hover:text-white hover:bg-primary transition-all ease-in-out hover:cursor-pointer ${isFiltered ? "!bg-primary text-white":null}
+                                            h-11 aspect-square
+                                            sm:py-2 sm:px-4`}>
                             <FontAwesomeIcon icon={faFilter}/>
-                            <p className='font-header text-sm'>Filter</p>
+                            <p className='font-header text-sm hidden
+                                        sm:block'>Filter</p>
                         </div>
                     </SheetTrigger>
                     <SheetOverlay className="bg-gray-500/75 backdrop-blur-sm transition-all" />
@@ -515,11 +625,11 @@ export default function UserManagementMaintenance() {
                 }
             </div>
 
-
-
-
             {/* Userlist Table */}
-            <div className='flex flex-col gap-2 row-start-3 row-span-2 col-start-1 col-span-4 px-5 py-2'>
+            <div className='flex flex-col gap-2 row-start-3 row-span-2 col-start-1 col-span-4
+                            px-3
+                            xl:pr-5 xl:py-2
+                            sm:px-4'>
                 <div className='w-full border-primary border rounded-md overflow-hidden shadow-md'>
                 <table className='text-left w-full overflow-y-scroll'>
                     <thead className='font-header text-xs text-primary bg-secondaryprimary border-l-2 border-secondaryprimary'>
@@ -557,11 +667,11 @@ export default function UserManagementMaintenance() {
                                     </div>
                                     <p> EMPLOYEE NAME</p>
                             </th>
-                            <th className='py-4 px-4  w-1/7'>DIVISION</th>
-                            <th className='py-4 px-4  w-1/7'>DEPARTMENT</th>
-                            <th className='py-4 px-4  w-1/7'>SECTION</th>
-                            <th className='py-4 px-4  w-1/7'>LOCATION</th>
-                            <th className='py-4 px-4  w-1/7'></th>
+                            <th className='py-4 px-4  w-1/7 hidden lg:table-cell'>DIVISION</th>
+                            <th className='py-4 px-4  w-1/7 hidden lg:table-cell'>DEPARTMENT</th>
+                            <th className='py-4 px-4  w-1/7 hidden lg:table-cell'>SECTION</th>
+                            {/* <th className='py-4 px-4  w-1/7'>LOCATION</th> */}
+                            <th className='py-4 px-4  w-2/7 hidden lg:table-cell'></th>
                         </tr>
                     </thead>
                     <tbody className='bg-white divide-y divide-divider'>
@@ -575,18 +685,18 @@ export default function UserManagementMaintenance() {
                                 //     </td>
                                 // </tr>
                                 <tr className="font-text text-sm">
-                                    <td colSpan={6} className="text-center py-3 px-4 font-text text-unactive">
+                                    <td colSpan={5} className="text-center py-3 px-4 font-text text-unactive">
                                     There is no users that met the selected criteria
                                     </td>
                                 </tr>
                             ):(
-                                users.map(userEntry => {
+                                users?.map(userEntry => {
                                     const { first_name, middle_name, last_name } = userEntry || {};
                                     const fullName = [first_name, middle_name, last_name].filter(Boolean).join(" ");
                                     return(<User
                                             key={userEntry.id}
                                             userID={userEntry.id}
-                                            click={OpenDialog}
+                                            click={()=>OpenDialog(userEntry)}
                                             name={fullName}
                                             division={userEntry.division?.division_name || "No Division Yet"}
                                             department={userEntry.department?.department_name || "No Department Yet"}
@@ -597,12 +707,13 @@ export default function UserManagementMaintenance() {
                                             profile_url={userEntry.profile_image}
                                             employeeID={userEntry.employeeID}
                                             role={userEntry.roles?.[0]?.role_name || "No Role Yet"}
-                                            edit={OpenEdit}
-                                            _delete={OpenDelete}
+                                            edit={(e)=>OpenEdit(e,userEntry)}
+                                            _delete={(e)=>OpenDelete(e,userEntry)}
                                             handleCheckbox = {handleCheckbox}
                                             selected = {checkedUsers}
                                             isChecked={checkedUsers.some(user => user.Selected_ID === userEntry.id)}
                                             userDetail = {OpenDetailView}
+                                            selectedUser={userEntry}
                                             />)
                                     }
 
@@ -674,18 +785,18 @@ export default function UserManagementMaintenance() {
 
 
                     {/* User Profile Card */}
-                    <UserEntryModal open={modalState.isOpen} close={CloseDialog} classname='relative z-10' ID={userID}/>
+                    <UserEntryModal open={modalState.isOpen} close={CloseDialog} classname='relative z-10' ID={userID} selectedUser={selectedUser}/>
 
                     {/* Add User Modal */}
                     <AddUserModal open={modalState.isOpenAdd} close={CloseAddUser} updateTable={fetchUsers}/>
 
                     {/* Edit User Modal */}
-                    <EditUserModal open={modalState.isEdit} close={CloseEdit} ID={userID.isEdit} close_confirmation={OpenSuccessFullyEdit}/>
+                    <EditUserModal open={modalState.isEdit} close={CloseEdit} ID={userID.isEdit} close_confirmation={OpenSuccessFullyEdit} selectedUser={selectedUser}/>
                     <EditUserSuccessfully open={modalState.isEditSuccess} close={CloseSuccessFullyEdit}/>
 
 
                     {/* Delete User Modal */}
-                    <DeleteUserModal open={modalState.isDelete} close={CloseDelete} EmployeeID={userID.isDelete} close_confirmation={OpenSuccessFullyDelete}/>
+                    <DeleteUserModal open={modalState.isDelete} close={CloseDelete} EmployeeID={userID.isDelete} close_confirmation={OpenSuccessFullyDelete} selectedUser={selectedUser}/>
                     <DeleteUserSuccessfully open={modalState.isDeleteSuccess} close={CloseSuccessFullyDelete}/>
 
         </div>

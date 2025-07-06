@@ -37,7 +37,7 @@ function normalizationDuration(values, setField) {
     setField('days', days > 0 ? days : '');
 }
 
-const BulkEnrollmentCourseDuration = ({open, close, result, selected, setSelected, setResults, handleEnrollment}) => {
+const BulkEnrollmentCourseDuration = ({open, close, result, selected, setSelected, setResults, handleEnrollment, enrolling}) => {
     const [selectedCourse, setSelectedCourse] = useState();
     const [course, setCourse] = useState();
     const [duration, setDuration] = useState({
@@ -125,8 +125,8 @@ const BulkEnrollmentCourseDuration = ({open, close, result, selected, setSelecte
         // const formattedFrom = format(new Date(range?.from), 'yyyy-MM-dd');
         // const formattedTo = format(new Date(range?.to), 'yyyy-MM-dd');
 
-        const formattedFrom = range?.from ? format(new Date(range.from), 'yyyy-MM-dd') : null;
-        const formattedTo = range?.to ? format(new Date(range.to), 'yyyy-MM-dd') : null;
+        const formattedFrom = range?.from ? format(new Date(range.from), 'yyyy-MM-dd') + ' 00:00:00': null;
+        const formattedTo = range?.to ? format(new Date(range.to), 'yyyy-MM-dd') + ' 23:59:59': null;
 
         setDate(range)
 
@@ -492,9 +492,10 @@ const BulkEnrollmentCourseDuration = ({open, close, result, selected, setSelecte
                                 <button
                                     onClick={handleEnrollment}
                                     type="submit"
-                                    className={`bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer hover:bg-primaryhover hover:scale-105 transition-all ease-in-out w-full
+                                    disabled={enrolling}
+                                    className={`bg-primary p-4 rounded-md font-header uppercase text-white text-xs hover:cursor-pointer ${enrolling ? "" : "hover:bg-primaryhover hover:scale-105"}  transition-all ease-in-out w-full
                                     `}>
-                                    Set Duration</button>
+                                    {enrolling ? "Enrolling" : "Set Duration"}</button>
                                 </div>
 
 

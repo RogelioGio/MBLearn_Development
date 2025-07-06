@@ -7,6 +7,7 @@ use App\Models\CarouselImage;
 use App\Http\Requests\StoreCarouselImageRequest;
 use App\Http\Requests\UpdateCarouselImageRequest;
 use Illuminate\Support\Facades\Storage;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class CarouselImageController extends Controller
 {
@@ -25,12 +26,20 @@ class CarouselImageController extends Controller
     {
         $validated = $request->validated();
         $file = $request->file('image');
-        $path = $file->store('', 'carouselimages');
+
+        // $uploadFile = Cloudinary::upload($file->getRealPath(), [
+        //     'folder' => 'carouselimages',
+        // ])->getSecurePath();
+        $uploadFile = Cloudinary::uploadApi()->upload($file->getRealPath(), [
+            'folder' => 'carouselimages',
+        ]);
+        //$path = $file->store('', 'carouselimages');
 
         $carouselImage = CarouselImage::create([
             'image_name' => $validated['image_name'],
-            'image_path' => $path,
+            'image_path' => $uploadFile['secure_url'],
         ]);
+
         return response()->json([
             'message' => 'Carousel image created successfully.',
             'carousel_image' => $carouselImage,

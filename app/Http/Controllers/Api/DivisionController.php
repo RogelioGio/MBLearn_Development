@@ -7,6 +7,7 @@ use App\Http\Requests\BulkFormInput;
 use App\Models\Division;
 use App\Http\Requests\StoreDivisionRequest;
 use App\Http\Requests\UpdateDivisionRequest;
+use App\Jobs\ResetOptionCache;
 use Illuminate\Support\Facades\Gate;
 
 class DivisionController extends Controller
@@ -25,6 +26,7 @@ class DivisionController extends Controller
     public function store(StoreDivisionRequest $request)
     {
         $validated = $request->validated();
+        ResetOptionCache::dispatch();
         return Division::create($validated);
     }
 

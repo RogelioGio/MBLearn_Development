@@ -1,17 +1,24 @@
 <?php
 
 
+use App\Events\fAsRead;
+use App\Events\NotificationsMarkedAsRead;
 use App\Http\Controllers\Api\ActivityLogsController;
 use App\Http\Controllers\Api\CarouselImageController;
 use App\Http\Controllers\Api\CourseContextController;
 use App\Http\Controllers\Api\FilterOptionController;
+use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\OptionController;
+use App\Models\UserCredentials;
+use App\Notifications\TestNotification;
+use App\Services\GmailService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BranchController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\CityController;
+use App\Http\Controllers\Api\CompECourseController;
 use App\Http\Controllers\Api\CourseController;
 use App\Http\Controllers\Api\DepartmentController;
 use App\Http\Controllers\Api\DivisionController;
@@ -26,19 +33,22 @@ use App\Http\Controllers\Api\SectionController;
 use App\Http\Controllers\Api\SubgroupController;
 use App\Http\Controllers\Api\TitleController;
 use App\Http\Controllers\Api\TypeController;
-use App\Models\Lesson;
 use App\Models\UserInfos;
 
 //New Login routing
+Route::post('/verifyOtp', [AuthController::class, 'verifyOtp']);
+Route::post('/reqOtp',[AuthController::class, 'requestOTP']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/reset-passowrd-request', [AuthController::class, 'reqResetPassword']);
 //Protected Routes
 Route::middleware('auth:sanctum')->group(function(){
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', function (Request $request) {
-        return $request->user()->load(['userInfos', 'userInfos.permissions','userInfos.roles',]);
+        return $request->user()->load(['userInfos', 'userInfos.city','userInfos.permissions','userInfos.roles','userInfos.department','userInfos.branch','userInfos.title','userInfos.division','userInfos.section']);
     });
     Route::get('/status/{userId}/{lessonId}', [LessonsController::class, 'updateLearnerProgress']);
-    
+    Route::get('/course-search', [CourseController::class, 'CourseSearch']);
+
     Route::get('/exists/{courseId}', [CourseController::class, 'checkIfExist']);
 
     //Relationships API
@@ -79,8 +89,10 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('get-profile-image',[userInfo_controller::class, 'getProfile']); //Get Profile Image for UserCredentials
     Route::get('/select-user-creds/{employeeID}',[userCredentials_controller::class, 'findUser_EmployeeID']);
     Route::put('/reset-password/{userCredentials}', [userCredentials_controller::class, 'resetUserPassword']);
+    Route::put('/change-user-password/{userCredentials}', [userCredentials_controller::class, 'changePassword']);
     Route::put('/restore-user-creds/{userCredentials}', [userCredentials_controller::class, 'restoreUser']);
     Route::get('/reset-user',[userInfo_controller::class, 'resetUser']); //reset user table
+    Route::get('/user-creds-search', [userCredentials_controller::class, 'UserCredsSearch']);
 
     //User with course API
     Route::get('/select-user-courses/{userInfos}', [userInfo_controller::class, 'getUserCourses']);
@@ -92,6 +104,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('/assigned-course-admins/{course}', [CourseController::class, 'getAssignedCourseAdmin']);
     Route::get('/select-user-enrollment-status/{userInfos}', [userInfo_controller::class, 'enrollmentStatusCount']);
     Route::delete('/delete-enrolled-user/{userInfos}/{course}', [CourseController::class, 'removeEnrolledUser']);
+    Route::get('/publish-course/{course}', [CourseController::class, 'publishCourse']);
 
 
     //Enrollment API
@@ -104,7 +117,6 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::apiResource('/courses', CourseController::class);
     Route::apiResource('/categories', CategoryController::class);
     Route::post('/categories/bulk', [CategoryController::class, 'bulkStore']);
-    Route::apiResource('/carousels', CarouselImageController::class);
 
     Route::apiResource('/types', TypeController::class);
     Route::post('types/bulk', [TypeController::class, 'bulkStore']);
@@ -146,11 +158,57 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('/updateRolePermission/{role}', [RoleController::class, 'updateRolePermissions']);
     Route::put('/updateUserPermission/{userCredentials}', [userCredentials_controller::class, 'changeUserPermissions']);
     Route::post('/setCoursePermission/{course}', [CourseController::class, 'setCoursePermissions']);
+    Route::put('/updatetest/{userCredentialsId}',[userCredentials_controller::class, 'updateTest']);
 
-    Route::get('/test', [userInfo_controller::class, 'test']);
 
+
+
+
+    //CompE Routes
+    Route::get('/compECourses', [CompECourseController::class, 'index']);
+    Route::get('/compECourses/{course}', [CompECourseController::class, 'show']);
+
+
+    //Notifcation API
+    Route::get('/index-notifications', [NotificationController::class, 'index']);
+    Route::get('/has-unread-notifications', [NotificationController::class, 'hasUnreadNotifications']);
+    Route::post('/mark-as-read',[NotificationController::class, 'markAllAsRead']);
+});
+Route::get('/test-broadcast', function () {
+    broadcast(new NotificationsMarkedAsRead(1));
+    return 'done';
 });
 
+//PUSH NOTIFICATION
+// Route::post('/send-reset-password-req', [PushNotificationController::class, 'sendResetPasswordReq']);
+//Design View PUSH NOTIFICATION
+// Route::get('/preview-reset-password-email', function () {
+//     $data = [
+//         'username' => 'Test User',
+//         'imageUrl' => asset('storage/images/Panel-1.png'),
+//         'message' => 'Click the link below to reset your password:',
+//         'actionUrl' => 'https://example.com/reset-password?email=test@example.com',
+//         'actionText' => 'Reset Password',
+//     ];
+//     return view('emails.reset_password_notification', $data);
+// });
+
+Route::post('/send-notfication', function (){
+    $user = UserCredentials::find(1); // Replace with the actual user ID
+    $user->notify(new TestNotification());
+
+    if($user){
+        $message = 'Notification sent successfully';
+    } else {
+        $message = 'Failed to send notification';
+    }
+
+    return response()->json(['message' => $message], 200);
+});
+
+
+Route::apiResource('/carousels', CarouselImageController::class);
+Route::get('/test', [userInfo_controller::class, 'test']);
 
 
 //Category API
@@ -167,6 +225,62 @@ Route::get('/aaaa', function(){
     return $user2->permissionsRole;
 
 });
+Route::get('/test-gmail-refresh', function () {
+    try {
+        $gmailService = new GmailService();
+        return 'Gmail service initialized successfully.';
+    } catch (\Exception $e) {
+        return 'Error: ' . $e->getMessage();
+    }
+});
+
+
+// Route::get('/auth/login', function () {
+//     $query = http_build_query([
+//         'client_id' => env('MS_GRAPH_CLIENT_ID'),
+//         'response_type' => 'code',
+//         'redirect_uri' => env('MS_GRAPH_REDIRECT_URI'),
+//         'response_mode' => 'query',
+//         'scope' => env('MS_GRAPH_SCOPE'),
+//     ]);
+
+//     return redirect("https://login.microsoftonline.com/common/oauth2/v2.0/authorize?$query");
+// });
+
+// Route::get('/auth/callback', function (Request $request) {
+//     $code = $request->get('code');
+
+//     $response = Http::asForm()->post('https://login.microsoftonline.com/common/oauth2/v2.0/token', [
+//         'client_id' => env('MS_GRAPH_CLIENT_ID'),
+//         'client_secret' => env('MS_GRAPH_CLIENT_SECRET'),
+//         'grant_type' => 'authorization_code',
+//         'code' => $code,
+//         'redirect_uri' => env('MS_GRAPH_REDIRECT_URI'),
+//         'scope' => env('MS_GRAPH_SCOPE'),
+//     ]);
+
+//     if ($response->failed()) {
+//         return response()->json([
+//             'error' => 'Token exchange failed',
+//             'details' => $response->json()
+//         ]);
+//     }
+
+//     $tokenData = $response->json();
+
+//     file_put_contents(
+//         storage_path('app/msgraph/token.json'),
+//         json_encode([
+//             'access_token' => $tokenData['access_token'],
+//             'refresh_token' => $tokenData['refresh_token'],
+//             'expires_at' => now()->addSeconds($tokenData['expires_in'])->toDateTimeString(),
+//         ], JSON_PRETTY_PRINT)
+//     );
+
+//     return '✅ Microsoft Graph token saved to storage/app/msgraph/token.json';
+// });
+
+
 // Route::get('/reset-user',[userInfo_controller::class, 'resetUser']); //reset user table
 // Route::get('/reset-user-creds',[userCredentials_controller::class, 'resetUsers']); //reset user table
 

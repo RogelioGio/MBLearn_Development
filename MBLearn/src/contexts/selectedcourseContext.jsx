@@ -7,6 +7,7 @@ export const SelectedCourseProvider = ({children}) => {
     const [selectedCourse, setSelectedCourse] = useState(null)
     const [courseID, setCourseID] = useState(null)
     const [isFetching, setIsFetching] = useState(false);
+    const [Course, _setCourse] = useState(null);
 
     useEffect(() => {
         setIsFetching(true)
@@ -20,6 +21,11 @@ export const SelectedCourseProvider = ({children}) => {
             })
         }
     }, [courseID]);
+
+    const SetCourse = (course) => {
+        _setCourse(course);
+        console.log("Course set:", course);
+    }
 
     const selectCourse = (id) => {
         if (id === courseID && selectedCourse) {
@@ -38,7 +44,7 @@ export const SelectedCourseProvider = ({children}) => {
     }
 
     return (
-        <SelectedCourse.Provider value={{selectedCourse, selectCourse, resetSelectedCourse,isFetching}}>
+        <SelectedCourse.Provider value={{selectedCourse, selectCourse, resetSelectedCourse,isFetching, Course, SetCourse}}>
             {children}
         </SelectedCourse.Provider>
     )

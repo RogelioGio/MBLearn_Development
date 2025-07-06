@@ -47,6 +47,7 @@ export default function BulkEnrollment() {
     const [empty, setEmpty] = useState(false) //No selected user state
     const [enrolling, setEnrolling] = useState(false) //Enrolling state
     const [openDuration, setOpenDuration] = useState(false)
+    const [processing, setProccess] = useState(false);
 
     //Pagenation States
     const [pageState, setPagination] = useState({
@@ -114,6 +115,7 @@ export default function BulkEnrollment() {
         })
     }
     useEffect(() => {
+        if(!courseId) return
         handleLearnerChange(courseId)
     },[pageState.currentPage, pageState.perPage])
 
@@ -155,23 +157,28 @@ export default function BulkEnrollment() {
                     days,
                 });
 
-                return [...prevUsers, {userId: User.id, courseId: course.id, enrollerId: user.user_infos.id,  start_date: format(start, 'yyyy-MM-dd'), end_date: format(end, 'yyyy-MM-dd')}]
+                return [...prevUsers, {userId: User.id, courseId: course.id, enrollerId: user.user_infos.id,  start_date: format(start, 'yyyy-MM-dd') + ' 00:00:00', end_date: format(end, 'yyyy-MM-dd')+' 23:59:59'}]
             }
         })
         setResults((prevCourses) => {
             if(!User&&!course) return prevCourses;
 
+
             const updated = [...prevCourses];
             const existingCourse = updated.findIndex(
                 (c) => c.course.id === course.id
             );
+
+
+
             if(existingCourse !== -1){
                 const courseToUpdate = { ...updated[existingCourse] }
-                courseToUpdate.enrollees = courseToUpdate.enrollees || [];
-
                 const enrolled = courseToUpdate.enrollees.some(
                     (u) => u.id === User.id
                 );
+
+                courseToUpdate.enrollees = courseToUpdate.enrollees || [];
+
 
                 if(!enrolled){
                     courseToUpdate.enrollees.push(User);
@@ -179,7 +186,12 @@ export default function BulkEnrollment() {
                     courseToUpdate.enrollees = courseToUpdate.enrollees.filter((u) => u.id !== User.id);
                 }
 
-                updated[existingCourse] = courseToUpdate;
+                if(courseToUpdate.enrollees?.length === 0){
+                    updated.splice(existingCourse, 1);
+                } else {
+                    updated[existingCourse] = courseToUpdate;
+                }
+
             } else {
                 updated.push({
                     course: course,
@@ -220,8 +232,8 @@ export default function BulkEnrollment() {
                 userId: e.id,
                 courseId: Course.id,
                 enrollerId: user.user_infos.id,
-                start_date: format(start, 'yyyy-MM-dd'),
-                end_date: format(end, 'yyyy-MM-dd'),
+                start_date: format(start, 'yyyy-MM-dd') + ' 00:00:00',
+                end_date: format(end, 'yyyy-MM-dd') + ' 23:59:59',
             }));
 
             setSelected(prev =>
@@ -295,32 +307,20 @@ export default function BulkEnrollment() {
     //handle ernollment
     const enrollLearners = () => {
         setEnrolling(true)
-        // console.log(selected)
-        // console.log(results)
         if(selected.length === 0){
             setEmpty(true)
             setEnrolling(false)
             return
         }
-
-        // axiosClient.post('enrollments/bulk', selected)
-        // .then(({data}) => {
-        //     setEnrolling(false)
-        //     console.log(data);
-        //     setEnrolled(true);
-        //     setSelected([]);
-        // })
-        // .catch((err)=>console.log(err));
-
-        setEnrolling(false)
         setOpenDuration(true)
     }
 
+
     useEffect(()=>{
-        console.log(selected)
+        //console.log(selected)
         console.log(results)
-        console.log(course)
-    },[selected,results])
+        //console.log(course)
+    },[results])
 
     // useEffect(() =>{
     //     setLoading(true)
@@ -407,17 +407,23 @@ export default function BulkEnrollment() {
             handleCourseChange(assigned_courses[0]);
             setResults([])
             setSelected([]);
+            pageChangeState("currentPage", 1)
         },250)
-        // handleCourseChange(assigned_courses[0]);
-        // setResults([])
     }
 
     //Handle Enrollment Submisstion
     const handleEnrollment = () => {
-        setOpenDuration(false)
-        setEnrolled(true)
-        console.log("for the API", selected)
-        console.log("For the result",results)
+        setProccess(true)
+        axiosClient.post('enrollments/bulk', selected)
+        .then(({data}) => {
+            setEnrolled(true);
+            setOpenDuration(false)
+            setEnrolling(false)
+            setProccess(false)
+        }).catch((err)=>{
+            console.log(err)
+        })
+
     }
 
     return (
@@ -444,85 +450,88 @@ export default function BulkEnrollment() {
             {/* Learner table */}
             <div className='row-start-2 row-span-3 col-span-4 px-5 py-2 grid grid-rows-[min-content_1fr_min-content] grid-cols-4'>
 
-            <div className="col-start-1 row-start-1 py-2 flex flex-row gap-3 items-center">
-                <Sheet>
-                    <SheetTrigger>
-                        <div className="border-2 border-primary rounded-md bg-white shadow-md flex items-center justify-center p-3 text-primary hover:cursor-pointer hover:bg-primary hover:text-white hover:scale-105 transition-all ease-in-out">
-                            <FontAwesomeIcon icon={faSwatchbook}/>
-                        </div>
-                    </SheetTrigger>
-                    <SheetOverlay className="bg-gray-500/75 backdrop-blur-sm transition-all" />
-                    <SheetContent className="h-full flex-col flex" side={"left"}>
-                        {/* Course Header */}
-                        <div className="inline-flex flex-col gap-1 row-start-3 col-span-1 py-2 w-full">
-                        <label htmlFor="filter">
-                            <div>
-                                <p className="font-header text-lg text-primary">Courses</p>
-                                <p className="font-text text-xs text-unactive">Quickly choose a course a leaner can be enrolled</p>
+            <div className="col-start-1 row-start-1 col-span-2 py-2 flex flex-row justify-between items-center">
+                <div className="flex flex-row gap-3 items-center">
+                    <Sheet>
+                        <SheetTrigger>
+                            <div className="border-2 border-primary rounded-md bg-white shadow-md flex items-center justify-center p-3 text-primary hover:cursor-pointer hover:bg-primary hover:text-white hover:scale-105 transition-all ease-in-out">
+                                <FontAwesomeIcon icon={faSwatchbook}/>
                             </div>
-                        </label>
-                        <div className="grid grid-cols-1">
-                            <select id="filter" name="filter" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                                value={formik.values.filter}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                >
-                                <option value="myCourses"> My Courses</option>
-                                <option value="Assigned"> Assigned Courses</option>
-                            </select>
-                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                            <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                            </svg>
-                        </div>
-                        </div>
-                        {/* Courses Available */}
-                        {
-                        isLoading ? (
-                            <div className="flex flex-col gap-2 items-center justify-center text-center h-full pr-4">
-                                <img src={CourseLoading} alt="" className="w-44"/>
-                                <p className="text-xs font-text text-primary">Hang tight! 🚀 Loading assigned courses for bulk enrollment—great things take a second!</p>
-                            </div>
-                        )
-                        : (
-                            <ScrollArea className="h-[calc(100vh-6rem)] w-full mr-1">
-                                <div className="gap-2 h-full flex flex-col snap-y snap-mandatory overflow-y-auto">
-                                {
-                                        assigned_courses.map((Course) => (
-                                            <AssignedCourseEnrollmentCard
-                                                id={Course.id}
-                                                name={Course.name}
-                                                coursetype={Course.types?.[0]?.type_name}
-                                                coursecategory={Course.categories?.[0]?.category_name}
-                                                duration={Course.duration}
-                                                trainingmode={Course.training_modes?.[0]?.mode_name}
-                                                trainingtype={Course.training_type}
-                                                course={course}
-                                                selected={selected}
-                                                onclick={() => handleCourseChange(Course)}
-                                                numberOfEnrollees={numberOfEnrollees}
-                                                />))
-                                    }
+                        </SheetTrigger>
+                        <SheetOverlay className="bg-gray-500/75 backdrop-blur-sm transition-all" />
+                        <SheetContent className="h-full flex-col flex" side={"left"}>
+                            {/* Course Header */}
+                            <div className="inline-flex flex-col gap-1 row-start-3 col-span-1 py-2 w-full">
+                            <label htmlFor="filter">
+                                <div>
+                                    <p className="font-header text-lg text-primary">Courses</p>
+                                    <p className="font-text text-xs text-unactive">Quickly choose a course a leaner can be enrolled</p>
                                 </div>
-                            </ScrollArea>
-                        )
-                        }
+                            </label>
+                            <div className="grid grid-cols-1">
+                                <select id="filter" name="filter" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                    value={formik.values.filter}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    >
+                                    <option value="myCourses"> My Courses</option>
+                                    <option value="Assigned"> Assigned Courses</option>
+                                </select>
+                                <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            </div>
+                            {/* Courses Available */}
+                            {
+                            isLoading ? (
+                                <div className="flex flex-col gap-2 items-center justify-center text-center h-full pr-4">
+                                    <img src={CourseLoading} alt="" className="w-44"/>
+                                    <p className="text-xs font-text text-primary">Hang tight! 🚀 Loading assigned courses for bulk enrollment—great things take a second!</p>
+                                </div>
+                            )
+                            : (
+                                <ScrollArea className="h-[calc(100vh-6rem)] w-full mr-1">
+                                    <div className="gap-2 h-full flex flex-col snap-y snap-mandatory overflow-y-auto">
+                                    {
+                                            assigned_courses.map((Course) => (
+                                                <AssignedCourseEnrollmentCard
+                                                    id={Course.id}
+                                                    name={Course.name}
+                                                    coursetype={Course.types?.[0]?.type_name}
+                                                    coursecategory={Course.categories?.[0]?.category_name}
+                                                    duration={Course.duration}
+                                                    trainingmode={Course.training_modes?.[0]?.mode_name}
+                                                    trainingtype={Course.training_type}
+                                                    course={course}
+                                                    selected={selected}
+                                                    onclick={() => handleCourseChange(Course)}
+                                                    numberOfEnrollees={numberOfEnrollees}
+                                                    />))
+                                        }
+                                    </div>
+                                </ScrollArea>
+                            )
+                            }
 
-                    </SheetContent>
-                </Sheet>
+                        </SheetContent>
+                    </Sheet>
 
-                <div>
-                    <p className="text-unactive font-text text-xs">Selected Course:</p>
-                    <p className="text-primary font-header">{_course?.name || "No Selected Course"}</p>
-                    <p className="text-unactive font-text text-xs">{_course && (<>Course ID: {_course.CourseID}</>)}</p>
+                    <div>
+                        <p className="text-unactive font-text text-xs">Selected Course:</p>
+                        <p className="text-primary font-header">{_course?.name || "No Selected Course"}</p>
+                        <p className="text-unactive font-text text-xs">{_course && (<>Course ID: {_course.CourseID}</>)}</p>
+                    </div>
                 </div>
-            </div>
-
-            <div className="col-start-2  py-2 flex flex-row gap-3">
                 <div>
                     <p className="text-unactive font-text text-xs">Number of Enrolless:</p>
                     <p className="text-primary font-text">{numberOfEnrollees(_course?.id)} Learner</p>
                 </div>
+
             </div>
+
+            {/* <div className="col-start-2  py-2 flex flex-row gap-3">
+            </div> */}
 
             <div className="col-start-4 w-full py-2 items-center flex">
                 <div className=' inline-flex flex-row place-content-between border-2 border-primary rounded-md font-text shadow-md w-full'>
@@ -633,7 +642,7 @@ export default function BulkEnrollment() {
         {/* Successfully Enrolled */}
         <EnrolledSuccessfullyModal isOpen={enrolled} onClose={() => {setEnrolled(false); reset()}} result={results}/>
         {/* Training Duration */}
-        <BulkEnrollmentCourseDuration open={openDuration} close={()=>{setOpenDuration(false)}} result={results} selected={selected} setSelected={setSelected} setResults={setResults} handleEnrollment={handleEnrollment}/>
+        <BulkEnrollmentCourseDuration open={openDuration} close={()=>{setOpenDuration(false),setProccess(false),setEnrolling(false)}} result={results} selected={selected} setSelected={setSelected} setResults={setResults} handleEnrollment={()=>handleEnrollment()} enrolling={processing}/>
         {/* Error */}
         <EnrollmentFailedModal isOpen={enrollmentFailed} onClose={()=>setEnrollmentFailed(false)}/>
         {/* When no Selected Users */}

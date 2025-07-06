@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BulkFormInput;
 use App\Http\Requests\StoreTypeRequest;
+use App\Jobs\ResetOptionCache;
 use App\Models\Type;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -25,6 +26,7 @@ class TypeController extends Controller
     public function store(StoreTypeRequest $request)
     {
         $type = Type::create($request->validated());
+        ResetOptionCache::dispatch();
         return $type;
     }
 

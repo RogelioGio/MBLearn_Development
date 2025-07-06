@@ -27,7 +27,7 @@ class UserInfoSearchRequest extends FormRequest
             'per_page' => 'nullable|integer|min:1|max:100',
             'status' => 'required|in:Active,Inactive',
             'course_id' => 'nullable|exists:courses,id',
-            'relation' => 'nullable|in:assignedCourses,enrolledCourses'
+            'relation' => 'nullable|in:enrolled,assigned'
         ];
     }
 }
