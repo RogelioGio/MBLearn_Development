@@ -4,7 +4,9 @@ import { faCircleCheck as faCircleCheckRegular, faSquareCheck } from "@fortaweso
 import { useStateContext } from "MBLearn/src/contexts/ContextProvider";
 import { Progress } from "./progress";
 import { ScrollArea } from "./scroll-area";
-import { faChevronCircleLeft, faChevronCircleRight, faCircleRight } from "@fortawesome/free-solid-svg-icons";
+import { faChevronCircleLeft, faChevronCircleRight, faChevronLeft, faChevronRight, faCircleArrowLeft, faCircleRight, faList } from "@fortawesome/free-solid-svg-icons";
+import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetClose, SheetOverlay, SheetPortal
+} from "./sheet";
 
 const StepperContext = createContext();
 
@@ -66,7 +68,7 @@ export const Stepper = forwardRef(
             {
                 role === "Course Admin" ?
                 <>
-                    <div className="w-full grid grid-cols-[20rem_1fr] gap-x-2 h-full pt-2">
+                <div className="lg:grid hidden w-full grid-cols-[20rem_1fr] gap-x-2 h-full pt-2">
                 {/* Step Indicators */}
                 <div>
                     <div>
@@ -135,6 +137,76 @@ export const Stepper = forwardRef(
                     </ScrollArea>
                 </div>
 
+                </div>
+
+                {/* Mobile */}
+                <div className="min-h-[500px] flex flex-col px-4 py-2 pb-[3.5rem]  lg:hidden">
+                    <div>
+                        {isCompleted ? completedStep : steps[active]}
+                    </div>
+                </div>
+                <div className="lg:hidden absolute bottom-0 left-0 right-0 bg-white z-10 py-2 border-t border-divider grid grid-cols-[min-content_1fr_min-content] px-4 gap-4">
+                    <div>
+                        <Sheet>
+                            <SheetTrigger disabled={steps.length <= 1 || steps.length === 0}>
+                                <div className="flex items-center justify-center w-10 h-10 text-lg border-2 border-primary rounded-md text-primary transition-all ease-in-out shadow-md hover:text-white hover:bg-primaryhover hover:border-primaryhover hover:cursor-pointer">
+                                    <FontAwesomeIcon icon={faList} />
+                                </div>
+                            </SheetTrigger>
+                            <SheetOverlay className="bg-gray-500/75 backdrop-blur-sm transition-all" />
+                            <SheetContent side="left">
+                                <SheetTitle className="font-text text-xs pb-2">Course Content:</SheetTitle>
+                                <div className="flex flex-col gap-2">
+                                    {steps.map((step, index) => {
+                                    const isActive = index === active;
+                                    const customIcon = step.props.icon;
+
+                                    return (
+                                        <div
+                                            key={index}
+                                            className={`group grid grid-cols-[min-content_1fr] py-3 px-2 hover:cursor-pointer hover:bg-primarybg gap-2 transition-all ease-in-out rounded-md border-2 border-transparent ${isActive ? "border-2 !border-primary":null}`}
+                                            onClick={()=>{if(enableStepClick){
+                                                setActive(index)
+                                                console.log(index)
+                                            }}}
+                                        >
+                                            {/* Indicator */}
+                                            <div
+                                                className={`w-10 aspect-square flex flex-col justify-center items-center rounded-full hover:!border-primary
+                                                ${isActive ? "border-2 border-primary bg-primary" : "border-2 border-unactive group-hover:border-primary"}`}
+                                            >
+                                                <p className={`text-primary font-header text-base ${!isActive ? "text-unactive group-hover:text-primary": isActive ? "text-white" : null}`}>{index + 1}</p>
+                                            </div>
+                                            {/* Step Description */}
+                                            <div className="font-text text-primary ">
+                                                <h1 className={`font-header text-sm ${!isActive ? "text-unactive":null} group-hover:text-primary`}>{step.props.stepTitle}</h1>
+                                                <p className="text-xs text-unactive group-hover:text-primary">{step.props.stepDesc}</p>
+                                            </div>
+
+                                            {/* {index < steps.length - 1 && (
+                                            <div className="flex-1 h-1 bg-gray-300 mx-2" />
+                                            )} */}
+                                        </div>
+                                    );
+                                })}
+                                </div>
+                            </SheetContent>
+                        </Sheet>
+                    </div>
+                    <div className="flex flex-col items-start justify-start">
+                        <p className="text-unactive font-text text-xs">Current Content Title:</p>
+                        <p className="font-header text-primary text-sm">{stepsMeta[active]?.title}</p>
+                    </div>
+                    <div className="flex flex-row gap-x-1">
+                        <div className="h-10 w-10  flex items-center justify-center text-primary border-2 rounded-md border-primary transition-all ease-in-out shadow-md hover:text-white hover:bg-primaryhover hover:border-primaryhover hover:cursor-pointer"
+                            onClick={() => setActive((prev) => Math.max(prev - 1, 0))}>
+                            <FontAwesomeIcon icon={faChevronCircleLeft}/>
+                        </div>
+                        <div className="h-10 w-10  flex items-center justify-center text-primary border-2 rounded-md border-primary transition-all ease-in-out shadow-md hover:text-white hover:bg-primaryhover hover:border-primaryhover hover:cursor-pointer"
+                            onClick={() => setActive((prev) => Math.min(prev + 1, steps.length-1))}>
+                            <FontAwesomeIcon icon={faChevronCircleRight}/>
+                        </div>
+                    </div>
                 </div>
                 </>
                 :

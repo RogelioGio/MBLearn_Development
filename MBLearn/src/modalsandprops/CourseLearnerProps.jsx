@@ -207,7 +207,8 @@ const CourseLearnerProps = ({course}) => {
     }
 
     return(
-        <div className='grid grid-rows-[min-content_1fr_min-content] grid-cols-4 pr-2 h-full'>
+        <div className='grid grid-rows-[min-content_1fr_min-content] grid-cols-4 h-full px-4
+                        md:pr-2 md:px-0'>
             {/* Headers */}
             <div className='flex flex-col gap-1 py-2'>
                 <p className='text-xs font-text text-unactive'>Learner Types:</p>
@@ -237,12 +238,13 @@ const CourseLearnerProps = ({course}) => {
                     </SelectContent>
                 </Select>
             </div>
-            <div className='col-start-3 flex justify-end items-center pr-2'>
+            <div className='md:col-start-3 col-start-2 flex justify-end items-center md:pr-2 py-2 '>
                 <div className='w-10 h-10 bg-white border-2 border-primary rounded-md shadow-md flex items-center justify-center hover:cursor-pointer text-primary hover:bg-primary hover:text-white transition-all ease-in-out'>
                     <FontAwesomeIcon icon={faFilter} className='text-lg'/>
                 </div>
             </div>
-            <div className='col-span-1 col-start-4 flex flex-row justify-end items-center'>
+            <div className='flex flex-row justify-end items-center pl-2 col-span-2
+                            md:col-span-1 md:col-start-4 '>
                 <div className='w-full'>
                     <div className=' inline-flex flex-row place-content-between border-2 border-primary rounded-md w-full font-text shadow-md'>
                     <input type="text" className='focus:outline-none text-sm px-4 w-full rounded-md bg-white' placeholder='Search...'/>
@@ -267,7 +269,7 @@ const CourseLearnerProps = ({course}) => {
                             {
                                 loading ? (
                                     Array.from({ length: 5 }, (_, index) => (
-                                        <tr className='font-text text-sm hover:bg-gray-200 animate-pulse' onClick={() => click(employeeID)}>
+                                        <tr key={index} className='font-text text-sm hover:bg-gray-200 animate-pulse' onClick={() => click(employeeID)}>
                                             <td className='text-sm  py-3 px-4'>
                                                 <div className='flex items-center gap-2'>
                                                     {/* User Image */}
@@ -332,7 +334,7 @@ const CourseLearnerProps = ({course}) => {
             </div>
 
             {/* Paginate */}
-            <div className='flex flex-row items-center justify-between col-span-4 pb-4'>
+            <div className='flex flex-row items-center justify-between col-span-4 pb-2'>
                 <p className='text-sm font-text text-unactive'>
                     Showing <span className='font-header text-primary'>1</span> to <span className='font-header text-primary'>2</span> of <span className='font-header text-primary'>5</span> <span className='text-primary'>results</span>
                 </p>

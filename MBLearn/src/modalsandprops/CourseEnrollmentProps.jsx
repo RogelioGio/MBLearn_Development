@@ -652,7 +652,9 @@ const CourseEnrollmentProps = ({course}) => {
         <>
         <div className='grid grid-rows-[min-content_1fr_min-content] grid-cols-4 pr-2 h-full'>
             {/* Header */}
-            <div className='col-span-1 flex flex-row gap-2 items-center py-2'>
+            <div className='flex flex-row gap-2 items-center py-2
+                            pl-2 col-span-2
+                            md:pl-0 md:col-span-1'>
                 <div className=' inline-flex flex-row place-content-between border-2 border-primary rounded-md w-full font-text shadow-md'>
                     <input type="text" className='focus:outline-none text-sm px-4 w-full rounded-md bg-white' placeholder='Search...'/>
                     <div className='bg-primary py-2 px-4 text-white'>
@@ -804,25 +806,31 @@ const CourseEnrollmentProps = ({course}) => {
                 </Sheet>
             </div>
             <div className='col-span-2 col-start-4 flex flex-row justify-end items-center gap-2 py-2'>
-                <div className='w-full'>
+                <div className='w-full hidden md:block'>
                     {
                         selected.length > 0 ? (
                             <p className='text-sm font-text text-unactive'><span className='text-primary'>{selected.length}</span> users selected to enroll</p>
                         ) : (null)
                     }
                 </div>
-
-                <div className='text-white border-2 border-primary py-2 px-5 bg-primary flex flex-row gap-2 justify-center items-center rounded-md shadow-md hover:bg-primaryhover hover:cursor-pointer transition-all ease-in-out'
-                    onClick={handleEnrollment}>
-                    <FontAwesomeIcon icon={faUserPlus}/>
-                    <p className='font-header'>
-                        { enrolling? "Enrolling": "Enroll"}
-                    </p>
+                <div className='relative group'>
+                    <div className='text-white border-2 border-primary md:py-2 md:px-5 bg-primary flex flex-row gap-2 justify-center items-center rounded-md shadow-md hover:bg-primaryhover hover:cursor-pointer transition-all ease-in-out
+                                    md:w-auto
+                                    w-10 h-10'
+                        onClick={handleEnrollment}>
+                        <FontAwesomeIcon icon={faUserPlus}/>
+                        <p className='font-header md:block hidden'>
+                            { enrolling? "Enrolling": "Enroll"}
+                        </p>
+                        <p className="md:hidden scale-0 group-hover:scale-100 whitespace-nowrap font-text text-xs p-2 rounded bg-tertiary text-white absolute -left-1 -bottom-10 shadow-md transition-all ease-in-out">
+                            Enroll
+                        </p>
+                    </div>
                 </div>
             </div>
 
             {/* Table */}
-            <div className='col-span-4'>
+            <div className='pl-2 md:pl-0 col-span-4'>
                 <div className='w-full border-primary border rounded-md overflow-hidden shadow-md'>
                     <table className='text-left w-full'>
                         <thead className='font-header text-xs text-primary bg-secondaryprimary border-l-2 border-secondaryprimary'>
@@ -838,9 +846,9 @@ const CourseEnrollmentProps = ({course}) => {
                                     </div>
                                     <p> EMPLOYEE NAME</p>
                                     </th>
-                                    <th className='py-4 px-4'>DIVISION</th>
-                                    <th className='py-4 px-4'>DEPARTMENT</th>
-                                    <th className='py-4 px-4'>SECTION</th>
+                                    <th className='py-4 px-4 hidden lg:table-cell'>DIVISION</th>
+                                    <th className='py-4 px-4 hidden lg:table-cell'>DEPARTMENT</th>
+                                    <th className='py-4 px-4 hidden lg:table-cell'>SECTION</th>
                                 </tr>
                             </thead>
                             <tbody className='bg-white divide-y divide-divider'>
@@ -869,15 +877,15 @@ const CourseEnrollmentProps = ({course}) => {
                                                 </div>
                                             </div>
                                         </td>
-                                        <td>
+                                        <td className='py-3 px-4 hidden lg:table-cell'>
                                             <p className="font-header text-sm text-primary bg-gray-300 rounded-full w-32 h-4 animate-pulse"></p>
                                             <p className="font-text text-unactive text-xs bg-gray-300 rounded-full w-16 h-3 mt-1 animate-pulse"></p>
                                         </td>
-                                        <td>
+                                        <td className='py-3 px-4 hidden lg:table-cell'>
                                             <p className="font-header text-sm text-primary bg-gray-300 rounded-full w-32 h-4 animate-pulse"></p>
                                             <p className="font-text text-unactive text-xs bg-gray-300 rounded-full w-16 h-3 mt-1 animate-pulse"></p>
                                         </td>
-                                        <td>
+                                        <td className='py-3 px-4 hidden lg:table-cell'>
                                             <p className="font-header text-sm text-primary bg-gray-300 rounded-full w-32 h-4 animate-pulse"></p>
                                             <p className="font-text text-unactive text-xs bg-gray-300 rounded-full w-16 h-3 mt-1 animate-pulse"></p>
                                         </td>
@@ -894,7 +902,7 @@ const CourseEnrollmentProps = ({course}) => {
                                     learners.map((learner, index) => (
                                         <tr key={index} className={`font-text text-sm hover:bg-gray-200 hover:cursor-pointer`} onClick={()=>handleCheckbox(learner, course)}>
                                             <td className={`text-sm  py-3 px-4 border-l-2 border-transparent transition-all ease-in-out`}>
-                                                <div className='flex items-center gap-4 flex-row'>
+                                                <div className='items-center gap-4 flex-row hidden lg:flex'>
                                                     {/* Checkbox */}
                                                     <div className="group grid size-4 grid-cols-1">
                                                         <input type="checkbox"
@@ -933,14 +941,68 @@ const CourseEnrollmentProps = ({course}) => {
                                                         <p className='text-unactive text-xs'>ID: {learner.employeeID}</p>
                                                     </div>
                                                 </div>
+                                                <div className='items-center gap-2 grid lg:hidden grid-cols-[min-content_auto_auto_auto] grid-rows-2'>
+                                                     {/* Checkbox */}
+                                                    <div className="group grid size-4 grid-cols-1">
+                                                        <input type="checkbox"
+                                                            className="col-start-1 row-start-1 appearance-none border border-divider rounded checked:border-primary checked:bg-primary focus:ring-2 focus:ring-primary focus:outline-none focus:ring-offset-1"
+                                                            onClick={()=>handleCheckbox(learner, course)}
+                                                            onChange={()=>handleCheckbox(learner, course)}
+                                                            checked={selected.some((entry) => entry.userId === learner.id)} // Updated this line
+                                                        />
+                                                        {/* Custom Checkbox styling */}
+                                                        <svg fill="none" viewBox="0 0 14 14" className="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-[:disabled]:stroke-gray-950/25">
+                                                            {/* Checked */}
+                                                            <path
+                                                                d="M3 8L6 11L11 3.5"
+                                                                strokeWidth={2}
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                                className="opacity-0 group-has-[:checked]:opacity-100"
+                                                            />
+                                                            {/* Indeterminate */}
+                                                            <path
+                                                                d="M3 7H11"
+                                                                strokeWidth={2}
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                                className="opacity-0 group-has-[:indeterminate]:opacity-100"
+                                                                />
+                                                        </svg>
+                                                    </div>
+                                                    <div className='flex flex-row gap-2 col-span-3'>
+                                                        {/* User Image */}
+                                                        <div className='bg-blue-500 h-10 w-10 rounded-full overflow-hidden'>
+                                                            <img src={learner.profile_image} alt="" className='w-full'/>
+                                                        </div>
+                                                        {/* Name and employee-id*/}
+                                                        <div>
+                                                            <p className='font-text'>{learner.first_name} {learner.middle_name} {learner.last_name} {learner.name_suffix}</p>
+                                                            <p className='text-unactive text-xs'>ID: {learner.employeeID}</p>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className='col-start-2 flex flex-col justify-start'>
+                                                        <p className='text-black text-xs'>{learner.division.division_name}</p>
+                                                        <p className='text-xs font-text text-unactive'>Division</p>
+                                                    </div>
+                                                    <div className='col-start-3 flex flex-col justify-start'>
+                                                        <p className='text-black text-xs '>{learner.department?.department_name}</p>
+                                                        <p className='text-xs font-text text-unactive'>Department</p>
+                                                    </div>
+                                                    <div className='col-start-4 flex flex-col justify-start'>
+                                                        <p className='text-black text-xs'>{learner.section?.section_name}</p>
+                                                        <p className='text-xs font-text text-unactive'>Section</p>
+                                                    </div>
+                                                    </div>
                                             </td>
-                                            <td className='py-3 px-4'>
+                                            <td className='py-3 px-4 hidden lg:table-cell'>
                                                 <p className='text-unactive'>{learner.division?.division_name}</p>
                                             </td>
-                                            <td className='py-3 px-4'>
+                                            <td className='py-3 px-4 hidden lg:table-cell'>
                                                 <p className='text-unactive'>{learner.department?.department_name}</p>
                                             </td>
-                                            <td className='py-3 px-4'>
+                                            <td className='py-3 px-4 hidden lg:table-cell'>
                                                 <p className='text-unactive'>{learner.section?.section_name}</p>
                                             </td>
                                         </tr>
@@ -952,7 +1014,7 @@ const CourseEnrollmentProps = ({course}) => {
             </div>
 
             {/* Pagination */}
-            <div className="col-span-4 h-full flex flex-row items-center justify-between py-3">
+            <div className="col-span-4 h-full flex flex-row items-center justify-between py-3 pl-3 md:pl-0">
                 <div>
                     {
                         learnerLoading ? <p className='text-sm font-text text-unactive'>
