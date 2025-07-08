@@ -1,19 +1,26 @@
 import { faCircleXmark as regularXmark } from "@fortawesome/free-regular-svg-icons"
-import { faBookBookmark, faBookOpen, faUserGroup, faUserLock, faXmark, faCircleXmark as solidXmark } from "@fortawesome/free-solid-svg-icons"
+import { faBookBookmark, faBookOpen, faSpinner, faUserGroup, faUserLock, faXmark, faCircleXmark as solidXmark } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react"
 import { useEffect, useState } from "react"
 import axiosClient from "../axios-client"
 import { useFormik } from "formik"
 import { useCourseContext } from "../contexts/CourseListProvider"
+import { set } from "date-fns"
+import UnsavedEditUserPromptModal from "./UnsaveEditUserPromptModal"
+import EditCourseSuccesFully from "./EditCourseSuccessfully"
 
 
-const EditCourseModal = ({open, close, id, course}) => {
-    const [hover, setHover] = useState(false);
+const EditCourseModal = ({open, close, id, course, refresh}) => {
     const [loading, setLoading] = useState(false)
     // const {selectedCourse = [] , selectCourse, isFetching, Course} = useCourse()
     const {coursetypes, coursecategories, trainingmodes} = useCourseContext();
     const [tab, setTab] = useState(1);
+    const [changes, setChanges] = useState({});
+    const [unsave, setUnsave] = useState(false);
+    const [updating, setUpdating] = useState(false);
+    const [updated, setUpdated] = useState(false);
+    const [unsavePromt, setUnsavePrompt] = useState(false);
 
     // useEffect(() => {
     //     if (open && id) {
@@ -62,10 +69,34 @@ const EditCourseModal = ({open, close, id, course}) => {
                 course_outcome: course?.course_outcomes || "",
             },
             onSubmit: (values) => {
-                console.log(values)
+                handleUpdate(values)
             }
         })
+
+        //Change Detector
+            useEffect(()=>{
+                const  newChanges= {}
+                for(const key in formik.values){
+                    if(Object.prototype.hasOwnProperty.call(formik.values, key)){
+                        newChanges[key] = formik.values[key] !== formik.initialValues[key];
+                    }
+                }
+                setChanges(newChanges)
+                const isChanged = Object.keys(formik.values).some(
+                    (key) => formik.values[key] !== formik.initialValues[key]
+                )
+                setUnsave(isChanged)
+            },[formik.values])
+
+        const handleUpdate = (values) => {
+            console.log("Updating Course with values: ", values);
+            setUpdating(true);
+            setTimeout(() => {setUpdating(false)}, 4000)
+            setTimeout(() => {setUpdated(true)}, 4100)
+        }
+
         return(
+        <>
         <Dialog open={open} onClose={()=>{}} className="fixed inset-0 z-10 w-screen overflow-y-auto">
             <DialogBackdrop transition className="fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in z-30"/>
                 <div className='fixed inset-0 z-30 w-screen overflow-y-auto'>
@@ -90,6 +121,10 @@ const EditCourseModal = ({open, close, id, course}) => {
                                                         w-5 h-5 text-xs
                                                         md:w-8 md:h-8 md:text-base"
                                             onClick={()=>{
+                                                if(unsave){
+                                                    setUnsavePrompt(true)
+                                                    return;
+                                                }
                                                 setTimeout(()=>{formik.resetForm(),setTab(1)},500)
                                                 close()
                                             }}>
@@ -126,7 +161,7 @@ const EditCourseModal = ({open, close, id, course}) => {
                                                     <p>Course Name:</p>
                                                 </label>
                                                 <input type="text" name="courseName"
-                                                        className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                                        className={`font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary ${changes?.courseName ? "border-2 border-primary":""}`}
                                                         value={formik.values.courseName}
                                                         onChange={formik.handleChange}
                                                         onBlur={formik.handleBlur}
@@ -139,7 +174,7 @@ const EditCourseModal = ({open, close, id, course}) => {
                                                     <p>Course Type:</p>
                                                 </label>
                                                 <div className="grid grid-cols-1">
-                                                    <select id="courseType" name="courseType" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                                    <select id="courseType" name="courseType" className={`appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary ${changes?.courseType ? "border-2 border-primary":""}`}
                                                         value={formik.values.courseType}
                                                         onChange={formik.handleChange}
                                                         onBlur={formik.handleBlur}
@@ -163,7 +198,7 @@ const EditCourseModal = ({open, close, id, course}) => {
                                                     <p>Course Category:</p>
                                                 </label>
                                                 <div className="grid grid-cols-1">
-                                                    <select id="courseCategory" name="courseCategory" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                                    <select id="courseCategory" name="courseCategory" className={`appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary ${changes?.courseCategory ? "border-2 border-primary":""}`}
                                                         value={formik.values.courseCategories}
                                                         onChange={formik.handleChange}
                                                         onBlur={formik.handleBlur}
@@ -187,7 +222,7 @@ const EditCourseModal = ({open, close, id, course}) => {
                                                     <p>Training Type:</p>
                                                 </label>
                                                 <div className="grid grid-cols-1">
-                                                    <select id="training_type" name="training_type" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                                    <select id="training_type" name="training_type" className={`appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary ${changes?.training_type ? "border-2 border-primary":""}`}
                                                         value={formik.values.training_type}
                                                         onChange={formik.handleChange}
                                                         onBlur={formik.handleBlur}
@@ -209,7 +244,7 @@ const EditCourseModal = ({open, close, id, course}) => {
 
                                                 <div className="inline-flex flex-col gap-1">
                                                     <input type="text" name="months"
-                                                            className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                                            className={`font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary ${changes?.months ? "border-2 border-primary":""}`}
                                                             value={formik.values.months}
                                                             onChange={formik.handleChange}
                                                             onBlur={formik.handleBlur}
@@ -220,7 +255,7 @@ const EditCourseModal = ({open, close, id, course}) => {
                                                 </div>
                                                 <div className="inline-flex flex-col gap-1">
                                                     <input type="text" name="weeks"
-                                                            className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                                            className={`font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary ${changes?.weeks ? "border-2 border-primary":""}`}
                                                             value={formik.values.weeks}
                                                             onChange={formik.handleChange}
                                                             onBlur={formik.handleBlur}
@@ -231,7 +266,7 @@ const EditCourseModal = ({open, close, id, course}) => {
                                                 </div>
                                                 <div className="inline-flex flex-col gap-1">
                                                     <input type="text" name="days"
-                                                            className="font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                                            className={`font-text border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary ${changes?.days ? "border-2 border-primary":""}`}
                                                             value={formik.values.days}
                                                             onChange={formik.handleChange}
                                                             onBlur={formik.handleBlur}
@@ -248,7 +283,7 @@ const EditCourseModal = ({open, close, id, course}) => {
                                             {/* Short Description */}
                                             <div className="inline-flex flex-col gap-1 row-start-1 col-span-2 py-1">
                                                 <label htmlFor="description" className="font-text text-xs flex flex-row justify-between ">Short Description:</label>
-                                                <textarea name="shortDescription" id="shortDescription" className='h-32 font-text text-xs md:text-base border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary resize-none'
+                                                <textarea name="shortDescription" id="shortDescription" className={`h-32 font-text text-xs md:text-base border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary resize-none ${changes?.shortDescription ? "border-2 border-primary":""}`}
                                                 onChange={formik.handleChange}
                                                 onBlur={formik.handleBlur}
                                                 value={formik.values.shortDescription}
@@ -256,7 +291,7 @@ const EditCourseModal = ({open, close, id, course}) => {
                                             </div>
                                             <div className="inline-flex flex-col gap-1 col-span-2 md:col-span-1 py-1">
                                                 <label htmlFor="description" className="font-text text-xs flex flex-row justify-between ">Course Objective:</label>
-                                                <textarea name="course_objective" id="course_objective" className='h-32 font-text text-xs md:text-base border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary resize-none'
+                                                <textarea name="course_objective" id="course_objective" className={`h-32 font-text text-xs md:text-base border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary resize-none ${changes?.course_objective ? "border-2 border-primary":""}`}
                                                 onChange={formik.handleChange}
                                                 onBlur={formik.handleBlur}
                                                 value={formik.values.course_objectives}
@@ -264,7 +299,7 @@ const EditCourseModal = ({open, close, id, course}) => {
                                             </div>
                                             <div className="inline-flex flex-col gap-1 col-span-2 md:col-span-1 py-1">
                                                 <label htmlFor="description" className="font-text text-xs flex flex-row justify-between ">Course Outcome:</label>
-                                                <textarea name="course_outcome" id="course_outcome" className='h-32 font-text md:text-base text-xs border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary resize-none'
+                                                <textarea name="course_outcome" id="course_outcome" className={`h-32 font-text text-xs md:text-base border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary resize-none ${changes?.course_outcome ? "border-2 border-primary":""}`}
                                                 onChange={formik.handleChange}
                                                 onBlur={formik.handleBlur}
                                                 value={formik.values.course_outcome}
@@ -277,11 +312,30 @@ const EditCourseModal = ({open, close, id, course}) => {
 
                                 {/* Buttons */}
                                 <div className="flex flex-row justify-between items-center gap-2  mx-4 pb-2 font-header">
-                                    <div className="border-2 border-primary rounded-md py-3 w-full flex flex-row justify-center shadow-md text-primary hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out">
+                                    <div className="border-2 border-primary rounded-md py-3 w-full flex flex-row justify-center shadow-md text-primary hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out"
+                                        onClick={()=>{
+                                            if(unsave){
+                                                    setUnsavePrompt(true)
+                                                    return;
+                                                }
+                                                setTimeout(()=>{formik.resetForm(),setTab(1)},500)
+                                                close()
+                                        }}>
                                         <p>Cancel</p>
                                     </div>
-                                    <div className={`border-2 border-primary rounded-md py-3 w-full flex flex-row justify-center shadow-md bg-primary text-white  transition-all ease-in-out ${false ? "opacity-50 hover:cursor-not-allowed" : "hover:cursor-pointer hover:bg-primaryhover hover:border-primaryhover"}`}>
-                                        <p>Update</p>
+                                    <div className={`border-2 border-primary rounded-md py-3 w-full flex flex-row justify-center shadow-md bg-primary text-white  transition-all ease-in-out ${loading || updating ? "opacity-50 hover:cursor-not-allowed" : !unsave ? "opacity-50 hover:cursor-not-allowed" : "hover:cursor-pointer hover:bg-primaryhover hover:border-primaryhover"}`}
+                                        onClick={()=>{
+                                            if(!unsave || loading || updating) return;
+                                            formik.handleSubmit()
+                                        }}>
+                                        {
+                                            updating ?
+                                            <div className="flex-row flex gap-2 items-center">
+                                                <FontAwesomeIcon icon={faSpinner} className="animate-spin text-white text-lg"/>
+                                                <p>Updating...</p>
+                                            </div> :
+                                            <p>Update</p>
+                                        }
                                     </div>
 
                                     {/*
@@ -296,6 +350,15 @@ const EditCourseModal = ({open, close, id, course}) => {
                     </div>
                 </div>
         </Dialog>
+        <UnsavedEditUserPromptModal
+            open={unsavePromt} close={()=>{setUnsavePrompt(false)}}
+            discardChanges={()=>{
+                    setUnsavePrompt(false),close()
+                    setTimeout(()=>{formik.resetForm(),setTab(1)},500)
+                }}/>
+        <EditCourseSuccesFully open={updated} close={()=>{setUpdated(false),close(),refresh(),setTimeout(()=>{formik.resetForm(),setTab(1)},500)}} />
+        </>
+
     )
 }
 export default EditCourseModal

@@ -66,7 +66,7 @@ export default function DefaultLayout() {
         setBreakpoint('2xl');
     }
 
-    //console.log(`Viewport: ${width}px — Tailwind Breakpoint: ${breakpoint}`);
+    console.log(`Viewport: ${width}px — Tailwind Breakpoint: ${breakpoint}`);
 }, [viewport]);
 
     //Laravel ECHO

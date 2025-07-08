@@ -278,13 +278,13 @@ const CourseLearnerProps = ({course}) => {
                                                     </div>
                                                     {/* Name and employee-id*/}
                                                     <div className='w-3/4 flex flex-col gap-2'>
-                                                        <div className='h-4 w-full bg-gray-300 rounded-full'></div>
-                                                        <div className='h-4 w-1/2 bg-gray-300 rounded-full'></div>
+                                                        <div className='h-4 w-10/12 bg-gray-300 rounded-full'></div>
+                                                        <div className='h-4 w-1/ bg-gray-300 rounded-full'></div>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td className='py-3 px-4 flex flex-col gap-2'>
-                                                <div className='h-4 w-full bg-gray-300 rounded-full'></div>
+                                                <div className='h-4 w-3/12 bg-gray-300 rounded-full'></div>
                                                 <div className='h-4 w-1/2 bg-gray-300 rounded-full'></div>
                                             </td>
                                             </tr>

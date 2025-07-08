@@ -31,6 +31,7 @@ const CourseEnrollmentProps = ({course}) => {
     const [results, setResults] = useState([]); //Enrolled results
     const [enrolled, setEnrolled] = useState(false)
     const [enrolling, setEnrolling] = useState(false)
+    const [save, setSave] = useState(false) // opens the warning
     const [empty, setEmpty] = useState(false) // opens the warning
     const [processing, setProcessing] = useState(false)
     const [filter, setFilter] = useState(false)
@@ -132,37 +133,51 @@ const CourseEnrollmentProps = ({course}) => {
                     return [...prevUsers, {userId: User.id, courseId: course.id, enrollerId: user.user_infos.id }]
                 }
             })
-            setResults((prevCourses) => {
-                if(!User&&!course) return prevCourses;
+            setResults((prev) => {
+                if(!User&&!course) return prev;
 
-                const updated = [...prevCourses];
-                const existingCourse = updated.findIndex(
-                    (c) => c.course.id === course.id
+                const exist = prev.some(
+                    (entry) => entry.id === User.id
                 );
 
-                if(existingCourse !== -1){
-                    const courseToUpdate = { ...updated[existingCourse] }
-                    courseToUpdate.enrollees = courseToUpdate.enrollees || [];
-                    const enrolled = existingCourse.enrollees?.some(
-                        (u) => u.id === User.id
-                    );
-
-                    if(!enrolled){
-                        courseToUpdate.enrollees.push(User);
-                    }
-
-                    updated[existingCourse] = courseToUpdate;
-                } else {
-                    updated.push({
-                        course: course,
-                        enrollees: [User]
-                    });
+                if(exist){
+                    return prev.filter(
+                        (entry) => entry.id !== User.id
+                    )
+                }else{
+                    return [...prev, User]
                 }
-                return updated;
+
+                // const updated = [...prevCourses];
+                // const existingCourse = updated.findIndex(
+                //     (c) => c.course.id === course.id
+                // );
+
+                // if(existingCourse !== -1){
+                //     const courseToUpdate = { ...updated[existingCourse] }
+                //     courseToUpdate.enrollees = courseToUpdate.enrollees || [];
+                //     const enrolled = existingCourse.enrollees?.some(
+                //         (u) => u.id === User.id
+                //     );
+
+                //     if(!enrolled){
+                //         courseToUpdate.enrollees.push(User);
+                //     }
+
+                //     updated[existingCourse] = courseToUpdate;
+                // } else {
+                //     updated.push({
+                //         course: course,
+                //         enrollees: [User]
+                //     });
+                // }
+                // return updated;
+
             });
         }
         const handleEnrollment  = () => {
             setEnrolling(true)
+            setSave(false)
             if(selected.length <= 0){
                 setEmpty(true)
                 return
@@ -178,16 +193,16 @@ const CourseEnrollmentProps = ({course}) => {
             },100)
         }
 
-        const closeEnrolling = () => {
-            setSelected([])
-            setResults([])
-            setEnrolling(false)
-            setDurationModal(false)
-            setDate({
-                from: new Date(),
-                to: undefined,
-            });
-        }
+        // const closeEnrolling = () => {
+        //     setSelected([])
+        //     setResults([])
+        //     setEnrolling(false)
+        //     setDurationModal(false)
+        //     setDate({
+        //         from: new Date(),
+        //         to: undefined,
+        //     });
+        // }
 
         const handleEnrolling = () => {
             setProcessing(true)
@@ -198,14 +213,23 @@ const CourseEnrollmentProps = ({course}) => {
             }))
             console.log(enrolees)
 
-            axiosClient.post('enrollments/bulk', enrolees)
-            .then(({data}) => {
+            setTimeout(()=>{
                 setEnrolling(false)
                 setDurationModal(false)
                 setEnrolled(true);
                 setProcessing(false)
-            })
-            .catch((err)=>console.log(err));
+                setSave(true)
+            },5000)
+
+            // axiosClient.post('enrollments/bulk', enrolees)
+            // .then(({data}) => {
+            //     setEnrolling(false)
+            //     setDurationModal(false)
+            //     setEnrolled(true);
+            //     setProcessing(false)
+            //     setSave(true)
+            // })
+            // .catch((err)=>console.log(err));
             // setEnrolling(false)
             // setDurationModal(false)
             // setEnrolled(true)
@@ -648,6 +672,8 @@ const CourseEnrollmentProps = ({course}) => {
             }
         }
 
+        useEffect(() => {console.log(results)},[results])
+
     return(
         <>
         <div className='grid grid-rows-[min-content_1fr_min-content] grid-cols-4 pr-2 h-full'>
@@ -941,7 +967,7 @@ const CourseEnrollmentProps = ({course}) => {
                                                         <p className='text-unactive text-xs'>ID: {learner.employeeID}</p>
                                                     </div>
                                                 </div>
-                                                <div className='items-center gap-2 grid lg:hidden grid-cols-[min-content_auto_auto_auto] grid-rows-2'>
+                                                <div className='items-center gap-4 grid lg:hidden grid-cols-[min-content_auto_auto_auto] grid-rows-2'>
                                                      {/* Checkbox */}
                                                     <div className="group grid size-4 grid-cols-1">
                                                         <input type="checkbox"
@@ -1064,7 +1090,7 @@ const CourseEnrollmentProps = ({course}) => {
         </div>
 
         {/* Training Duration */}
-        <TrainingDurationModal open={durationModal} close={closeEnrolling} enroll={handleEnrolling} date={date} _setDate={setDate} course={course} enrolling={processing}/>
+        <TrainingDurationModal open={durationModal} close={()=>{setDurationModal(false),setEnrolling(false)}} enroll={handleEnrolling} date={date} _setDate={setDate} course={course} enrolling={processing} save={save}/>
         {/* Successfully */}
         <CourseEnrollmentSuccesfully open={enrolled} close={close} result={results}/>
         {/* Empty */}

@@ -45,16 +45,19 @@ export default function Course() {
     // useEffect(() => {
     //     console.log('the corse is passed is:', course || "none");
     // },[course])
+    const fetchCourse  = () => {
+        setLoading(true)
+        axiosClient.get(`/coursecontext/${id}`)
+        .then((res) => {
+            setLoading(false);
+            setCourse(res.data)
+        })
+        .catch((e) => console.log(e))
+    }
 
     useEffect(()=>{
         if(!course && role === "Course Admin") {
-            setLoading(true)
-            axiosClient.get(`/coursecontext/${id}`)
-            .then((res) => {
-                setLoading(false);
-                setCourse(res.data)
-            })
-            .catch((e) => console.log(e))
+            fetchCourse()
         } else if(!course && role === "Learner") {
             setLoading(true)
             axiosClient.get(`/coursecontext/${id}/${user.user_infos.id}`)
@@ -314,34 +317,49 @@ export default function Course() {
                                         </div>
                                         <div className="flex flex-row gap-2">
                                             <div className="group relative">
-                                                <div className="border-2  w-10 h-10 rounded-md flex items-center justify-center text-white hover:cursor-pointer hover:bg-white hover:text-primary transition-all ease-in-out"  onClick={()=>setOpenPublish(true)}>
+                                                <div className={`border-2  w-10 h-10 rounded-md flex items-center justify-center text-white transition-all ease-in-out ${isLoading ? "opacity-50 cursor-not-allowed" : " hover:cursor-pointer hover:bg-white hover:text-primary"}`}
+                                                    onClick={()=>{if(isLoading) return;
+                                                            setOpenPublish(true)
+                                                            }}>
                                                     <FontAwesomeIcon icon={faBookBookmark} />
                                                 </div>
-                                                <p className="scale-0 group-hover:scale-100 font-text text-xs p-2 rounded bg-tertiary text-white absolute left-1/2 -translate-x-1/2 -bottom-10 shadow-md transition-all ease-in-out">
+                                                <p className={`scale-0 font-text text-xs p-2 rounded bg-tertiary text-white absolute left-1/2 -translate-x-1/2 -bottom-10 shadow-md transition-all ease-in-out ${isLoading ? "" : "group-hover:scale-100"}`}>
                                                     Publish
                                                 </p>
                                             </div>
                                             <div className="group relative">
-                                                <div className="border-2  w-10 h-10 rounded-md flex items-center justify-center text-white hover:cursor-pointer hover:bg-white hover:text-primary transition-all ease-in-out" onClick={()=>setOpen(true)}>
+                                                <div className={`border-2  w-10 h-10 rounded-md flex items-center justify-center text-white  transition-all ease-in-out ${isLoading ? "opacity-50 cursor-not-allowed" : "hover:cursor-pointer hover:bg-white hover:text-primary"}`}
+                                                    onClick={()=>{
+                                                        if(isLoading) return;
+                                                        setOpen(true)
+                                                    }}>
                                                     <FontAwesomeIcon icon={faPenToSquare} />
                                                 </div>
-                                                <p className="scale-0 group-hover:scale-100 whitespace-nowrap font-text text-xs p-2 rounded bg-tertiary text-white absolute left-1/2 -translate-x-1/2 -bottom-10 shadow-md transition-all ease-in-out">
+                                                <p className={`scale-0 whitespace-nowrap font-text text-xs p-2 rounded bg-tertiary text-white absolute left-1/2 -translate-x-1/2 -bottom-10 shadow-md transition-all ease-in-out ${isLoading ? "" : "group-hover:scale-100"}`}>
                                                     Edit Course
                                                 </p>
                                             </div>
                                             <div className="group relative">
-                                                <div className="border-2  w-10 h-10 rounded-md flex items-center justify-center text-white hover:cursor-pointer hover:bg-white hover:text-primary transition-all ease-in-out" onClick={()=>setAssign(true)}>
+                                                <div className={`border-2  w-10 h-10 rounded-md flex items-center justify-center text-white transition-all ease-in-out ${isLoading ? "opacity-50 cursor-not-allowed" : "hover:cursor-pointer hover:bg-white hover:text-primary"}`}
+                                                    onClick={()=>{
+                                                        if(isLoading) return;
+                                                        setAssign(true)
+                                                    }}>
                                                     <FontAwesomeIcon icon={faBookReader} />
                                                 </div>
-                                                <p className="scale-0 group-hover:scale-100 whitespace-nowrap font-text text-xs p-2 rounded bg-tertiary text-white absolute left-1/2 -translate-x-1/2 -bottom-10 shadow-md transition-all ease-in-out">
+                                                <p className={`scale-0 whitespace-nowrap font-text text-xs p-2 rounded bg-tertiary text-white absolute left-1/2 -translate-x-1/2 -bottom-10 shadow-md transition-all ease-in-out ${isLoading ? "" : "group-hover:scale-100"}`}>
                                                     Assign Course Admin
                                                 </p>
                                             </div>
                                             <div className="group relative">
-                                                <div className="border-2  w-10 h-10 rounded-md flex items-center justify-center text-white hover:cursor-pointer hover:bg-white hover:text-primary transition-all ease-in-out" onClick={()=>setOpenDetails(true)}>
+                                                <div className={`border-2  w-10 h-10 rounded-md flex items-center justify-center text-white transition-all ease-in-out ${isLoading ? "opacity-50 cursor-not-allowed":"hover:cursor-pointer hover:bg-white hover:text-primary "}`}
+                                                    onClick={()=>{
+                                                        if(isLoading) return;
+                                                        setOpenDetails(true)
+                                                    }}>
                                                     <FontAwesomeIcon icon={faCircleInfo} />
                                                 </div>
-                                                <p className="scale-0 group-hover:scale-100 whitespace-nowrap font-text text-xs p-2 rounded bg-tertiary text-white absolute left-1/2 -translate-x-1/2 -bottom-10 shadow-md transition-all ease-in-out">
+                                                <p className={`scale-0 whitespace-nowrap font-text text-xs p-2 rounded bg-tertiary text-white absolute left-1/2 -translate-x-1/2 -bottom-10 shadow-md transition-all ease-in-out ${isLoading ? "" : "group-hover:scale-100"}`}>
                                                     Details
                                                 </p>
                                             </div>
@@ -477,9 +495,8 @@ export default function Course() {
         </div>
 
         {/* Edit */}
-        <EditCourseModal open={open} close={()=>setOpen(false)} id={course?.id} course={course}/>
+        <EditCourseModal open={open} close={()=>setOpen(false)} id={course?.id} course={course} refresh={fetchCourse}/>
         {/* Assign Course Admin */}
-        {/* <AssignCourseAdmin open={assign} close={()=>setAssign(false)} id={course?.id}/> */}
         <AddAssignCourseAdmin courseID={course?.id} open={assign}  close={()=>setAssign(false)} />
         {/* CourseDetail */}
         <CourseDetailsModal open={openDetails} close={()=>setOpenDetails(false)} selectedCourse={course}/>

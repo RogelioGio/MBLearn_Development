@@ -14,73 +14,6 @@ const CourseDetailsModal = ({open,close,classname,selectedCourse}) => {
         setHover(false);
     },[])
 
-    const content = () => {
-        return (
-            <>
-            {/* Course Header */}
-                                <div className='grid grid-cols-3 grid-rows-[min-content] col-span-3'>
-                                    <div className='col-start-1 col-span-2 row-start-1'>
-                                            <p className='text-xs font-text text-unactive'>Name:</p>
-                                            <h2 className='font-header text-primary text-2xl'>{selectedCourse?.name}</h2>
-                                            <p className='text-xs font-text text-unactive'>Course ID: {selectedCourse?.CourseID}</p>
-                                            <span className="inline-flex items-center rounded-md bg-secondaryprimary px-2 py-1 text-xs font-medium text-primary font-text ring-1 ring-primary gap-1 my-1">
-                                                {selectedCourse?.training_type}
-                                            </span>
-                                    </div>
-                                    {/* Close Button */}
-                                    <div className='col-start-3 col-span-1 row-start-1 flex justify-end text-2xl'>
-                                        <FontAwesomeIcon icon={hover ? solidXmark:regularXmark} className='text-primary transition-all ease-in-out transform hover:scale-110 cursor-pointer' onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} onClick={close}/>
-                                    </div>
-                                </div>
-                                {/* Course Details */}
-                                <div className='flex flex-col justify-center py-2'>
-                                    <p className='font-text text-xs text-unactive'>Type:</p>
-                                    <p className='font-header text-lg text-primary'>{selectedCourse?.types?.[0]?.type_name}</p>
-                                </div>
-                                <div className='flex flex-col justify-center py-2'>
-                                    <p className='font-text text-xs text-unactive'>Category:</p>
-                                    <p className='font-header text-lg text-primary'>{selectedCourse?.categories?.[0]?.category_name}</p>
-                                </div>
-                                <div className='flex flex-col justify-center py-2'>
-                                    <p className='font-text text-xs text-unactive'>Date Added:</p>
-                                    <p className='font-header text-lg text-primary'>{dayjs(selectedCourse?.create_at).format("MMMM DD, YYYY")}</p>
-                                </div>
-
-                                {/* Course Short Desciption */}
-                                <div className='flex flex-col justify-center py-2 col-span-3'>
-                                    <p className='font-text text-xs text-unactive'>Description:</p>
-                                    <p className='font-text'>{selectedCourse?.description}</p>
-                                </div>
-
-                                {/* Person-contributer */}
-                                {/* Main Course Admin toh */}
-                                <div className='col-span-1 flex flex-col items-start justify-center gap-y-2'>
-                                    <p className='font-text text-xs text-unactive'>Course Contributor:</p>
-                                    <div className='flex-row flex gap-x-2'>
-                                        <div className='bg-blue-500 h-10 w-10 rounded-full'>
-                                            <img src={selectedCourse?.adder?.profile_image} alt="" className='rounded-full' />
-                                        </div>
-                                        <div>
-                                            <p className='font-text'>{selectedCourse?.adder?.first_name} {selectedCourse?.adder?.middle_name} {selectedCourse?.adder?.last_name} {selectedCourse?.adder?.name_suffix}</p>
-                                            <p className='text-unactive text-xs font-text'>ID: {selectedCourse?.adder?.employeeID}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className='col-span-1 flex flex-col items-start justify-center gap-y-2'>
-                                    <p className='font-text text-xs text-unactive'>Course Author:</p>
-                                    <div className='flex-row flex gap-x-2'>
-                                        <div className='bg-blue-500 h-10 w-10 rounded-full'>
-                                            <img src="" alt="" className='rounded-full' />
-                                        </div>
-                                        <div>
-                                            <p className='font-text'>Author's Name</p>
-                                            <p className='text-unactive text-xs font-text'>ID: 11110110291</p>
-                                        </div>
-                                    </div>
-                                </div>
-            </>
-        )
-    }
 
     return(
         <Dialog open={open} onClose={()=>{}} className={classname}>
@@ -96,8 +29,9 @@ const CourseDetailsModal = ({open,close,classname,selectedCourse}) => {
                                             <div className='flex items-center justify-end'>
                                                 <div className='border-2 border-white rounded-full text-white flex items-center justify-center hover:bg-white hover:text-primary hover:cursor-pointer transition-all ease-in-out
                                                     w-5 h-5 text-xs
-                                                    md:w-8 md:h-8 md:text-base'>
-                                                    <FontAwesomeIcon icon={faXmark} onClick={close}/>
+                                                    md:w-8 md:h-8 md:text-base'
+                                                    onClick={close}>
+                                                    <FontAwesomeIcon icon={faXmark}/>
                                                 </div>
                                             </div>
                                             <div className='px-4'>
@@ -110,20 +44,20 @@ const CourseDetailsModal = ({open,close,classname,selectedCourse}) => {
                                 <div className='px-8 pt-4 pb-2 flex flex-col md:flex-row md:gap-10'>
                                     <div className='flex flex-col justify-center py-1 font-text'>
                                         <p className='font-text text-xs text-unactive'>Type:</p>
-                                        <p className=''>{selectedCourse?.types?.[0]?.type_name}</p>
+                                        <p className='md:text-base text-xs'>{selectedCourse?.types?.[0]?.type_name}</p>
                                     </div>
                                     <div className='flex flex-col justify-center py-1 font-text'>
                                         <p className='font-text text-xs text-unactive'>Category:</p>
-                                        <p className=''>{selectedCourse?.categories?.[0]?.category_name}</p>
+                                        <p className='md:text-base text-xs'>{selectedCourse?.categories?.[0]?.category_name}</p>
                                     </div>
                                     <div className='flex flex-col justify-center py-1 font-text'>
                                         <p className='font-text text-xs text-unactive'>Date Added:</p>
-                                        <p className=''>{dayjs(selectedCourse?.create_at).format("MMMM DD, YYYY")}</p>
+                                        <p className='md:text-base text-xs'>{dayjs(selectedCourse?.create_at).format("MMMM DD, YYYY")}</p>
                                     </div>
                                 </div>
                                 <div className='px-8 py-2'>
                                     <p className='font-text text-xs text-unactive'>Description:</p>
-                                    <p className='font-text text-base'>{selectedCourse?.description}</p>
+                                    <p className='font-text md:text-base text-xs'>{selectedCourse?.description}</p>
                                 </div>
                                 <div className='px-8 pt-2 pb-5 flex md:flex-row md:gap-10 flex-col gap-y-4'>
                                     <div className='col-span-1 flex flex-col items-start justify-center gap-y-2'>

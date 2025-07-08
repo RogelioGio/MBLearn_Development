@@ -140,7 +140,7 @@ export const Stepper = forwardRef(
                 </div>
 
                 {/* Mobile */}
-                <div className="min-h-[500px] flex flex-col px-4 py-2 pb-[3.5rem]  lg:hidden">
+                <div className="min-h-[1000px] flex flex-col px-4 py-2 pb-[3.5rem]  lg:hidden">
                     <div>
                         {isCompleted ? completedStep : steps[active]}
                     </div>
@@ -198,11 +198,11 @@ export const Stepper = forwardRef(
                         <p className="font-header text-primary text-sm">{stepsMeta[active]?.title}</p>
                     </div>
                     <div className="flex flex-row gap-x-1">
-                        <div className="h-10 w-10  flex items-center justify-center text-primary border-2 rounded-md border-primary transition-all ease-in-out shadow-md hover:text-white hover:bg-primaryhover hover:border-primaryhover hover:cursor-pointer"
+                        <div className={`h-10 w-10  flex items-center justify-center text-primary border-2 rounded-md border-primary transition-all ease-in-out shadow-md ${active === 0 ? "opacity-50 cursor-not-allowed" : "hover:text-white hover:bg-primaryhover hover:border-primaryhover hover:cursor-pointer"}`}
                             onClick={() => setActive((prev) => Math.max(prev - 1, 0))}>
                             <FontAwesomeIcon icon={faChevronCircleLeft}/>
                         </div>
-                        <div className="h-10 w-10  flex items-center justify-center text-primary border-2 rounded-md border-primary transition-all ease-in-out shadow-md hover:text-white hover:bg-primaryhover hover:border-primaryhover hover:cursor-pointer"
+                        <div className={`h-10 w-10  flex items-center justify-center text-primary border-2 rounded-md border-primary transition-all ease-in-out shadow-md ${active >= steps.length - 1 ? "opacity-50 cursor-not-allowed" : "hover:text-white hover:bg-primaryhover hover:border-primaryhover  hover:cursor-pointer"}`}
                             onClick={() => setActive((prev) => Math.min(prev + 1, steps.length-1))}>
                             <FontAwesomeIcon icon={faChevronCircleRight}/>
                         </div>
