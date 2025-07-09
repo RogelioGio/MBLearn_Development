@@ -1,4 +1,4 @@
-import { faChevronDown, faFilter, faSearch, faTrashCan, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faChevronCircleRight, faChevronDown, faChevronLeft, faChevronRight, faFilter, faSearch, faSpinner, faTrashCan, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import React, { useEffect, useState } from "react";
@@ -29,17 +29,66 @@ import {
     SheetTitle,
     SheetTrigger,
 } from "../components/ui/sheet";
+import { set } from "date-fns";
+import CancelAssigningModal from "./CancelAssigning";
+
+const usePagination = (data, itemPerpage = 2) => {
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const indexFirstItem = (currentPage - 1) * itemPerpage;
+    const indexLastItem = Math.min(indexFirstItem + itemPerpage, data?.length);
+    const currentPaginated = data?.slice(indexFirstItem, indexLastItem)
+    const totalPage = Math.ceil(data?.length / itemPerpage)
+    const totalitem = data?.length
+
+    //Pagination Controll
+    const goto = (pageNum) => {
+        if (pageNum >= 1 && pageNum <= totalPage) setCurrentPage(pageNum);
+    }
+    const next = () => {
+        // setCurrentPage((prev) => Math.min(prev + 1, totalPage));
+        if (currentPage < totalPage) setCurrentPage(currentPage + 1)
+    };
+
+    const back = () => {
+        if (currentPage > 1) setCurrentPage(currentPage - 1);
+    };
+
+    return {
+        currentPaginated,
+        currentPage,
+        totalPage,
+        indexFirstItem,
+        indexLastItem,
+        totalitem,
+        goto,
+        next,
+        back
+    }
+}
 
 
 const AddAssignCourseAdmin = ({courseID ,open, close,}) => {
     const {departments, cities, location, division ,section} = useOption()
     const [loading, setLoading] = useState(false)
+    const [cancelAssigning, setCancelAssigning] = useState(false)
     const [selectedBranches, setSelectedBranches] = useState([])
     const [filteredEmployee, setFilteredEmployee] = useState([])
     const [selectedCourseAdmin, setSelectedCourseAdmin] = useState([])
+    const [result, setResults] = useState([])
     const [assiging, setAssigning] = useState(false)
     const [assigned, setAssigned] = useState(false)
     const [number, setNumber] = useState(0)
+
+    const {currentPaginated,
+        currentPage,
+        totalPage,
+        indexFirstItem,
+        indexLastItem,
+        totalitem,
+        goto,
+        next,
+        back} = usePagination(filteredEmployee,5)
 
     useEffect(()=>{
         setIsFiltered(false)
@@ -105,35 +154,64 @@ const AddAssignCourseAdmin = ({courseID ,open, close,}) => {
         setSelectedBranches(location?.filter((l) => String(l.city_id) === String(city)));
     }
 
-    const handleSelectedCourseAdmin = (e, id) => {
+    const handleSelectedCourseAdmin = (e, user) => {
          // If event came from a checkbox, don't let it bubble to <tr>
-        e.stopPropagation();
 
         // We check manually if the item is already selected
-        setSelectedCourseAdmin((prev) =>
-            prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-        );
+        setSelectedCourseAdmin((prev) => {
+            const exist = prev.some(
+                (entry) => entry.user_id === user.id
+            );
+
+            if(exist) {
+                return prev.filter((entry) => entry.user_id !== user.id);
+            }else {
+                return [...prev, {user_id: user.id}];
+            }
+        });
+
+        setResults((prev) => {
+            const exist = prev.some(
+                (entry) => entry.id === user.id
+            )
+            if(exist) {
+                return prev.filter((entry) => entry.id !== user.id);
+            }else {
+                return [...prev, user];
+            }
+        })
     }
 
+
     const handleAssigningCourseAdmin = () => {
-        const formattedData = selectedCourseAdmin.map(id => ({ user_id: id }));
         setAssigning(true)
-        axiosClient.post(`/assign-course-admin/${courseID}`, formattedData)
-        .then((response) => {
-            console.log(response.data)
+        // axiosClient.post(`/assign-course-admin/${courseID}`, formattedData)
+        // .then((response) => {
+        //     console.log(response.data)
+        //     setAssigning(false)
+        //     setAssigned(true)
+        //     setNumber(selectedCourseAdmin.length)
+        // })
+        // .catch((error) => {console.log(error)})
+        //assign-course-admin/{course}'
+
+        setTimeout(() => {
             setAssigning(false)
             setAssigned(true)
             setNumber(selectedCourseAdmin.length)
-        })
-        .catch((error) => {console.log(error)})
-        //assign-course-admin/{course}'
-        console.log(formattedData);
+        },2000)
+        console.log(selectedCourseAdmin);
+        console.log(result)
     }
 
     const handleClose = () => {
-        setSelectedCourseAdmin([])
-        setFilteredEmployee([])
         setAssigned(false)
+        close();
+        setTimeout(() => {
+            setSelectedCourseAdmin([])
+            setFilteredEmployee([])
+            setResults([])
+        },500)
     }
 
     const content = () => {
@@ -196,144 +274,6 @@ const AddAssignCourseAdmin = ({courseID ,open, close,}) => {
         )
     }
 
-    const content2 = () => {
-        <div className="grid mx-4 py-4 space-y-2">
-                                {/* Fiter Category */}
-                                <div className="grid grid-rows-1 grid-cols-6 gap-2">
-                                    {/* Header */}
-                                    <Drawer>
-                                        <DrawerTrigger asChild>
-                                            <button className="py-2 font-header text-primary flex flex-row gap-2 justify-center items-center border-2 border-primary p-2 rounded-md shadow-md hover: cursor-pointer hover:scale-105 transition-all ease-in-out hover:bg-primaryhover hover:text-white">
-                                                <FontAwesomeIcon icon={faFilter}/>
-                                                <p>Filter</p>
-                                            </button>
-                                        </DrawerTrigger>
-                                        <DrawerContent>
-                                            <div className="mx-auto w-full p-5">
-                                                <DrawerHeader className="pb-2">
-                                                    <DrawerTitle>
-                                                        <p className="font-header text-primary">
-                                                            Course Admin Filter
-                                                        </p>
-                                                    </DrawerTitle>
-                                                    <DrawerDescription>
-                                                        <p className="text-xs font-text">
-                                                            Select option to categorize and filter the given entries
-                                                        </p>
-                                                    </DrawerDescription>
-                                                </DrawerHeader>
-                                                <div>
-                                                <form onSubmit={(e) => { e.preventDefault(); formik.handleSubmit(e); }} className="row-start-2 grid grid-cols-[1fr_1fr_1fr_1fr_1fr_auto] gap-x-1">
-                                                    {/* Division */}
-                                                    <div class="grid grid-cols-1 w-full row-start-1">
-                                                        <select id="division" name="division" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
-                                                            value={formik.values.division}
-                                                            onChange={formik.handleChange}
-                                                            onBlur={formik.handleBlur}
-                                                        >
-                                                        <option value="">Select a Division</option>
-                                                        {division?.map((division) => (
-                                                            <option key={division.id} value={division.id}>{division.division_name}</option>
-                                                        ))}
-                                                        </select>
-                                                        <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                                                        <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                                                        </svg>
-                                                    </div>
-                                                    <label htmlFor="division" className="font-text text-unactive text-sm col-start-1 pb-4">Division</label>
-                                                    {/* Department */}
-                                                    <div class="grid grid-cols-1 w-full row-start-1 ">
-                                                        <select id="department" name="department" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
-                                                            value={formik.values.department}
-                                                            onChange={formik.handleChange}
-                                                            onBlur={formik.handleBlur}
-                                                        >
-                                                        <option value="">Select a Department</option>
-                                                        {departments.map((department) => (
-                                                            <option key={department.id} value={department.id}>{department.department_name}</option>
-                                                        ))}
-                                                        </select>
-                                                        <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                                                        <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                                                        </svg>
-                                                    </div>
-                                                    <label htmlFor="department" className="font-text text-unactive text-sm col-start-2 pb-4">Department</label>
-                                                    {/* Section */}
-                                                    <div class="grid grid-cols-1 w-full row-start-1 ">
-                                                        <select id="section" name="section" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
-                                                            value={formik.values.section}
-                                                            onChange={formik.handleChange}
-                                                            onBlur={formik.handleBlur}
-                                                        >
-                                                        <option value="">Select a Section</option>
-                                                        {section?.map((section) => (
-                                                            <option key={section.id} value={section.id}>{section.section_name}</option>
-                                                        ))}
-                                                        </select>
-                                                        <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                                                        <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                                                        </svg>
-                                                    </div>
-                                                    <label htmlFor="department" className="font-text text-unactive text-sm col-start-3 pb-4">Section</label>
-                                                    {/* City */}
-                                                    <div class="grid grid-cols-1 w-full col-start-4 row-start-1 ">
-                                                        <select id="city" name="city" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
-                                                            value={formik.values.city}
-                                                            onChange={handleBranchesOptions}
-                                                            onBlur={formik.handleBlur}
-                                                        >
-                                                        <option value="">Select a Branch City</option>
-                                                                {cities.map((city) => (
-                                                                    <option key={city.id} value={city.id}>{city.city_name}</option>
-                                                                ))}
-                                                        </select>
-                                                        <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                                                        <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                                                        </svg>
-                                                    </div>
-                                                    <label htmlFor="department" className="font-text text-unactive text-sm col-start-4 row-start-2">Branch City</label>
-                                                    {/* Location */}
-                                                    <div class="grid grid-cols-1 w-full col-start-5 row-start-1">
-                                                        <select id="branch" name="branch" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
-                                                            value={formik.values.branch}
-                                                            onChange={formik.handleChange}
-                                                            onBlur={formik.handleBlur}
-                                                        >
-                                                        <option value="">Select a Branch Location</option>
-                                                                {selectedBranches.map((branch) => (
-                                                                    <option key={branch.id} value={branch.id}>{branch.branch_name}</option>
-                                                                ))}
-                                                        </select>
-                                                        <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                                                        <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                                                        </svg>
-                                                    </div>
-                                                    <label htmlFor="department" className="font-text text-unactive text-sm col-start-5 row-start-2">Branch Location</label>
-                                                    <button type="submit" className="aspect-square col-start-6 row-start-1  flex flex-row gap-2 justify-center items-center border-2 border-primary p-2 rounded-md shadow-md bg-primary hover: cursor-pointer hover:scale-105 transition-all ease-in-out hover:bg-primaryhover hover:text-white">
-                                                        <FontAwesomeIcon icon={faFilter} className="text-white"/>
-                                                    </button>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </DrawerContent>
-                                    </Drawer>
-
-                                    <div className="col-start-5 col-span-2">
-                                        <div>
-                                            <div className=' inline-flex flex-row place-content-between border-2 border-primary rounded-md w-full font-text shadow-md'>
-                                                <input type="text" className='focus:outline-none text-sm px-4 w-full rounded-md bg-white' placeholder='Search...'/>
-                                                <div className='bg-primary py-2 px-4 text-white'>
-                                                    <FontAwesomeIcon icon={faSearch}/>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-
-
-                            </div>
-    }
 
     return(
         <>
@@ -360,6 +300,10 @@ const AddAssignCourseAdmin = ({courseID ,open, close,}) => {
                                                     w-5 h-5 text-xs
                                                     md:w-8 md:h-8 md:text-base"
                                                     onClick={() => {
+                                                        if(selectedCourseAdmin.length > 0) {
+                                                            setCancelAssigning(true);
+                                                            return
+                                                        }
                                                         close();
                                                         setTimeout(() => {
                                                             formik.resetForm();
@@ -524,11 +468,12 @@ const AddAssignCourseAdmin = ({courseID ,open, close,}) => {
                                                 loading ? (
                                                     <tr className="font-text text-sm hover:bg-gray-200">
                                                         <td colSpan={6} className="text-center py-3 px-4 font-text text-primary">
+                                                            <FontAwesomeIcon icon={faSpinner} className="animate-spin mr-2"/>
                                                             Loading Eligable Course Admins...
                                                         </td>
                                                     </tr>
                                                 ) : filteredEmployee.length > 0 ?
-                                                    filteredEmployee.map((employee) => (
+                                                    currentPaginated.map((employee) => (
                                                         <CourseAssigningProps
                                                                     key={employee.id}
                                                                     isfiltered={isfiltered}
@@ -544,7 +489,8 @@ const AddAssignCourseAdmin = ({courseID ,open, close,}) => {
                                                                     branch={employee.branch?.branch_name || "Not Available"}
                                                                     city={employee.city?.city_name || "Not Available"}
                                                                     profile_image={employee?.profile_image || "Not Available"}
-                                                                    selectedCourseAdmin={selectedCourseAdmin.includes(employee.id)}
+                                                                    selectedCourseAdmin={selectedCourseAdmin.some((entry) => entry.user_id === employee.id)}
+                                                                    user={employee}
                                                                 />
                                                     ))
                                                 :
@@ -561,15 +507,81 @@ const AddAssignCourseAdmin = ({courseID ,open, close,}) => {
                                 </div>
                             </div>
                             {/* Pagination */}
-                            <div></div>
+                            {
+                                filteredEmployee.length === 0 ? null :
+                                <div className="px-4 py-2 flex flex-row justify-between items-center">
+                                                <div className='flex flex-row items-center gap-2'>
+                                                    {
+                                                        loading ?
+                                                        <>
+                                                            <FontAwesomeIcon icon={faSpinner} className="animate-spin mr-2 text-primary" />
+                                                            <p className='text-sm font-text text-unactive'>
+                                                                Retrieving Course Admins...
+                                                            </p>
+                                                        </>:
+                                                        <p className='text-sm font-text text-unactive'>
+                                                            Showing <span className='font-header text-primary'>{indexFirstItem + 1}</span> to <span className='font-header text-primary'>{indexLastItem}</span> of <span className='font-header text-primary'>{totalitem}</span> <span className='text-primary'>results</span>
+                                                        </p>
+                                                    }
+                                                </div>
+                                                    <div>
+                                                        <nav className='isolate inline-flex -space-x-px round-md shadow-xs'>
+                                                            {/* Previous */}
+                                                            <a
+                                                                onClick={back}
+                                                                className='relative inline-flex items-center rounded-l-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
+                                                                <FontAwesomeIcon icon={faChevronLeft}/>
+                                                            </a>
+
+                                                            {/* Current Page & Dynamic Paging */}
+                                                            {
+                                                                Array.from({length: totalPage}, (_, i) => (
+                                                                    <a key={i}
+                                                                        className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset
+                                                                            ${
+                                                                                currentPage === i+1
+                                                                                ? 'bg-primary text-white'
+                                                                                : 'bg-secondarybackground text-primary hover:bg-primary hover:text-white'
+                                                                            } transition-all ease-in-out`}
+                                                                            onClick={() => goto(i+1)}>
+                                                                        {i+1}</a>
+                                                                ))
+                                                            }
+
+
+                                                            <a
+                                                                onClick={next}
+                                                                className='relative inline-flex items-center rounded-r-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
+                                                                <FontAwesomeIcon icon={faChevronRight}/>
+                                                            </a>
+                                                        </nav>
+                                                    </div>
+                                            </div>
+                            }
 
                             {/* Action */}
-                            <div className="flex flex-row justify-between gap-2 mx-4 py-2">
-                                <div className="font-header border-2 border-primary rounded-md py-3 w-full flex flex-row justify-center shadow-md text-primary hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out">
+                            <div className={`flex flex-row justify-between gap-2 mx-4 ${filteredEmployee.length === 0 ? "py-2" : "pb-2"}`}>
+                                <div className={`font-header border-2 border-primary rounded-md py-3 w-full flex flex-row justify-center shadow-md text-primary transition-all ease-in-out ${assiging ? "opacity-50 hover:cursor-not-allowed" : "hover:border-primaryhover hover:bg-primaryhover"}`}
+                                    onClick={() => {
+                                        if(assigning) return;
+                                        handleClose();
+                                    }}>
                                     <p>Cancel</p>
                                 </div>
-                                <div className={`font-header border-2 border-primary rounded-md py-3 w-full flex flex-row justify-center shadow-md bg-primary text-white hover:cursor-pointer hover:bg-primaryhover hover:border-primaryhover transition-all ease-in-out ${false ? "opacity-50 hover:cursor-not-allowed" : null}`}>
-                                    <p>Assign</p>
+                                <div className={`items-center justify-center font-header border-2 border-primary rounded-md py-3 w-full flex flex-row shadow-md bg-primary text-white transition-all ease-in-out ${selectedCourseAdmin.length === 0 || assiging ? "opacity-50 hover:cursor-not-allowed" : "hover:cursor-pointer hover:bg-primaryhover hover:border-primaryhover "}`}
+                                    onClick={() => {
+                                        if(selectedCourseAdmin.length === 0) return;
+                                        handleAssigningCourseAdmin();
+                                    }}>
+                                    {
+                                        assiging ?
+                                        <>
+                                        <FontAwesomeIcon icon={faSpinner} className="animate-spin mr-2" />
+                                        <p>Assigning...</p>
+                                        </>
+                                        : <p>Assign</p>
+                                    }
+
                                 </div>
                             </div>
                         </div>
@@ -577,7 +589,8 @@ const AddAssignCourseAdmin = ({courseID ,open, close,}) => {
                 </div>
             </div>
     </Dialog>
-    <AssignCourseAdminModalSuccessfully open={assigned} close={handleClose} number={number}/>
+    <AssignCourseAdminModalSuccessfully open={assigned} close={handleClose} number={number} result={result}/>
+    <CancelAssigningModal open={cancelAssigning} close={() => setCancelAssigning(false)} discardChanges={()=>{setCancelAssigning(false), handleClose()}}/>
     </>
     )
 };

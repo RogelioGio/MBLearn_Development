@@ -1,6 +1,6 @@
-const CourseAssigningProps = ({isfiltered, id, handleInput, loading, name, employeeID, division, department, section, title, branch, city, profile_image,selectedCourseAdmin}) => {
+const CourseAssigningProps = ({isfiltered, id, handleInput, loading, name, employeeID, division, department, section, title, branch, city, profile_image,selectedCourseAdmin,user}) => {
     return (
-        <tr className='font-text text-sm hover:bg-gray-200 hover:cursor-pointer' onClick={(e) => handleInput(e,id)}>
+        <tr className='font-text text-sm hover:bg-gray-200 hover:cursor-pointer' onClick={(e) => handleInput(e,user)}>
             <td className='text-sm py-3 px-4 hidden lg:table-cell'>
                             <div className='flex items-center gap-4'>
                                 {/* Checkbox */}
@@ -10,7 +10,8 @@ const CourseAssigningProps = ({isfiltered, id, handleInput, loading, name, emplo
                                         name={employeeID}
                                         id={employeeID}
                                         checked={selectedCourseAdmin}
-                                        onChange={(e) => handleInput(e,id)}
+                                        onChange={(e) => handleInput(e,user)}
+
                                     />
                                     {/* Custom Checkbox styling */}
                                     <svg fill="none" viewBox="0 0 14 14" className="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-[:disabled]:stroke-gray-950/25">
@@ -36,31 +37,31 @@ const CourseAssigningProps = ({isfiltered, id, handleInput, loading, name, emplo
                                     {/* User Image */}
                                         {
                                             profile_image ?
-                                            <img src={profile_image} alt="" className='rounded-full h-10 w-10'/>
+                                            <img src={profile_image} alt="" className='rounded-full h-8 w-8'/>
                                             : <div className="bg-blue-500 h-10 w-10"></div>
                                         }
 
                                     {/* Name and employee-id*/}
                                     <div>
-                                        <p className='font-text'>{name}</p>
+                                        <p className='font-text text-xs'>{name}</p>
                                         <p className='text-unactive text-xs'>ID: {employeeID}</p>
                                     </div>
                                 </div>
                             </div>
             </td>
             <td className='py-3 px-4 hidden lg:table-cell'>
-                <p className='text-unactive'>{division}</p>
+                <p className='text-unactive text-xs'>{division}</p>
             </td>
             <td className='py-3 px-4 hidden lg:table-cell'>
                 <div className='flex flex-col'>
                     {/* Department */}
-                    <p className='text-unactive'>{department}</p>
+                    <p className='text-unactive text-xs'>{department}</p>
                     {/* Title */}
                     {/* <p className='text-unactive text-xs'>{title}</p> */}
                 </div>
             </td>
             <td className='py-3 px-4 hidden lg:table-cell'>
-                <p className='text-unactive'>{section}</p>
+                <p className='text-unactive text-xs'>{section}</p>
             </td>
 
             <td className="lg:hidden py-3 px-4 text-sm border-l-2 border-transparent transition-all ease-in-out">

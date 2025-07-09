@@ -18,7 +18,7 @@ import NoEmployeeSelectedModal from './NoEmployeeSelectedModal'
 import { useOption } from '../contexts/AddUserOptionProvider'
 import { Train } from 'lucide-react'
 import TrainingDurationModal from './TrainingDurationModal'
-import { format } from 'date-fns'
+import { format, set } from 'date-fns'
 
 
 const CourseEnrollmentProps = ({course}) => {
@@ -52,7 +52,6 @@ const CourseEnrollmentProps = ({course}) => {
                     }
             }
             ).then(({data})=>{
-                console.log(data)
                 setLearners(data.data)
                 pageChangeState('total', data.total)
                 pageChangeState('lastPage', data.lastPage)
@@ -672,7 +671,7 @@ const CourseEnrollmentProps = ({course}) => {
             }
         }
 
-        useEffect(() => {console.log(results)},[results])
+        useEffect(() => {console.log(selected)},[selected])
 
     return(
         <>
@@ -840,14 +839,16 @@ const CourseEnrollmentProps = ({course}) => {
                     }
                 </div>
                 <div className='relative group'>
-                    <div className='text-white border-2 border-primary md:py-2 md:px-5 bg-primary flex flex-row gap-2 justify-center items-center rounded-md shadow-md hover:bg-primaryhover hover:cursor-pointer transition-all ease-in-out
+                    <div className={`text-white border-2 border-primary md:py-2 md:px-5 bg-primary flex flex-row gap-2 justify-center items-center rounded-md shadow-md transition-all ease-in-out
+                                    ${selected.length > 0 ? 'opacity-100 hover:bg-primaryhover hover:border-primaryhover hover:cursor-pointer' : 'opacity-50 cursor-not-allowed'}
                                     md:w-auto
-                                    w-10 h-10'
-                        onClick={handleEnrollment}>
+                                    w-10 h-10`}
+                                    onClick={()=>{
+                                        if(selected.length === 0) return;
+                                        handleEnrollment()
+                                    }}>
                         <FontAwesomeIcon icon={faUserPlus}/>
-                        <p className='font-header md:block hidden'>
-                            { enrolling? "Enrolling": "Enroll"}
-                        </p>
+                        <p className='hidden md:block font-header'>Enroll</p>
                         <p className="md:hidden scale-0 group-hover:scale-100 whitespace-nowrap font-text text-xs p-2 rounded bg-tertiary text-white absolute -left-1 -bottom-10 shadow-md transition-all ease-in-out">
                             Enroll
                         </p>
