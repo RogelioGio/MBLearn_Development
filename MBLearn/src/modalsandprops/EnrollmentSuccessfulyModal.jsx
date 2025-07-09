@@ -39,7 +39,7 @@ const usePagination = (data, itemPerpage = 1) => {
     }
 }
 
-const EnrolledSuccessfullyModal = ({ isOpen, onClose, result }) => {
+const EnrolledSuccessfullyModal = ({ isOpen, onClose, result, course, duration}) => {
     const [selectedCourse, setSelectedCourse] = useState();
     const [selectedEnrollees, setSelectedEnrolees] = useState();
     const [selectedCourses, setSelectedCourses] = useState()

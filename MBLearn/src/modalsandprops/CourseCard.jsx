@@ -72,13 +72,7 @@ const CourseCard = ({ course, type, click}) => {
                                             left: pos?.x + 15,
                                             top: pos?.y,
                                         }}>
-                                <div className="w-full flex flex-row justify-between gap-2 whitespace-nowrap">
-                                        <div className="flex flex-row gap-2 items-center">
-                                            <div className="rounded-sm h-3 w-3 bg-primary"/>
-                                            <p className="text-unactive">Enrolled:</p>
-                                        </div>
-                                        <p>{course.enrolled}</p>
-                                    </div>
+                                <div className="w-full flex flex-col justify-between gap-2 whitespace-nowrap">
                                     <div className="w-full flex flex-row justify-between gap-2 whitespace-nowrap">
                                         <div className="flex flex-row gap-2 items-center">
                                             <div className="rounded-sm h-3 w-3 bg-primary"/>
@@ -93,6 +87,14 @@ const CourseCard = ({ course, type, click}) => {
                                         </div>
                                         <p>{course.due_soon}</p>
                                     </div>
+                                    <div className="w-full flex flex-row justify-between gap-2 whitespace-nowrap">
+                                        <div className="flex flex-row gap-2 items-center">
+                                            <div className="rounded-sm h-3 w-3 bg-primary"/>
+                                            <p className="text-unactive">Past-Due:</p>
+                                        </div>
+                                        <p>{course.past_due}</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -108,11 +110,6 @@ const CourseCard = ({ course, type, click}) => {
                                 <>
                                 <div className="grid-cols-[1fr_min-content_1fr_min-content_1fr] gap-2 md:grid hidden">
                                     <div className="flex flex-row items-center justify-between">
-                                        <p className="text-xs font-text text-unactive">Enrolled</p>
-                                        <p className="text-sm font-header text-primary">{course.enrolled}</p>
-                                    </div>
-                                    <div className="w-[1px] h-full bg-divider"/>
-                                    <div className="flex flex-row items-center justify-between">
                                         <p className="text-xs font-text text-unactive">On-going</p>
                                         <p className="text-sm font-header text-primary">{course.ongoing}</p>
                                     </div>
@@ -121,38 +118,13 @@ const CourseCard = ({ course, type, click}) => {
                                         <p className="text-xs font-text text-unactive">Due-soon</p>
                                         <p className="text-sm font-header text-primary">{course.due_soon}</p>
                                     </div>
+                                    <div className="w-[1px] h-full bg-divider"/>
+                                    <div className="flex flex-row items-center justify-between">
+                                        <p className="text-xs font-text text-unactive">Past-Due</p>
+                                        <p className="text-sm font-header text-primary">{course.past_due}</p>
+                                    </div>
                                 </div>
-                                {/* <div className="absolute group-hover:scale-100 scale-100 border border-primary rounded-md font-text p-2 w-full text-xs transition-all ease-in-out bg-white shadow-md flex flex-col justify-between gap-1
-                                                md:hidden"
-                                        style={{
-                                                left: `${pos.x}px`,
-                                                top: `${pos.y}px`,
-                                                //transform: "translate(-50%, -50%)",
-                                            }}
-                                        >
 
-                                    <div className="w-full flex flex-row justify-between">
-                                        <div className="flex flex-row gap-2 items-center">
-                                            <div className="rounded-sm h-3 w-3 bg-primary"/>
-                                            <p className="text-unactive">Enrolled:</p>
-                                        </div>
-                                        <p>{course.enrolled}</p>
-                                    </div>
-                                    <div className="w-full flex flex-row justify-between">
-                                        <div className="flex flex-row gap-2 items-center">
-                                            <div className="rounded-sm h-3 w-3 bg-primary"/>
-                                            <p className="text-unactive">On-going:</p>
-                                        </div>
-                                        <p>{course.ongoing}</p>
-                                    </div>
-                                    <div className="w-full flex flex-row justify-between">
-                                        <div className="flex flex-row gap-2 items-center">
-                                            <div className="rounded-sm h-3 w-3 bg-primary"/>
-                                            <p className="text-unactive">Due-soon:</p>
-                                        </div>
-                                        <p>{course.due_soon}</p>
-                                    </div>
-                                </div> */}
                                 </>
                             ) : type === 'learner' || type === 'learnerCourseManager' ? (
                                 <div className="flex flex-col justify-between h-full py-3 px-4">

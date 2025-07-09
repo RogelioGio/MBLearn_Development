@@ -1093,7 +1093,7 @@ const CourseEnrollmentProps = ({course}) => {
         {/* Training Duration */}
         <TrainingDurationModal open={durationModal} close={()=>{setDurationModal(false),setEnrolling(false)}} enroll={handleEnrolling} date={date} _setDate={setDate} course={course} enrolling={processing} save={save}/>
         {/* Successfully */}
-        <CourseEnrollmentSuccesfully open={enrolled} close={close} result={results}/>
+        <CourseEnrollmentSuccesfully open={enrolled} close={close} result={results} course={course} duration={date}/>
         {/* Empty */}
         <NoEmployeeSelectedModal isOpen={empty} onClose={()=>{setEmpty(false),setEnrolling(false)}} />
         </>

@@ -224,8 +224,8 @@ class CourseController extends Controller
 
     public function getCourseUsers(Course $course, Request $request){
         $page = $request->input('page', 1); // default page
-        $perPage = $request->input('per_page', 8); // default per page
-        $acceptedEnrollmentFilter = ['enrolled', 'ongoing', 'finished'];
+        $perPage = $request->input('per_page', 5); // default per page
+        $acceptedEnrollmentFilter = ['enrolled', 'ongoing', 'finished', 'pastdue'];
 
         $filter = new UserInfosFilter();
         $queryItems = $filter->transform($request);
@@ -236,9 +236,16 @@ class CourseController extends Controller
         });
 
         if($request->has('enrollment_status')){
-            if(in_array($request->input('enrollment_status')['eq'],$acceptedEnrollmentFilter)){
-                $query->where('enrollment_status', $request->input('enrollment_status')['eq']);
+            $status = $request->input('enrollment_status')['eq'];
+
+            if($status === 'pastdue'){
+                $query->whereDate('end_date', '<', now())
+                        ->where('enrollment_status', '!=', 'finished');
+            } else
+            if(in_array($status, $acceptedEnrollmentFilter)){
+                $query->where('enrollment_status', $status);
             }
+
         }
         $enrolls = $query->paginate($perPage);
 

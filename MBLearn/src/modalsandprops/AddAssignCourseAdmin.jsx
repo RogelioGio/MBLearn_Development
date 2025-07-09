@@ -8,16 +8,6 @@ import { useFormik } from "formik";
 import Course from "../views/Course";
 import CourseAssigningProps from "./CourseAssigingProps";
 import * as Yup from 'yup';
-import {
-    Drawer,
-    DrawerClose,
-    DrawerContent,
-    DrawerDescription,
-    DrawerFooter,
-    DrawerHeader,
-    DrawerTitle,
-    DrawerTrigger,
-    } from "../components/ui/drawer"
 import AssignCourseAdminModalSuccessfully from "./AssignCourseAdminSuccessfullyModal";
 import { useOption } from "../contexts/AddUserOptionProvider"
 import {
@@ -79,6 +69,7 @@ const AddAssignCourseAdmin = ({courseID ,open, close,}) => {
     const [assiging, setAssigning] = useState(false)
     const [assigned, setAssigned] = useState(false)
     const [number, setNumber] = useState(0)
+    const [openFilter, setOpenFilter] = useState(false)
 
     const {currentPaginated,
         currentPage,
@@ -123,6 +114,7 @@ const AddAssignCourseAdmin = ({courseID ,open, close,}) => {
                 setFilteredEmployee(response.data.data)
                 setLoading(false)
                 setIsFiltered(true)
+                setOpenFilter(false)
             })
 
 
@@ -214,67 +206,6 @@ const AddAssignCourseAdmin = ({courseID ,open, close,}) => {
         },500)
     }
 
-    const content = () => {
-        return(
-                                        <div>
-                                    {/* Course Admin Table */}
-                                    <div className="py-1">
-                                        <div className='w-full border-primary border rounded-md overflow-hidden shadow-md'>
-                                            <table className='text-left w-full overflow-y-scroll'>
-                                                <thead className='font-header text-xs text-primary bg-secondaryprimary'>
-                                                    <tr>
-                                                        <th className='py-4 px-4'>EMPLOYEE NAME</th>
-                                                        <th className='py-4 px-4'>DIVISION</th>
-                                                        <th className='py-4 px-4'>DEPARTMENT</th>
-                                                        <th className='py-4 px-4'>SECTION</th>
-                                                        <th className='py-4 px-4'>LOCATION</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody className='bg-white divide-y divide-divider'>
-                                                    {loading ? (
-                                                        <tr className="font-text text-sm hover:bg-gray-200">
-                                                            <td colSpan={6} className="text-center py-3 px-4 font-text text-primary">
-                                                                Loading Eligable Course Admins...
-                                                            </td>
-                                                        </tr>
-                                                    ) : (
-                                                        filteredEmployee.length > 0 ? (
-                                                            filteredEmployee.map((employee) => (
-                                                                <CourseAssigningProps
-                                                                    key={employee.id}
-                                                                    isfiltered={isfiltered}
-                                                                    id = {employee.id}
-                                                                    handleInput={handleSelectedCourseAdmin}
-                                                                    name={`${employee.first_name} ${employee.middle_name || ""} ${employee.last_name} ${employee.name_suffix || ""}`.trim()}
-                                                                    loading={loading}
-                                                                    employeeID={employee.employeeID || "Not Available"}
-                                                                    division={employee.division?.division_name || "Not Available"}
-                                                                    department={employee.department?.department_name || "Not Available"}
-                                                                    section={employee.section?.section_name || "Not Available"}
-                                                                    title={employee.title?.title_name || "Not Available"}
-                                                                    branch={employee.branch?.branch_name || "Not Available"}
-                                                                    city={employee.city?.city_name || "Not Available"}
-                                                                    profile_image={employee?.profile_image || "Not Available"}
-                                                                    selectedCourseAdmin={selectedCourseAdmin.includes(employee.id)}
-                                                                />
-                                                            ))
-                                                        ) : (
-                                                            <tr className="font-text text-sm hover:bg-gray-200">
-                                                                <td colSpan={6} className="text-center py-3 px-4 font-text text-primary">
-                                                                    Filter first the course admin you want to add for the course
-                                                                </td>
-                                                            </tr>
-                                                        )
-                                                    )}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-        )
-    }
-
-
     return(
         <>
         <Dialog open={open} onClose={()=>{}}>
@@ -326,7 +257,7 @@ const AddAssignCourseAdmin = ({courseID ,open, close,}) => {
                                     </div>
                                 </div>
                                 <div className="flex flex-row items-center justify-end md:col-start-4">
-                                    <Sheet>
+                                    <Sheet open={openFilter} onOpenChange={setOpenFilter}>
                                         <SheetTrigger className="h-full">
                                             <div className="group relative h-full">
                                                 <div className={`w-10 h-10 border-2 border-primary rounded-md flex items-center justify-center hover:bg-primaryhover hover:border-primaryhover hover:text-white hover:cursor-pointer transition-all ease-in-out
@@ -335,7 +266,7 @@ const AddAssignCourseAdmin = ({courseID ,open, close,}) => {
                                                     <FontAwesomeIcon icon={faFilter} className="text-lg" />
                                                     <p className="font-header text-base hidden md:block">Filter</p>
                                                 </div>
-                                                <div className="md:hidden scale-0 group-hover:scale-100 whitespace-nowrap font-text text-xs p-2 rounded bg-tertiary text-white absolute left-1/2 -translate-x-1/2 -bottom-9 shadow-md transition-all ease-in-out">
+                                                <div className={`md:hidden scale-0 group-hover:scale-100 whitespace-nowrap font-text text-xs p-2 rounded bg-tertiary text-white absolute left-1/2 -translate-x-1/2 -bottom-9 shadow-md transition-all ease-in-out`}>
                                                     <p>Filter</p>
                                                 </div>
                                             </div>
@@ -439,10 +370,21 @@ const AddAssignCourseAdmin = ({courseID ,open, close,}) => {
                                                     </div>
                                                 </div>
                                             </form>
-                                            <div className="font-header bg-primary text-white border-2 border-primary rounded-md p-3 mt-4 flex flex-row gap-2 justify-center items-center hover:cursor-pointer hover:bg-primaryhover hover:border-primaryhover hover:text-white transition-all ease-in-out"
-                                                onClick={() => {formik.handleSubmit()}}>
-                                                <FontAwesomeIcon icon={faFilter} className="text-lg"/>
-                                                <p>Filter</p>
+                                            <div className={`font-header bg-primary text-white border-2 border-primary rounded-md p-3 mt-4 flex flex-row gap-2 justify-center items-center  transition-all ease-in-out
+                                                            ${loading ? "opacity-50 hover:cursor-not-allowed" : "hover:cursor-pointer hover:bg-primaryhover hover:border-primaryhover hover:text-white"}`}
+                                                onClick={() => {
+                                                        if(loading) return;
+                                                        formik.handleSubmit()
+                                                    }}>
+                                                {
+                                                    loading ?
+                                                    <div className="flex flex-row items-center gap-2">
+                                                        <FontAwesomeIcon icon={faSpinner} className="animate-spin mr-2" />
+                                                        <p>Filtering</p>
+                                                    </div>:
+                                                    <p>Filter</p>
+                                                }
+
                                             </div>
                                             </>
 
