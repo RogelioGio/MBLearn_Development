@@ -1,8 +1,8 @@
-import { faBook, faBookBookmark, faChalkboardUser, faChevronLeft, faChevronRight, faFilter, faGraduationCap, faSearch, faSwatchbook, faUserPlus } from "@fortawesome/free-solid-svg-icons"
+import { faBook, faBookBookmark, faCalendar, faChalkboardUser, faChevronLeft, faChevronRight, faFilter, faGraduationCap, faMagnifyingGlass, faSearch, faSpinner, faSwatchbook, faUserPlus, faXmark } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Helmet } from "react-helmet"
 import axiosClient from "../axios-client"
-import { act, useEffect, useRef, useState } from "react"
+import { act, useEffect, useMemo, useRef, useState } from "react"
 import Learner from "../modalsandprops/LearnerEnroleeEntryProps"
 import EnrollmentTableProps from "../modalsandprops/EnrollmentTableProps"
 import AssignedCourseEnrollmentCard from "../modalsandprops/AssignedCourseEnrollmentCard"
@@ -26,6 +26,36 @@ import {
     SheetTrigger,
 } from "../components/ui/sheet"
 import BulkEnrollmentCourseDuration from "../modalsandprops/BulkEnrollmentCourseDuration"
+import { use } from "react"
+import BulkEnrollmentCourseSelectorModal from "../modalsandprops/BulkEnrollmentCourseSelectorModal"
+import { createPortal } from "react-dom"
+
+
+
+function UseElementPos (ref,enabled=true, offset=8){
+    const [coords, setCoords] = useState(null);
+
+    useEffect(()=>{
+        const toolTip = () => {
+            const rect = ref.current.getBoundingClientRect();
+            setCoords({
+                top: rect.bottom + offset,
+                left: rect.left + rect.width / 2
+            });
+        }
+
+        toolTip();
+        window.addEventListener('resize', toolTip);
+        window.addEventListener('scroll', toolTip, true);
+
+        return () => {
+            window.removeEventListener('resize', toolTip);
+            window.removeEventListener('scroll', toolTip, true);
+        }
+    },[ref, enabled, offset])
+
+    return coords;
+}
 
 export default function BulkEnrollment() {
 
@@ -34,8 +64,7 @@ export default function BulkEnrollment() {
     const [learners, setLearners] = useState([]); //List all learners
     const [selected, setSelected] = useState([]); //Select learner to ernoll
     const [results, setResults] = useState([]); //Enrolled results
-    const [course, selectCourse] = useState([]); //Select course to enroll name
-    const [_course, _selectCourse] = useState([])
+    const [course, setCourse] = useState({}); //Select course
     const [courseId, setCourseId] = useState([]); //Select course to enroll id
     const [isLoading, setLoading] = useState(true); //Loading state
     const [learnerLoading, setLearnerLoading] = useState(true); //Loading state
@@ -48,19 +77,32 @@ export default function BulkEnrollment() {
     const [enrolling, setEnrolling] = useState(false) //Enrolling state
     const [openDuration, setOpenDuration] = useState(false)
     const [processing, setProccess] = useState(false);
+    const [openSelector, setOpenSelector] = useState(false);
+    const buttonRef = useRef();
+    const dateButton = useRef();
+    const [coords, setCoords] = useState(null);
+
+    //Form
+    const DateFormik = useFormik({
+        enableReinitialize: true,
+            initialValues:{
+                months: course.months || 0,
+                weeks: course.weeks || 0,
+                days: course.days || 0,
+            },
+    })
+
 
     //Pagenation States
     const [pageState, setPagination] = useState({
         currentPage: 1,
-        perPage:5,
+        perPage:10,
         totalUser: 0,
         lastPage: 1,
         startNumber: 0,
         endNumber: 0,
         currentPerPage:0
     })
-
-
     //Pagination Change State
     const pageChangeState = (key, value) => {
         setPagination((prev) => ({
@@ -68,29 +110,54 @@ export default function BulkEnrollment() {
             [key]: value
         }))
     }
+    const [bufferedUserList, setBufferedUserList] = useState([])
+    const [currentChunk, setCurrentChunk] = useState(1);
+    //use Current Page
+    const entry_per_chunk = 5;
+
+
 
     //Next and Previous Page
     const back = () => {
-        if(isLoading) return;
-        if (pageState.currentPage > 1){
-            pageChangeState("currentPage", pageState.currentPage - 1)
-            pageChangeState("startNumber", pageState.perPage - 4)
+        if(isLoading || learnerLoading) return;
+        if(currentChunk > 1) {
+            setCurrentChunk(prev => prev-1);
+        } else if (pageState.currentPage > 1) {
+                pageChangeState("currentPage", pageState.currentPage - 1)
+                setCurrentChunk(3);
         }
+        // if (pageState.currentPage > 1){
+        //     pageChangeState("currentPage", pageState.currentPage - 1)
+        //     pageChangeState("startNumber", pageState.perPage - 4)
+        // }
     }
     const next = () => {
-        if(isLoading) return;
-        if (pageState.currentPage < pageState.lastPage){
+        if(isLoading || learnerLoading) return;
+        if(currentChunk < 2) {
+            setCurrentChunk(prev => prev+1);
+        } else {
+            if (pageState.currentPage === pageState.lastPage) return;
             pageChangeState("currentPage", pageState.currentPage + 1)
+            setCurrentChunk(1);
+        };
+        // if (pageState.currentPage < pageState.lastPage){
+        //     pageChangeState("currentPage", pageState.currentPage + 1)
 
-        }
+        // }
     }
 
     //Page Navigation
     const pageChange = (page) => {
         if(isLoading) return;
-        if(page > 0 && page <= pageState.lastPage){
-            pageChangeState("currentPage", page)
-        }
+
+        const serverPage = Math.ceil(page / chunkPerPage);
+        const currentChunkPage = ((page-1) % chunkPerPage) + 1
+
+        pageChangeState("currentPage", serverPage)
+        setCurrentChunk(currentChunkPage);
+        // if(page > 0 && page <= pageState.lastPage){
+        //     pageChangeState("currentPage", page)
+        // }
     }
 
     //Calculate Course Duration
@@ -98,6 +165,7 @@ export default function BulkEnrollment() {
     //Handle Learner to be enroll
     const handleLearnerChange = (courseId) => {
         setLearnerLoading(true)
+        if(!courseId) return
         axiosClient.get(`/index-user-enrollments/${courseId}`,{
             params: {
                         page: pageState.currentPage,
@@ -105,31 +173,29 @@ export default function BulkEnrollment() {
                     }
         }
         ).then(({data})=>{
-            setLearners(data.data)
+            // setLearners(data.data)
             pageChangeState('totalUser', data.total)
             pageChangeState('lastPage', data.lastPage)
-            pageChangeState('currentPerPage', data.data.length)
+
+            setBufferedUserList(data.data)
             setLearnerLoading(false)
         }).catch((err)=>{
             console.log(err)
         })
     }
-    useEffect(() => {
-        if(!courseId) return
-        handleLearnerChange(courseId)
-    },[pageState.currentPage, pageState.perPage])
 
+
+    const LearnerPaginated = useMemo(()=>{
+        const startIndex = (currentChunk - 1) * entry_per_chunk;
+        return bufferedUserList.slice(startIndex, startIndex + entry_per_chunk);
+    }, [bufferedUserList, currentChunk])
 
     //Handle course change
-    const handleCourseChange = (Course) => {
-        selectCourse(Course?.name);
-        setCourseId(Course?.id);
-        _selectCourse(Course)
-        //Fetch Learner
-        handleLearnerChange(Course?.id);
-
-
-    }
+    // const handleCourseChange = (Course) => {
+    //     setCourse(Course)
+    //     //Fetch Learner
+    //     //handleLearnerChange(Course?.id);
+    // }
 
     //Learner to enroll
     const handleCheckbox = (User, course) => {
@@ -316,12 +382,6 @@ export default function BulkEnrollment() {
     }
 
 
-    useEffect(()=>{
-        //console.log(selected)
-        console.log(results)
-        //console.log(course)
-    },[results])
-
     // useEffect(() =>{
     //     setLoading(true)
     //     setLearnerLoading(true)
@@ -339,14 +399,21 @@ export default function BulkEnrollment() {
 
 
     useEffect(() => {
-        pageChangeState('startNumber', (pageState.currentPage - 1) * pageState.perPage + 1)
-        pageChangeState('endNumber', Math.min(pageState.currentPage * pageState.perPage, pageState.totalUser))
-    },[pageState.currentPerPage])
+        const frontEndPagination = (pageState.currentPage - 1) * 2 + currentChunk;
+
+        pageChangeState("startNumber", (frontEndPagination - 1)*entry_per_chunk + 1)
+        pageChangeState("endNumber", Math.min(frontEndPagination * entry_per_chunk, pageState.totalUser))
+
+        // pageChangeState('startNumber', (pageState.currentPage - 1) * pageState.perPage + 1)
+        // pageChangeState('endNumber', Math.min(pageState.currentPage * pageState.perPage, pageState.totalUser))
+    },[pageState.currentPage, currentChunk, pageState.totalUser])
 
 
     // Dynamic Page Number
     const Pages = [];
-    for(let p = 1; p <= pageState.lastPage; p++){
+    const chunkPerPage = pageState.perPage / entry_per_chunk;
+    const totalFrontendPages = pageState.lastPage * chunkPerPage;
+    for(let p = 1; p <= totalFrontendPages; p++){
         Pages.push(p)
     }
 
@@ -370,6 +437,7 @@ export default function BulkEnrollment() {
             })
             .then(({data}) => {
                 setAssigned_courses(data.data)
+                setCourse(data.data[0])
                 pageChangeState("totalCourses", data.total)
                 pageChangeState("lastPage", data.lastPage)
                 setLoading(false)
@@ -396,10 +464,12 @@ export default function BulkEnrollment() {
         }
     },[formik.values.filter])
     useEffect(() => {
-        if (!Array.isArray(assigned_courses) || assigned_courses.length === 0) return;
-
-        handleCourseChange(assigned_courses[0]); // Automatically select the first entry
-    }, [assigned_courses]);
+        handleLearnerChange(course?.id)
+    },[course, pageState.currentPage])
+    // useEffect(() => {
+    //     if (!Array.isArray(assigned_courses) || assigned_courses.length === 0) return;
+    //     handleCourseChange(assigned_courses[0]); // Automatically select the first entry
+    // }, [assigned_courses]);
 
     //reset the operation
     const reset = () => {
@@ -426,223 +496,333 @@ export default function BulkEnrollment() {
 
     }
 
+    useEffect(() => {
+        console.log("currentPage", pageState.currentPage)
+    },[pageState.currentPage])
+
+    // useEffect(()=>{
+    //     const tooltip = () => {
+    //         const rect = buttonRef.current.getBoundingClientRect();
+    //         setCoords({
+    //             top: rect.bottom + 8,
+    //             left: rect.left + rect.width / 2
+    //         })
+    //     }
+
+    //     tooltip();
+    //     window.addEventListener('resize', tooltip);
+    //     window.addEventListener('scroll', tooltip,true );
+
+    // return () => {
+    //     window.removeEventListener("resize", tooltip);
+    //     window.removeEventListener("scroll", tooltip, true);
+    // };
+    // }, [openSelector])
+
+    const selectCourseToolTip = UseElementPos(buttonRef, openSelector, 8);
+    const dateToolTip = UseElementPos(dateButton, openDuration, 8);
+
+
+    const content1 = () => {
+        <div className='inline-flex flex-row place-content-between border-2 border-primary rounded-md w-full font-text shadow-md'>
+                        <input type="text" className='focus:outline-none text-sm px-4 rounded-md bg-white' placeholder='Search...'
+                            name='search'
+                            //value={searchFormik.values.search}
+                            //onChange={searchFormik.handleChange}
+                            // onKeyDown={(e) => {
+                            //     if (e.key === 'Enter') {
+                            //         e.preventDefault();
+                            //         searchFormik.handleSubmit();
+                            //     }
+                            // }}
+                            />
+                             {/* ${search ? "hover:cursor-pointer":null} */}
+                        <div className={`min-w-10 h-10 bg-primary text-white flex items-center justify-center`}
+                            // onClick={() => {
+                            //     if (search) {
+                            //         setSearch(false);
+                            //         searchFormik.resetForm();
+                            //         fetchUsers();
+                            //     }
+                            // }}
+                            >
+                            {/* <FontAwesomeIcon icon={search ? faXmark : faMagnifyingGlass}/> */}
+                            <FontAwesomeIcon icon={faMagnifyingGlass}/>
+                        </div>
+                    </div>
+    }
+
     return (
         <>
-        <div className='grid grid-cols-4 grid-rows-[6.25rem_min-content_1fr_3.75rem] h-full w-full'>
+        <div className='grid grid-cols-4 h-full w-full
+                        grid-rows-[6.25rem_min-content_min-content_min-content_1fr_min-content]
+                        md:grid-rows-[6.25rem_min-content_min-content_auto_min-content]'>
             <Helmet>
                 {/* Title of the mark-up */}
                 <title>MBLearn | Enroll Trainee</title>
             </Helmet>
 
             {/* Header */}
-            <div className='flex flex-col justify-center col-span-3 row-span-1 pr-5 border-b ml-5 border-divider'>
-                <h1 className='text-primary text-4xl font-header'>Enroll Trainee</h1>
-                <p className='font-text text-sm text-unactive' >Quickly enroll large groups of trainees into assigned courses for efficient training delivery.</p>
+            <div className='flex flex-col justify-center row-span-1 border-b border-divider
+                            col-start-1 row-start-1 col-span-3 ml-3
+                            xl:col-span-3
+                            sm:col-span-3 sm:ml-4'>
+                <h1 className='text-primary font-header
+                                text-xl
+                                sm:text-2xl
+                                xl:text-4xl'>Enroll Learner</h1>
+                <p className='font-text text-unactive
+                                text-xs
+                                xl:text-sm
+                                sm:text-xs'>Quickly enroll large groups of trainees into assigned courses for efficient training delivery.</p>
             </div>
 
             {/* Enroll button */}
-            <div className="flex flex-col justify-center pl-5 mr-5 border-divider border-b col-start-4 row-start-1 row-span-1">
-                <button className="w-full p-4 bg-primary font-header text-white rounded-full hover:scale-105 transition-all ease-in-out" onClick={enrollLearners}>
-                    <FontAwesomeIcon icon={faUserPlus} className='mr-2'/>
-                    {enrolling ? 'Enrolling...' : 'Enroll Trainee'}
-                </button>
-            </div>
-            {/* Learner table */}
-            <div className='row-start-2 row-span-3 col-span-4 px-5 py-2 grid grid-rows-[min-content_1fr_min-content] grid-cols-4'>
-
-            <div className="col-start-1 row-start-1 col-span-2 py-2 flex flex-row justify-between items-center">
-                <div className="flex flex-row gap-3 items-center">
-                    <Sheet>
-                        <SheetTrigger>
-                            <div className="border-2 border-primary rounded-md bg-white shadow-md flex items-center justify-center p-3 text-primary hover:cursor-pointer hover:bg-primary hover:text-white hover:scale-105 transition-all ease-in-out">
-                                <FontAwesomeIcon icon={faSwatchbook}/>
-                            </div>
-                        </SheetTrigger>
-                        <SheetOverlay className="bg-gray-500/75 backdrop-blur-sm transition-all" />
-                        <SheetContent className="h-full flex-col flex" side={"left"}>
-                            {/* Course Header */}
-                            <div className="inline-flex flex-col gap-1 row-start-3 col-span-1 py-2 w-full">
-                            <label htmlFor="filter">
-                                <div>
-                                    <p className="font-header text-lg text-primary">Courses</p>
-                                    <p className="font-text text-xs text-unactive">Quickly choose a course a leaner can be enrolled</p>
-                                </div>
-                            </label>
-                            <div className="grid grid-cols-1">
-                                <select id="filter" name="filter" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                                    value={formik.values.filter}
-                                    onChange={formik.handleChange}
-                                    onBlur={formik.handleBlur}
-                                    >
-                                    <option value="myCourses"> My Courses</option>
-                                    <option value="Assigned"> Assigned Courses</option>
-                                </select>
-                                <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                                <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                            </div>
-                            {/* Courses Available */}
-                            {
-                            isLoading ? (
-                                <div className="flex flex-col gap-2 items-center justify-center text-center h-full pr-4">
-                                    <img src={CourseLoading} alt="" className="w-44"/>
-                                    <p className="text-xs font-text text-primary">Hang tight! 🚀 Loading assigned courses for bulk enrollment—great things take a second!</p>
-                                </div>
-                            )
-                            : (
-                                <ScrollArea className="h-[calc(100vh-6rem)] w-full mr-1">
-                                    <div className="gap-2 h-full flex flex-col snap-y snap-mandatory overflow-y-auto">
-                                    {
-                                            assigned_courses.map((Course) => (
-                                                <AssignedCourseEnrollmentCard
-                                                    id={Course.id}
-                                                    name={Course.name}
-                                                    coursetype={Course.types?.[0]?.type_name}
-                                                    coursecategory={Course.categories?.[0]?.category_name}
-                                                    duration={Course.duration}
-                                                    trainingmode={Course.training_modes?.[0]?.mode_name}
-                                                    trainingtype={Course.training_type}
-                                                    course={course}
-                                                    selected={selected}
-                                                    onclick={() => handleCourseChange(Course)}
-                                                    numberOfEnrollees={numberOfEnrollees}
-                                                    />))
-                                        }
-                                    </div>
-                                </ScrollArea>
-                            )
-                            }
-
-                        </SheetContent>
-                    </Sheet>
-
-                    <div>
-                        <p className="text-unactive font-text text-xs">Selected Course:</p>
-                        <p className="text-primary font-header">{_course?.name || "No Selected Course"}</p>
-                        <p className="text-unactive font-text text-xs">{_course && (<>Course ID: {_course.CourseID}</>)}</p>
-                    </div>
-                </div>
-                <div>
-                    <p className="text-unactive font-text text-xs">Number of Enrolless:</p>
-                    <p className="text-primary font-text">{numberOfEnrollees(_course?.id)} Learner</p>
-                </div>
-
-            </div>
-
-            {/* <div className="col-start-2  py-2 flex flex-row gap-3">
-            </div> */}
-
-            <div className="col-start-4 w-full py-2 items-center flex">
-                <div className=' inline-flex flex-row place-content-between border-2 border-primary rounded-md font-text shadow-md w-full'>
-                    <input type="text" className='focus:outline-none text-sm px-4 w-full rounded-md bg-white' placeholder='Search...'/>
-                    <div className='bg-primary py-2 px-4 text-white'>
-                        <FontAwesomeIcon icon={faSearch}/>
+            <div className="row-start-1 flex flex-col justify-center border-divider border-b
+                            items-end mr-3
+                            xl:col-start-4 xl:pl-5 xl:mr-5
+                            sm:col-span-1 sm:col-start-4 sm:py-2 sm:mr-4">
+                <div className='relative group sm:w-full'>
+                    <button className='inline-flex flex-row shadow-md items-center justify-center bg-primary font-header text-white text-base p-4 rounded-full hover:bg-primaryhover hover:scale-105 transition-all ease-in-out
+                                    w-16 h-16
+                                    sm:w-full'
+                        onClick={enrollLearners}>
+                        <FontAwesomeIcon icon={faUserPlus} className='sm:mr-2'/>
+                        <p className='hidden
+                                    sm:block'>Enroll</p>
+                    </button>
+                    <div className='absolute bottom-[-2.5rem] w-full bg-tertiary rounded-md text-white font-text text-xs p-2 items-center justify-center whitespace-nowrap scale-0 group-hover:scale-100 block transition-all ease-in-out
+                                    sm:hidden'>
+                        <p>Enroll</p>
                     </div>
                 </div>
             </div>
 
-            <div className="col-start-3 pr-2 row-start-1 flex flex-row items-center justify-end">
-                <Sheet>
-                    <SheetTrigger>
-                        <div className="h-fit p-2 flex justify-center items-center bg-primary aspect-square border-2 border-primary rounded-md shadow-md text-white hover:cursor-pointer hover:scale-105 hover:bg-primaryhover transition-all ease-in-out">
-                            <FontAwesomeIcon icon={faFilter}/>
+            {/* Course */}
+            <div className="row-start-2 col-span-4 flex flex-col gap-2 pl-3 pt-2
+                            md:pr-2 md:col-span-2 md:pl-4 md:py-2">
+                <p className=" font-text text-xs">Selected Course:</p>
+                <div className="flex flex-row gap-2">
+                    <div className="group relative">
+                        <div className={`w-10 h-10 text-primary border-2 border-primary rounded-md flex items-center justify-center bg-white shadow-md transition-all ease-in-out ${isLoading ? "opacity-50 cursor-not-allowed" : "hover:cursor-pointer hover:bg-primary hover:text-white hover:scale-105"}`}
+                            onClick={() => {setOpenSelector(true)}}
+                            ref={buttonRef}>
+                            <FontAwesomeIcon icon={faBookBookmark}/>
                         </div>
-                    </SheetTrigger>
-                    <SheetOverlay className="bg-gray-500/75 backdrop-blur-sm transition-all" />
-                    <SheetContent className="h-full flex-col flex">
-                    <div>
-                        <h1 className='font-header text-2xl text-primary'>Learner Filter</h1>
-                        <p className='text-md font-text text-unactive text-sm'>Categorize learner to enroll</p>
+                        <div
+                            style={{
+                                top: `${selectCourseToolTip?.top}px`,
+                                left: `${selectCourseToolTip?.left}px`,
+                            }}
+                        className={`fixed  -translate-x-1/2 scale-0 group-hover:scale-100 bg-tertiary text-white font-text p-2 text-xs rounded-md shadow-lg whitespace-nowrap z-50 transition-all ease-in-out`}>
+                        <p>Select Course</p>
+                        </div>
+                        {/* <div className='absolute -bottom-10 left-1/2 transform-y-1/2 w-fit bg-tertiary rounded-md text-white font-text text-xs p-2 items-center justify-center whitespace-nowrap scale-100 group-hover:scale-100 block transition-all ease-in-out'>
+                        <p>Select Course</p>
+                    </div> */}
                     </div>
-                    </SheetContent>
-                </Sheet>
+                    <div className={`${isLoading ? "flex-row items-center justify-between":"flex-col"} flex `}>
+                        {
+                            isLoading ?
+                            <>
+                                <FontAwesomeIcon icon={faSpinner} className="text-primary mr-2 animate-spin"/>
+                                <p className="font-header text-base text-primary">Loading...</p>
+                            </>
+                            :<>
+                                <p className="text-primary font-header text-sm lg:text-base">{course?.name || "No Selected Course"}</p>
+                                <p className="text-unactive font-text text-xs">{course && (<>Course ID: {course.CourseID}</>)}</p>
+                            </>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div className="py-2 flex flex-col gap-2 col-span-4 px-3
+                            md:row-start-2 md:col-span-2 md:col-start-3 md:mr-5 md:px-0">
+                <p className="font-text text-xs lg:text-right">Course Enrollment Duration</p>
+                <div className="flex flex-row gap-2 justify-end w-full">
+                    <div className="group">
+                        <div ref={dateButton} className={`min-w-10 h-10 text-primary border-2 border-primary rounded-md flex items-center justify-center bg-white shadow-md transition-all ease-in-out ${isLoading ? "opacity-50 cursor-not-allowed" : "hover:cursor-pointer hover:bg-primary hover:text-white hover:scale-105"}`}>
+                            <FontAwesomeIcon icon={faCalendar}/>
+                        </div>
+                        <div
+                                style={{
+                                    top: `${dateToolTip?.top}px`,
+                                    left: `${dateToolTip?.left}px`,
+                                }}
+                            className={`fixed  -translate-x-1/2 scale-0 group-hover:scale-100 bg-tertiary text-white font-text p-2 text-xs rounded-md shadow-lg whitespace-nowrap z-50 transition-all ease-in-out`}>
+                            <p>Date Adjustment</p>
+                        </div>
+                    </div>
+                    <form action="" className="grid grid-cols-3 gap-2 w-full">
+                        <div className="inline-flex flex-col gap-1 w-full">
+                        <input type="text" name="months"
+                            readOnly
+                            value={DateFormik.values.months ? `${DateFormik.values.months} Month/s` : "0 Month/s"}
+                            onChange={DateFormik.handleChange}
+                            // onBlur={(e) => {
+                            //     courseFormik.handleBlur(e);
+                            //     normalizationDuration({
+                            //         ...courseFormik.values,
+                            //         months: e.target.value,
+                            //     }, courseFormik.setFieldValue);
+                            // }}
+                            className={`font-text border border-divider rounded-md p-2 ${isLoading ? "opacity-50 cursor-not-allowed focus-within:outline-none":"focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"}`}/>
+                            {/* {courseFormik.touched.months && courseFormik.errors.months ? (<div className="text-red-500 text-xs font-text">{courseFormik.errors.months}</div>):null} */}
+                        </div>
+                        <div className="inline-flex flex-col gap-1 w-full">
+                        <input type="text" name="weeks"
+                            readOnly
+                            value={DateFormik.values.weeks ? `${DateFormik.values.weeks} Week/s` : "0 Week/s"}
+                            //onChange={courseFormik.handleChange}
+                            // onBlur={(e) => {
+                            //     courseFormik.handleBlur(e);
+                            //     normalizationDuration({
+                            //         ...courseFormik.values,
+                            //         months: e.target.value,
+                            //     }, courseFormik.setFieldValue);
+                            // }}
+                            className={`font-text border border-divider rounded-md p-2 ${isLoading ? "opacity-50 cursor-not-allowed focus-within:outline-none":"focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"}`}/>
+                            {/* {courseFormik.touched.months && courseFormik.errors.months ? (<div className="text-red-500 text-xs font-text">{courseFormik.errors.months}</div>):null} */}
+                        </div>
+                        <div className="inline-flex flex-col gap-1 w-full">
+                        <input type="text" name="days"
+                            readOnly
+                            value={DateFormik.values.days ? `${DateFormik.values.days} day/s` : "0 Week/s"}
+                            //value={courseFormik.values.months}
+                            //onChange={courseFormik.handleChange}
+                            // onBlur={(e) => {
+                            //     courseFormik.handleBlur(e);
+                            //     normalizationDuration({
+                            //         ...courseFormik.values,
+                            //         months: e.target.value,
+                            //     }, courseFormik.setFieldValue);
+                            // }}
+                            className={`font-text border border-divider rounded-md p-2 ${isLoading ? "opacity-50 cursor-not-allowed focus-within:outline-none":"focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"}`}/>
+                            {/* {courseFormik.touched.months && courseFormik.errors.months ? (<div className="text-red-500 text-xs font-text">{courseFormik.errors.months}</div>):null} */}
+                        </div>
+                    </form>
+                </div>
+
             </div>
 
-            {
-                learnerLoading ? (
-                    <EnrollmentTableProps>
-                        <LearnerLoadingProps/>
-                    </EnrollmentTableProps>
-                ):
-                (assigned_courses.map((Course) => (
-                    course === Course.name ? (
-                    <EnrollmentTableProps selectAll={selectAll} onchange={handleSelectAll} course={Course} key={Course.name}>
-                        {
-                            learnerLoading ? (
-                                <LearnerLoadingProps/>
-                            ) :(
-                            learners.map((learner)=>(
-                                <Learner
-                                    key={learner?.id}
-                                    id={learner}
-                                    profile_image={learner?.profile_image}
-                                    name={[learner?.first_name, learner?.middle_name, learner?.last_name].filter(Boolean).join(" ")}
-                                    employeeID={learner?.employeeID}
-                                    division={learner?.division.division_name}
-                                    department={learner?.department.department_name}
-                                    section={learner?.section.section_name}
-                                    title={learner?.title.title_name}
-                                    branch={learner?.branch.branch_name}
-                                    city={learner?.city.city_name}
-                                    enrolled={selected}
-                                    selectedCourse={Course}
-                                    handleCheckbox={handleCheckbox}
-                                    selected={selected}/>
-                            ))
-                        )
-                        }
-                    </EnrollmentTableProps>) : (null)
-                )))
-            }
 
-            <div className='flex flex-row items-center justify-between col-span-4 border-t border-divider py-3'>
-                {/* Total number of entries and only be shown */}
+
+
+            {/* Search */}
+            <div className='col-span-2 pl-4 py-2
+                            lg:row-start-3 lg:col-span-1'>
+                {/* {
+                    //search
+                    true ? (
+                        <div className='border-primary border-2 rounded-md shadow-md bg-white flex items-center justify-center text-primary hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out w-11 h-11'
+                        onClick={()=>{setSearch(false), searchFormik.resetForm(), fetchUsers()}}>
+                            <FontAwesomeIcon icon={faXmark}/>
+                        </div>
+                    ) : null
+                } */}
+                <form>
+                    <div className="border-primary inline-flex flex-row place-content-between border-2 font-text rounded-md shadow-md w-full">
+                        <input type="text" className='focus:outline-none text-sm px-4 rounded-md bg-white w-full' placeholder='Search...'
+                            name='search'
+                            //value={searchFormik.values.search}
+                            //onChange={searchFormik.handleChange}
+                            // onKeyDown={(e) => {
+                            //     if (e.key === 'Enter') {
+                            //         e.preventDefault();
+                            //         searchFormik.handleSubmit();
+                            //     }
+                            // }}
+                            />
+                        <div className="min-h-10 min-w-10 bg-primary text-white flex items-center justify-center">
+                            <FontAwesomeIcon icon={faMagnifyingGlass}/>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            {/* Filter */}
+            <div className="col-start-4 py-2 flex flex-row items-center justify-end pr-4
+                            lg:row-start-3">
+                <div className="border-2 border-primary w-10 h-10 rounded-md bg-white shadow-md flex items-center justify-center text-primary gap-2 hover:cursor-pointer hover:border-primaryhover hover:bg-primaryhover hover:text-white transition-all ease-in-out
+                                md:w-fit md:h-full md:px-4">
+                    <FontAwesomeIcon icon={faFilter} className="text-lg"/>
+                    <p className="font-header md:block hidden">Filter</p>
+                </div>
+            </div>
+
+            {/* Table */}
+            <div className="py-2 col-span-4 px-4">
+                <EnrollmentTableProps>
+                    {
+                        learnerLoading || isLoading  ? (
+                            <LearnerLoadingProps/>
+                        ):
+                        LearnerPaginated.map((learner)=>(
+                            <Learner key={learner?.id} learner={learner} handleCheckbox={()=>{handleCheckbox(learner, course)}} selectedCourse={course} enrolled={selected}/>
+                        ))
+                    }
+                </EnrollmentTableProps>
+            </div>
+
+            {/* Pagination */}
+            <div className="py-4 px-4 col-span-4 flex flex-row justify-between items-center">
                 <div>
                     <p className='text-sm font-text text-unactive'>
-                        Showing <span className='font-header text-primary'>{pageState.startNumber}</span> to <span className='font-header text-primary'>{pageState.endNumber}</span> of <span className='font-header text-primary'>{pageState.totalUser}</span> <span className='text-primary'>results</span>
+                        {
+                            isLoading || learnerLoading ?
+                            <>
+                                <FontAwesomeIcon icon={faSpinner} className="mr-2 animate-spin"/> Retrieving Learners...
+                            </>:
+                            <>
+                                Showing <span className='font-header text-primary'>{pageState.startNumber}</span> to <span className='font-header text-primary'>{pageState.endNumber}</span> of <span className='font-header text-primary'>{pageState.totalUser}</span> <span className='text-primary'>results</span>
+                            </>
+                        }
                     </p>
                 </div>
-                {/* Paganation */}
                 <div>
-                    <nav className='isolate inline-flex -space-x-px round-md shadow-xs'>
-                        {/* Previous */}
-                        <a href="#"
-                            onClick={back}
-                            className='relative inline-flex items-center rounded-l-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
-                            <FontAwesomeIcon icon={faChevronLeft}/>
-                        </a>
+                <nav className={`isolate inline-flex -space-x-px round-md shadow-xs ${isLoading || learnerLoading ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}>
+                    {/* Previous */}
+                    <a href="#"
+                        onClick={back}
+                        className={`relative inline-flex items-center rounded-l-md px-3 py-2 text-primary ring-1 ring-divider ring-inset transition-all ease-in-out ${isLoading || learnerLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-primary hover:text-white"}`}>
+                        <FontAwesomeIcon icon={faChevronLeft}/>
+                    </a>
 
-                        {/* Current Page & Dynamic Paging */}
-                        {Pages.map((page)=>(
-                            <a href="#"
-                                key={page}
-                                className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset
-                                    ${
-                                        page === pageState.currentPage
-                                        ? 'bg-primary text-white'
-                                        : 'bg-secondarybackground text-primary hover:bg-primary hover:text-white'
-                                    } transition-all ease-in-out`}
-                                    onClick={() => pageChange(page)}>
-                                {page}</a>
-                        ))}
-
-                        {/* Next */}
+                    {/* Current Page & Dynamic Paging */}
+                    {Pages.map((page)=>(
                         <a href="#"
-                            onClick={next}
-                            className='relative inline-flex items-center rounded-r-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
-                            <FontAwesomeIcon icon={faChevronRight}/>
-                        </a>
-                    </nav>
-                </div>
+                            key={page}
+                            className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset
+                                ${
+                                    isLoading || learnerLoading ? "opacity-50 cursor-not-allowed" :
+                                    page === ((pageState.currentPage - 1)* chunkPerPage + currentChunk)
+                                    ? 'bg-primary text-white'
+                                    : 'bg-secondarybackground text-primary hover:bg-primary hover:text-white'
+                                } transition-all ease-in-out`}
+                                onClick={() => pageChange(page)}>
+                            {page}</a>
+                    ))}
+
+                    {/* Next */}
+                    <a href="#"
+                        onClick={next}
+                        className={`relative inline-flex items-center rounded-r-md px-3 py-2 text-primary ring-1 ring-divider ring-inset transition-all ease-in-out ${isLoading || learnerLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-primary hover:text-white"}`}>
+                        <FontAwesomeIcon icon={faChevronRight}/>
+                    </a>
+                </nav>
             </div>
             </div>
+
+
+
         </div>
 
         {/* Successfully Enrolled */}
         <EnrolledSuccessfullyModal isOpen={enrolled} onClose={() => {setEnrolled(false); reset()}} result={results}/>
+
+        {/* Course Selector */}
+        <BulkEnrollmentCourseSelectorModal open={openSelector} close={()=>{setOpenSelector(false)}} formik={formik} courselist={assigned_courses} selectedCourse={course}/>
         {/* Training Duration */}
-        <BulkEnrollmentCourseDuration open={openDuration} close={()=>{setOpenDuration(false),setProccess(false),setEnrolling(false)}} result={results} selected={selected} setSelected={setSelected} setResults={setResults} handleEnrollment={()=>handleEnrollment()} enrolling={processing}/>
+        {/* <BulkEnrollmentCourseDuration open={openDuration} close={()=>{setOpenDuration(false),setProccess(false),setEnrolling(false)}} result={results} selected={selected} setSelected={setSelected} setResults={setResults} handleEnrollment={()=>handleEnrollment()} enrolling={processing}/> */}
         {/* Error */}
         <EnrollmentFailedModal isOpen={enrollmentFailed} onClose={()=>setEnrollmentFailed(false)}/>
         {/* When no Selected Users */}

@@ -1,6 +1,6 @@
 const EnrollmentTableProps = ({children, selectAll, onchange, course}) => {
     return (
-        <div className="row-start-2 col-span-4 py-3">
+        <div className="row-start-2 col-span-4">
             <div className='w-full border-primary border rounded-md overflow-hidden shadow-md'>
             <table className='text-left min-w-full table-auto table-layout-fixed'>
                 <thead className='font-header text-xs text-primary bg-secondaryprimary'>
@@ -40,7 +40,6 @@ const EnrollmentTableProps = ({children, selectAll, onchange, course}) => {
                         <th className='p-4 w-1/7'>DIVISION</th>
                         <th className='p-4 w-1/7'>DEPARTMENT</th>
                         <th className='p-4 w-1/7'>SECTION</th>
-                        <th className='p-4 w-1/7'>LOCATION</th>
                     </tr>
                 </thead>
                 <tbody className='bg-white divide-y divide-divider'>

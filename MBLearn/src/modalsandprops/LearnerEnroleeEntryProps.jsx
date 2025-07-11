@@ -1,23 +1,24 @@
 
-const Learner = ({profile_image, id, name, employeeID, department, title, branch, city, enrolled, selectedCourse,division, section ,handleCheckbox}) => {
+const Learner = ({learner, enrolled, selectedCourse ,handleCheckbox}) => {
 
     const selectedEnrollee = enrolled?.some(
-        (entry) => entry.userId == id.id && entry.courseId === selectedCourse.id
+        (entry) => entry.userId == learner.id && entry.courseId === selectedCourse.id
     )
     return(
-        <tr className={`font-text text-sm text-primary hover:bg-gray-200 cursor-pointer ${selectedEnrollee ? 'bg-gray-200':''}`} onClick={()=>handleCheckbox(id, selectedCourse)}>
+        <tr className={`font-text text-sm text-primary hover:bg-gray-200 cursor-pointer ${selectedEnrollee ? 'bg-gray-200':''}`} onClick={handleCheckbox}>
 
                 {/* Employee Name */}
-                <td className={`font-header p-4 flex flex-row items-center gap-4 border-l-2 border-transparent transition-all ease-in-out ${selectedEnrollee ? '!border-primary':''} h-full`}>
+                <td className={`font-header px-4 py-3 flex flex-row items-center gap-3 border-l-2 border-transparent transition-all ease-in-out ${selectedEnrollee ? '!border-primary':''} h-full`}>
 
                     {/* Checkbox */}
                     <div className="group grid size-4 grid-cols-1">
                         <input type="checkbox"
                             className="col-start-1 row-start-1 appearance-none border border-divider rounded checked:border-primary checked:bg-primary focus:ring-2 focus:ring-primary focus:outline-none focus:ring-offset-1"
-                            name={employeeID}
-                            id={employeeID}
+                            name={learner?.id}
+                            id={learner?.id}
                             checked={selectedEnrollee}
-                            onChange={() => handleCheckbox(id, selectedCourse)}/>
+                            onChange={handleCheckbox}
+                        />
                         {/* Custom Checkbox styling */}
                         <svg fill="none" viewBox="0 0 14 14" className="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-[:disabled]:stroke-gray-950/25">
                             {/* Checked */}
@@ -39,35 +40,31 @@ const Learner = ({profile_image, id, name, employeeID, department, title, branch
                         </svg>
                     </div>
 
-                    <img src={profile_image} alt="" className="w-10 rounded-full"/>
+                    <div className="min-w-8 min-h-8 rounded-full bg-blue-500">
+                        <img src={learner?.profile_image} alt="" className="w-8 rounded-full"/>
+                    </div>
 
                     <div>
-                    <p className={`text-unactive ${selectedEnrollee ? '!text-primary':''} font-text text-sm`}>{name}</p>
-                    <p className="font-text text-unactive text-xs">ID: {employeeID}</p>
+                    <p className={`text-unactive ${selectedEnrollee ? '!text-primary':''} font-text text-sm`}>{learner?.first_name} {learner?.middle_name || ""} {learner?.last_name}</p>
+                    <p className="font-text text-unactive text-xs">ID: {learner?.employeeID}</p>
                     </div>
                 </td>
 
                 {/* Division */}
                 <td className="p-4 font-text text-unactive">
-                    <p className="text-sm"> {division} </p>
+                    <p className="text-xs"> {learner?.division?.division_name}</p>
                 </td>
 
                 {/* Department */}
                 <td className="p-4 font-text text-unactive">
-                    <p className="text-sm"> {department} </p>
-                    <p className="text-xs"> {title} </p>
+                    <p className="text-xs"> {learner?.department?.department_name} </p>
                 </td>
 
                 {/* Section*/}
                 <td className="p-4 font-text text-unactive">
-                    <p> {section} </p>
+                    <p className="text-xs"> {learner?.section?.section_name} </p>
                 </td>
 
-                {/* Branch */}
-                <td className="p-4 font-text text-unactive">
-                    <p className="text-sm">{branch}</p>
-                    <p className="text-xs">{city} </p>
-                </td>
             </tr>
 
     )
