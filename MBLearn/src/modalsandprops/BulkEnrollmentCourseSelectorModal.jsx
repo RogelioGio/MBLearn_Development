@@ -4,8 +4,15 @@ import axiosClient from "../axios-client"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faChevronLeft, faChevronRight, faMagnifyingGlass, faXmark } from "@fortawesome/free-solid-svg-icons"
 import AssignedCourseEnrollmentCard from "./AssignedCourseEnrollmentCard"
+import {
+    Select,
+    SelectTrigger,
+    SelectValue,
+    SelectContent,
+    SelectItem,
+} from '../components/ui/select';
 
-const BulkEnrollmentCourseSelectorModal = ({ open, close, formik, courselist, selectedCourse }) => {
+const BulkEnrollmentCourseSelectorModal = ({ open, close, courselist, currentCourse, setCurrentCourse, courseType, setCourseType, resetPagination,loading, numberOfEnrollees}) => {
     return (
         <Dialog open={open} onClose={()=>{}}>
             <DialogBackdrop transition className="backdrop-blur-sm fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in z-30"/>
@@ -30,7 +37,6 @@ const BulkEnrollmentCourseSelectorModal = ({ open, close, formik, courselist, se
                                                     w-5 h-5 text-xs
                                                     md:w-8 md:h-8 md:text-base"
                                         onClick={()=>{
-                                            setTimeout(()=>{formik.resetForm();setFormCompleted([])},1000)
                                             close()
                                         }}>
                                         <FontAwesomeIcon icon={faXmark}/>
@@ -39,22 +45,17 @@ const BulkEnrollmentCourseSelectorModal = ({ open, close, formik, courselist, se
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-4 py-1 px-3">
-                                <div className="col-span-1">
-                                        <label htmlFor="filter" className="font-text text-xs">Course Type:</label>
-                                        <div className="grid grid-cols-1">
-                                        <select id="filter" name="filter" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                                            value={formik.values.filter}
-                                            onChange={formik.handleChange}
-                                            onBlur={formik.handleBlur}
-                                            >
-                                            <option value="myCourses"> My Courses</option>
-                                            <option value="Assigned"> Assigned Courses</option>
-                                        </select>
-                                        <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                                        <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                                        </svg>
-                                </div>
+                            <div className="grid grid-cols-4 py-2 px-3">
+                                <div className="col-span-1 flex items-center justify-center">
+                                    <Select value={courseType} onValueChange={(value) => setCourseType.setFieldValue("filter", value)} className="w-full h-full" disabled={loading}>
+                                        <SelectTrigger className="focus:outline-2 focus:-outline-offset-2 focus:outline-primary border-primary border-2 font-header text-primary w-full">
+                                            <SelectValue placeholder="Learner Type" />
+                                        </SelectTrigger>
+                                        <SelectContent className="font-text text-xs text-primary hover:cursor-pointer">
+                                            <SelectItem value="myCourses">My Courses</SelectItem>
+                                            <SelectItem value="Assigned">Assigned Courses</SelectItem>
+                                        </SelectContent>
+                                    </Select>
                                 </div>
                                 <div className="col-span-2 col-start-3 flex flex-col justify-end">
                                     <form>
@@ -80,9 +81,37 @@ const BulkEnrollmentCourseSelectorModal = ({ open, close, formik, courselist, se
 
                             <div className="grid-rows-2 grid-cols-3 grid gap-2 px-3 py-2">
                                 {
+                                    loading ? (
+                                        Array.from({ length: 6 }).map((_, index) => (
+                                            <div className="border-2 border-divider rounded-md p-4 shadow-md h-36 w-full animate-pulse ng-white" key={index}/>
+                                        ))
+                                    ) : courselist.length === 0 ?
+                                        <div className="col-span-3 row-span-2 p-10 font-text text-unactive text-center flex flex-col items-center justify-center gap-2">
+                                            {
+                                                courseType === "myCourses" ?
+                                                    <>
+                                                        <div>
+                                                            <div className="w-14 h-14 rounded-full bg-primarybg text-primary text-2xl flex items-center justify-center">
+                                                                <FontAwesomeIcon icon={faXmark}/>
+                                                            </div>
+                                                        </div>
+                                                        <p className="text-sm">You have no inputted courses yet</p>
+                                                    </>
+                                                : courseType === "Assigned" ?
+                                                    <>
+                                                        <div>
+                                                            <div className="w-14 h-14 rounded-full bg-primarybg text-primary text-2xl flex items-center justify-center">
+                                                                <FontAwesomeIcon icon={faXmark}/>
+                                                            </div>
+                                                        </div>
+                                                        <p className="text-sm">You have no assigned courses yet</p>
+                                                    </>
+                                                : <p className="text-sm">No courses found</p>
+                                            }
+                                        </div>
+                                    :
                                     courselist.map((course, index) => (
-                                        <AssignedCourseEnrollmentCard key={index} AssignedCourse={course} course={selectedCourse.name}/>
-                                    ))
+                                        <AssignedCourseEnrollmentCard key={index} AssignedCourse={course} selected={currentCourse} onclick={()=>{setCurrentCourse(course), resetPagination() ,setTimeout(()=>{close()},100)}} numberOfEnrollees={numberOfEnrollees(course)}/>))
                                 }
                             </div>
 

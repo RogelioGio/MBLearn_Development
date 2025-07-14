@@ -1,14 +1,15 @@
 
-const Learner = ({learner, enrolled, selectedCourse ,handleCheckbox}) => {
+const Learner = ({learner, enrollmentList, currentCourse,handleCheckbox}) => {
 
-    const selectedEnrollee = enrolled?.some(
-        (entry) => entry.userId == learner.id && entry.courseId === selectedCourse.id
-    )
+    const course = enrollmentList.find(entry => entry.course.id === currentCourse?.id);
+    const checked = course?.enrollees?.some(enrollee => enrollee.id === learner?.id) ?? false;
+
+
     return(
-        <tr className={`font-text text-sm text-primary hover:bg-gray-200 cursor-pointer ${selectedEnrollee ? 'bg-gray-200':''}`} onClick={handleCheckbox}>
+        <tr className={`font-text text-sm text-primary hover:bg-gray-200 cursor-pointer ${checked ? 'bg-gray-200':''}`} onClick={handleCheckbox}>
 
                 {/* Employee Name */}
-                <td className={`font-header px-4 py-3 flex flex-row items-center gap-3 border-l-2 border-transparent transition-all ease-in-out ${selectedEnrollee ? '!border-primary':''} h-full`}>
+                <td className={`font-header px-4 py-3 flex flex-row items-center gap-3 border-l-2 border-transparent transition-all ease-in-out ${checked ? '!border-primary':''} h-full`}>
 
                     {/* Checkbox */}
                     <div className="group grid size-4 grid-cols-1">
@@ -16,7 +17,7 @@ const Learner = ({learner, enrolled, selectedCourse ,handleCheckbox}) => {
                             className="col-start-1 row-start-1 appearance-none border border-divider rounded checked:border-primary checked:bg-primary focus:ring-2 focus:ring-primary focus:outline-none focus:ring-offset-1"
                             name={learner?.id}
                             id={learner?.id}
-                            checked={selectedEnrollee}
+                            checked={checked}
                             onChange={handleCheckbox}
                         />
                         {/* Custom Checkbox styling */}
@@ -45,7 +46,7 @@ const Learner = ({learner, enrolled, selectedCourse ,handleCheckbox}) => {
                     </div>
 
                     <div>
-                    <p className={`text-unactive ${selectedEnrollee ? '!text-primary':''} font-text text-sm`}>{learner?.first_name} {learner?.middle_name || ""} {learner?.last_name}</p>
+                    <p className={`text-unactive ${checked ? '!text-primary':''} font-text text-sm`}>{learner?.first_name} {learner?.middle_name || ""} {learner?.last_name}</p>
                     <p className="font-text text-unactive text-xs">ID: {learner?.employeeID}</p>
                     </div>
                 </td>
