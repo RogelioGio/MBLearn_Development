@@ -33,6 +33,7 @@ import { CourseProvider } from '../contexts/Course';
 
 
 
+
 // Sample configs for chart
 const chartConfig = {
     visitors: {
@@ -72,6 +73,7 @@ const chartConfig2 = {
 
 //One Dashboard Component for 3 different roles
 const DashboardLayout = ({role,name,user}) => {
+
     const calendarRef = useRef()
     const [monthLabel, setMonthLabel] = useState("")
     const [openCalendarModal, setOpenCalendarModal] = useState(false);
@@ -433,7 +435,8 @@ export default function Dashboard()
 {
     const {user, role, token} = useStateContext();
     if(!token){
-        return window.location.href = "/login";
+        console.log("wlang token")
+        // return navigate('/login'); // Redirect to login if no token
     }
     if (!user) {
         return <div>Loading...</div>;

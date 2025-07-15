@@ -31,7 +31,9 @@ import BulkEnrollmentCourseSelectorModal from "../modalsandprops/BulkEnrollmentC
 import { createPortal } from "react-dom"
 import { Calendar } from "../components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "../components/ui/popover";
-import { unstable_usePrompt, useBlocker } from "react-router-dom";
+import { useBlocker } from "react-router-dom";
+import Unerollnment from "../modalsandprops/Unenrollment"
+import ReviewEnrollment from "../modalsandprops/ReviewEnrollment"
 
 
 
@@ -64,27 +66,34 @@ export default function BulkEnrollment() {
 
     const {user} = useStateContext();
     const [assigned_courses, setAssigned_courses] = useState([]);
+
     const [learners, setLearners] = useState([]); //List all learners
-    // const [selected, setSelected] = useState([]); //Select learner to ernoll
-    // const [results, setResults] = useState([]); //Enrolled results
+
     const [enrollment,setEnrollment] = useState([]); //Enrolled Learners
     const [course, setCourse] = useState({}); //Select course
+
     const [courseId, setCourseId] = useState([]); //Select course to enroll id
+
     const [isLoading, setLoading] = useState(true); //Loading state
     const [learnerLoading, setLearnerLoading] = useState(true); //Loading state
     const [courseListLoading, setCourseListLoading] = useState(true); //Loading state for course list
+
     const selectAll = useRef(null) //select all learners
-    const [tab, setTab] = useState(1)//Tabs
+
     const [enrolled, setEnrolled] = useState(false) //Modal for successfully Enrolled
+
     const [error, setError] = useState([]) //Error state
     const [enrollmentFailed, setEnrollmentFailed] = useState(false) //Enrollment failed state
-    const [empty, setEmpty] = useState(false) //No selected user state
+
     const [enrolling, setEnrolling] = useState(false) //Enrolling state
+
     const [openDuration, setOpenDuration] = useState(false)
-    const [processing, setProccess] = useState(false);
     const [openSelector, setOpenSelector] = useState(false);
+    const [openReview, setOpenReview] = useState(false);
+
     const buttonRef = useRef();
     const dateButton = useRef();
+
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
 
@@ -268,26 +277,22 @@ export default function BulkEnrollment() {
     //     //handleLearnerChange(Course?.id);
     // }
 
-    const blocker = useBlocker(hasUnsavedChanges)
+    const blocker = useBlocker(true);
 
     useEffect(() => {
-    if (blocker.state === "blocked") {
-      const confirm = window.confirm(
-        "You have unsaved changes. Are you sure you want to leave?"
-      );
-      if (confirm) {
-        blocker.proceed();
-      } else {
-        blocker.reset();
-      }
-    }
-  }, [blocker]);
+        if(blocker.state === "blocked") {
+            if(enrollment.length > 0) {
+                setHasUnsavedChanges(true);
+            }else {
+                blocker.proceed();
+            }
+        }
+    }, [blocker,enrollment.length]);
 
 
 
     //Learner to enroll
     const handleCheckbox = (User, course) => {
-        setHasUnsavedChanges(true);
         setEnrollment((entry)=> {
             if(!User&&!course) return prevCourses;
 
@@ -453,7 +458,7 @@ export default function BulkEnrollment() {
 
         // pageChangeState('startNumber', (pageState.currentPage - 1) * pageState.perPage + 1)
         // pageChangeState('endNumber', Math.min(pageState.currentPage * pageState.perPage, pageState.totalUser))
-    },[pageState.currentPage, currentChunk])
+    },[pageState.currentPage, currentChunk, bufferedUserList])
 
 
     // Dynamic Page Number
@@ -531,6 +536,8 @@ export default function BulkEnrollment() {
 
     //Handle Enrollment Submisstion
     const handleEnrollment = () => {
+        if(enrolling) return;
+        setEnrolling(true)
         const payload = enrollment.flatMap((obj) =>
             obj.enrollees.map((enrollee) => (
                 {
@@ -543,6 +550,13 @@ export default function BulkEnrollment() {
             ))
         )
         console.log("Payload:", payload)
+        setTimeout(() => {
+            setEnrolling(false)
+        },2000)
+        setTimeout(() => {
+            setOpenReview(false);
+            setEnrolled(true);
+        },2100)
         // setProccess(true)
         // axiosClient.post('enrollments/bulk', selected)
         // .then(({data}) => {
@@ -553,117 +567,16 @@ export default function BulkEnrollment() {
         // }).catch((err)=>{
         //     console.log(err)
         // })
-
     }
-
     useEffect(() => {
         //console.log("Course:", course)
         // console.log("Enrollment:", enrollment)
-        console.log(hasUnsavedChanges)
-    },[hasUnsavedChanges])
+        //console.log(hasUnsavedChanges)
+    },[enrollment])
 
-    // useEffect(()=>{
-    //     const tooltip = () => {
-    //         const rect = buttonRef.current.getBoundingClientRect();
-    //         setCoords({
-    //             top: rect.bottom + 8,
-    //             left: rect.left + rect.width / 2
-    //         })
-    //     }
-
-    //     tooltip();
-    //     window.addEventListener('resize', tooltip);
-    //     window.addEventListener('scroll', tooltip,true );
-
-    // return () => {
-    //     window.removeEventListener("resize", tooltip);
-    //     window.removeEventListener("scroll", tooltip, true);
-    // };
-    // }, [openSelector])
 
     const selectCourseToolTip = UseElementPos(buttonRef, openSelector, 8);
     const dateToolTip = UseElementPos(dateButton, openDuration, 8);
-
-
-    const content1 = () => {
-        <div className='inline-flex flex-row place-content-between border-2 border-primary rounded-md w-full font-text shadow-md'>
-                        <input type="text" className='focus:outline-none text-sm px-4 rounded-md bg-white' placeholder='Search...'
-                            name='search'
-                            //value={searchFormik.values.search}
-                            //onChange={searchFormik.handleChange}
-                            // onKeyDown={(e) => {
-                            //     if (e.key === 'Enter') {
-                            //         e.preventDefault();
-                            //         searchFormik.handleSubmit();
-                            //     }
-                            // }}
-                            />
-                             {/* ${search ? "hover:cursor-pointer":null} */}
-                        <div className={`min-w-10 h-10 bg-primary text-white flex items-center justify-center`}
-                            // onClick={() => {
-                            //     if (search) {
-                            //         setSearch(false);
-                            //         searchFormik.resetForm();
-                            //         fetchUsers();
-                            //     }
-                            // }}
-                            >
-                            {/* <FontAwesomeIcon icon={search ? faXmark : faMagnifyingGlass}/> */}
-                            <FontAwesomeIcon icon={faMagnifyingGlass}/>
-                        </div>
-                    </div>
-    }
-
-    const content2 = () => {
-                            <form action="" className="grid grid-cols-3 gap-2 w-full">
-                        <div className="inline-flex flex-col gap-1 w-full">
-                        <input type="text" name="months"
-                            readOnly
-                            value={DateFormik.values.months ? `${DateFormik.values.months} Month/s` : "0 Month/s"}
-                            onChange={DateFormik.handleChange}
-                            // onBlur={(e) => {
-                            //     courseFormik.handleBlur(e);
-                            //     normalizationDuration({
-                            //         ...courseFormik.values,
-                            //         months: e.target.value,
-                            //     }, courseFormik.setFieldValue);
-                            // }}
-                            className={`font-text border border-divider rounded-md p-2 ${isLoading ? "opacity-50 cursor-not-allowed focus-within:outline-none":"focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"}`}/>
-                            {/* {courseFormik.touched.months && courseFormik.errors.months ? (<div className="text-red-500 text-xs font-text">{courseFormik.errors.months}</div>):null} */}
-                        </div>
-                        <div className="inline-flex flex-col gap-1 w-full">
-                        <input type="text" name="weeks"
-                            readOnly
-                            value={DateFormik.values.weeks ? `${DateFormik.values.weeks} Week/s` : "0 Week/s"}
-                            //onChange={courseFormik.handleChange}
-                            // onBlur={(e) => {
-                            //     courseFormik.handleBlur(e);
-                            //     normalizationDuration({
-                            //         ...courseFormik.values,
-                            //         months: e.target.value,
-                            //     }, courseFormik.setFieldValue);
-                            // }}
-                            className={`font-text border border-divider rounded-md p-2 ${isLoading ? "opacity-50 cursor-not-allowed focus-within:outline-none":"focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"}`}/>
-                            {/* {courseFormik.touched.months && courseFormik.errors.months ? (<div className="text-red-500 text-xs font-text">{courseFormik.errors.months}</div>):null} */}
-                        </div>
-                        <div className="inline-flex flex-col gap-1 w-full">
-                        <input type="text" name="days"
-                            readOnly
-                            value={DateFormik.values.days ? `${DateFormik.values.days} day/s` : "0 Week/s"}
-                            //value={courseFormik.values.months}
-                            //onChange={courseFormik.handleChange}
-                            // onBlur={(e) => {
-                            //     courseFormik.handleBlur(e);
-                            //     normalizationDuration({
-                            //         ...courseFormik.values,
-                            //         months: e.target.value,
-                            //     }, courseFormik.setFieldValue);
-                            // }}
-                            className={`font-text border border-divider rounded-md p-2 ${isLoading ? "opacity-50 cursor-not-allowed focus-within:outline-none":"focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"}`}/>
-                            {/* {courseFormik.touched.months && courseFormik.errors.months ? (<div className="text-red-500 text-xs font-text">{courseFormik.errors.months}</div>):null} */}
-                        </div>
-                    </form>
-    }
 
     return (
         <>
@@ -702,7 +615,7 @@ export default function BulkEnrollment() {
                                     ${enrollment.length === 0 ? "opacity-50 cursor-not-allowed" : "hover:bg-primaryhover"}`}
                         onClick={()=>{
                             if(enrollment.length === 0) return
-                            handleEnrollment();
+                            setOpenReview(true);
                         }}>
                         <FontAwesomeIcon icon={faUserPlus} className='sm:mr-2'/>
                         <p className='hidden
@@ -934,7 +847,7 @@ export default function BulkEnrollment() {
                             <div>
                             <nav className={`isolate inline-flex -space-x-px round-md shadow-xs ${isLoading || learnerLoading ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}>
                                 {/* Previous */}
-                                <a href="#"
+                                <a
                                     onClick={back}
                                     className={`relative inline-flex items-center rounded-l-md px-3 py-2 text-primary ring-1 ring-divider ring-inset transition-all ease-in-out ${isLoading || learnerLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-primary hover:text-white"}`}>
                                     <FontAwesomeIcon icon={faChevronLeft}/>
@@ -942,7 +855,7 @@ export default function BulkEnrollment() {
 
                                 {/* Current Page & Dynamic Paging */}
                                 {Pages.map((page)=>(
-                                    <a href="#"
+                                    <a
                                         key={page}
                                         className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset
                                             ${
@@ -956,7 +869,7 @@ export default function BulkEnrollment() {
                                 ))}
 
                                 {/* Next */}
-                                <a href="#"
+                                <a
                                     onClick={next}
                                     className={`relative inline-flex items-center rounded-r-md px-3 py-2 text-primary ring-1 ring-divider ring-inset transition-all ease-in-out ${isLoading || learnerLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-primary hover:text-white"}`}>
                                     <FontAwesomeIcon icon={faChevronRight}/>
@@ -973,16 +886,18 @@ export default function BulkEnrollment() {
 
         </div>
 
-        {/* Successfully Enrolled */}
-        {/* <EnrolledSuccessfullyModal isOpen={enrolled} onClose={() => {setEnrolled(false); reset()}} result={results}/> */}
-
         {/* Course Selector */}
-        <BulkEnrollmentCourseSelectorModal open={openSelector} close={()=>{setOpenSelector(false)}} courselist={assigned_courses} currentCourse={course} setCurrentCourse={setCourse} courseType={formik.values.filter} setCourseType={formik} loading={courseListLoading} numberOfEnrollees={numberOfEnrollees} resetPagination={()=>{pageChangeState('currentPage', 1), pageChangeState('currentFrontendPage', 1), seturrentChunk(1)}}/>
-        {/* Training Duration */}
+        <BulkEnrollmentCourseSelectorModal open={openSelector} close={()=>{setOpenSelector(false)}} courselist={assigned_courses} currentCourse={course} setCurrentCourse={setCourse} courseType={formik.values.filter} setCourseType={formik} loading={courseListLoading} numberOfEnrollees={numberOfEnrollees} resetPagination={()=>{pageChangeState('currentPage', 1), pageChangeState('currentFrontendPage', 1), setCurrentChunk(1)}}/>
         {/* Error */}
         <EnrollmentFailedModal isOpen={enrollmentFailed} onClose={()=>setEnrollmentFailed(false)}/>
-        {/* When no Selected Users */}
-        <NoEmployeeSelectedModal isOpen={empty} onClose={()=>{setEmpty(false);}} />
+        {/* Unenrollment */}
+        <Unerollnment isOpen={hasUnsavedChanges} close={()=>(setHasUnsavedChanges(false), blocker.reset())} onContinue={()=>{setHasUnsavedChanges(false), blocker.proceed()}}/>
+        {/* Review Enrollment */}
+        <ReviewEnrollment open={openReview} close={()=>{setOpenReview(false)}} enrollment={enrollment} enroll={handleEnrollment} enrolling={enrolling}/>
+        {/* Complete Enrollment */}
+        <ReviewEnrollment open={enrolled} close={()=>{setEnrolled(false)}} enrollment={enrollment} enrolled={true} />
+
+
         </>
     )
 }
