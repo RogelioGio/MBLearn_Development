@@ -1,4 +1,4 @@
-const EnrollmentTableProps = ({children, selectAll, onchange, course}) => {
+const EnrollmentTableProps = ({children, selectAll, all, course}) => {
     return (
         <div className="row-start-2 col-span-4">
             <div className='w-full border-primary border rounded-md overflow-hidden shadow-md'>
@@ -12,7 +12,7 @@ const EnrollmentTableProps = ({children, selectAll, onchange, course}) => {
                                 <input type="checkbox"
                                     className="col-start-1 row-start-1 appearance-none border border-primary rounded checked:border-primary checked:bg-primary indeterminate:bg-primary focus:ring-2 focus:ring-primary focus:outline-none focus:ring-offset-1"
                                     ref={selectAll}
-                                    onChange={() => onchange(course)}
+                                    onClick={all}
                                     />
                                 {/* Custom Checkbox styling */}
                                 <svg fill="none" viewBox="0 0 14 14" className="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-[:disabled]:stroke-gray-950/25">
@@ -37,9 +37,9 @@ const EnrollmentTableProps = ({children, selectAll, onchange, course}) => {
                             <p>EMPLOYEE NAME</p>
                             </div>
                         </th>
-                        <th className='p-4 w-1/7'>DIVISION</th>
-                        <th className='p-4 w-1/7'>DEPARTMENT</th>
-                        <th className='p-4 w-1/7'>SECTION</th>
+                        <th className='p-4 hidden md:table-cell'>DIVISION</th>
+                        <th className='p-4 hidden md:table-cell'>DEPARTMENT</th>
+                        <th className='p-4 hidden md:table-cell'>SECTION</th>
                     </tr>
                 </thead>
                 <tbody className='bg-white divide-y divide-divider'>

@@ -79,6 +79,8 @@ export default function BulkEnrollment() {
     const [courseListLoading, setCourseListLoading] = useState(true); //Loading state for course list
 
     const selectAll = useRef(null) //select all learners
+    const [all, setAll] = useState(false); //Selected Learners
+    const [selectAllmap, setSelectAllmap] = useState([]);
 
     const [enrolled, setEnrolled] = useState(false) //Modal for successfully Enrolled
 
@@ -96,7 +98,6 @@ export default function BulkEnrollment() {
 
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
-
     useEffect(() => {
         setEnrollment([]);
     },[])
@@ -113,8 +114,8 @@ export default function BulkEnrollment() {
     const DateFormik = useFormik({
         enableReinitialize: true,
             initialValues:  {
-                start_date:  assigned_courses.length === 0 ? "Select start date" : format(new Date(), "MMMM dd yyyy") || "Select start date",
-                end_date: getEndDate() ? format(getEndDate(), "MMMM dd yyyy") : "Select end date",
+                start_date:  assigned_courses.length === 0 ? "Select date" : format(new Date(), "MMMM dd yyyy") || "Select date",
+                end_date: getEndDate() ? format(getEndDate(), "MMMM dd yyyy") : "Select date",
                 months: course?.months || 0,
                 weeks: course?.weeks || 0,
                 days: course?.days || 0,
@@ -158,9 +159,6 @@ export default function BulkEnrollment() {
         })
     }
 
-
-
-
     //Pagenation States
     const [pageState, setPagination] = useState({
         currentPage: 1,
@@ -188,7 +186,7 @@ export default function BulkEnrollment() {
 
     //Next and Previous Page
     const back = () => {
-        if(isLoading || learnerLoading) return;
+        if(isLoading || learnerLoading || pageState.currentFrontendPage === 1) return;
 
         if(currentChunk > 1) {
             setCurrentChunk(prev => prev-1);
@@ -196,7 +194,7 @@ export default function BulkEnrollment() {
                 pageChangeState("currentPage", pageState.currentPage - 1)
                 setCurrentChunk(2);
             }
-            pageChangeState("currentFrontendPage", pageState.currentFrontendPage - 1)
+        pageChangeState("currentFrontendPage", pageState.currentFrontendPage - 1)
 
         // if (pageState.currentPage > 1){
         //     pageChangeState("currentPage", pageState.currentPage - 1)
@@ -204,7 +202,9 @@ export default function BulkEnrollment() {
         // }
     }
     const next = () => {
-        if(isLoading || learnerLoading) return;
+        const totalFrontendPages = Math.ceil(pageState.totalUser / entry_per_chunk);
+        if(isLoading || learnerLoading || totalFrontendPages === pageState.currentFrontendPage) return;
+
         if(currentChunk < 2) {
             setCurrentChunk(prev => prev+1);
         } else {
@@ -236,7 +236,11 @@ export default function BulkEnrollment() {
         // }
     }
 
-    //Calculate Course Duration
+    const LearnerPaginated = useMemo(()=>{
+        const startIndex = (currentChunk - 1) * entry_per_chunk;
+        return bufferedUserList.slice(startIndex, startIndex + entry_per_chunk);
+    }, [bufferedUserList, currentChunk])
+
 
     //Handle Learner to be enroll
     const handleLearnerChange = (courseId) => {
@@ -264,21 +268,7 @@ export default function BulkEnrollment() {
         })
     }
 
-
-    const LearnerPaginated = useMemo(()=>{
-        const startIndex = (currentChunk - 1) * entry_per_chunk;
-        return bufferedUserList.slice(startIndex, startIndex + entry_per_chunk);
-    }, [bufferedUserList, currentChunk])
-
-    //Handle course change
-    // const handleCourseChange = (Course) => {
-    //     setCourse(Course)
-    //     //Fetch Learner
-    //     //handleLearnerChange(Course?.id);
-    // }
-
     const blocker = useBlocker(true);
-
     useEffect(() => {
         if(blocker.state === "blocked") {
             if(enrollment.length > 0) {
@@ -314,10 +304,13 @@ export default function BulkEnrollment() {
                 })
             }else{
                 const currentCourse = {...currentEnrollment[existingCourse]};
-
                 const enrolled = currentCourse.enrollees.some((entry) => (entry.id === User.id));
-                console.log("Enrolled?",enrolled)
+
                 if(enrolled){
+                    const selectAll = selectAllmap.find((e) => e.courseId === course.id);
+                    if(selectAll){
+                        setSelectAllmap((prev) => prev.filter((e) => e.courseId !== course.id));
+                    }
                     currentCourse.enrollees = currentCourse.enrollees.filter((entry) => entry.id !== User.id);
                 }else{
                     currentCourse.enrollees.push(User);
@@ -408,25 +401,87 @@ export default function BulkEnrollment() {
         })
 
     }
+    const selectAllLearner = () => {
+        if(!course.id) return;
 
+        const current = enrollment.find((entry) => entry.course.id === course.id);
+        const exist = selectAllmap.find((e) => e.courseId === course.id);
 
-    //handle indertiminate checkbox
+        if(!exist){
+            console.log("Select All Learner:", course.id)
+            LearnerPaginated.forEach((learner) => {
+                if(!current || !current.enrollees.some((enrollee) => enrollee.id === learner.id)) {
+                    handleCheckbox(learner, course);
+                }
+            })
+
+            selectAll.current.indeterminate = false;
+            selectAll.current.checked = true
+        } else {
+            console.log("unSelect All Learner:", course.id)
+            enrollment.find((entry) => entry.course.id === course.id)?.enrollees.forEach((learner) => {
+                handleCheckbox(learner, course);
+            })
+            setAll(false);
+        }
+
+        setSelectAllmap((entry) => {
+            const objects = [...entry]
+
+            const exist = objects.find((e) => e.courseId === course.id);
+
+            if(exist){
+                console.log("Select All Learner:", course.id)
+                return objects.filter((e) => e.courseId !== course.id);
+            } else {
+                return [...objects, {courseId: course.id}];
+            }
+
+        })
+
+    }
+    useEffect(()=>{
+        const exist = selectAllmap.find((e) => e.courseId === course.id);
+        const current = enrollment.find((entry) => entry.course.id === course.id);
+
+        if(exist){
+            LearnerPaginated.forEach((learner) => {
+                if(!current || !current.enrollees.some((enrollee) => enrollee.id === learner.id)) {
+                    handleCheckbox(learner, course);
+                }
+            })
+
+        }
+        // } else {
+        //     enrollment.find((entry) => entry.course.id === course.id)?.enrollees.forEach((learner) => {
+        //         handleCheckbox(learner, course);
+        //     })
+        //     selectAll.current.indeterminate = false;
+        //     selectAll.current.checked = false
+        // }
+    },[pageState.currentFrontendPage,LearnerPaginated])
     useEffect(() => {
-        if (!selectAll.current) return;
+        if(!course || !selectAll.current) return;
+        const currentCourse = enrollment.find(entry => entry.course.id === course.id);
+        const exist = selectAllmap.find((e) => e.courseId === course.id);
 
-        const courseLearners = learners.map((user) => user.id);
-        const selectedLearners = selected.filter((entry) => entry.courseId === courseId).map((entry) => entry.userId);
-
-        if (courseLearners.length === selectedLearners.length && courseLearners.length > 0) {
+        if(enrollment.length === 0) {
+            selectAll.current.indeterminate = false;
+            selectAll.current.checked = false;
+            return;
+        } else if(exist) {
             selectAll.current.indeterminate = false;
             selectAll.current.checked = true;
-        } else if (selectedLearners.length > 0) {
-            selectAll.current.indeterminate = true;
-        } else {
+        } else if(!currentCourse) {
             selectAll.current.indeterminate = false;
             selectAll.current.checked = false;
         }
-    }, [learners, courseId]);
+        else {
+            selectAll.current.indeterminate = true;
+            selectAll.current.checked = false;
+        }
+
+    }, [enrollment,course]);
 
     //Number of enrollees
     const numberOfEnrollees = (course) => {
@@ -463,7 +518,7 @@ export default function BulkEnrollment() {
 
     // Dynamic Page Number
     const Pages = [];
-    const totalFrontendPages =Math.ceil(pageState.totalUser / entry_per_chunk);
+    const totalFrontendPages = Math.ceil(pageState.totalUser / entry_per_chunk);
     for(let p = 1; p <= totalFrontendPages; p++){
         Pages.push(p)
     }
@@ -570,9 +625,10 @@ export default function BulkEnrollment() {
     }
     useEffect(() => {
         //console.log("Course:", course)
-        // console.log("Enrollment:", enrollment)
+        console.log("Enrollment:", enrollment)
+        console.log("selectAllmap:", selectAllmap)
         //console.log(hasUnsavedChanges)
-    },[enrollment])
+    },[enrollment,selectAllmap])
 
 
     const selectCourseToolTip = UseElementPos(buttonRef, openSelector, 8);
@@ -581,7 +637,7 @@ export default function BulkEnrollment() {
     return (
         <>
         <div className='grid grid-cols-4 h-full w-full
-                        grid-rows-[6.25rem_min-content_min-content_min-content_1fr_min-content]
+                        grid-rows-[6.25rem_min-content_min-content_min-content_min-content_1fr_min-content]
                         md:grid-rows-[6.25rem_min-content_min-content_auto_min-content]'>
             <Helmet>
                 {/* Title of the mark-up */}
@@ -630,7 +686,7 @@ export default function BulkEnrollment() {
 
             {/* Course */}
             <div className="row-start-2 col-span-4 flex flex-col gap-2 pl-3 pt-2
-                            md:pr-2 md:col-span-2 md:pl-4 md:py-2">
+                            md:pr-2 lg:col-span-2 lg:pl-4 lg:py-2">
                 <p className=" font-text text-xs">Selected Course:</p>
                 <div className="flex flex-row gap-2">
                     <div className="group relative">
@@ -667,7 +723,7 @@ export default function BulkEnrollment() {
                 </div>
             </div>
             <form className="py-2 grid grid-cols-[min-content_1fr_1fr_1fr] grid-rows-[min-content_auto] gap-2 col-span-4 px-3
-                            md:row-start-2 md:col-span-2 md:col-start-3 md:mr-5 md:px-0">
+                            lg:row-start-2 lg:col-span-2 lg:col-start-3 lg:mr-5 lg:px-0">
                     <div className="col-start-1 row-start-2 flex flex-row items-center gap-2 justify-end">
                         <Popover>
                             <PopoverTrigger asChild>
@@ -700,7 +756,7 @@ export default function BulkEnrollment() {
                     </div>
 
                     {/* Course Duration */}
-                    <div className="col-start-2 row-start-1 flex flex-col items-end">
+                    <div className="col-start-2 row-start-1 flex flex-col lg:items-end">
                         <p className="font-text text-xs">Course Duration:</p>
                     </div>
                     <div className="col-start-2 row-start-2 flex flex-col justify-center">
@@ -712,12 +768,16 @@ export default function BulkEnrollment() {
                             </div>
                             : assigned_courses.length === 0 ?
                             <p className="font-header text-base text-primary">No Course Selected</p>
-                            : <p className="font-header text-header text-primary">{DateFormik.values.months || 0} <span className="text-xs font-text text-unactive">Month/s,</span> {DateFormik.values.weeks || 0} <span className="text-xs font-text text-unactive">Week/s,</span> {DateFormik.values.days || 0} <span className="text-xs font-text text-unactive">Day/s</span></p>
+                            : <>
+                                <p className="font-header text-header text-primary md:block hidden">{DateFormik.values.months || 0} <span className="text-xs font-text text-unactive">Month/s,</span> {DateFormik.values.weeks || 0} <span className="text-xs font-text text-unactive">Week/s,</span> {DateFormik.values.days || 0} <span className="text-xs font-text text-unactive">Day/s</span></p>
+                                <p className="font-header text-header text-primary text-lg md:hidden">{DateFormik.values.months || 0}<span className="text-xs font-text text-unactive">mos,</span> {DateFormik.values.weeks || 0}<span className="text-xs font-text text-unactive">wks,</span> {DateFormik.values.days || 0}<span className="text-xs font-text text-unactive">d</span></p>
+                            </>
+
                         }
                     </div>
 
                     {/* Start */}
-                    <div className="col-start-3 row-start-1 flex flex-col items-end">
+                    <div className="col-start-3 row-start-1 flex flex-col lg:items-end">
                         <p className="font-text text-xs">Starting Date:</p>
                     </div>
                     <div className="col-start-3 row-start-2">
@@ -738,7 +798,7 @@ export default function BulkEnrollment() {
                     </div>
 
                     {/* End */}
-                    <div className="col-start-4 row-start-1 flex flex-col items-end">
+                    <div className="col-start-4 row-start-1 flex flex-col lg:items-end">
                         <p className="font-text text-xs">Ending Date:</p>
                     </div>
                     <div className="col-start-4 row-start-2">
@@ -760,7 +820,7 @@ export default function BulkEnrollment() {
             </form>
 
             {/* Search */}
-            <div className='col-span-2 pl-4 py-2
+            <div className='col-span-2 pl-3 py-2
                             lg:row-start-3 lg:col-span-1'>
                 {/* {
                     //search
@@ -792,7 +852,8 @@ export default function BulkEnrollment() {
             </div>
             {/* Filter */}
             <div className="col-start-4 py-2 flex flex-row items-center justify-end pr-4
-                            lg:row-start-3 lg:col-start-2 md:justify-start md:pl-2">
+                            md:justify-start md:pl-2 md:col-start-3
+                            lg:row-start-3 lg:col-start-2 ">
                 <div className="border-2 border-primary w-10 h-10 rounded-md bg-white shadow-md flex items-center justify-center text-primary gap-2 hover:cursor-pointer hover:border-primaryhover hover:bg-primaryhover hover:text-white transition-all ease-in-out
                                 md:px-4">
                     <FontAwesomeIcon icon={faFilter} className="text-lg"/>
@@ -800,17 +861,20 @@ export default function BulkEnrollment() {
             </div>
 
             {/* Number of enrollees */}
-            <div className="col-start-4 pr-5 flex flex-col items-end gap-2 ">
+            <div className="flex  items-end gap-2 col-span-4 px-3 justify-between py-2
+                            md:col-span-1 md:flex-col md:py-2 md:justify-normal
+                            lg:col-start-4 lg:pr-5 lg:px-0 lg:flex-col">
                 <p className="text-xs font-text">Number of Enrollees:</p>
                 <p className="text-primary font-header text-sm"> {numberOfEnrollees(course)}<span className="font-text text-xs text-unactive"> Enrollees</span></p>
             </div>
             {/* Table */}
-            <div className="py-2 col-span-4 px-4">
-                <EnrollmentTableProps>
+            <div className="py-2 col-span-4 px-3">
+                <EnrollmentTableProps selectAll={selectAll} all={()=>{selectAllLearner()}}>
                     {
+
                         learnerLoading || isLoading ? (
                             <LearnerLoadingProps/>
-                        )   : assigned_courses.length === 0 || !course ?(
+                        )  :  assigned_courses.length === 0 || !course?(
                             <tr className={`font-text text-sm text-primary hover:bg-gray-200 cursor-pointer`}>
                                 <td colSpan={5} className="text-center text-primary py-4">No Selected Course</td>
                             </tr>

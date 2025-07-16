@@ -22,19 +22,19 @@ const LearnerLoadingProps = () => {
                     </div>
                     </td>
 
-                    <td className="px-4 py-3 font-text text-unactive animate-pulse">
+                    <td className="px-4 py-3 font-text text-unactive animate-pulse hidden md:table-cell">
                         <div className="flex flex-col gap-2">
                         <div className="h-4 w-36 bg-gray-300 rounded-full"></div>
                         <div className="h-3 w-20 bg-gray-300 rounded-full"></div>
                         </div>
                     </td>
-                    <td className="px-4 py-3font-text text-unactive animate-pulse">
+                    <td className="px-4 py-3font-text text-unactive animate-pulse hidden md:table-cell">
                         <div className="flex flex-col gap-2">
                         <div className="h-4 w-36 bg-gray-300 rounded-full"></div>
                         <div className="h-3 w-20 bg-gray-300 rounded-full"></div>
                         </div>
                     </td>
-                    <td className="px-4 py-3 font-text text-unactive animate-pulse">
+                    <td className="px-4 py-3 font-text text-unactive animate-pulse hidden md:table-cell">
                         <div className="flex flex-col gap-2">
                         <div className="h-4 w-36 bg-gray-300 rounded-full"></div>
                         <div className="h-3 w-20 bg-gray-300 rounded-full"></div>
