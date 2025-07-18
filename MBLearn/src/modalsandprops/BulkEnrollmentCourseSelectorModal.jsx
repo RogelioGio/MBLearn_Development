@@ -2,7 +2,7 @@ import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react"
 import { useEffect, useRef, useState } from "react"
 import axiosClient from "../axios-client"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faChevronLeft, faChevronRight, faMagnifyingGlass, faXmark } from "@fortawesome/free-solid-svg-icons"
+import { faChevronLeft, faChevronRight, faFilter, faMagnifyingGlass, faXmark } from "@fortawesome/free-solid-svg-icons"
 import AssignedCourseEnrollmentCard from "./AssignedCourseEnrollmentCard"
 import {
     Select,
@@ -20,7 +20,7 @@ const BulkEnrollmentCourseSelectorModal = ({ open, close, courselist, currentCou
                 <div className='flex min-h-full items-center justify-center p-4'>
                     <DialogPanel transition className='relative overflow-hidden transform rounded-md bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in
                                                         w-[100vw]
-                                                        md:w-[60vw]'>
+                                                        lg:w-[75vw]'>
                         <div className='bg-white rounded-md h-full p-5 flex flex-col'>
                             {/* Header */}
                             <div className="pb-2 mx-4 border-b border-divider flex flex-row justify-between item-center">
@@ -45,8 +45,9 @@ const BulkEnrollmentCourseSelectorModal = ({ open, close, courselist, currentCou
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-4 py-2 px-3">
-                                <div className="col-span-1 flex items-center justify-center">
+                            <div className="grid grid-cols-4 pb-2 px-3">
+                                <div className="flex items-center justify-center col-span-4 pb-2
+                                                md:pb-0 md:col-span-1">
                                     <Select value={courseType} onValueChange={(value) => setCourseType.setFieldValue("filter", value)} className="w-full h-full" disabled={loading}>
                                         <SelectTrigger className="focus:outline-2 focus:-outline-offset-2 focus:outline-primary border-primary border-2 font-header text-primary w-full">
                                             <SelectValue placeholder="Learner Type" />
@@ -57,66 +58,76 @@ const BulkEnrollmentCourseSelectorModal = ({ open, close, courselist, currentCou
                                         </SelectContent>
                                     </Select>
                                 </div>
-                                <div className="col-span-2 col-start-3 flex flex-col justify-end">
-                                    <form>
-                                        <div className="border-primary inline-flex flex-row place-content-between border-2 font-text rounded-md shadow-md w-full">
-                                            <input type="text" className='focus:outline-none text-sm px-4 rounded-md bg-white w-full' placeholder='Search...'
-                                                name='search'
-                                                //value={searchFormik.values.search}
-                                                //onChange={searchFormik.handleChange}
-                                                // onKeyDown={(e) => {
-                                                //     if (e.key === 'Enter') {
-                                                //         e.preventDefault();
-                                                //         searchFormik.handleSubmit();
-                                                //     }
-                                                // }}
-                                                />
-                                            <div className="min-h-10 min-w-10 bg-primary text-white flex items-center justify-center">
-                                                <FontAwesomeIcon icon={faMagnifyingGlass}/>
-                                            </div>
+                                <div className="flex flex-row justify-end items-center gap-2 col-span-4
+                                                md:pt-2 md:col-span-2 md:col-start-3">
+                                    <div>
+                                        <div className="min-h-10 min-w-10 bg-white text-primary flex items-center justify-center rounded-md shadow-md border-2 border-primary hover:cursor-pointer hover:bg-primaryhover hover:border-primaryhover hover:text-white transition-all ease-in-out">
+                                            <FontAwesomeIcon icon={faFilter}/>
                                         </div>
-                                    </form>
+                                    </div>
+                                    <div className="w-full">
+                                        <form>
+                                            <div className="border-primary inline-flex flex-row place-content-between border-2 font-text rounded-md shadow-md w-full">
+                                                <input type="text" className='focus:outline-none text-sm px-4 rounded-md bg-white w-full' placeholder='Search...'
+                                                    name='search'
+                                                    //value={searchFormik.values.search}
+                                                    //onChange={searchFormik.handleChange}
+                                                    // onKeyDown={(e) => {
+                                                    //     if (e.key === 'Enter') {
+                                                    //         e.preventDefault();
+                                                    //         searchFormik.handleSubmit();
+                                                    //     }
+                                                    // }}
+                                                    />
+                                                <div className="min-h-10 min-w-10 bg-primary text-white flex items-center justify-center">
+                                                    <FontAwesomeIcon icon={faMagnifyingGlass}/>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div className="grid-rows-2 grid-cols-3 grid gap-2 px-3 py-2">
+                            <div className="grid gap-2 px-3 py-2 grid-cols-2 grid-rows-3
+                                            md:grid-rows-2 md:grid-cols-3">
                                 {
                                     loading ? (
                                         Array.from({ length: 6 }).map((_, index) => (
-                                            <div className="border-2 border-divider rounded-md p-4 shadow-md h-36 w-full animate-pulse ng-white" key={index}/>
+                                            <div className="rounded-md border p-4 shadow-md h-36 w-full animate-pulse bg-white" key={index}/>
                                         ))
-                                    ) : courselist.length === 0 ?
-                                        <div className="col-span-3 row-span-2 p-10 font-text text-unactive text-center flex flex-col items-center justify-center gap-2">
-                                            {
-                                                courseType === "myCourses" ?
-                                                    <>
-                                                        <div>
-                                                            <div className="w-14 h-14 rounded-full bg-primarybg text-primary text-2xl flex items-center justify-center">
-                                                                <FontAwesomeIcon icon={faXmark}/>
-                                                            </div>
-                                                        </div>
-                                                        <p className="text-sm">You have no inputted courses yet</p>
-                                                    </>
-                                                : courseType === "Assigned" ?
-                                                    <>
-                                                        <div>
-                                                            <div className="w-14 h-14 rounded-full bg-primarybg text-primary text-2xl flex items-center justify-center">
-                                                                <FontAwesomeIcon icon={faXmark}/>
-                                                            </div>
-                                                        </div>
-                                                        <p className="text-sm">You have no assigned courses yet</p>
-                                                    </>
-                                                : <p className="text-sm">No courses found</p>
-                                            }
-                                        </div>
-                                    :
-                                    courselist.map((course, index) => (
-                                        <AssignedCourseEnrollmentCard key={index} AssignedCourse={course} selected={currentCourse} onclick={()=>{setCurrentCourse(course), resetPagination() ,setTimeout(()=>{close()},100)}} numberOfEnrollees={numberOfEnrollees(course)}/>))
-                                }
+                                    ) :
+                                    courselist.length === 0 ?
+                                                <div className="col-span-3 row-span-2 p-10 font-text text-unactive text-center flex flex-col items-center justify-center gap-2">
+                                                    {
+                                                        courseType === "myCourses" ?
+                                                            <>
+                                                                <div>
+                                                                    <div className="w-14 h-14 rounded-full bg-primarybg text-primary text-2xl flex items-center justify-center">
+                                                                        <FontAwesomeIcon icon={faXmark}/>
+                                                                    </div>
+                                                                </div>
+                                                                <p className="text-sm">You have no inputted courses yet</p>
+                                                            </>
+                                                        : courseType === "Assigned" ?
+                                                            <>
+                                                                <div>
+                                                                    <div className="w-14 h-14 rounded-full bg-primarybg text-primary text-2xl flex items-center justify-center">
+                                                                        <FontAwesomeIcon icon={faXmark}/>
+                                                                    </div>
+                                                                </div>
+                                                                <p className="text-sm">You have no assigned courses yet</p>
+                                                            </>
+                                                        : <p className="text-sm">No courses found</p>
+                                                    }
+                                                </div>
+                                            :
+                                            courselist.map((course, index) => (
+                                                <AssignedCourseEnrollmentCard key={index} AssignedCourse={course} selected={currentCourse} onclick={()=>{setCurrentCourse(course), resetPagination() ,setTimeout(()=>{close()},100)}} numberOfEnrollees={numberOfEnrollees(course)}/>))
+                                        }
                             </div>
 
                             {/* Pagination */}
-                            <div className="pt-4 px-4 col-span-4 flex flex-row justify-between items-center">
+                            <div className="px-4 col-span-4 flex flex-row justify-between items-center">
                                 <div>
                                     <p className='text-sm font-text text-unactive'>
                                         Showing <span className='font-header text-primary'>1</span> to <span className='font-header text-primary'>1</span> of <span className='font-header text-primary'>1</span> <span className='text-primary'>results</span>

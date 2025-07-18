@@ -1,25 +1,27 @@
 const AssignedCourseEnrollmentCard = ({selected, onclick, AssignedCourse, numberOfEnrollees }) => {
     //const enrollees = numberOfEnrollees(id)
     return(
-        <div className={`group flex flex-col p-4 gap-2 border border-primary rounded-md font-text shadow-md hover:cursor-pointer hover:bg-primaryhover hover:text-white transition-all ease-in-out ${selected.name === AssignedCourse?.name ? 'bg-primary text-white' : 'bg-white text-primary'}`}
+        <div className={`grid gap-x-1 grid-cols-[1fr_min-content] grid-rows-[min-content_1fr] border border-primary rounded-md py-2 px-4 shadow-md w-full hover:cursor-pointer hover:bg-primaryhover hover:text-white transition-all ease-in-out ${selected.name === AssignedCourse?.name ? 'bg-primary text-white' : 'bg-white text-primary'}`}
             onClick={onclick}>
-            {/* Badge */}
-            <div className="flex justify-between items-center">
-                <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-blue-700/10 ring-inset">
-                    {AssignedCourse.training_type }
-                </span>
-                {
-                    numberOfEnrollees ?
-                    <div className={`flex items-center justify-center font-header text-sm w-8 h-8 rounded-full transition-all ease-in-out ${selected.name === AssignedCourse?.name ? 'bg-white text-primary' : 'bg-primary text-white group-hover:bg-white group-hover:text-primary'}`}>
-                        {numberOfEnrollees }
-                    </div>
-                    : <div className="w-8 h-8"/>
-                }
+            <div className="row-start-1 col-start-2 -span-2 flex items-center justify-center gap-2
+                            md:row-span-2">
+                <div className={`min-h-5 min-w-5 h-6 md:h-8 w-6 md:w-8 rounded-full flex items-center justify-center font-text text-xs ${selected.name === AssignedCourse?.name ? 'bg-white text-primary' : 'bg-primary text-white'}`}>
+                    <p>{numberOfEnrollees}</p>
+                </div>
             </div>
-            {/* Course Header */}
-            <div className="col-span-2">
-                <h1 className="text-sm font-header leading-tight">{AssignedCourse?.name}</h1>
-                <p className="text-xs">Course ID: {AssignedCourse?.CourseID}</p>
+            <div className="flex items-end row-start-1 col-start-1">
+                <div>
+                    <span className="font-text inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-blue-700/10 ring-inset">
+                        {AssignedCourse.training_type }
+                    </span>
+                </div>
+            </div>
+            <div className="row-start-2 col-span-2
+                            md:col-span-1">
+                <div>
+                    <h1 className="font-header text-sm">{AssignedCourse?.name}</h1>
+                    <h1 className="font-text text-xs">Course ID: {AssignedCourse?.CourseID}</h1>
+                </div>
             </div>
         </div>
     )

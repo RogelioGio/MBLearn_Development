@@ -34,28 +34,53 @@ import { Popover, PopoverContent, PopoverTrigger } from "../components/ui/popove
 import { useBlocker } from "react-router-dom";
 import Unerollnment from "../modalsandprops/Unenrollment"
 import ReviewEnrollment from "../modalsandprops/ReviewEnrollment"
+import { useOption } from "../contexts/AddUserOptionProvider"
 
 
 
 function UseElementPos (ref,enabled=true, offset=8){
     const [coords, setCoords] = useState(null);
+    const [breakpoint, setBreakpoint] = useState(null);
 
     useEffect(()=>{
+        const getBreakpoint = () => {
+            const width = window.innerWidth;
+            if (width >= 1280) return "lg";
+            if (width >= 1024) return "md";
+            if (width >= 768) return "sm";
+            return "xs";
+        }
+
+
         const toolTip = () => {
-            const rect = ref.current.getBoundingClientRect();
-            setCoords({
-                top: rect.bottom + offset,
-                left: rect.left + rect.width / 2
+            const run = () => {
+                const rect = ref.current.getBoundingClientRect();
+                const currentBreakpoint = getBreakpoint();
+                setCoords({
+                    top: rect.bottom + offset,
+                    left: ["md", "sm", "xs"].includes(currentBreakpoint)
+                        ? rect.left
+                        : rect.left + rect.width / 2,
+                });
+            }
+
+            requestAnimationFrame(()=>{
+                run();
+                requestAnimationFrame(run)
             });
         }
 
         toolTip();
-        window.addEventListener('resize', toolTip);
+        const resizeObserver = new ResizeObserver(toolTip);
+        resizeObserver.observe(ref.current);
+
+        window.addEventListener('resize', toolTip)
         window.addEventListener('scroll', toolTip, true);
 
         return () => {
-            window.removeEventListener('resize', toolTip);
             window.removeEventListener('scroll', toolTip, true);
+            window.removeEventListener('resize', toolTip)
+            resizeObserver.disconnect();
         }
     },[ref, enabled, offset])
 
@@ -63,7 +88,7 @@ function UseElementPos (ref,enabled=true, offset=8){
 }
 
 export default function BulkEnrollment() {
-
+    const {departments,cities,location, division, section} = useOption();
     const {user} = useStateContext();
     const [assigned_courses, setAssigned_courses] = useState([]);
 
@@ -77,6 +102,9 @@ export default function BulkEnrollment() {
     const [isLoading, setLoading] = useState(true); //Loading state
     const [learnerLoading, setLearnerLoading] = useState(true); //Loading state
     const [courseListLoading, setCourseListLoading] = useState(true); //Loading state for course list
+    const [learnerFiltering, setLearnerFiltering] = useState(false)
+    const [learnerFiltered, setLearnerFiltered] = useState(false)
+    const [openLearnerFilter, setOpenLearnerFilter] = useState(false)
 
     const selectAll = useRef(null) //select all learners
     const [all, setAll] = useState(false); //Selected Learners
@@ -98,9 +126,41 @@ export default function BulkEnrollment() {
 
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
+    const [popOverState, setPopOverState] = useState({
+        numberOfMonths: 2,
+        side: "bottom",
+        sideOffset: 8,
+    })
+
     useEffect(() => {
         setEnrollment([]);
+
+
+        const getBreakPoint = () => {
+            const width = window.innerWidth;
+            if (width >= 1024) {
+                setPopOverState({
+                    numberOfMonths: 2,
+                    side: "bottom",
+                    sideOffset: 8,
+                })
+                return "md";
+            }else {
+                setPopOverState({
+                    numberOfMonths: 1,
+                    side: "left",
+                    sideOffset: 8,
+                })
+            }
+            return "xs";
+        }
+
+        window.addEventListener('resize', getBreakPoint);
+        getBreakPoint();
+        return () => window.removeEventListener('resize', getBreakPoint);
     },[])
+
+
 
     //Dates
     const getEndDate = () => {
@@ -179,10 +239,7 @@ export default function BulkEnrollment() {
     }
     const [bufferedUserList, setBufferedUserList] = useState([])
     const [currentChunk, setCurrentChunk] = useState(1);
-    //use Current Page
     const entry_per_chunk = 5;
-
-
 
     //Next and Previous Page
     const back = () => {
@@ -241,15 +298,8 @@ export default function BulkEnrollment() {
         return bufferedUserList.slice(startIndex, startIndex + entry_per_chunk);
     }, [bufferedUserList, currentChunk])
 
-
     //Handle Learner to be enroll
-    const handleLearnerChange = (courseId) => {
-        setLearnerLoading(true)
-        if(!courseId){
-            setBufferedUserList([]);
-            setLearnerLoading(false);
-            return
-        }
+    const fetchLearner = (courseId) => {
         axiosClient.get(`/index-user-enrollments/${courseId}`,{
             params: {
                         page: pageState.currentPage,
@@ -267,6 +317,28 @@ export default function BulkEnrollment() {
             console.log(err)
         })
     }
+    const handleLearnerChange = (courseId) => {
+        setLearnerLoading(true)
+        if(!courseId){
+            setBufferedUserList([]);
+            setLearnerLoading(false);
+            return
+        }
+        fetchLearner(courseId);
+    }
+    const handleLearnerFilter = () => {
+        setLearnerFiltering(true)
+        console.log("Filtering Learner for course:", course.id, "with values:", LearnerFormik.values)
+        //Fetch Learner
+        //fetchLearner(courseId);
+        setTimeout(()=>{
+            setOpenLearnerFilter(false)
+            setLearnerFiltering(false)
+            setLearnerFiltered(true);
+        },2000)
+    }
+
+
 
     const blocker = useBlocker(true);
     useEffect(() => {
@@ -278,8 +350,6 @@ export default function BulkEnrollment() {
             }
         }
     }, [blocker,enrollment.length]);
-
-
 
     //Learner to enroll
     const handleCheckbox = (User, course) => {
@@ -328,79 +398,6 @@ export default function BulkEnrollment() {
     }
 
     //Select All Learners
-    const handleSelectAll = (Course) => {
-        //Handle all selected
-        const allSelected = selected.filter(s => s.courseId === Course.id).length === learners.length
-        if (allSelected) {
-            setSelected(prev =>
-                prev.filter(entry => entry.courseId !== Course.id)
-            );
-
-            console.log("unselect all")
-        }else{
-            const start = new Date()
-
-            const months = Course?.months || 0;
-            const weeks = Course?.weeks || 0;
-            const days = Course?.days || 0;
-
-            const end = add(start, {
-                months,
-                weeks,
-                days,
-            });
-
-            const newSelections = learners.map(e => ({
-                userId: e.id,
-                courseId: Course.id,
-                enrollerId: user.user_infos.id,
-                start_date: format(start, 'yyyy-MM-dd') + ' 00:00:00',
-                end_date: format(end, 'yyyy-MM-dd') + ' 23:59:59',
-            }));
-
-            setSelected(prev =>
-                [...prev.filter(entry => entry.courseId !== Course.id), ...newSelections]
-            );
-        }
-
-        // Set Results
-        setResults((prevCourses) => {
-            if(!Course) return prevCourses;
-
-            const updated = [...prevCourses];
-            const exist = updated.findIndex(
-                (c) => c.course.id === Course.id
-            );
-
-            const learnerIds = learners.map((learner) => learner.id);
-
-            if(exist !== -1){
-                const courseToUpdate = {...updated[exist] };
-                const currentEnrollees = (courseToUpdate.enrollees || []).map((u) => u.id);
-
-                const allSelected = learnerIds.every(id => currentEnrollees.includes(id))
-
-                if(allSelected){
-                    courseToUpdate.enrollees = []
-                } else {
-                    const newEnrollees = learners.filter((l) => !currentEnrollees.includes(l.id))
-                    courseToUpdate.enrollees = [...(courseToUpdate.enrollees || []), ...newEnrollees]
-                }
-
-                updated[exist] = courseToUpdate;
-            } else {
-                updated.push({
-                    course: Course,
-                    enrollees: [...learners],
-                    months: Course?.months,
-                    weeks: Course?.weeks,
-                    days: Course?.days,
-                })
-            }
-            return updated;
-        })
-
-    }
     const selectAllLearner = () => {
         if(!course.id) return;
 
@@ -452,13 +449,6 @@ export default function BulkEnrollment() {
             })
 
         }
-        // } else {
-        //     enrollment.find((entry) => entry.course.id === course.id)?.enrollees.forEach((learner) => {
-        //         handleCheckbox(learner, course);
-        //     })
-        //     selectAll.current.indeterminate = false;
-        //     selectAll.current.checked = false
-        // }
     },[pageState.currentFrontendPage,LearnerPaginated])
     useEffect(() => {
         if(!course || !selectAll.current) return;
@@ -489,22 +479,6 @@ export default function BulkEnrollment() {
         return current ? current.enrollees.length : 0;
     };
 
-    // useEffect(() =>{
-    //     setLoading(true)
-    //     setLearnerLoading(true)
-
-    //     //fetch courses
-    //     axiosClient.get('/courses').then(({data})=>{
-    //         setAssigned_courses(data.data);
-    //         handleCourseChange(data.data[0]);
-    //         selectCourse(data.data[0].name);
-    //         setLoading(false);
-    //     }).catch((err)=>
-    //     console.log(err)
-    //     );
-    // },[]);
-
-
     useEffect(() => {
         const frontEndPagination = (pageState.currentPage - 1) * 2 + currentChunk;
 
@@ -529,6 +503,28 @@ export default function BulkEnrollment() {
             filter: "myCourses"
         }
     });
+    const LearnerFormik = useFormik({
+        initialValues: {
+            division: '',
+            department: '',
+            section: '',
+            branch: '',
+            city:'',
+        },
+        onSubmit: values => {
+            console.log("Filtering the following, ", values)
+        }
+    })
+    const [selectedBranches, setSelectedBranches] = useState([])
+    const handleBranchesOptions = (e) =>{
+        const city = e.target.value;
+        LearnerFormik.setFieldValue('city', city)
+        LearnerFormik.setFieldValue('branch', '')
+
+        //Filtering
+        const filteredBranches = location.filter((branch) => branch.city_id.toString() === city)
+        setSelectedBranches(filteredBranches)
+    }
 
     useEffect(() => {
         setCourseListLoading(true);
@@ -580,14 +576,14 @@ export default function BulkEnrollment() {
     // }, [assigned_courses]);
 
     //reset the operation
-    const reset = () => {
-        setTimeout(() => {
-            handleCourseChange(assigned_courses[0]);
-            setResults([])
-            setSelected([]);
-            pageChangeState("currentPage", 1)
-        },250)
-    }
+    // const reset = () => {
+    //     setTimeout(() => {
+    //         handleCourseChange(assigned_courses[0]);
+    //         setResults([])
+    //         setSelected([]);
+    //         pageChangeState("currentPage", 1)
+    //     },250)
+    // }
 
     //Handle Enrollment Submisstion
     const handleEnrollment = () => {
@@ -691,7 +687,10 @@ export default function BulkEnrollment() {
                 <div className="flex flex-row gap-2">
                     <div className="group relative">
                         <div className={`w-10 h-10 text-primary border-2 border-primary rounded-md flex items-center justify-center bg-white shadow-md transition-all ease-in-out ${isLoading ? "opacity-50 cursor-not-allowed" : "hover:cursor-pointer hover:bg-primary hover:text-white hover:scale-105"}`}
-                            onClick={() => {setOpenSelector(true)}}
+                            onClick={() => {
+                                if(isLoading) return;
+                                setOpenSelector(true);
+                            }}
                             ref={buttonRef}>
                             <FontAwesomeIcon icon={faBookBookmark}/>
                         </div>
@@ -700,12 +699,9 @@ export default function BulkEnrollment() {
                                 top: `${selectCourseToolTip?.top}px`,
                                 left: `${selectCourseToolTip?.left}px`,
                             }}
-                        className={`fixed  -translate-x-1/2 scale-0 group-hover:scale-100 bg-tertiary text-white font-text p-2 text-xs rounded-md shadow-lg whitespace-nowrap z-50 transition-all ease-in-out`}>
-                        <p>Select Course</p>
+                        className={`fixed scale-0 group-hover:scale-100 bg-tertiary text-white font-text p-2 text-xs rounded-md shadow-lg whitespace-nowrap z-50 transition-all ease-in-out ${isLoading ? "group-hover:scale-0" : " group-hover:scale-100"} xl:-translate-x-1/2`}>
+                            <p>Select Course</p>
                         </div>
-                        {/* <div className='absolute -bottom-10 left-1/2 transform-y-1/2 w-fit bg-tertiary rounded-md text-white font-text text-xs p-2 items-center justify-center whitespace-nowrap scale-100 group-hover:scale-100 block transition-all ease-in-out'>
-                        <p>Select Course</p>
-                    </div> */}
                     </div>
                     <div className={`${isLoading ? "flex-row items-center justify-between":"flex-col"} flex `}>
                         {
@@ -727,25 +723,25 @@ export default function BulkEnrollment() {
                     <div className="col-start-1 row-start-2 flex flex-row items-center gap-2 justify-end">
                         <Popover>
                             <PopoverTrigger asChild>
-                                <button className="group" disabled={isLoading || assigned_courses.length === 0}>
+                                <button className="group relative" disabled={isLoading || assigned_courses.length === 0}>
                                     <div ref={dateButton} className={`w-10 h-10 text-primary border-2 border-primary rounded-md flex items-center justify-center bg-white shadow-md transition-all ease-in-out ${isLoading || assigned_courses.length === 0 ? "opacity-50 cursor-not-allowed" : "hover:cursor-pointer hover:bg-primary hover:text-white hover:scale-105"}`}>
                                         <FontAwesomeIcon icon={faCalendar}/>
                                     </div>
                                     <div
-                                            style={{
-                                                top: `${dateToolTip?.top}px`,
-                                                left: `${dateToolTip?.left}px`,
-                                            }}
-                                        className={`fixed -translate-x-1/2 scale-0 bg-tertiary text-white font-text p-2 text-xs rounded-md shadow-lg whitespace-nowrap z-50 transition-all ease-in-out ${isLoading ? "group-hover:scale-0" : " group-hover:scale-100"}`}>
+                                        style={{
+                                            top: `${dateToolTip?.top}px`,
+                                            left: `${dateToolTip?.left}px`,
+                                        }}
+                                        className={`fixed scale-0 group-hover:scale-100 bg-tertiary text-white font-text p-2 text-xs rounded-md shadow-lg whitespace-nowrap z-50 transition-all ease-in-out ${isLoading ? "group-hover:scale-0" : " group-hover:scale-100"} xl:-translate-x-1/2`}>
                                         <p>Date Adjustment</p>
                                     </div>
                                 </button>
                             </PopoverTrigger>
-                            <PopoverContent className="w-fit p-2">
+                            <PopoverContent className="w-fit p-2" side={popOverState.side} sideOffset={popOverState.sideOffset}>
                                 <Calendar
                                     initialFocus
                                     mode="range"
-                                    numberOfMonths={2}
+                                    numberOfMonths={popOverState.numberOfMonths}
                                     defaultMonth={date.from}
                                     selected={date}
                                     disabled={{ before: new Date() }}
@@ -854,10 +850,158 @@ export default function BulkEnrollment() {
             <div className="col-start-4 py-2 flex flex-row items-center justify-end pr-4
                             md:justify-start md:pl-2 md:col-start-3
                             lg:row-start-3 lg:col-start-2 ">
-                <div className="border-2 border-primary w-10 h-10 rounded-md bg-white shadow-md flex items-center justify-center text-primary gap-2 hover:cursor-pointer hover:border-primaryhover hover:bg-primaryhover hover:text-white transition-all ease-in-out
-                                md:px-4">
-                    <FontAwesomeIcon icon={faFilter} className="text-lg"/>
-                </div>
+                <Sheet open={openLearnerFilter} onOpenChange={setOpenLearnerFilter}>
+                    <SheetTrigger>
+                        <div className="border-2 border-primary w-10 h-10 rounded-md bg-white shadow-md flex items-center justify-center text-primary gap-2 hover:cursor-pointer hover:border-primaryhover hover:bg-primaryhover hover:text-white transition-all ease-in-out
+                                        md:px-4">
+                            <FontAwesomeIcon icon={faFilter} className="text-lg"/>
+                        </div>
+                    </SheetTrigger>
+                    <SheetOverlay className="bg-gray-500/75 backdrop-blur-sm transition-all" />
+                    <SheetContent>
+                        <SheetTitle className={"font-header text-primary"}>Learner Flter</SheetTitle>
+                        <SheetDescription className={"font-text text-xs"}>Filter learner you want to enroll in the selected course</SheetDescription>
+                        <form onSubmit={LearnerFormik.handleSubmit} className="py-2 flex-col flex gap-3">
+                            <div className="inline-flex flex-col gap-1">
+                                    <label htmlFor="division" className="font-header text-xs flex flex-row justify-between">
+                                        <p className="text-xs font-text text-unactive">Division </p>
+                                    </label>
+                                    <div className="grid grid-cols-1">
+                                        <select id="division" name="division" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                            value={LearnerFormik.values.division}
+                                            onChange={LearnerFormik.handleChange}
+                                            onBlur={LearnerFormik.handleBlur}
+                                            >
+                                            <option value=''>Select Division</option>
+                                            {
+                                                division.map((division) => (
+                                                    <option key={division.id} value={division.id}>{division.division_name}</option>
+                                                ))
+                                            }
+                                        </select>
+                                        <svg className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                        <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
+                                        </svg>
+                                    </div>
+                            </div>
+                            <div className="inline-flex flex-col gap-1">
+                                <label htmlFor="department" className="font-header text-xs flex flex-row justify-between">
+                                    <p className="text-xs font-text text-unactive">Department </p>
+                                </label>
+                                <div className="grid grid-cols-1">
+                                    <select id="department" name="department" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                        value={LearnerFormik.values.department}
+                                        onChange={LearnerFormik.handleChange}
+                                        onBlur={LearnerFormik.handleBlur}
+                                        >
+                                        <option value=''>Select Department</option>
+                                        {
+                                            departments.map((department) => (
+                                                <option key={department.id} value={department.id}>{department.department_name}</option>
+                                            ))
+                                        }
+                                    </select>
+                                    <svg className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                    <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div className="inline-flex flex-col gap-1">
+                                <label htmlFor="section" className="font-header text-xs flex flex-row justify-between">
+                                    <p className="text-xs font-text text-unactive">Section</p>
+                                </label>
+                                <div className="grid grid-cols-1">
+                                    <select id="section" name="section" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                        value={LearnerFormik.values.section}
+                                        onChange={LearnerFormik.handleChange}
+                                        onBlur={LearnerFormik.handleBlur}
+                                        >
+                                        <option value=''>Select Section</option>
+                                        {
+                                            section.map((section) => (
+                                                <option key={section.id} value={section.id}>{section.section_name}</option>
+                                            ))
+                                        }
+                                    </select>
+                                    <svg className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                    <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div className="inline-flex flex-col gap-1">
+                                <label htmlFor="city" className="font-header text-xs flex flex-row justify-between">
+                                    <p className="text-xs font-text text-unactive">City</p>
+                                </label>
+                                <div className="grid grid-cols-1">
+                                    <select id="city" name="city" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                        value={LearnerFormik.values.city}
+                                        onChange={handleBranchesOptions}
+                                        onBlur={LearnerFormik.handleBlur}
+                                        >
+                                        <option value=''>Select Branch City</option>
+                                        {
+                                            cities.map((city) => (
+                                                <option key={city.id} value={city.id}>{city.city_name}</option>
+                                            ))
+                                        }
+                                    </select>
+                                    <svg className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                    <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div className="inline-flex flex-col gap-1">
+                                <label htmlFor="branch" className="font-header text-xs flex flex-row justify-between">
+                                    <p className="text-xs font-text text-unactive">Location</p>
+                                </label>
+                                <div className="grid grid-cols-1">
+                                    <select id="branch" name="branch" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
+                                        value={LearnerFormik.values.branch}
+                                        onChange={LearnerFormik.handleChange}
+                                        onBlur={LearnerFormik.handleBlur}
+                                        >
+                                        <option value=''>Select Branch Location</option>
+                                        {selectedBranches.map((branch) => (
+                                            <option key={branch.id} value={branch.id}>{branch.branch_name}</option>
+                                        ))}
+                                    </select>
+                                    <svg className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                    <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </form>
+                        <div className="flex flex-row gap-2 py-2">
+                            <div className={`w-full p-3 flex flex-row justify-center gap-2 items-center bg-primary text-white rounded-md shadow-md ease-in-out transition-all ${learnerFiltering ? "opacity-50 cursor-not-allowed" : "hover:cursor-pointer hover:bg-primaryhover"}`}
+                                onClick={()=>{
+                                    if(learnerFiltering) return;
+                                    handleLearnerFilter()}}>
+                                {
+                                    learnerFiltering ? <>
+                                        <FontAwesomeIcon icon={faSpinner} className="text-white mr-2 animate-spin"/>
+                                        <p className="font-header">Filtering...</p>
+                                    </>
+                                    :
+                                    <>
+                                    <FontAwesomeIcon icon={faFilter}/>
+                                    <p className="font-header">Filter</p>
+                                    </>
+                                }
+                            </div>
+                            {/* reset */}
+                            {
+                                learnerFiltered ?
+                                <div className=" flex items-center justify-center bg-white border-2 border-primary rounded-md min-h-12 min-w-12 h-12 w-12 shadow-md text-primary hover:cursor-pointer hover:bg-primaryhover hover:border-primaryhover hover:text-white transition-all ease-in-out"
+                                    onClick={()=>{
+                                        setLearnerFiltered(false);
+                                    }}>
+                                    <FontAwesomeIcon icon={faXmark} className="text-2xl"/>
+                                </div>
+                                : null
+                            }
+                        </div>
+                    </SheetContent>
+                </Sheet>
             </div>
 
             {/* Number of enrollees */}
