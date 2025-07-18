@@ -1,13 +1,16 @@
 const AssignedCourseEnrollmentCard = ({selected, onclick, AssignedCourse, numberOfEnrollees }) => {
     //const enrollees = numberOfEnrollees(id)
     return(
-        <div className={`grid gap-x-1 grid-cols-[1fr_min-content] grid-rows-[min-content_1fr] border border-primary rounded-md py-2 px-4 shadow-md w-full hover:cursor-pointer hover:bg-primaryhover hover:text-white transition-all ease-in-out ${selected.name === AssignedCourse?.name ? 'bg-primary text-white' : 'bg-white text-primary'}`}
+        <div className={`grid gap-1 grid-cols-[1fr_min-content] grid-rows-[min-content_1fr] border border-primary rounded-md py-2 px-4 shadow-md w-full hover:cursor-pointer hover:bg-primaryhover hover:text-white transition-all ease-in-out ${selected.name === AssignedCourse?.name ? 'bg-primary text-white' : 'bg-white text-primary'}`}
             onClick={onclick}>
             <div className="row-start-1 col-start-2 -span-2 flex items-center justify-center gap-2
                             md:row-span-2">
-                <div className={`min-h-5 min-w-5 h-6 md:h-8 w-6 md:w-8 rounded-full flex items-center justify-center font-text text-xs ${selected.name === AssignedCourse?.name ? 'bg-white text-primary' : 'bg-primary text-white'}`}>
-                    <p>{numberOfEnrollees}</p>
-                </div>
+                {
+                    numberOfEnrollees === 0 ? null :
+                    <div className={`min-h-5 min-w-5 h-6 md:h-8 w-6 md:w-8 rounded-full flex items-center justify-center font-text text-xs ${selected.name === AssignedCourse?.name ? 'bg-white text-primary' : 'bg-primary text-white'}`}>
+                        <p>{numberOfEnrollees}</p>
+                    </div>
+                }
             </div>
             <div className="flex items-end row-start-1 col-start-1">
                 <div>

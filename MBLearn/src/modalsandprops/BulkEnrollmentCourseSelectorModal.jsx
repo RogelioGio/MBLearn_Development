@@ -2,7 +2,7 @@ import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react"
 import { useEffect, useRef, useState } from "react"
 import axiosClient from "../axios-client"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faChevronLeft, faChevronRight, faFilter, faMagnifyingGlass, faXmark } from "@fortawesome/free-solid-svg-icons"
+import { faChevronLeft, faChevronRight, faFilter, faMagnifyingGlass, faSpinner, faXmark } from "@fortawesome/free-solid-svg-icons"
 import AssignedCourseEnrollmentCard from "./AssignedCourseEnrollmentCard"
 import {
     Select,
@@ -12,7 +12,7 @@ import {
     SelectItem,
 } from '../components/ui/select';
 
-const BulkEnrollmentCourseSelectorModal = ({ open, close, courselist, currentCourse, setCurrentCourse, courseType, setCourseType, resetPagination,loading, numberOfEnrollees}) => {
+const BulkEnrollmentCourseSelectorModal = ({ open, close, courselist, currentCourse, setCurrentCourse, courseType, setCourseType, resetPagination,loading, numberOfEnrollees, pageState}) => {
     return (
         <Dialog open={open} onClose={()=>{}}>
             <DialogBackdrop transition className="backdrop-blur-sm fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in z-30"/>
@@ -88,7 +88,7 @@ const BulkEnrollmentCourseSelectorModal = ({ open, close, courselist, currentCou
                                 </div>
                             </div>
 
-                            <div className="grid gap-2 px-3 py-2 grid-cols-2 grid-rows-3
+                            <div className="grid gap-2 px-3 py-2 grid-cols-1
                                             md:grid-rows-2 md:grid-cols-3">
                                 {
                                     loading ? (
@@ -128,10 +128,18 @@ const BulkEnrollmentCourseSelectorModal = ({ open, close, courselist, currentCou
 
                             {/* Pagination */}
                             <div className="px-4 col-span-4 flex flex-row justify-between items-center">
-                                <div>
-                                    <p className='text-sm font-text text-unactive'>
-                                        Showing <span className='font-header text-primary'>1</span> to <span className='font-header text-primary'>1</span> of <span className='font-header text-primary'>1</span> <span className='text-primary'>results</span>
-                                    </p>
+                                <div className="flex flex-row items-center">
+                                    {
+                                        loading ? <>
+                                        <FontAwesomeIcon icon={faSpinner} className='animate-spin mr-2 text-unactive' />
+                                        <p className='text-sm font-text text-unactive'>Retrieving Courses...</p>
+                                        </>
+                                        : courselist.length === 0 ?
+                                        <p className='text-sm font-text text-unactive'>No courses found</p>
+                                        :<p className='text-sm font-text text-unactive'>
+                                        Showing <span className='font-header text-primary'>{pageState.startNumber}</span> to <span className='font-header text-primary'>{pageState.endNumber}</span> of <span className='font-header text-primary'>{pageState.totalCourse}</span> total courses
+                                        </p>
+                                    }
                                 </div>
                                 <div>
                                      {/* ${isLoading || learnerLoading ? "opacity-50 cursor-not-allowed" : "cursor-pointer"} */}

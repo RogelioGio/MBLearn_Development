@@ -237,6 +237,28 @@ export default function BulkEnrollment() {
             [key]: value
         }))
     }
+    //Pagenation States
+    const [coursePageState, setCoursePagination] = useState({
+        currentPage: 1,
+        perPage:6,
+        totalCourse: 0,
+        lastPage: 1,
+        startNumber: 0,
+        endNumber: 0,
+    })
+    //Pagination Change State
+    const coursePageChangeState = (key, value) => {
+        setCoursePagination((prev) => ({
+            ...prev,
+            [key]: value
+        }))
+    }
+    useEffect(() => {
+            coursePageChangeState('startNumber', (coursePageState.currentPage - 1) * coursePageState.perPage + 1)
+            coursePageChangeState('endNumber', Math.min(coursePageState.currentPage * coursePageState.perPage, coursePageState.totalCourse))
+        },[coursePageState.currentPage, coursePageState.perPage, coursePageState.totalCourse])
+
+
     const [bufferedUserList, setBufferedUserList] = useState([])
     const [currentChunk, setCurrentChunk] = useState(1);
     const entry_per_chunk = 5;
@@ -300,6 +322,7 @@ export default function BulkEnrollment() {
 
     //Handle Learner to be enroll
     const fetchLearner = (courseId) => {
+        setLearnerLoading(true)
         axiosClient.get(`/index-user-enrollments/${courseId}`,{
             params: {
                         page: pageState.currentPage,
@@ -318,7 +341,6 @@ export default function BulkEnrollment() {
         })
     }
     const handleLearnerChange = (courseId) => {
-        setLearnerLoading(true)
         if(!courseId){
             setBufferedUserList([]);
             setLearnerLoading(false);
@@ -531,15 +553,15 @@ export default function BulkEnrollment() {
         if(formik.values.filter === "myCourses"){
             axiosClient.get(`/select-user-added-courses/${user.user_infos?.id}`,{
                 params: {
-                    page: pageState.currentPage,
-                    perPage: pageState.perPage,
+                    page: coursePageState.currentPage,
+                    perPage: coursePageState.perPage,
                 }
             })
             .then(({data}) => {
                 setAssigned_courses(data.data)
                 setCourse(data.data[0])
-                pageChangeState("totalCourses", data.total)
-                pageChangeState("lastPage", data.lastPage)
+                coursePageChangeState("totalCourse", data.total)
+                coursePageChangeState("lastPage", data.lastPage)
                 setCourseListLoading(false);
                 setLoading(false)
             })
@@ -549,15 +571,15 @@ export default function BulkEnrollment() {
         } else if(formik.values.filter ==="Assigned"){
             axiosClient.get(`/select-user-assigned-courses/${user.user_infos?.id}`,{
                     params: {
-                        page: pageState.currentPage,
-                        per_page: pageState.perPage,
+                        page: coursePageState.currentPage,
+                        per_page: coursePageState.perPage,
                     }
                 })
                 .then(({ data }) => {
                     setAssigned_courses(data.data)
                     setCourse(data.data[0])
-                    pageChangeState("totalCourses", data.total)
-                    pageChangeState("lastPage", data.lastPage)
+                    coursePageChangeState("totalCourse", data.total)
+                    coursePageChangeState("lastPage", data.lastPage)
                     setCourseListLoading(false);
                     setLoading(false)
                 })
@@ -634,7 +656,8 @@ export default function BulkEnrollment() {
         <>
         <div className='grid grid-cols-4 h-full w-full
                         grid-rows-[6.25rem_min-content_min-content_min-content_min-content_1fr_min-content]
-                        md:grid-rows-[6.25rem_min-content_min-content_auto_min-content]'>
+                        md:grid-rows-[6.25rem_min-content_min-content_min-content_1fr_min-content]
+                        lg:grid-rows-[6.25rem_min-content_min-content_auto_min-content]'>
             <Helmet>
                 {/* Title of the mark-up */}
                 <title>MBLearn | Enroll Trainee</title>
@@ -1095,7 +1118,7 @@ export default function BulkEnrollment() {
         </div>
 
         {/* Course Selector */}
-        <BulkEnrollmentCourseSelectorModal open={openSelector} close={()=>{setOpenSelector(false)}} courselist={assigned_courses} currentCourse={course} setCurrentCourse={setCourse} courseType={formik.values.filter} setCourseType={formik} loading={courseListLoading} numberOfEnrollees={numberOfEnrollees} resetPagination={()=>{pageChangeState('currentPage', 1), pageChangeState('currentFrontendPage', 1), setCurrentChunk(1)}}/>
+        <BulkEnrollmentCourseSelectorModal open={openSelector} close={()=>{setOpenSelector(false)}} courselist={assigned_courses} currentCourse={course} setCurrentCourse={setCourse} courseType={formik.values.filter} setCourseType={formik} loading={courseListLoading} numberOfEnrollees={numberOfEnrollees} resetPagination={()=>{pageChangeState('currentPage', 1), pageChangeState('currentFrontendPage', 1), setCurrentChunk(1)}} pageState={coursePageState}/>
         {/* Error */}
         <EnrollmentFailedModal isOpen={enrollmentFailed} onClose={()=>setEnrollmentFailed(false)}/>
         {/* Unenrollment */}
@@ -1103,7 +1126,7 @@ export default function BulkEnrollment() {
         {/* Review Enrollment */}
         <ReviewEnrollment open={openReview} close={()=>{setOpenReview(false)}} enrollment={enrollment} enroll={handleEnrollment} enrolling={enrolling}/>
         {/* Complete Enrollment */}
-        <ReviewEnrollment open={enrolled} close={()=>{setEnrolled(false)}} enrollment={enrollment} enrolled={true} />
+        <ReviewEnrollment open={enrolled} close={()=>{setEnrolled(false), fetchLearner(course.id), setTimeout(()=>{setEnrollment([])},200)}} enrollment={enrollment} enrolled={true} />
 
 
         </>
