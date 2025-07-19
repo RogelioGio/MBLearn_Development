@@ -10,9 +10,36 @@ import {
     SelectValue,
     SelectContent,
     SelectItem,
-} from '../components/ui/select';
+} from "../components/ui/select";
 
-const BulkEnrollmentCourseSelectorModal = ({ open, close, courselist, currentCourse, setCurrentCourse, courseType, setCourseType, resetPagination,loading, numberOfEnrollees, pageState}) => {
+const BulkEnrollmentCourseSelectorModal = ({ open, close, courselist, currentCourse, setCurrentCourse, courseType, setCourseType, resetPagination,loading, learnerloading, numberOfEnrollees, pageState, changePageState}) => {
+    const Pages = []
+    for(let p = 1; p <= pageState.lastPage; p++){
+        Pages.push(p)
+    }
+
+    const back = () => {
+        if (loading) return;
+        if (pageState.currentPage > 1){
+            changePageState("currentPage", pageState.currentPage - 1)
+            //changePageState("startNumber", pageState.perPage - 4)
+        }
+    }
+    const next = () => {
+        if (loading) return;
+        if (pageState.currentPage < pageState.lastPage){
+            pageChangeState("currentPage", pageState.currentPage + 1)
+        }
+    }
+
+    const pageChange = (page) => {
+        if(loading) return;
+        if(page > 0 && page <= pageState.lastPage){
+            pageChangeState("currentPage", page)
+        }
+    }
+
+
     return (
         <Dialog open={open} onClose={()=>{}}>
             <DialogBackdrop transition className="backdrop-blur-sm fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in z-30"/>
@@ -48,7 +75,7 @@ const BulkEnrollmentCourseSelectorModal = ({ open, close, courselist, currentCou
                             <div className="grid grid-cols-4 pb-2 px-3">
                                 <div className="flex items-center justify-center col-span-4 pb-2
                                                 md:pb-0 md:col-span-1">
-                                    <Select value={courseType} onValueChange={(value) => setCourseType.setFieldValue("filter", value)} className="w-full h-full" disabled={loading}>
+                                    <Select value={courseType} onValueChange={(value) => setCourseType.setFieldValue("filter", value)} className="w-full h-full" disabled={loading || learnerloading}>
                                         <SelectTrigger className="focus:outline-2 focus:-outline-offset-2 focus:outline-primary border-primary border-2 font-header text-primary w-full">
                                             <SelectValue placeholder="Learner Type" />
                                         </SelectTrigger>
@@ -122,7 +149,10 @@ const BulkEnrollmentCourseSelectorModal = ({ open, close, courselist, currentCou
                                                 </div>
                                             :
                                             courselist.map((course, index) => (
-                                                <AssignedCourseEnrollmentCard key={index} AssignedCourse={course} selected={currentCourse} onclick={()=>{setCurrentCourse(course), resetPagination() ,setTimeout(()=>{close()},100)}} numberOfEnrollees={numberOfEnrollees(course)}/>))
+                                                <AssignedCourseEnrollmentCard key={index} AssignedCourse={course} selected={currentCourse} learnerLoading={learnerloading} onclick={()=>{
+                                                    if(learnerloading) return;
+                                                    setCurrentCourse(course), resetPagination() ,setTimeout(()=>{close()},100)
+                                                }} numberOfEnrollees={numberOfEnrollees(course)}/>))
                                         }
                             </div>
 
@@ -141,40 +171,39 @@ const BulkEnrollmentCourseSelectorModal = ({ open, close, courselist, currentCou
                                         </p>
                                     }
                                 </div>
-                                <div>
-                                     {/* ${isLoading || learnerLoading ? "opacity-50 cursor-not-allowed" : "cursor-pointer"} */}
-                                    <nav className={`isolate inline-flex -space-x-px round-md shadow-xs`}>
-                                        {/* Previous */}
-                                        <a href="#"
-                                            //onClick={back}
-                                            // ${isLoading || learnerLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-primary hover:text-white"}
-                                            className={`relative inline-flex items-center rounded-l-md px-3 py-2 text-primary ring-1 ring-divider ring-inset transition-all ease-in-out `}>
-                                            <FontAwesomeIcon icon={faChevronLeft}/>
-                                        </a>
+                                {
+                                    courselist.length !== 0 ?
+                                    <div>
+                                        <nav className={`isolate inline-flex -space-x-px round-md shadow-xs`}>
+                                            {/* Previous */}
+                                            <a  onClick={back}
+                                                className={`relative inline-flex items-center rounded-l-md px-3 py-2 text-primary ring-1 ring-divider ring-inset transition-all ease-in-out ${loading ? "opacity-50 cursor-not-allowed" : "hover:bg-primary hover:text-white hover:cursor-pointer"}`}>
+                                                <FontAwesomeIcon icon={faChevronLeft}/>
+                                            </a>
 
-                                        {/* Current Page & Dynamic Paging */}
-                                        {/* {Pages.map((page)=>(
-                                            <a href="#"
-                                                key={page}
-                                                className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset
-                                                    ${
-                                                        isLoading || learnerLoading ? "opacity-50 cursor-not-allowed" :
-                                                        page === ((pageState.currentPage - 1)* chunkPerPage + currentChunk)
-                                                        ? 'bg-primary text-white'
-                                                        : 'bg-secondarybackground text-primary hover:bg-primary hover:text-white'
-                                                    } transition-all ease-in-out`}
-                                                    onClick={() => pageChange(page)}>
-                                                {page}</a>
-                                        ))}
-                                        */}
-                                        {/* Next */}
-                                        <a href="#"
-                                           // onClick={next}
-                                            className={`relative inline-flex items-center rounded-r-md px-3 py-2 text-primary ring-1 ring-divider ring-inset transition-all ease-in-out`}>
-                                            <FontAwesomeIcon icon={faChevronRight}/>
-                                        </a>
-                                    </nav>
-                                </div>
+                                            {/* Current Page & Dynamic Paging */}
+                                            {Pages.map((page)=>(
+                                                <a
+                                                    key={page}
+                                                    className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset
+                                                        ${
+                                                            loading ? "opacity-50 cursor-not-allowed" :
+                                                            page === pageState.currentPage
+                                                            ? 'bg-primary text-white'
+                                                            : 'bg-secondarybackground text-primary hover:bg-primary hover:text-white'
+                                                        } transition-all ease-in-out`}
+                                                        onClick={() => pageChange(page)}>
+                                                    {page}</a>
+                                            ))}
+                                            {/* Next */}
+                                            <a
+                                                onClick={next}
+                                                className={`relative inline-flex items-center rounded-r-md px-3 py-2 text-primary ring-1 ring-divider ring-inset transition-all ease-in-out ${loading ? "opacity-50 cursor-not-allowed" : "hover:bg-primary hover:text-white hover:cursor-pointer"}`}>
+                                                <FontAwesomeIcon icon={faChevronRight}/>
+                                            </a>
+                                        </nav>
+                                    </div> : null
+                                }
                             </div>
                         </div>
                     </DialogPanel>

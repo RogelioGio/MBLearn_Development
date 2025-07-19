@@ -77,10 +77,10 @@ const Calendar = forwardRef(({events = []}, ref) => {
             const eventTypes = eventDates[dayKey] || {};
 
             days.push(
-                <TooltipProvider>
+                <TooltipProvider key={format(day, "yyyy-MM-dd")}>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <button key={day} className={`font-text flex items-center justify-center border border-division ${!isCurrentMonth ? "!text-gray-300" : ""}`}>
+                            <button className={`font-text flex items-center justify-center border border-division ${!isCurrentMonth ? "!text-gray-300" : ""}`}>
                                 <div className={`text-sm w-8 h-7 flex items-center justify-center ${isToday && !isSameDay(day, selectedDate) ? "bg-primary text-white rounded-md shadow-md hover:text-white" : ""} ${hasEvent ? "border-2 border-primary text-primary font-header":""} transition-all hover:border hover:cursor-pointer hover:text-primary border-primary rounded-md`}>{formattedDate}</div>
                             </button>
                         </TooltipTrigger>
@@ -90,9 +90,9 @@ const Calendar = forwardRef(({events = []}, ref) => {
                                 <div className="flex flex-col gap-1 text-unactive font-text">
                                     {
                                         Object.entries(eventTypes).map(([type, count], index) => (
-                                            <div className="flex gap-1 items-center">
+                                            <div key={`${type}-${index}`} className="flex gap-1 items-center">
                                                 <div className="w-3 h-3 bg-primary rounded-sm"/>
-                                                <p className="" key={index}>{type} - {count}</p>
+                                                <p className="">{type} - {count}</p>
                                             </div>
                                         ))
                                     }

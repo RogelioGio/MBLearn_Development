@@ -1,4 +1,4 @@
-import { faArrowDownShortWide, faArrowDownZA, faArrowUpAZ, faArrowUpWideShort, faBook, faBookBookmark, faBookmark, faChalkboard, faChevronLeft, faChevronRight, faFilter, faFloppyDisk, faFolderPlus, faPen, faPersonChalkboard, faSearch, faSort, faSwatchbook } from "@fortawesome/free-solid-svg-icons"
+import { faArrowDownShortWide, faArrowDownZA, faArrowUpAZ, faArrowUpWideShort, faBook, faBookBookmark, faBookmark, faChalkboard, faChevronLeft, faChevronRight, faExclamationTriangle, faFilter, faFloppyDisk, faFolderPlus, faPen, faPersonChalkboard, faSearch, faSort, faSpinner, faSwatchbook } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Helmet } from "react-helmet"
 import AssignedCourseCatalogCard from "../modalsandprops/AssignedCourseCatalogCard"
@@ -25,13 +25,18 @@ import CourseCard from "../modalsandprops/CourseCard"
 
 import { useNavigate } from "react-router"
 import { useCourse } from "../contexts/Course"
+import { Select,
+    SelectTrigger,
+    SelectValue,
+    SelectContent,
+    SelectItem,} from "../components/ui/select"
 
 
 
 export default function AssignedCourseCatalog() {
     const {coursetypes, coursecategories} = useCourseContext();
     const {user} = useStateContext();
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [assigned_course, setAssignedCourse] = useState([]);
     const [tab, setTab] = useState("myCourses");
     const [openAddCourse, setOpenAddCourse] = useState(false);
@@ -80,6 +85,11 @@ export default function AssignedCourseCatalog() {
         }
     }
 
+    const courseFormik = useFormik({
+        initialValues: {
+            courseType: "myCourses",
+        },
+    })
     const fetchCourses = (typeOfCourse) => {
         setLoading(true)
         if(typeOfCourse === "myCourses"){
@@ -98,7 +108,7 @@ export default function AssignedCourseCatalog() {
             .catch((err) => {
                 console.log(err);
             })
-        } else if(typeOfCourse ==="assignedCourses"){
+        } else if(typeOfCourse ==="assigned"){
             axiosClient.get(`/select-user-assigned-courses/${user.user_infos?.id}`,{
                     params: {
                         page: pageState.currentPage,
@@ -114,7 +124,7 @@ export default function AssignedCourseCatalog() {
                 .catch((err) => {
                     console.log(err);
                 })
-        } else if(typeOfCourse === "allCourses"){
+        } else if(typeOfCourse === "archived"){
             axiosClient.get('/courses', {
                 params: {
                     page: pageState.currentPage,
@@ -157,8 +167,8 @@ export default function AssignedCourseCatalog() {
         },[pageState.currentPage, pageState.perPage, pageState.totalCourses])
 
         useEffect(()=>{
-            fetchCourses(tab)
-        },[pageState.currentPage, pageState.perPage, tab])
+            fetchCourses(courseFormik.values.courseType);
+        },[pageState.currentPage, pageState.perPage, courseFormik.values.courseType])
 
         //Next and Previous
         const back = () => {
@@ -260,8 +270,7 @@ export default function AssignedCourseCatalog() {
     <>
         <div className='grid grid-cols-4 h-full w-full
                         grid-rows-[6.25rem_min-content_min-content_1fr_min-content]
-                        xl:grid-rows-[6.25rem_min-content_min-content_auto_min-content]
-                        '>
+                        xl:grid-rows-[6.25rem_min-content_1fr_min-content]'>
             <Helmet>
                 {/* Title of the mark-up */}
                 <title>MBLearn | Course Manager</title>
@@ -303,80 +312,38 @@ export default function AssignedCourseCatalog() {
             </div>
 
             {/* Tabs */}
-            <div className="col-span-4 w-full py-2 flex flex-row justify-between items-center gap-2
-                            md:pr-5 md:pl-4
-                            p-3">
-                    <div className="flex flex-row justify-between gap-2
-                                    sm:w-full">
-                        <div className="relative group sm:w-full">
-                            <div className={`flex flex-row px-3 py-2 border-primary border-2 rounded-md font-header items-center gap-2 hover:cursor-pointer transition-all ease-in-out hover:bg-primaryhover hover:text-white ${tab === "myCourses" ? "bg-primary text-white hover:border-primaryhover":"bg-white text-primary hover:border-primaryhover"}
-                                        sm:w-full
-                                        w-10 h-10`}
-                                        onClick={() => {if(!loading) return setTab("myCourses")}}>
-                                <FontAwesomeIcon icon={faBookBookmark}/>
-                                <p className="sm:flex hidden">My Courses</p>
-                            </div>
-                            <div className="absolute whitespace-nowrap bg-tertiary p-2 rounded-md text-white font-text text-xs bottom-[-2.1rem] left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 transition-all ease-in-out sm:hidden block">
-                                <p>My Courses</p>
-                            </div>
-                        </div>
-                        <div className="relative group sm:w-full">
-                            <div className={`flex flex-row px-3 py-2 border-primary border-2 rounded-md font-header items-center gap-2 hover:cursor-pointer transition-all ease-in-out hover:bg-primaryhover hover:text-white ${tab === "assignedCourses" ? "bg-primary text-white hover:border-primaryhover":"bg-white text-primary hover:border-primaryhover"}
-                                        sm:w-full
-                                        w-10 h-10`}
-                                        onClick={() => {if(!loading) return setTab("assignedCourses")}}>
-                                <FontAwesomeIcon icon={faBook} className=""/>
-                                <p className="sm:flex hidden">Assigned Courses</p>
-                            </div>
-                            <div className="absolute whitespace-nowrap bg-tertiary p-2 rounded-md text-white font-text text-xs bottom-[-2.1rem] left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 transition-all ease-in-out sm:hidden block">
-                                <p>Assigned Courses</p>
-                            </div>
-                        </div>
-                        <div className="relative group sm:w-full">
-                            <div className={`flex flex-row px-3 py-2 border-primary border-2 rounded-md font-header items-center gap-2 hover:cursor-pointer transition-all ease-in-out hover:bg-primaryhover hover:text-white ${tab === "archivedCourses" ? "bg-primary text-white hover:border-primaryhover":"bg-white text-primary hover:border-primaryhover"}
-                                            sm:w-full
-                                            w-10 h-10`}
-                                            onClick={() => {if(!loading) return setTab("archivedCourses")}}>
-                                <FontAwesomeIcon icon={faBookmark} className=""/>
-                                <p className="sm:flex hidden">Archived Courses</p>
-                            </div>
-                            <div className="absolute whitespace-nowrap bg-tertiary p-2 rounded-md text-white font-text text-xs bottom-[-2.1rem] left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 transition-all ease-in-out sm:hidden block">
-                                <p>Archived Courses</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="sm:hidden font-header text-primary flex flex-col items-end">
-                        {
-                            tab === "myCourses" ?
-                            <>
-                                <p>My Courses</p>
-                                <p className="text-xs font-text text-unactive">List of your added courses</p>
-                            </>
-                            : tab === "assignedCourses" ?
-                            <>
-                                <p>Assigned Courses</p>
-                                <p className="text-xs font-text text-unactive">List of assigned courses</p>
-                            </>
-                            : tab === "archivedCourses" ?
-                            <>
-                                <p>Archived Courses</p>
-                                <p className="text-xs font-text text-unactive">List of archived courses</p>
-                            </>
-                            : null
-                        }
-                    </div>
+            <div className="col-span-2 row-start-2 pl-3 pr-1 pt-2
+                            md:col-span-1 md:pl-4 md:py-2">
+                <Select value={courseFormik.values.courseType} onValueChange={(value) => {courseFormik.setFieldValue("courseType", value);}} disabled={loading}>
+                    <SelectTrigger className="focus:outline-2 focus:-outline-offset-2 focus:outline-primary border-primary border-2 font-header text-primary w-full h-full bg-white">
+                        <SelectValue placeholder="Course Type" />
+                    </SelectTrigger>
+                    <SelectContent className="font-text text-xs text-primary hover:cursor-pointer">
+                        <SelectItem value="myCourses">My Courses</SelectItem>
+                        <SelectItem value="assigned">Assigned Courses</SelectItem>
+                        <SelectItem value="archived">Archived Courses</SelectItem>
+                    </SelectContent>
+                </Select>
             </div>
 
             {/* Sorter */}
-            <div className="flex flex-row gap-2 pl-3 items-center
-                            sm:pl-4">
+            <div className="flex flex-row gap-2 items-center pl-1 pt-2 col-span-2 pr-3
+                            md:row-start-2 md:col-start-2 md:py-2">
                 {/* Sort by Name */}
-                <div className={`h-fit flex flex-row items-center border-2 border-primary py-2 px-4 font-header rounded-md text-primary gap-2 w-fit hover:bg-primaryhover hover:border-primaryhover hover:text-white hover:cursor-pointer transition-all ease-in-out shadow-md ${sort.name === "asc" ? 'bg-primary text-white' : sort.name === "desc" ? 'bg-primary text-white': 'bg-secondarybackground' }`} onClick={() => setOrder("name", tab)}>
+                <div className={`h-fit flex flex-row items-center justify-between border-2 border-primary py-2 px-4 font-header rounded-md text-primary gap-2 md:w-fit w-full  transition-all ease-in-out shadow-md ${loading ? "opacity-50 cursor-not-allowed" : "hover:bg-primaryhover hover:border-primaryhover hover:text-white hover:cursor-pointer"} ${sort.name === "asc" ? 'bg-primary text-white' : sort.name === "desc" ? 'bg-primary text-white': 'bg-secondarybackground' }`}
+                    onClick={() => {
+                        if(loading) return;
+                        setOrder("name", tab)
+                    }}>
                     <p>Name</p>
                     <FontAwesomeIcon icon={sort.name === "asc" ? faArrowUpAZ : sort.name === "desc" ? faArrowDownZA : faSort}/>
                 </div>
                 {/* Sort By Date-Added */}
-                <div className={`h-fit flex flex-row items-center border-2 border-primary py-2 px-4 font-header rounded-md text-primary gap-2 w-fit hover:bg-primaryhover hover:border-primaryhover hover:text-white hover:cursor-pointer transition-all ease-in-out shadow-md ${sort.created_at === "asc" ? 'bg-primary text-white' : sort.created_at === "desc" ? 'bg-primary text-white': 'bg-secondarybackground' }`} onClick={() => setOrder("created_at", tab)}>
+                <div className={`h-fit flex flex-row items-center justify-between border-2 border-primary py-2 px-4 font-header rounded-md text-primary gap-2 md:w-fit w-full transition-all ease-in-out shadow-md ${loading ? "opacity-50 cursor-not-allowed" : "hover:bg-primaryhover hover:border-primaryhover hover:text-white hover:cursor-pointer"} ${sort.created_at === "asc" ? 'bg-primary text-white' : sort.created_at === "desc" ? 'bg-primary text-white': 'bg-secondarybackground' }`}
+                    onClick={() => {
+                        if(loading) return;
+                        setOrder("created_at", tab)
+                    }}>
                     <p>Date</p>
                     <FontAwesomeIcon icon={sort.created_at === "asc" ? faArrowUpWideShort : sort.created_at === "desc" ? faArrowDownShortWide : faSort}/>
                 </div>
@@ -394,8 +361,8 @@ export default function AssignedCourseCatalog() {
                 </div>
             </div> */}
             {/* Filter & Search */}
-            <div className="col-span-2 col-start-3 flex flex-row gap-2 pr-3
-                            md:pr-5 md:grid md:grid-cols-2">
+            <div className="flex flex-row gap-2 pr-3 row-start-3 col-span-4 pt-2 px-3
+                            md:pr-5 md:grid md:grid-cols-2 md:col-span-2 md:py-2 md:col-start-3 md:row-start-2">
                 <div className="flex flex-row justify-end items-center gap-2">
                     <Sheet>
                         <SheetTrigger>
@@ -506,33 +473,34 @@ export default function AssignedCourseCatalog() {
                                 md:pr-5 md:pl-4
                                 lg:grid-cols-4 lg:grid-rows-2`}>
                 {
-                    !loading ? (
-                        assigned_course && assigned_course.length > 0 ? (
-                            assigned_course?.map((course, index) => (
-                                <CourseCard key={course.id} course={course} type={tab === "myCourses" || tab === "assignedCourses" ? "courseAdminCourseManager" : "general"} click={()=>{setCourse(course), navigate(`/courseadmin/course/${course.id}`)}}/>
-                            ))
-                        ) :
-                        (
-                            <div className="flex flex-col gap-4 items-center justify-center text-center h-full col-span-2 row-span-3
-                                            lg:col-span-4 lg:row-span-2">
-                                <p className="text-sm font-text text-unactive">No available courses yet</p>
-                            </div>
-                        )
-                    ) : (
-                            Array.from({length: pageState.perPage}).map((_, index) => (
-                                <div key={index} className="animate-pulse bg-white w-full h-full rounded-md shadow-md"/>
-                            ))
-
-                    )
+                    loading ?
+                    Array.from({length: 8 }).map((_, index) => (
+                                <div key={index} className="animate-pulse bg-white w-full h-full rounded-md shadow-md border"/>
+                    ))
+                    :assigned_course.length === 0 ?
+                    <div className="col-span-4 row-span-2 flex flex-col justify-center items-center gap-4">
+                        <div className="flex items-center justify-center w-28 h-28 bg-primarybg rounded-full text-primary">
+                            <FontAwesomeIcon icon={faExclamationTriangle} className="text-6xl"/>
+                        </div>
+                        <p className="text-unactive font-text text-sm">You dont have any {courseFormik.values.courseType === "myCourses" ? "inputted courses": courseFormik.values.courseType === "assigned" ? "assigned courses" : courseFormik.values.courseType === archived ? "archived courses" : "courses yet"} yet.. </p>
+                    </div>
+                    :
+                    assigned_course.map((course, index) => (
+                        <CourseCard key={course.id} course={course} type={courseFormik.values.courseType === "myCourses" || courseFormik.values.courseType === "assigned" ? "courseAdminCourseManager" : "general"} click={()=>{setCourse(course), navigate(`/courseadmin/course/${course.id}`)}}/>
+                    ))
                 }
             </div>
 
             {/* Pagination */}
-            <div className="mx-5 col-span-4 row-start-5 row-span-1 flex flex-row justify-between items-center py-3 border-t border-divider">
+            <div className="mx-5 col-span-4 row-start-5 row-span-1 flex flex-row justify-between items-center py-3">
                 {/* Total number of entries and only be shown */}
                 <div>
                     {
-                        loading ? <p className='text-sm font-text text-unactive'>Loading courses...</p>
+                        loading ?
+                        <div className='flex flex-row items-center gap-2'>
+                            <FontAwesomeIcon icon={faSpinner} className='animate-spin mr-2'/>
+                            <p className='text-sm font-text text-unactive'>Loading courses...</p>
+                        </div>
                         :
                         <p className='text-sm font-text text-unactive'>
                             Showing <span className='font-header text-primary'>{pageState.startNumber}</span> to <span className='font-header text-primary'>{pageState.endNumber}</span> of <span className='font-header text-primary'>{pageState.totalCourses}</span> <span className='text-primary'>results</span>

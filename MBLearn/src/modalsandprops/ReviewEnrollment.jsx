@@ -196,7 +196,7 @@ const ReviewEnrollment = ({open, close, enrollment, enroll, enrolling, enrolled}
                                         <tbody className='bg-white divide-y divide-divider'>
                                             {
                                                 currentPaginated?.map((enrollee) => (
-                                                    <tr>
+                                                    <tr key={enrollee?.id}>
                                                         <td className="px-4 py-3 md:py-0">
                                                             <div className="hidden py-3 md:flex flex-row items-center gap-3">
                                                                 <div className="min-w-8 min-h-8 rounded-full bg-blue-500 w-8">

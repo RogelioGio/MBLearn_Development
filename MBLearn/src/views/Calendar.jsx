@@ -43,7 +43,7 @@ export default function Calendar() {
                 const isToday = isSameDay(day, new Date());
 
                 days.push(
-                    <div className={`group font-text flex items-start justify-start border border-division w-full h-full ${!isCurrentMonth ? "!text-gray-300" : ""} transition-all ease-in-out hover:cursor-pointer hover:!text-primary`}>
+                    <div key={format(day, "yyyy-MM-dd")} className={`group font-text flex items-start justify-start border border-division w-full h-full ${!isCurrentMonth ? "!text-gray-300" : ""} transition-all ease-in-out hover:cursor-pointer hover:!text-primary`}>
                         <div className={`text-sm w-8 h-8 flex items-center justify-center m-2 ${isToday && !isSameDay(day, selectedDate) ? "bg-primary text-white rounded-full shadow-md hover:text-white font-header" : ""} group-hover:border rounded-full border-primary transition-all ease-in-out`}>
                             {formattedDate}
                         </div>

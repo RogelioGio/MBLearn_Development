@@ -125,6 +125,8 @@ export default function BulkEnrollment() {
     const dateButton = useRef();
 
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+    const blocker = useBlocker(hasUnsavedChanges);
+
 
     const [popOverState, setPopOverState] = useState({
         numberOfMonths: 2,
@@ -134,7 +136,6 @@ export default function BulkEnrollment() {
 
     useEffect(() => {
         setEnrollment([]);
-
 
         const getBreakPoint = () => {
             const width = window.innerWidth;
@@ -159,6 +160,7 @@ export default function BulkEnrollment() {
         getBreakPoint();
         return () => window.removeEventListener('resize', getBreakPoint);
     },[])
+
 
 
 
@@ -219,7 +221,7 @@ export default function BulkEnrollment() {
         })
     }
 
-    //Pagenation States
+    //Learner Pagenation States
     const [pageState, setPagination] = useState({
         currentPage: 1,
         perPage:10,
@@ -230,14 +232,14 @@ export default function BulkEnrollment() {
         currentPerPage:0,
         currentFrontendPage: 1,
     })
-    //Pagination Change State
+    //Learner Pagination Change State
     const pageChangeState = (key, value) => {
         setPagination((prev) => ({
             ...prev,
             [key]: value
         }))
     }
-    //Pagenation States
+    //Course Pagenation States
     const [coursePageState, setCoursePagination] = useState({
         currentPage: 1,
         perPage:6,
@@ -246,22 +248,45 @@ export default function BulkEnrollment() {
         startNumber: 0,
         endNumber: 0,
     })
-    //Pagination Change State
+    // Course Pagination Change State
     const coursePageChangeState = (key, value) => {
         setCoursePagination((prev) => ({
             ...prev,
             [key]: value
         }))
     }
+    // Start and End entry Course Pagination
     useEffect(() => {
             coursePageChangeState('startNumber', (coursePageState.currentPage - 1) * coursePageState.perPage + 1)
             coursePageChangeState('endNumber', Math.min(coursePageState.currentPage * coursePageState.perPage, coursePageState.totalCourse))
         },[coursePageState.currentPage, coursePageState.perPage, coursePageState.totalCourse])
 
 
+    // handle frontend pagination
     const [bufferedUserList, setBufferedUserList] = useState([])
     const [currentChunk, setCurrentChunk] = useState(1);
     const entry_per_chunk = 5;
+
+    const LearnerPaginated = useMemo(()=>{
+        const startIndex = (currentChunk - 1) * entry_per_chunk;
+        return bufferedUserList.slice(startIndex, startIndex + entry_per_chunk);
+    }, [bufferedUserList, currentChunk])
+    useEffect(() => {
+        const frontEndPagination = (pageState.currentPage - 1) * 2 + currentChunk;
+
+        pageChangeState("startNumber", (frontEndPagination - 1)*entry_per_chunk + 1)
+        pageChangeState("endNumber", Math.min(frontEndPagination * entry_per_chunk, pageState.totalUser))
+
+        // pageChangeState('startNumber', (pageState.currentPage - 1) * pageState.perPage + 1)
+        // pageChangeState('endNumber', Math.min(pageState.currentPage * pageState.perPage, pageState.totalUser))
+    },[pageState.currentPage, currentChunk, bufferedUserList])
+
+    // Dynamic Page Number
+    const Pages = [];
+    const totalFrontendPages = Math.ceil(pageState.totalUser / entry_per_chunk);
+    for(let p = 1; p <= totalFrontendPages; p++){
+        Pages.push(p)
+    }
 
     //Next and Previous Page
     const back = () => {
@@ -297,8 +322,6 @@ export default function BulkEnrollment() {
 
         // }
     }
-
-    //Page Navigation
     const pageChange = (page) => {
         if(isLoading) return;
 
@@ -315,10 +338,7 @@ export default function BulkEnrollment() {
         // }
     }
 
-    const LearnerPaginated = useMemo(()=>{
-        const startIndex = (currentChunk - 1) * entry_per_chunk;
-        return bufferedUserList.slice(startIndex, startIndex + entry_per_chunk);
-    }, [bufferedUserList, currentChunk])
+
 
     //Handle Learner to be enroll
     const fetchLearner = (courseId) => {
@@ -360,21 +380,9 @@ export default function BulkEnrollment() {
         },2000)
     }
 
-
-
-    const blocker = useBlocker(true);
-    useEffect(() => {
-        if(blocker.state === "blocked") {
-            if(enrollment.length > 0) {
-                setHasUnsavedChanges(true);
-            }else {
-                blocker.proceed();
-            }
-        }
-    }, [blocker,enrollment.length]);
-
     //Learner to enroll
     const handleCheckbox = (User, course) => {
+        setHasUnsavedChanges(true);
         setEnrollment((entry)=> {
             if(!User&&!course) return prevCourses;
 
@@ -460,6 +468,7 @@ export default function BulkEnrollment() {
 
     }
     useEffect(()=>{
+        if(!course) return;
         const exist = selectAllmap.find((e) => e.courseId === course.id);
         const current = enrollment.find((entry) => entry.course.id === course.id);
 
@@ -501,23 +510,7 @@ export default function BulkEnrollment() {
         return current ? current.enrollees.length : 0;
     };
 
-    useEffect(() => {
-        const frontEndPagination = (pageState.currentPage - 1) * 2 + currentChunk;
 
-        pageChangeState("startNumber", (frontEndPagination - 1)*entry_per_chunk + 1)
-        pageChangeState("endNumber", Math.min(frontEndPagination * entry_per_chunk, pageState.totalUser))
-
-        // pageChangeState('startNumber', (pageState.currentPage - 1) * pageState.perPage + 1)
-        // pageChangeState('endNumber', Math.min(pageState.currentPage * pageState.perPage, pageState.totalUser))
-    },[pageState.currentPage, currentChunk, bufferedUserList])
-
-
-    // Dynamic Page Number
-    const Pages = [];
-    const totalFrontendPages = Math.ceil(pageState.totalUser / entry_per_chunk);
-    for(let p = 1; p <= totalFrontendPages; p++){
-        Pages.push(p)
-    }
 
     //Formik for filter
     const formik = useFormik({
@@ -548,6 +541,8 @@ export default function BulkEnrollment() {
         setSelectedBranches(filteredBranches)
     }
 
+
+    //Fetch Courses
     useEffect(() => {
         setCourseListLoading(true);
         if(formik.values.filter === "myCourses"){
@@ -592,20 +587,8 @@ export default function BulkEnrollment() {
         handleLearnerChange(course?.id)
         setDate((prev) => ({...prev, to: getEndDate()}))
     },[course, pageState.currentPage])
-    // useEffect(() => {
-    //     if (!Array.isArray(assigned_courses) || assigned_courses.length === 0) return;
-    //     handleCourseChange(assigned_courses[0]); // Automatically select the first entry
-    // }, [assigned_courses]);
 
-    //reset the operation
-    // const reset = () => {
-    //     setTimeout(() => {
-    //         handleCourseChange(assigned_courses[0]);
-    //         setResults([])
-    //         setSelected([]);
-    //         pageChangeState("currentPage", 1)
-    //     },250)
-    // }
+
 
     //Handle Enrollment Submisstion
     const handleEnrollment = () => {
@@ -623,12 +606,16 @@ export default function BulkEnrollment() {
             ))
         )
         console.log("Payload:", payload)
+        setHasUnsavedChanges(false);
         setTimeout(() => {
             setEnrolling(false)
         },2000)
         setTimeout(() => {
             setOpenReview(false);
             setEnrolled(true);
+            if(blocker.state === 'blocked') {
+                blocker.reset();
+            }
         },2100)
         // setProccess(true)
         // axiosClient.post('enrollments/bulk', selected)
@@ -641,12 +628,12 @@ export default function BulkEnrollment() {
         //     console.log(err)
         // })
     }
-    useEffect(() => {
-        //console.log("Course:", course)
-        console.log("Enrollment:", enrollment)
-        console.log("selectAllmap:", selectAllmap)
-        //console.log(hasUnsavedChanges)
-    },[enrollment,selectAllmap])
+    // useEffect(() => {
+    //     //console.log("Course:", course)
+    //     console.log("Enrollment:", enrollment)
+    //     console.log("selectAllmap:", selectAllmap)
+    //     //console.log(hasUnsavedChanges)
+    // },[enrollment,selectAllmap])
 
 
     const selectCourseToolTip = UseElementPos(buttonRef, openSelector, 8);
@@ -1118,11 +1105,11 @@ export default function BulkEnrollment() {
         </div>
 
         {/* Course Selector */}
-        <BulkEnrollmentCourseSelectorModal open={openSelector} close={()=>{setOpenSelector(false)}} courselist={assigned_courses} currentCourse={course} setCurrentCourse={setCourse} courseType={formik.values.filter} setCourseType={formik} loading={courseListLoading} numberOfEnrollees={numberOfEnrollees} resetPagination={()=>{pageChangeState('currentPage', 1), pageChangeState('currentFrontendPage', 1), setCurrentChunk(1)}} pageState={coursePageState}/>
+        <BulkEnrollmentCourseSelectorModal open={openSelector} close={()=>{setOpenSelector(false)}} courselist={assigned_courses} currentCourse={course} setCurrentCourse={setCourse} courseType={formik.values.filter} setCourseType={formik} loading={courseListLoading} learnerloading={learnerLoading} numberOfEnrollees={numberOfEnrollees} resetPagination={()=>{pageChangeState('currentPage', 1), pageChangeState('currentFrontendPage', 1), setCurrentChunk(1)}} pageState={coursePageState} changePageState={coursePageChangeState}/>
         {/* Error */}
         <EnrollmentFailedModal isOpen={enrollmentFailed} onClose={()=>setEnrollmentFailed(false)}/>
         {/* Unenrollment */}
-        <Unerollnment isOpen={hasUnsavedChanges} close={()=>(setHasUnsavedChanges(false), blocker.reset())} onContinue={()=>{setHasUnsavedChanges(false), blocker.proceed()}}/>
+        <Unerollnment isOpen={blocker.state === "blocked"} close={()=>(blocker.reset())} onContinue={()=>{blocker.proceed()}}/>
         {/* Review Enrollment */}
         <ReviewEnrollment open={openReview} close={()=>{setOpenReview(false)}} enrollment={enrollment} enroll={handleEnrollment} enrolling={enrolling}/>
         {/* Complete Enrollment */}

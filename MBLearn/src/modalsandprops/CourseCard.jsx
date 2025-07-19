@@ -67,7 +67,7 @@ const CourseCard = ({ course, type, click}) => {
                                 <h1 className='font-header text-sm text-white'>{course.name}</h1>
                                 <p className='font-text text-xs text-white'>Course ID: {course.CourseID}</p>
                             </div>
-                            <div className="absolute md:hidden group-hover:scale-100 scale-0 border border-primary rounded-md font-text p-2 w-fit text-xs transition-all ease-in-out bg-white shadow-md flex flex-col justify-between gap-1 z-10 pointer-events-none"
+                            <div className={`absolute md:hidden group-hover:scale-100 scale-0 border border-primary rounded-md font-text p-2 w-fit text-xs transition-all ease-in-out bg-white shadow-md flex flex-col justify-between gap-1 z-10 pointer-events-none ${type === 'courseAdmin' ? "hidden":""}`}
                                         style={{
                                             left: pos?.x + 15,
                                             top: pos?.y,
