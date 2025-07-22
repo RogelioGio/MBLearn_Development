@@ -195,10 +195,10 @@ export default function BulkEnrollment() {
         DateFormik.setFieldValue("end_date", end ? format(end, "MMMM dd yyyy") : "Select end date")
         setDate(range)
 
-        const totalDuration = differenceInDays(new Date(end), new Date(start));
+        const totalDuration = differenceInDays(new Date(end), new Date(start)) + 1;
         const months = Math.floor(totalDuration / 30);
         const weeks = Math.floor((totalDuration % 30) / 7);
-        const days = totalDuration % 7;
+        const days = (totalDuration % 30) % 7;
 
         DateFormik.setFieldValue("months", months);
         DateFormik.setFieldValue("weeks", weeks);

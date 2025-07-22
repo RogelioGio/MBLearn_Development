@@ -208,7 +208,7 @@ const chartData = [
                     <div className='flex flex-row justify-between items-center'>
                         <div className="pb-3">
                             <p className="font-text text-unactive text-xs">Current Month & Date:</p>
-                            <p className="font-header text-primary text-base">{monthLabel || "Loadding"}</p>
+                            <p className="font-header text-primary text-base">{monthLabel || "Loading"}</p>
                         </div>
                         <div className='flex flex-row gap-2'>
                             <div>

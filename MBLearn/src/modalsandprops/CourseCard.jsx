@@ -4,6 +4,7 @@ import { HoverCard, HoverCardContent, HoverCardTrigger, } from "../components/ui
 import { useNavigate } from "react-router";
 import { Progress } from "../components/ui/progress";
 import { useEffect, useRef, useState } from "react";
+import { RingProgress } from "@mantine/core";
 
 
 
@@ -49,8 +50,8 @@ const CourseCard = ({ course, type, click}) => {
                     <div className={`bg-gradient-to-b from-[hsl(239,94%,19%)] via-[hsl(214,97%,27%)] to-[hsl(201,100%,36%)] md:rounded-t-md rounded-md flex flex-row justify-end gap-2 ${type === 'general' ? '!rounded-md': ''}`}>
                         <div className={`bg-gradient-to-t from-black via-black/80 to-transparent w-full p-4 flex flex-col justify-between rounded-md md:rounded-none  ${type === 'general' ? 'rounded-md' : ''}`}>
                             <div className="flex flex-row justify-between items-start">
-                                <div className={`flex flex-row gap-1
-                                                xl:flex-col`}>
+                                <div className={`flex flex-row gap-1 pb-2
+                                                xl:flex-col lg:pb-0`}>
                                     <span className="inline-flex items-center rounded-md bg-primarybg px-2 py-1 text-xs font-medium text-primary font-text w-fit">{course.training_type}</span>
                                 </div>
                                 {
@@ -72,29 +73,49 @@ const CourseCard = ({ course, type, click}) => {
                                             left: pos?.x + 15,
                                             top: pos?.y,
                                         }}>
-                                <div className="w-full flex flex-col justify-between gap-2 whitespace-nowrap">
-                                    <div className="w-full flex flex-row justify-between gap-2 whitespace-nowrap">
-                                        <div className="flex flex-row gap-2 items-center">
-                                            <div className="rounded-sm h-3 w-3 bg-primary"/>
-                                            <p className="text-unactive">On-going:</p>
+                                {
+                                    type === "courseAdminCourseManager" ?
+                                    <>
+                                        <div className="w-full flex flex-col justify-between gap-2 whitespace-nowrap">
+                                            <div className="w-full flex flex-row justify-between gap-2 whitespace-nowrap">
+                                                <div className="flex flex-row gap-2 items-center">
+                                                    <div className="rounded-sm h-3 w-3 bg-primary"/>
+                                                    <p className="text-unactive">On-going:</p>
+                                                </div>
+                                                <p>{course.ongoing}</p>
+                                            </div>
+                                            <div className="w-full flex flex-row justify-between gap-2 whitespace-nowrap">
+                                                <div className="flex flex-row gap-2 items-center">
+                                                    <div className="rounded-sm h-3 w-3 bg-primary"/>
+                                                    <p className="text-unactive">Due-soon:</p>
+                                                </div>
+                                                <p>{course.due_soon}</p>
+                                            </div>
+                                            <div className="w-full flex flex-row justify-between gap-2 whitespace-nowrap">
+                                                <div className="flex flex-row gap-2 items-center">
+                                                    <div className="rounded-sm h-3 w-3 bg-primary"/>
+                                                    <p className="text-unactive">Past-Due:</p>
+                                                </div>
+                                                <p>{course.past_due}</p>
+                                            </div>
                                         </div>
-                                        <p>{course.ongoing}</p>
-                                    </div>
-                                    <div className="w-full flex flex-row justify-between gap-2 whitespace-nowrap">
-                                        <div className="flex flex-row gap-2 items-center">
-                                            <div className="rounded-sm h-3 w-3 bg-primary"/>
-                                            <p className="text-unactive">Due-soon:</p>
+                                    </> :
+                                    <>
+                                        <div className="flex flex-row items-center gap-2 whitespace-nowrap">
+                                            <RingProgress
+                                                size={35} // Diameter of the ring
+                                                roundCaps
+                                                thickness={4} // Thickness of the progress bar
+                                                sections={[{ value: course.progress, color: "hsl(218,97%,26%)" }]} // Lighter blue progress
+                                                rootColor="hsl(210, 14%, 83%)" // Darker blue track
+                                            />
+                                            <div>
+                                                <p className='font-header'>{course.progress}%</p>
+                                                <p className='font-text text-xs'>Completion Progress</p>
+                                            </div>
                                         </div>
-                                        <p>{course.due_soon}</p>
-                                    </div>
-                                    <div className="w-full flex flex-row justify-between gap-2 whitespace-nowrap">
-                                        <div className="flex flex-row gap-2 items-center">
-                                            <div className="rounded-sm h-3 w-3 bg-primary"/>
-                                            <p className="text-unactive">Past-Due:</p>
-                                        </div>
-                                        <p>{course.past_due}</p>
-                                    </div>
-                                </div>
+                                    </>
+                                }
                             </div>
                         </div>
                     </div>
@@ -127,7 +148,7 @@ const CourseCard = ({ course, type, click}) => {
 
                                 </>
                             ) : type === 'learner' || type === 'learnerCourseManager' ? (
-                                <div className="flex flex-col justify-between h-full py-3 px-4">
+                                <div className="flex-col justify-between h-full py-3 px-4 md:flex hidden">
                                     <div className="flex flex-row justify-between font-text text-unactive text-xs pb-2">
                                         <p>Progress</p>
                                         <p>{Math.round(course.progress)} %</p>
