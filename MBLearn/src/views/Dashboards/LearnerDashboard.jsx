@@ -302,13 +302,10 @@ const LearnerDashboard = ({name,user}) => {
                         </div>
                     ) : (
                         <div className="w-full h-full grid grid-cols-4 grid-rows-1 gap-3">
-                            {/* filter(item => item.progress !== 100) */}
                             {
-                                enrolled.map((course) => {
-                                    return (
-                                        <CourseCard course={course} type='learner' click={() => {setCourse(course), navigate(`/learner/course/${course.id}`)}}/>
-                                    )
-                                })
+                                enrolled.map((course) => (
+                                    <CourseCard course={course} type='learner' click={() => {setCourse(course), navigate(`/learner/course/${course.id}`)}}/>
+                                ))
                             }
                         </div>
                     )

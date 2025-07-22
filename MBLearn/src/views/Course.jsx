@@ -31,7 +31,6 @@ export default function Course() {
     const navigate = useNavigate();
     const {role, user} = useStateContext();
     const {id} = useParams();
-    //const [course, setCourse] = useState([]);
     const [isLoading ,setLoading] = useState(false);
     const [tab, setTab] = useState("module");
     const [open, setOpen] = useState(false);
@@ -41,10 +40,10 @@ export default function Course() {
     const {course, setCourse} = useCourse()
     const [learnerProgress, setLearnerProgress] = useState();
 
-
     // useEffect(() => {
     //     console.log('the corse is passed is:', course || "none");
     // },[course])
+
     const fetchCourse  = () => {
         setLoading(true)
         axiosClient.get(`/coursecontext/${id}`)
@@ -55,19 +54,28 @@ export default function Course() {
         .catch((e) => console.log(e))
     }
 
+    const fetchLearnerProgress = () => {
+        setLoading(true)
+        axiosClient.get(`/coursecontext/${id}/${user.user_infos.id}`)
+        .then((res) => {
+            setLearnerProgress(res.data.completed_lessons);
+            if(!course){
+                setCourse(res.data)
+            }
+            setLoading(false)
+        }).catch((e) => console.log(e))
+    }
+
     useEffect(()=>{
         if(!course && role === "Course Admin") {
             fetchCourse()
         } else if(!course && role === "Learner") {
-            setLoading(true)
-            axiosClient.get(`/coursecontext/${id}/${user.user_infos.id}`)
-            .then((res) => {
-                setLearnerProgress(res.data.completed_lessons);
-                setCourse(res.data);
-                setLoading(false)
-            }).catch((e) => console.log(e))
+            fetchLearnerProgress()
         }
     },[course])
+    useEffect(()=>{
+        fetchLearnerProgress()
+    },[])
 
     // useEffect(() => {
         //     console.log("Active Tab:", tab);
@@ -291,109 +299,114 @@ export default function Course() {
 
     return(
         <>
-        <div className={`grid ${role === "Course Admin" ? "grid-cols-4 grid-rows-[min-content_min-content_calc(100vh-11.5rem)]" :"grid-cols-[1fr_20rem] grid-rows-[min-content_min-content_4rem_auto]"} grid-rows-[4rem_3rem_auto] h-full`}>
+        <div className={`grid ${role === "Course Admin" ? "grid-cols-4 grid-rows-[min-content_min-content_calc(100vh-11.5rem)]" :role === "Learner" ? "grid-cols-4 grid-rows-[min-content_1fr]" : null} h-full`}>
             <Helmet>
                 {/* Title of the mark-up */}
                 <title>MBLearn | {isLoading ? "Loading..." : course?.name || "No Course Found"}</title>
             </Helmet>
 
+            {/* Header */}
+            <div className="col-span-4 pb-2
+                            md:py-2 md:pr-2">
+                <div className="bg-gradient-to-b from-[hsl(239,94%,19%)] via-[hsl(214,97%,27%)] to-[hsl(201,100%,36%)]
+                                md:rounded-xl md:shadow-md">
+                    <div className="flex flex-col bg-gradient-to-b from-transparent to-black md:rounded-xl gap-4 md:gap-0">
+                        <div className="flex flex-row justify-between px-4 pt-4 gap-x-2">
+                            <div>
+                                <div className="flex md:hidden">
+                                    <div className="w-8 h-8 group aspect-square rounded-full border-white border-2 flex flex-row justify-center items-center hover:bg-white transition-all ease-in-out" onClick={()=>navigate(-1)}>
+                                        <FontAwesomeIcon icon={faArrowLeft} className="text-white cursor-pointer group-hover:text-primary"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex flex-row gap-2">
+                                {
+                                    role === "Course Admin" ?
+                                    <>
+                                        <div className="group relative">
+                                            <div className={`border-2  w-10 h-10 rounded-md flex items-center justify-center text-white transition-all ease-in-out ${isLoading ? "opacity-50 cursor-not-allowed" : " hover:cursor-pointer hover:bg-white hover:text-primary"}`}
+                                                onClick={()=>{if(isLoading) return;
+                                                        setOpenPublish(true)
+                                                        }}>
+                                                <FontAwesomeIcon icon={faBookBookmark} />
+                                            </div>
+                                            <p className={`scale-0 font-text text-xs p-2 rounded bg-tertiary text-white absolute left-1/2 -translate-x-1/2 -bottom-10 shadow-md transition-all ease-in-out ${isLoading ? "" : "group-hover:scale-100"}`}>
+                                                Publish
+                                            </p>
+                                        </div>
+                                        <div className="group relative">
+                                            <div className={`border-2  w-10 h-10 rounded-md flex items-center justify-center text-white  transition-all ease-in-out ${isLoading ? "opacity-50 cursor-not-allowed" : "hover:cursor-pointer hover:bg-white hover:text-primary"}`}
+                                                onClick={()=>{
+                                                    if(isLoading) return;
+                                                    setOpen(true)
+                                                }}>
+                                                <FontAwesomeIcon icon={faPenToSquare} />
+                                            </div>
+                                            <p className={`scale-0 whitespace-nowrap font-text text-xs p-2 rounded bg-tertiary text-white absolute left-1/2 -translate-x-1/2 -bottom-10 shadow-md transition-all ease-in-out ${isLoading ? "" : "group-hover:scale-100"}`}>
+                                                Edit Course
+                                            </p>
+                                        </div>
+                                        <div className="group relative">
+                                            <div className={`border-2  w-10 h-10 rounded-md flex items-center justify-center text-white transition-all ease-in-out ${isLoading ? "opacity-50 cursor-not-allowed" : "hover:cursor-pointer hover:bg-white hover:text-primary"}`}
+                                                onClick={()=>{
+                                                    if(isLoading) return;
+                                                    setAssign(true)
+                                                }}>
+                                                <FontAwesomeIcon icon={faBookReader} />
+                                            </div>
+                                            <p className={`scale-0 whitespace-nowrap font-text text-xs p-2 rounded bg-tertiary text-white absolute left-1/2 -translate-x-1/2 -bottom-10 shadow-md transition-all ease-in-out ${isLoading ? "" : "group-hover:scale-100"}`}>
+                                                Assign Course Admin
+                                            </p>
+                                        </div>
+                                    </>
+                                    :null
+                                }
+                                <div className="group relative">
+                                    <div className={`border-2  w-10 h-10 rounded-md flex items-center justify-center text-white transition-all ease-in-out ${isLoading ? "opacity-50 cursor-not-allowed":"hover:cursor-pointer hover:bg-white hover:text-primary "}`}
+                                        onClick={()=>{
+                                            if(isLoading) return;
+                                            setOpenDetails(true)
+                                        }}>
+                                        <FontAwesomeIcon icon={faCircleInfo} />
+                                    </div>
+                                    <p className={`scale-0 whitespace-nowrap font-text text-xs p-2 rounded bg-tertiary text-white absolute left-1/2 -translate-x-1/2 -bottom-10 shadow-md transition-all ease-in-out ${isLoading ? "" : "group-hover:scale-100"}`}>
+                                        Details
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="flex flex-row gap-3 pb-4 px-5">
+                            {
+                                !isLoading &&
+                                <div className="hidden md:flex">
+                                    <div className="w-8 h-8 group aspect-square rounded-full border-white border-2 flex flex-row justify-center items-center hover:bg-white transition-all ease-in-out" onClick={()=>navigate(-1)}>
+                                        <FontAwesomeIcon icon={faArrowLeft} className="text-white cursor-pointer group-hover:text-primary"/>
+                                    </div>
+                                </div>
+                            }
+                            <div className={`${isLoading ? "flex flex-row gap-2 text-white text-2xl items-center":""}`}>
+                                {
+                                    isLoading ?
+                                    <>
+                                    <FontAwesomeIcon icon={faSpinner} className="animate-spin"/>
+                                    <h1 className="font-header text-2xl text-white">Loading... </h1>
+                                    </>
+                                    :
+                                    <>
+                                    <h1 className="font-header text-white text-sm
+                                                    md:text-2xl">{course?.name} </h1>
+                                    <p className="font-text text-xs text-white">Course ID: {course?.CourseID} </p>
+                                    </>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             {
                 role === "Course Admin" ? (
                     <>
-                        {/* Header */}
-                        <div className="col-span-4 pb-2
-                                        md:py-2 md:pr-2">
-                            <div className="bg-gradient-to-b from-[hsl(239,94%,19%)] via-[hsl(214,97%,27%)] to-[hsl(201,100%,36%)]
-                                            md:rounded-xl md:shadow-md">
-                                <div className="flex flex-col bg-gradient-to-b from-transparent to-black md:rounded-xl gap-4 md:gap-0">
-                                    <div className="flex flex-row justify-between px-4 pt-4 gap-x-2">
-                                        <div>
-                                            <div className="flex md:hidden">
-                                                <div className="w-8 h-8 group aspect-square rounded-full border-white border-2 flex flex-row justify-center items-center hover:bg-white transition-all ease-in-out" onClick={()=>navigate(-1)}>
-                                                    <FontAwesomeIcon icon={faArrowLeft} className="text-white cursor-pointer group-hover:text-primary"/>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="flex flex-row gap-2">
-                                            <div className="group relative">
-                                                <div className={`border-2  w-10 h-10 rounded-md flex items-center justify-center text-white transition-all ease-in-out ${isLoading ? "opacity-50 cursor-not-allowed" : " hover:cursor-pointer hover:bg-white hover:text-primary"}`}
-                                                    onClick={()=>{if(isLoading) return;
-                                                            setOpenPublish(true)
-                                                            }}>
-                                                    <FontAwesomeIcon icon={faBookBookmark} />
-                                                </div>
-                                                <p className={`scale-0 font-text text-xs p-2 rounded bg-tertiary text-white absolute left-1/2 -translate-x-1/2 -bottom-10 shadow-md transition-all ease-in-out ${isLoading ? "" : "group-hover:scale-100"}`}>
-                                                    Publish
-                                                </p>
-                                            </div>
-                                            <div className="group relative">
-                                                <div className={`border-2  w-10 h-10 rounded-md flex items-center justify-center text-white  transition-all ease-in-out ${isLoading ? "opacity-50 cursor-not-allowed" : "hover:cursor-pointer hover:bg-white hover:text-primary"}`}
-                                                    onClick={()=>{
-                                                        if(isLoading) return;
-                                                        setOpen(true)
-                                                    }}>
-                                                    <FontAwesomeIcon icon={faPenToSquare} />
-                                                </div>
-                                                <p className={`scale-0 whitespace-nowrap font-text text-xs p-2 rounded bg-tertiary text-white absolute left-1/2 -translate-x-1/2 -bottom-10 shadow-md transition-all ease-in-out ${isLoading ? "" : "group-hover:scale-100"}`}>
-                                                    Edit Course
-                                                </p>
-                                            </div>
-                                            <div className="group relative">
-                                                <div className={`border-2  w-10 h-10 rounded-md flex items-center justify-center text-white transition-all ease-in-out ${isLoading ? "opacity-50 cursor-not-allowed" : "hover:cursor-pointer hover:bg-white hover:text-primary"}`}
-                                                    onClick={()=>{
-                                                        if(isLoading) return;
-                                                        setAssign(true)
-                                                    }}>
-                                                    <FontAwesomeIcon icon={faBookReader} />
-                                                </div>
-                                                <p className={`scale-0 whitespace-nowrap font-text text-xs p-2 rounded bg-tertiary text-white absolute left-1/2 -translate-x-1/2 -bottom-10 shadow-md transition-all ease-in-out ${isLoading ? "" : "group-hover:scale-100"}`}>
-                                                    Assign Course Admin
-                                                </p>
-                                            </div>
-                                            <div className="group relative">
-                                                <div className={`border-2  w-10 h-10 rounded-md flex items-center justify-center text-white transition-all ease-in-out ${isLoading ? "opacity-50 cursor-not-allowed":"hover:cursor-pointer hover:bg-white hover:text-primary "}`}
-                                                    onClick={()=>{
-                                                        if(isLoading) return;
-                                                        setOpenDetails(true)
-                                                    }}>
-                                                    <FontAwesomeIcon icon={faCircleInfo} />
-                                                </div>
-                                                <p className={`scale-0 whitespace-nowrap font-text text-xs p-2 rounded bg-tertiary text-white absolute left-1/2 -translate-x-1/2 -bottom-10 shadow-md transition-all ease-in-out ${isLoading ? "" : "group-hover:scale-100"}`}>
-                                                    Details
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="flex flex-row gap-3 pb-4 px-5">
-                                        {
-                                            !isLoading &&
-                                            <div className="hidden md:flex">
-                                                <div className="w-8 h-8 group aspect-square rounded-full border-white border-2 flex flex-row justify-center items-center hover:bg-white transition-all ease-in-out" onClick={()=>navigate(-1)}>
-                                                    <FontAwesomeIcon icon={faArrowLeft} className="text-white cursor-pointer group-hover:text-primary"/>
-                                                </div>
-                                            </div>
-                                        }
-                                        <div className={`${isLoading ? "flex flex-row gap-2 text-white text-2xl items-center":""}`}>
-                                            {
-                                                isLoading ?
-                                                <>
-                                                <FontAwesomeIcon icon={faSpinner} className="animate-spin"/>
-                                                <h1 className="font-header text-2xl text-white">Loading... </h1>
-                                                </>
-                                                :
-                                                <>
-                                                <h1 className="font-header text-white text-sm
-                                                                md:text-2xl">{course?.name} </h1>
-                                                <p className="font-text text-xs text-white">Course ID: {course?.CourseID} </p>
-                                                </>
-                                            }
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
                         {/* Tabs */}
                         <div className="hidden col-span-4 lg:flex flex-row gap-2">
                             <div className={`border-2 border-primary rounded-md shadow-md w-fit py-2 px-4 flex flex-row gap-4 items-center justify-center text-primary hover:cursor-pointer transition-all ease-in-out hover:bg-primaryhover hover:border-primaryhover hover:text-white ${tab === "module" ? "border-b-2 border-primary text-white bg-primary" : 'bg-white text-primary'}`} onClick={()=> setTab("module")}>
@@ -435,62 +448,64 @@ export default function Course() {
                             </div>
                         </div>
 
-                        {/* Course Content */}
-                        {/* border-2 border-red-500 */}
                         <div className="col-span-4 ">
-                        {tabComponents[tab] || null}
-
+                            {tabComponents[tab] || null}
                         </div>
                     </>
-                ) : role === "Learner" ? (
-                    <>
-                        <CourseModuleProps headers={<>
-                            <div className="flex flex-row col-span-4 items-center gap-4 pl-5">
-                                {/* Back Button */}
-                                    <div className="w-8 h-8 group aspect-square rounded-full border-white border-2 flex flex-row justify-center items-center hover:bg-white transition-all ease-in-out" onClick={()=>navigate(-1)}>
-                                    <FontAwesomeIcon icon={faArrowLeft} className="text-white cursor-pointer group-hover:text-primary"/>
-                                </div>
-                                {/* Course Name */}
-                                <div >
-                                    {
-                                        course && Object.keys(course).length > 0 ? <>
-                                            <h1 className="font-header text-2xl text-white">{course?.name} </h1>
-                                            <p className="font-text text-xs text-white">Course ID: {course?.CourseID} </p>
-                                        </>:<>
-                                            <h1 className="font-header text-3xl font-bold text-white">Loading...</h1>
-                                        </>
-                                    }
-                                </div>
-                                {/* Course Status */}
-                                {/* <span className="inline-flex items-center rounded-md bg-secondaryprimary px-4 py-2 text-xs font-medium text-primary font-text ring-1 ring-primary gap-1">
-                                    <FontAwesomeIcon icon={faPencil} className="text-primary text-xs mr-1"/>
-                                    Unpublished
-                                </span> */}
-                            </div>
-                            <div className="flex flex-row gap-1 pr-5">
-                                {/* Action Button */}
-                                {/* <div className={`text-white text-sm border-2 border-white h-full py-2 px-4 rounded-md shadow-md flex flex-row gap-2 items-center transition-all ease-in-out  ${Object.keys(course).length > 0 ? "hover:scale-105 hover:bg-white hover:text-primary hover:cursor-pointer" : "opacity-50"}`} onClick={()=>{if(Object.keys(course).length > 0){setOpenDetails(true)}else return}}>
-                                    <FontAwesomeIcon icon={faCircleInfo} />
-                                    <p className="font-header">Detail</p>
-                                </div> */}
-                            </div>
-                        </>} course={course} LearnerProgress={learnerProgress} setLearnerProgress={setLearnerProgress} fetchingLearnerProgress={isLoading}/>
-                    </>
-                ) :
-                // isLoading && role === "Learner" ? (
-                //     <div className="col-span-2 row-span-4 flex flex-col justify-center items-center">
+                ) : role === "Learner" ?
+                    <div className="col-span-4">
+                        <CourseModuleProps course={course} LearnerProgress={learnerProgress} setLearnerProgress={setLearnerProgress} fetchingLearnerProgress={isLoading} />
+                    </div>
+                : null
+                // ) : role === "Learner" ? (
+                //     <>
+                //         <CourseModuleProps headers={<>
+                //             <div className="flex flex-row col-span-4 items-center gap-4 pl-5">
+                //                 {/* Back Button */}
+                //                     <div className="w-8 h-8 group aspect-square rounded-full border-white border-2 flex flex-row justify-center items-center hover:bg-white transition-all ease-in-out" onClick={()=>navigate(-1)}>
+                //                     <FontAwesomeIcon icon={faArrowLeft} className="text-white cursor-pointer group-hover:text-primary"/>
+                //                 </div>
+                //                 {/* Course Name */}
+                //                 <div >
+                //                     {
+                //                         course && Object.keys(course).length > 0 ? <>
+                //                             <h1 className="font-header text-2xl text-white">{course?.name} </h1>
+                //                             <p className="font-text text-xs text-white">Course ID: {course?.CourseID} </p>
+                //                         </>:<>
+                //                             <h1 className="font-header text-3xl font-bold text-white">Loading...</h1>
+                //                         </>
+                //                     }
+                //                 </div>
+                //                 {/* Course Status */}
+                //                 {/* <span className="inline-flex items-center rounded-md bg-secondaryprimary px-4 py-2 text-xs font-medium text-primary font-text ring-1 ring-primary gap-1">
+                //                     <FontAwesomeIcon icon={faPencil} className="text-primary text-xs mr-1"/>
+                //                     Unpublished
+                //                 </span> */}
+                //             </div>
+                //             <div className="flex flex-row gap-1 pr-5">
+                //                 {/* Action Button */}
+                //                 {/* <div className={`text-white text-sm border-2 border-white h-full py-2 px-4 rounded-md shadow-md flex flex-row gap-2 items-center transition-all ease-in-out  ${Object.keys(course).length > 0 ? "hover:scale-105 hover:bg-white hover:text-primary hover:cursor-pointer" : "opacity-50"}`} onClick={()=>{if(Object.keys(course).length > 0){setOpenDetails(true)}else return}}>
+                //                     <FontAwesomeIcon icon={faCircleInfo} />
+                //                     <p className="font-header">Detail</p>
+                //                 </div> */}
+                //             </div>
+                //         </>} course={course} LearnerProgress={learnerProgress} setLearnerProgress={setLearnerProgress} fetchingLearnerProgress={isLoading}/>
+                //     </>
+                // ) :
+                // // isLoading && role === "Learner" ? (
+                // //     <div className="col-span-2 row-span-4 flex flex-col justify-center items-center">
+                // //         <img src={CourseLoading} alt="" className="w-80"/>
+                // //         <p className="text-4xl font-header text-primary">Loading...</p>
+                // //         <p className="text-sm font-text text-primary">Hang tight! 🚀 Loading courses for — great things take a second!</p>
+                // //     </div>
+                // // ) :
+                // (
+                //     <div className="col-span-4 row-span-3 flex flex-col justify-center items-center">
                 //         <img src={CourseLoading} alt="" className="w-80"/>
                 //         <p className="text-4xl font-header text-primary">Loading...</p>
                 //         <p className="text-sm font-text text-primary">Hang tight! 🚀 Loading courses for — great things take a second!</p>
                 //     </div>
-                // ) :
-                (
-                    <div className="col-span-4 row-span-3 flex flex-col justify-center items-center">
-                        <img src={CourseLoading} alt="" className="w-80"/>
-                        <p className="text-4xl font-header text-primary">Loading...</p>
-                        <p className="text-sm font-text text-primary">Hang tight! 🚀 Loading courses for — great things take a second!</p>
-                    </div>
-                )
+                // )
             }
         </div>
 

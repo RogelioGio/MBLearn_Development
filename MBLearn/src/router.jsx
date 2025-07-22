@@ -196,7 +196,7 @@ const router = createBrowserRouter([
                 element:
                 <CourseListProvider>
                         <CourseProvider>
-                            <Learner/>
+                                <Learner/>
                         </CourseProvider>
                 </CourseListProvider>,
                 children: [
