@@ -151,6 +151,7 @@ Route::middleware('auth:sanctum')->group(function(){
     //Fetching All nessesary call for courselist maintenance
     Route::get('/coursecontext',[CourseContextController::class,'index']);
     Route::get('/coursecontext/{id}/{userInfos}',[CourseContextController::class,'getSelectedCourse']);
+    Route::get('/courseprogress/{id}/{userInfos}', [CourseContextController::class, 'getProgress']);
     Route::get('/coursecontext/{id}',[CourseContextController::class,'adminGetSelectedCourse']);
 
 
@@ -208,7 +209,7 @@ Route::post('/send-notfication', function (){
 
 
 Route::apiResource('/carousels', CarouselImageController::class);
-Route::get('/test', [userInfo_controller::class, 'test']);
+Route::get('/test/{id}/{userInfos}', [CourseContextController::class, 'getProgress']);
 
 
 //Category API

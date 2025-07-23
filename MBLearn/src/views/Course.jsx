@@ -1,5 +1,5 @@
 import { faCircleCheck as faCircleCheckRegular, faCircleLeft as faCircleLeftRegular } from "@fortawesome/free-regular-svg-icons"
-import { faArrowDownShortWide, faArrowDownZA, faArrowLeft, faArrowUpAZ, faArrowUpWideShort, faBook, faBookBookmark, faBookOpenReader, faBookReader, faCakeCandles, faChalkboard, faChalkboardUser, faCircle, faCircleInfo, faClipboard, faClipboardUser, faFile, faFileContract, faGraduationCap, faPencil, faPenToSquare, faPieChart, faSort, faSpinner, faSquareCheck, faTrash, faUser, faUserCircle, faUserGraduate, faUserGroup, faUserPlus, faUserTie } from "@fortawesome/free-solid-svg-icons"
+import { faArrowDownShortWide, faArrowDownZA, faArrowLeft, faArrowUpAZ, faArrowUpWideShort, faBook, faBookBookmark, faBookOpenReader, faBookReader, faCakeCandles, faChalkboard, faChalkboardUser, faCircle, faCircleInfo, faClipboard, faClipboardUser, faFile, faFileContract, faGraduationCap, faPencil, faPenToSquare, faPieChart, faSort, faSpinner, faSquareCheck, faTrash, faTruckMonster, faUser, faUserCircle, faUserGraduate, faUserGroup, faUserPlus, faUserTie } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Stepper } from "@mantine/core"
 import React, { useEffect, useState } from "react"
@@ -39,10 +39,11 @@ export default function Course() {
     const [assign, setAssign] = useState(false);
     const {course, setCourse} = useCourse()
     const [learnerProgress, setLearnerProgress] = useState();
+    const [fetchingLearnerProgress, setFethingLearnerProgress] = useState();
 
-    // useEffect(() => {
-    //     console.log('the corse is passed is:', course || "none");
-    // },[course])
+    useEffect(() => {
+        console.log('the corse is passed is:', course || "none");
+    },[course])
 
     const fetchCourse  = () => {
         setLoading(true)
@@ -54,14 +55,12 @@ export default function Course() {
         .catch((e) => console.log(e))
     }
 
-    const fetchLearnerProgress = () => {
+    const fetchLearnerCourse = () => {
         setLoading(true)
         axiosClient.get(`/coursecontext/${id}/${user.user_infos.id}`)
         .then((res) => {
             setLearnerProgress(res.data.completed_lessons);
-            if(!course){
-                setCourse(res.data)
-            }
+            setCourse(res.data)
             setLoading(false)
         }).catch((e) => console.log(e))
     }
@@ -70,23 +69,23 @@ export default function Course() {
         if(!course && role === "Course Admin") {
             fetchCourse()
         } else if(!course && role === "Learner") {
-            fetchLearnerProgress()
+            fetchLearnerCourse()
+        } else {role === "Learner"}{
+            setFethingLearnerProgress(true)
+            axiosClient.get(`/courseprogress/${id}/${user.user_infos.id}`)
+            .then((res) => {
+                setLearnerProgress(res.data.completed_lessons);
+                setFethingLearnerProgress(false)
+            }).catch((e) => console.log(e))
         }
-    },[course])
-    useEffect(()=>{
-        fetchLearnerProgress()
     },[])
 
-    // useEffect(() => {
-        //     console.log("Active Tab:", tab);
-        // }, [tab]);
-
-        const tabComponents = {
-            module: <CourseModuleProps course={course} usedTo={"Course Admin"}/>,
-            learner: <CourseLearenerProps course={course}/>,
-            courseAdmin: <CourseCourseAdminAssignmentProps courseID={course}/>,
-            enrollment: <CourseEnrollmentProps course={course}/>,
-        };
+    const tabComponents = {
+        module: <CourseModuleProps course={course} usedTo={"Course Admin"}/>,
+        learner: <CourseLearenerProps course={course}/>,
+        courseAdmin: <CourseCourseAdminAssignmentProps courseID={course}/>,
+        enrollment: <CourseEnrollmentProps course={course}/>,
+    };
 
     const content = () => {
         return (
@@ -299,7 +298,7 @@ export default function Course() {
 
     return(
         <>
-        <div className={`grid ${role === "Course Admin" ? "grid-cols-4 grid-rows-[min-content_min-content_calc(100vh-11.5rem)]" :role === "Learner" ? "grid-cols-4 grid-rows-[min-content_1fr]" : null} h-full`}>
+        <div className={`grid ${role === "Course Admin" ? "grid-cols-4 grid-rows-[min-content_min-content_calc(100vh-11.5rem)]" : role === "Learner" ? "grid-cols-4 grid-rows-[min-content_1fr]" : null} h-full`}>
             <Helmet>
                 {/* Title of the mark-up */}
                 <title>MBLearn | {isLoading ? "Loading..." : course?.name || "No Course Found"}</title>
@@ -454,7 +453,7 @@ export default function Course() {
                     </>
                 ) : role === "Learner" ?
                     <div className="col-span-4">
-                        <CourseModuleProps course={course} LearnerProgress={learnerProgress} setLearnerProgress={setLearnerProgress} fetchingLearnerProgress={isLoading} />
+                        <CourseModuleProps course={course} LearnerProgress={learnerProgress} setLearnerProgress={setLearnerProgress} fetchingLearnerProgress={fetchingLearnerProgress} />
                     </div>
                 : null
                 // ) : role === "Learner" ? (

@@ -102,6 +102,10 @@ const CourseModuleProps = ({headers, course, LearnerProgress = [], setLearnerPro
         //console.log('learner progress: ', LearnerProgress)
     },[LearnerProgress])
 
+    useEffect(()=>{
+        console.log(course)
+    },[course])
+
     return (
         <>
         {
@@ -138,7 +142,7 @@ const CourseModuleProps = ({headers, course, LearnerProgress = [], setLearnerPro
                 </Stepper>
             </>
             : <>
-                <Stepper initialStep={0} enableStepClick={true} ref={stepperRef} onStepChange={(index,meta) => setActiveMeta(meta)} learnerProgress={LearnerProgress || []} tempProgress={miscProgress || []} completionPercent={progress}>
+                <Stepper initialStep={0} enableStepClick={true} ref={stepperRef} onStepChange={(index,meta) => setActiveMeta(meta)} learnerProgress={LearnerProgress || []} tempProgress={miscProgress || []} completionPercent={progress} isLoading={fetchingLearnerProgress}>
                     {
                         course?.description && course?.course_objectives && course?.course_outcomes ? (
                             <Step stepTitle={"Course Overview"} stepDesc={"Quick Summary of the course"} icon={faBook} stepID={"overview"}>

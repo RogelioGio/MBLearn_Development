@@ -54,6 +54,17 @@ class CourseContextController extends Controller
         }
     }
 
+    public function getProgress($id, UserInfos $userInfos){
+        $course = Course::find($id)->lessons();
+        $course->completed_count = $userInfos->lessons()->where('course_id', $id)->wherePivot('is_completed', true)->count();
+        $course->completed_lessons = $userInfos->lessons()->where('course_id', $id)->wherePivot('is_completed', true)->pluck('lessons.id');
+        return response()->json([
+            'completed_count' => $course->completed_count,
+            'completed_lessons' => $course->completed_lessons
+        ]);
+    }
+
+
         public function adminGetSelectedCourse($id){
         $course = Course::with('adder', 'assignedCourseAdmins','categories','types','training_modes', 'lessons')->find($id);
         $course->adder->load(['branch', 'department', 'branch.city', 'title']);

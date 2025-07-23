@@ -4,7 +4,7 @@ import { faCircleCheck as faCircleCheckRegular, faSquareCheck } from "@fortaweso
 import { useStateContext } from "MBLearn/src/contexts/ContextProvider";
 import { Progress } from "./progress";
 import { ScrollArea } from "./scroll-area";
-import { faChevronCircleLeft, faChevronCircleRight, faChevronLeft, faChevronRight, faCircleArrowLeft, faCircleRight, faList } from "@fortawesome/free-solid-svg-icons";
+import { faChevronCircleLeft, faChevronCircleRight, faChevronLeft, faChevronRight, faCircleArrowLeft, faCircleRight, faList, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetClose, SheetOverlay, SheetPortal
 } from "./sheet";
 import { RingProgress } from "@mantine/core";
@@ -12,7 +12,7 @@ import { RingProgress } from "@mantine/core";
 const StepperContext = createContext();
 
 export const Stepper = forwardRef(
-({ children, initialStep = 0, enableStepClick = false, onStepChange ,complete, learnerProgress=[], tempProgress=[],completionPercent}, ref) => {
+({ children, initialStep = 0, enableStepClick = false, onStepChange ,complete, learnerProgress=[], tempProgress=[],completionPercent, isLoading}, ref) => {
     const [active, setActive] = useState(initialStep);
 
     const steps = React.Children.toArray(children).filter(
@@ -274,23 +274,37 @@ export const Stepper = forwardRef(
                     </div>
                 </div>
                 </>
-
                 :
                 // Learner
-                <div className="grid grid-rows-[min-content_calc(100vh-12.30rem)] grid-cols-4 h-full">
+                <div className="grid grid-rows-[min-content_1fr] grid-cols-4 h-full">
                     {/* Header */}
                     <div className="border-b border-divider col-span-3 flex flex-row items-center justify-between py-2 pr-4">
-                        <div className={`w-10 h-10 text-lg border-2 border-primary rounded-md flex justify-center items-center text-primary  transition-all ease-in-out shadow-md ${active === 0 ? "opacity-50 cursor-not-allowed" : "hover:text-white hover:bg-primaryhover hover:border-primaryhover hover:cursor-pointer"}`}
-                            onClick={() => setActive((prev) => Math.max(prev - 1, 0))}
+                        <div className={`w-10 h-10 text-lg border-2 border-primary rounded-md flex justify-center items-center text-primary  transition-all ease-in-out shadow-md ${isLoading ? "opacity-50 cursor-not-allowed":""} ${active === 0 ? "opacity-50 cursor-not-allowed" : "hover:text-white hover:bg-primaryhover hover:border-primaryhover hover:cursor-pointer"}`}
+                            onClick={() => {
+                                if(isLoading) return
+                                setActive((prev) => Math.max(prev - 1, 0))
+                            }}
                             disabled={active === 0}>
                             <FontAwesomeIcon icon={faChevronCircleLeft}/>
                         </div>
                         <div className="flex flex-col items-center justify-center">
-                            <p className="text-unactive font-text text-xs">Current Module:</p>
-                            <p className="font-header text-primary text-lg">{stepsMeta[active]?.title}</p>
+                            {
+                                isLoading ?
+                                    <div className="flex flex-row gap-x-2 text-sm font-text text-unactive items-center justify-center">
+                                        <FontAwesomeIcon icon={faSpinner} className="animate-spin text-unactive"/>
+                                        <p>Loading...</p>
+                                    </div>
+                                :<>
+                                    <p className="text-unactive font-text text-xs">Current Module:</p>
+                                    <p className="font-header text-primary text-lg">{stepsMeta[active]?.title}</p>
+                                </>
+                            }
                         </div>
-                        <div className={`w-10 h-10 text-lg border-2 border-primary rounded-md flex justify-center items-center text-primary  transition-all ease-in-out  shadow-md ${active >= steps.length - 1 ? "opacity-50 cursor-not-allowed" : "hover:text-white hover:bg-primaryhover hover:border-primaryhover  hover:cursor-pointer"}`}
-                            onClick={() => setActive((prev) => Math.min(prev + 1, steps.length-1))}
+                        <div className={`w-10 h-10 text-lg border-2 border-primary rounded-md flex justify-center items-center text-primary  transition-all ease-in-out  shadow-md ${isLoading ? "opacity-50 cursor-not-allowed":""}  ${active >= steps.length - 1 ? "opacity-50 cursor-not-allowed" : "hover:text-white hover:bg-primaryhover hover:border-primaryhover  hover:cursor-pointer"}`}
+                            onClick={() => {
+                                if(isLoading) return
+                                setActive((prev) => Math.min(prev + 1, steps.length-1))
+                            }}
                             disabled={active >= steps.length - 1}>
                             <FontAwesomeIcon icon={faChevronCircleRight}/>
                         </div>
@@ -298,69 +312,94 @@ export const Stepper = forwardRef(
 
                     {/* Steps */}
                     <div className="py-2 pl-4 mr-3 flex flex-row gap-2 items-center border-divider border-b border-l">
-                        <RingProgress
-                            size={35} // Diameter of the ring
-                            roundCaps
-                            thickness={4} // Thickness of the progress bar
-                            sections={[{ value: completionPercent, color: "hsl(218,97%,26%)" }]} // Lighter blue progress
-                            rootColor="hsl(210, 14%, 83%)" // Darker blue track
-                        />
-                        <div>
-                            <p className='font-header'>{completionPercent}%</p>
-                            <p className='font-text text-xs'>Completion Progress</p>
-                        </div>
+                        {
+                            isLoading ?
+                            <div className="flex flex-row gap-2 animate-pulse">
+                                <RingProgress
+                                    size={35} // Diameter of the ring
+                                    roundCaps
+                                    thickness={4} // Thickness of the progress bar
+                                    sections={[{ value: 0, color: "hsl(218,97%,26%)" }]} // Lighter blue progress
+                                    rootColor="hsl(210, 14%, 83%)" // Darker blue track
+                                />
+                                <div className="flex flex-col gap-1">
+                                    <div className="w-10 h-3 text-sm bg-gray-300 rounded-full"/>
+                                    <div className="w-40 h-3 text-sm bg-gray-300 rounded-full"/>
+                                </div>
+                            </div>
+                            : <>
+                                <RingProgress
+                                    size={35} // Diameter of the ring
+                                    roundCaps
+                                    thickness={4} // Thickness of the progress bar
+                                    sections={[{ value: completionPercent, color: "hsl(218,97%,26%)" }]} // Lighter blue progress
+                                    rootColor="hsl(210, 14%, 83%)" // Darker blue track
+                                />
+                                <div>
+                                    <p className='font-header'>{completionPercent}%</p>
+                                    <p className='font-text text-xs'>Completion Progress</p>
+                                </div>
+                            </>
+                        }
+
                     </div>
                     <div className="col-start-4 pl-4 mr-3 border-l border-divider">
-                        <ScrollArea className="h-[calc(100vh-12.30rem)] ">
+                        <ScrollArea className="h-[calc(100vh-12.25rem)] ">
                             <div className="py-2 flex flex-col gap-y-1 transition-all ease-in-out">
-                            {steps.map((step, index) => {
-                            const stepID = step.props.stepID;
-                            const isDone = learnerProgress.includes(stepID) || tempProgress.includes(stepID);
-                            const isActive = index === active;
-                            const customIcon = step.props.icon;
-                            const isLastVisited = index === lastVisitedIndex;
-                            const isNext = index === nextIndex;
+                            {
+                                isLoading ?
+                                Array.from({length: 5}).map((i, _ ) => (
+                                    <div key={i} className="min-h-20 w-100 border-unactive border bg-white animate-pulse rounded-md shadow-md"/>
+                                ))
+                                :
+                                steps.map((step, index) => {
+                                const stepID = step.props.stepID;
+                                const isDone = learnerProgress.includes(stepID) || tempProgress.includes(stepID);
+                                const isActive = index === active;
+                                const customIcon = step.props.icon;
+                                const isLastVisited = index === lastVisitedIndex;
+                                const isNext = index === nextIndex;
 
-                                return (
-                                    <div
-                                        key={index}
-                                        className={`group grid grid-cols-[min-content_1fr] py-3 px-2 hover:cursor-pointer hover:bg-primarybg gap-2 transition-all ease-in-out rounded-md border-2 border-transparent ${isActive ? "border-2 !border-primary":null} ${isNext ? "bg-primarybg" : ""}`}
-                                        onClick={()=>{
-                                            const isDone = learnerProgress.includes(stepID) || tempProgress.includes(stepID);
-                                            if(enableStepClick && index !== active && isDone || isNext){
-                                            setActive(index)
-                                        }}}
-                                    >
-                                        {/* Indicator */}
+                                    return (
                                         <div
-                                            className={`w-10 aspect-square flex flex-col justify-center items-center rounded-full hover:!border-primary
-                                            ${isDone ? "border-primary bg-primary border-2" :
-                                            isActive ? "border-2 border-primary bg-primary" :
-                                            isNext ? "bg-primary border-primary bnorder-2"  : "border-2 border-unactive group-hover:border-primary"}`}
+                                            key={index}
+                                            className={`group grid grid-cols-[min-content_1fr] py-3 px-2 hover:cursor-pointer hover:bg-primarybg gap-2 transition-all ease-in-out rounded-md border-2 border-transparent ${isActive ? "border-2 !border-primary":null} ${isNext ? "bg-primarybg" : ""}`}
+                                            onClick={()=>{
+                                                const isDone = learnerProgress.includes(stepID) || tempProgress.includes(stepID);
+                                                if(enableStepClick && index !== active && isDone || isNext){
+                                                setActive(index)
+                                            }}}
                                         >
-                                            {isDone ? (
-                                                    <FontAwesomeIcon
-                                                        icon={faCircleCheckRegular} // ← Use it here
-                                                        className="text-white p-2"
-                                                    />
-                                                ) : (
-                                                    customIcon ? (
+                                            {/* Indicator */}
+                                            <div
+                                                className={`w-10 aspect-square flex flex-col justify-center items-center rounded-full hover:!border-primary
+                                                ${isDone ? "border-primary bg-primary border-2" :
+                                                isActive ? "border-2 border-primary bg-primary" :
+                                                isNext ? "bg-primary border-primary bnorder-2"  : "border-2 border-unactive group-hover:border-primary"}`}
+                                            >
+                                                {isDone ? (
                                                         <FontAwesomeIcon
-                                                            icon={customIcon}
-                                                            className={`text-primary font-header text-base ${isNext ? "text-white" : !isDone && !isActive ? "text-unactive group-hover:text-primary" : isActive ? "text-white": null}`}
+                                                            icon={faCircleCheckRegular} // ← Use it here
+                                                            className="text-white p-2"
                                                         />
                                                     ) : (
-                                                        <p className={`text-primary font-header text-base ${isNext ? "text-white" : !isDone && !isActive ? "text-unactive group-hover:text-primary" : isActive ? "text-white": null}`}>{index}</p>
-                                                    )
-                                                )}
+                                                        customIcon ? (
+                                                            <FontAwesomeIcon
+                                                                icon={customIcon}
+                                                                className={`text-primary font-header text-base ${isNext ? "text-white" : !isDone && !isActive ? "text-unactive group-hover:text-primary" : isActive ? "text-white": null}`}
+                                                            />
+                                                        ) : (
+                                                            <p className={`text-primary font-header text-base ${isNext ? "text-white" : !isDone && !isActive ? "text-unactive group-hover:text-primary" : isActive ? "text-white": null}`}>{index}</p>
+                                                        )
+                                                    )}
+                                            </div>
+                                            {/* Step Description */}
+                                            <div className={`font-text text-primary`}>
+                                                <h1 className={`font-header text-sm ${isNext ? "text-primary":!isDone && !isActive ? "text-unactive":null} group-hover:text-primary`}>{step.props.stepTitle}</h1>
+                                                <p className={`text-xs group-hover:text-primary ${isNext ? "text-primary" :"text-unactive"}`}>{step.props.stepDesc}</p>
+                                            </div>
                                         </div>
-                                        {/* Step Description */}
-                                        <div className={`font-text text-primary`}>
-                                            <h1 className={`font-header text-sm ${isNext ? "text-primary":!isDone && !isActive ? "text-unactive":null} group-hover:text-primary`}>{step.props.stepTitle}</h1>
-                                            <p className={`text-xs group-hover:text-primary ${isNext ? "text-primary" :"text-unactive"}`}>{step.props.stepDesc}</p>
-                                        </div>
-                                    </div>
-                                );
+                                    );
                             })}
                             </div>
                         </ScrollArea>
@@ -369,9 +408,17 @@ export const Stepper = forwardRef(
                     {/* StepContent */}
                     <div className="col-span-3 row-start-2">
                         <ScrollArea className="h-[calc(100vh-12.30rem)]">
-                            <div>
-                                {isCompleted ? completedStep : steps[active]}
-                            </div>
+                           {
+                                isLoading ?
+                                <div className="flex flex-row gap-x-2 text-sm font-text text-unactive items-center justify-center h-[calc(100vh-12.30rem)]">
+                                    <FontAwesomeIcon icon={faSpinner} className="animate-spin text-unactive"/>
+                                    <p>Loading Content...</p>
+                                </div>
+                                :
+                                <div>
+                                    {isCompleted ? completedStep : steps[active]}
+                                </div>
+                           }
                         </ScrollArea>
                     </div>
                 </div>
