@@ -5,6 +5,7 @@ import { Progress } from "MBLearn/src/components/ui/progress"
 import { useEffect, useRef, useState } from "react"
 import CourseAssesmentItem from "./courseAssementItem"
 import CircleChart from "MBLearn/src/components/ui/circleChart"
+import { RingProgress } from "@mantine/core"
 
 
 const CourseAssesment = ({course,complete}) => {
@@ -158,301 +159,100 @@ const CourseAssesment = ({course,complete}) => {
     // },[quizState])
 
     return(
-        // <div className="pl-1 grid grid-cols-1 grid-rows-[min-content_min-content] gap-2">
-        //     <div>
-        //         <p className="font-header text-primary">Course Assesment</p>
-        //         <p className="font-text text-sm">
-        //             This is a sample course assesment. Please answer the following questions to the best of your ability.
-        //         </p>
-        //     </div>
-        //     {/* Assesment items Content */}
-        //     <div className="col-span-1 row-span-1 flex flex-col gap-2">
-        //         <div className="flex flex-col gap-10 border-2 border-primary rounded-md p-4 bg-white shadow-md">
-        //             {/* Question */}
-        //             <div>
-        //                 <p className="font-header text-primary">Question 1: (True or False)</p>
-        //                 <p className="font-text text-sm">
-        //                     Capital Gains Tax is imposed on profits made from the sale of income-generating properties only.
-        //                 </p>
-        //             </div>
-        //             {/* Answers */}
-        //             <div className="grid grid-cols-2 gap-2">
-        //             <div className=" group flex items-center justify-center w-full h-full py-4 bg-white border-2 border-primary rounded-md shadow-md hover:bg-primary hover:cursor-pointer transition-all ease-in-out">
-        //                 <p className="group-hover:text-white font-header text-primary">True</p>
-        //             </div>
-        //             <div className=" group flex items-center justify-center w-full h-full py-4 bg-white border-2 border-primary rounded-md shadow-md hover:bg-primary hover:cursor-pointer transition-all ease-in-out ">
-        //                 <p className="group-hover:text-white font-header text-primary">False</p>
-        //             </div>
-        //             </div>
-        //         </div>
-        //         <div className="flex flex-col gap-10 border-2 border-primary rounded-md p-4 bg-white shadow-md">
-        //             {/* Question */}
-        //             <div>
-        //                 <p className="font-header text-primary">Question 2: (Multiple Choice)</p>
-        //                 <p className="font-text text-sm">
-        //                 Which of the following is NOT a type of direct tax in the Philippines?
-        //                 </p>
-        //             </div>
-        //             {/* Answers */}
-        //             <div className="grid grid-cols-2 grid-rows-2 gap-2">
-        //             <div className=" group flex items-center justify-center w-full h-full py-4 bg-white border-2 border-primary rounded-md shadow-md hover:bg-primary hover:cursor-pointer transition-all ease-in-out">
-        //                 <p className="group-hover:text-white font-header text-primary">A. Income Tax</p>
-        //             </div>
-        //             <div className=" group flex items-center justify-center w-full h-full py-4 bg-white border-2 border-primary rounded-md shadow-md hover:bg-primary hover:cursor-pointer transition-all ease-in-out ">
-        //                 <p className="group-hover:text-white font-header text-primary">B. Value-Added Tax</p>
-        //             </div>
-        //             <div className=" group flex items-center justify-center w-full h-full py-4 bg-white border-2 border-primary rounded-md shadow-md hover:bg-primary hover:cursor-pointer transition-all ease-in-out ">
-        //                 <p className="group-hover:text-white font-header text-primary">C. Capital Gains Tax</p>
-        //             </div>
-        //             <div className=" group flex items-center justify-center w-full h-full py-4 bg-white border-2 border-primary rounded-md shadow-md hover:bg-primary hover:cursor-pointer transition-all ease-in-out ">
-        //                 <p className="group-hover:text-white font-header text-primary">D. Corporate Tax</p>
-        //             </div>
-        //             </div>
-        //         </div>
-        //         <div className="flex flex-col gap-10 border-2 border-primary rounded-md p-4 bg-white shadow-md">
-        //             {/* Question */}
-        //             <div>
-        //                 <p className="font-header text-primary">Question 3: (Essay)</p>
-        //                 <p className="font-text text-sm">
-        //                     Explain the importance of direct taxes in the Philippine economy.
-        //                 </p>
-        //             </div>
-        //             {/* Answers */}
-        //             <div className="grid grid-cols-1 gap-2">
-        //                 <textarea id="essay" name="essay" rows="5" placeholder="Write your answer here..."
-        //                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-        //             </div>
-        //         </div>
-
-        //     </div>
-        //     {/* Submit */}
-        //     <div className="py-2">
-        //         <div className="flex items-center justify-center w-full h-full py-4 border-2 bg-primary rounded-md shadow-md hover:cursor-pointer hover:bg-primaryhover transition-all ease-in-out">
-        //             <p className="font-header text-white">Submit Assesment</p>
-        //         </div>
-        //     </div>
-        // </div>
-        //
-        <div className="py-5 h-[calc(100vh-12.25rem)] grid grid-cols-1 grid-rows-[min-content_min-content_1fr_min-content] overflow-visible">
-            {/* Quiz Premise */}
+        <div className="flex flex-col items-center justify-center h-[calc(100vh-13rem)]">
             {
-                quizState === "on-going" ? (
-                    <>
-                    {/* Quiz Header */}
-                        <div className="grid grid-cols-4 overflow-visible">
-                            <div className="py-2 flex flex-row items-center gap-3 overflow-visible col-span-2">
-                                <div className="relative w-fit group">
-                                    <div className="overflow-visible relative border-primary border-2 w-10 h-10 bg-white shadow-md rounded-md flex items-center justify-center text-primary hover:text-white hover:bg-primary hover:cursor-pointer transition-all ease-in-out"
-                                        onClick={()=>{pauseAssessment(),setHover(false)}}
-                                        ref={iconRef} onMouseLeave={()=>setHover(false)} onMouseEnter={()=>setHover(true)}>
-                                        <FontAwesomeIcon icon={faPause}/>
-                                    </div>
-
-                                    <PortalToolTip anchorRef={iconRef} visible={hover}>
-                                        Pause Quiz
-                                    </PortalToolTip>
-                                </div>
-                                <div>
-                                    <p className="font-text text-unactive text-xs">Time Left:</p>
-                                    <p className="font-header text-lg text-primary">{formatTime(timeleft)} <span className="text-unactive font-text text-xs">minutes Left</span></p>
-                                </div>
-                                <div>
-                                    <p className="font-text text-unactive text-xs">Attempt:</p>
-                                    <p className="font-header text-lg text-primary">1 out of 1 <span className="text-unactive font-text text-xs">max attempt</span></p>
-                                </div>
-                            </div>
-                            <div className="py-2">
-                                <div className="flex flex-col items-end pr-4">
-                                    <p className="font-text text-unactive text-xs">Questions:</p>
-                                    <p className="font-header text-lg text-primary">{active+1} out of {assessment.assesmentItems.length} <span className="text-unactive font-text text-xs">items</span></p>
-                                </div>
-                            </div>
-                            <div className="flex flex-col justify-center col-start-4">
-
-                                <div className="flex flex-col gap-2 ">
-                                    <div className="flex font-text text-unactive text-sm justify-between">
-                                        <p>Progress</p>
-                                        <p>{progress}%</p>
-                                    </div>
-                                    <Progress value={progress}/>
-                                </div>
-                            </div>
+                quizState === "start" || quizState === "paused" ? <>
+                <div className="grid grid-rows-3 gap-2 w-full">
+                    <div className="flex flex-col items-center justify-center">
+                        <p className="font-header text-primary text-3xl">Course Assesment</p>
+                        <p className="font-text text-sm"> This is a sample course assesment. Please answer the following questions to the best of your ability. </p>
+                    </div>
+                    <div className="flex flex-row items-center justify-around">
+                        {
+                            quizState === "paused" ?
+                            <div>
+                                <p className="font-header text-lg text-primary">{formatTime(timeleft)} minutes Left</p>
+                                <p className="font-text text-unactive text-xs">Time Left</p>
+                            </div> : null
+                        }
+                        <div>
+                            <p className="font-header text-lg text-primary">1 attempt</p>
+                            <p className="font-text text-unactive text-xs">Current Attempt</p>
                         </div>
-                        <div className="flex flex-col py-5 items-center">
-                            <p className="text-primary font-header leading-none">{course.name}</p>
-                            <p className="text-xs font-text text-unactive">Course Assesment</p>
+                        <div>
+                            <p className="font-header text-lg text-primary">4 attempts</p>
+                            <p className="font-text text-unactive text-xs">Max Attempts</p>
                         </div>
-
-                        {/* Quiz Content */}
-                        <CourseAssesmentItem assesmentItem={assessment.assesmentItems[active]} active={active}/>
-
-
-                        {/* Quiz Navigation */}
-                        <div className="flex flex-row justify-between">
-                            <div className="h-10 w-10 bg-white border-2 border-primary rounded-md shadow-md flex items-center justify-center text-primary hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out"
-                                onClick={() => {back()}}>
-                                <FontAwesomeIcon icon={faChevronLeft}/>
-                            </div>
-                            {/* Quiz Lenght */}
-                            <div className="flex flex-row gap-2 items-center">
-                                {Array.from({length: assessment.assesmentItems.length}).map((_, i)=>(
-                                    <div key={i} className={`h-2 w-2 rounded-full ${active === i ? "bg-primary":"bg-unactive"}`}/>
-                                ))}
-                            </div>
-                            <div className="h-10 w-10 bg-white border-2 border-primary rounded-md shadow-md flex items-center justify-center text-primary hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out"
-                                onClick={()=>{
-                                        if(assessment.assesmentItems.length-1 === active){
-                                            completeAssesment()
-                                        }
-                                        next()
-                                    }}>
-                                <FontAwesomeIcon icon={faChevronRight}/>
-                            </div>
-                        </div>
-                    </>
-                ) : quizState === "start" || quizState === "paused" ? (
-                    <>
-                    {/* Starting entry */}
-                    <div className="row-span-4 grid grid-cols-4 grid-rows-2">
-                        <div className="flex flex-col items-center gap-2 col-span-4 justify-end mb-5">
-                            <div className="flex flex-col items-center">
-                                <p className="font-text text-primary text-xs">{course.name}</p>
-                                <p className="font-header text-primary text-3xl">Course Assesment</p>
-                            </div>
-                            <p className="font-text text-sm">
-                                This is a sample course assesment. Please answer the following questions to the best of your ability.
+                        {
+                            quizState === "paused" ?
+                            <div>
+                                <div className="flex flex-row items-center justify-start gap-2">
+                                    <RingProgress
+                                    size={35} // Diameter of the ring
+                                    roundCaps
+                                    thickness={4} // Thickness of the progress bar
+                                    sections={[{ value: progress, color: "hsl(218,97%,26%)" }]} // Lighter blue progress
+                                    rootColor="hsl(210, 14%, 83%)" // Darker blue track
+                                    />
+                                    <p className='font-header'>{progress}%</p>
+                                </div>
+                                <p className="font-text text-unactive text-xs">Assessment Progress</p>
+                            </div> : null
+                        }
+                    </div>
+                    <div className="flex flex-row items-center justify-center">
+                        <div className="w-fit py-3 px-5 bg-primary rounded-md shadow-md flex flex-row items-center justify-center hover:bg-primaryhover transition-all ease-in-out hover:cursor-pointer"
+                        onClick={()=>startAssesment()}>
+                            <p className="font-header text-white text-sm">
+                                {
+                                    quizState === "start" ? "Start Assesment" : "Resume Assesment"
+                                }
                             </p>
                         </div>
-                        <div className="flex flex-row justify-between items-start col-span-2 col-start-2">
+                    </div>
+                </div>
+                </> : quizState === "on-going" ? <>
+                <div className="grid grid-rows-[min-content_1fr_min-content] w-full h-full">
+                    <div className="flex flex-row items-center justify-between py-2">
+                        <div className="flex flex-row items-center gap-2 w-full">
+                            <div className="relative w-fit group">
+                                <div className="overflow-visible relative border-primary border-2 w-10 h-10 bg-white shadow-md rounded-md flex items-center justify-center text-primary hover:text-white hover:bg-primary hover:cursor-pointer transition-all ease-in-out"
+                                    onClick={()=>{pauseAssessment(),setHover(false)}}
+                                    ref={iconRef} onMouseLeave={()=>setHover(false)} onMouseEnter={()=>setHover(true)}>
+                                    <FontAwesomeIcon icon={faPause}/>
+                                </div>
+
+                                <PortalToolTip anchorRef={iconRef} visible={hover}>
+                                    Pause Quiz
+                                </PortalToolTip>
+                            </div>
                             <div>
-                                <p className="font-text text-sm">Number of Attempt: <span className="font-header text-primary text-lg">1</span></p>
-                                <p className="font-text text-sm">Max Attempt: <span className="font-header text-primary text-lg">1</span></p>
+                                <p className="font-header text-lg text-primary">{formatTime(timeleft)} <span className="text-unactive font-text text-xs">minutes Left</span></p>
+                                <p className="font-text text-xs">Time Left:</p>
                             </div>
-                            <div className="font-header text-primary border-primary border-2 rounded-md shadow-md py-2 px-5 hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out"
-                                onClick={()=>{startAssesment()}}>
-                                Take an Assement
+
+                        </div>
+                        <div className="flex flex-col justify-center items-center whitespace-nowrap">
+                            <p className='font-header text-lg text-primary'>1 <span className="font-text text-xs text-unactive">out of</span> 4 <span className="font-text text-xs text-unactive">max Attempt</span></p>
+                            <p className='font-text text-xs'>Attempt:</p>
+
+                        </div>
+                        <div className="flex flex-row justify-end gap-2 pr-4 w-full">
+                            <div className="flex flex-col items-end justify-end">
+                                <p className='font-header'>{progress}%</p>
+                                <p className='font-text text-xs'>Assessment Progress</p>
                             </div>
+                            <RingProgress
+                                size={35} // Diameter of the ring
+                                roundCaps
+                                thickness={4} // Thickness of the progress bar
+                                sections={[{ value: progress, color: "hsl(218,97%,26%)" }]} // Lighter blue progress
+                                rootColor="hsl(210, 14%, 83%)" // Darker blue track
+                            />
                         </div>
                     </div>
-                    </>
-                ) : quizState === "complete" ? (
-                    <>
-                        {/* <div className="row-span-4 grid grid-cols-4 grid-rows-2">
-                            <div className="flex flex-col items-center gap-2 col-span-4 justify-end mb-5">
-                                <div className="flex flex-col items-center">
-                                    <p className="font-text text-primary text-xs">{course.name}</p>
-                                    <p className="font-header text-primary text-3xl">Course Assesment</p>
-                                </div>
-                                <p className="font-text text-sm">
-                                    Complete
-                                </p>
-                            </div>
-                        </div> */}
-                        <div className="grid grid-cols-4 overflow-visible py-2">
-                            <div className="col-span-2">
-                                <p className="text-primary font-header leading-none">{course.name}</p>
-                                <p className="text-xs font-text text-unactive">Course Assesment</p>
-                            </div>
-                            <div className="flex flex-col col-start-4 items-end">
-                                <p className="text-primary font-header leading-none">Answer Summary</p>
-                                <p className="text-xs font-text text-unactive">Review your Answer before submitting</p>
-                            </div>
-                        </div>
-                        <div className="grid grid-cols-4 gap-2">
-                                <div>
-                                    <p className="font-text text-unactive text-xs">Time Left:</p>
-                                    <p className="font-header text-lg text-primary">{formatTime(timeleft)} <span className="text-unactive font-text text-xs">minutes Left</span></p>
-                                </div>
-                                <div className="flex flex-col">
-                                    <p className="font-text text-unactive text-xs">Attempt:</p>
-                                    <p className="font-header text-lg text-primary">1 out of 1 <span className="text-unactive font-text text-xs">max attempt</span></p>
-                                </div>
-                                <div className="flex flex-col">
-                                    <p className="font-text text-unactive text-xs"> Answered Questions:</p>
-                                    <p className="font-header text-lg text-primary">{active+1} out of {assessment.assesmentItems.length} <span className="text-unactive font-text text-xs">items</span></p>
-                                </div>
-                                <div className="flex flex-col gap-2 justify-center">
-                                    <div className="flex font-text text-unactive text-xs justify-between">
-                                        <p> Assessment Progress:</p>
-                                        <p>{progress}%</p>
-                                    </div>
-                                    <Progress value={progress}/>
-                                </div>
-                        </div>
-
-                            <CourseAssesmentItem usedTo="review" assesmentItem={assessment}/>
-
-                        <div className="grid grid-cols-2 gap-2">
-                            {
-                                timeleft <=0 ? null :
-                                <div className="py-3 border-2 border-primary text-primary bg-white rounded-md font-header flex items-center justify-center shadow-md hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out"
-                                    onClick={()=>{setQuizState("on-going")}}>
-                                    <p>Review</p>
-                                </div>
-                            }
-                            <div className={`py-3 border-2 border-primary text-white bg-primary rounded-md font-header flex items-center justify-center shadow-md hover:cursor-pointer ${timeleft <=0 ? "col-span-2":null}`}
-                                onClick={()=>{setQuizState("result")}}>
-                                <p>Submit</p>
-                            </div>
-                        </div>
-                    </>
-                ) : quizState === "result" ? (
-                    // <div className="row-span-4 flex items-center justify-center gap-5">
-                    //     <CircleChart label="Assesment Performance" size={250}  type="finished"/>
-                    //     <div className="flex flex-col items-center gap-4">
-                    //         <div>
-                    //             <p className="font-header text-primary text-2xl">{course.name}</p>
-                    //             <p className="font-text text-unactive">Course Assessment</p>
-                    //         </div>
-                    //         <div className="flex flex-col items-center">
-                    //             <p className="font-text text-unactive">You got</p>
-                    //             <p className="font-header text-4xl text-primary">10 out of {assessment.assesmentItems.length}</p>
-                    //             <p className="font-text text-unactive">Assessment Score</p>
-                    //         </div>
-                    //         <div className="py-2 px-10 border-2 border-primary text-primary bg-white rounded-md font-header flex items-center justify-center shadow-md hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out"
-                    //             //onClick={complete()}
-                    //             >
-                    //             Complete Course
-                    //         </div>
-
-                    //     </div>
-                    // </div>
-                    <>
-                    <div className="row-span-3 grid grid-cols-4 grid-rows-[min-content_min-content_1fr]">
-                        <div className="flex flex-row items-start justify-between col-start-1 col-span-4">
-                            <div>
-                                <p className="font-header text-primary">{course.name}</p>
-                                <p className="font-text text-unactive text-xs">Course Assessment</p>
-                            </div>
-                            <div className="flex flex-col items-end">
-                                <p className="font-text text-unactive text-xs">Attempt:</p>
-                                <p className="font-header text-lg text-primary">1 out of 1 max attempt</p>
-                            </div>
-                        </div>
-                        <div className="flex flex-col items-center justify-center col-start-1 row-start-2 row-span-2 gap-10">
-                            <CircleChart label="Assesment Performance" size={200}  type="finished"/>
-                            <div className="flex flex-col items-center">
-                                <p className="font-text text-xs text-unactive">You got</p>
-                                <p className="font-header text-2xl text-primary">10 out of {assessment.assesmentItems.length}</p>
-                                <p className="font-text text-xs text-unactive">Assessment Score</p>
-                            </div>
-                        </div>
-                        <div className="col-start-2 row-start-3 col-span-3 pl-3">
-                            <CourseAssesmentItem usedTo="review" assesmentItem={assessment}/>
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                        <div className="py-3 border-2 border-primary text-primary bg-white rounded-md font-header flex items-center justify-center shadow-md hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out"
-                            onClick={()=>{setQuizState("start"), setActive(0), setTimeleft(0)}}>
-                            <p>Try Again</p>
-                        </div>
-                        <div className={`py-3 border-2 border-primary text-white bg-primary rounded-md font-header flex items-center justify-center shadow-md hover:cursor-pointer`}
-                            onClick={()=>{setQuizState("result")}}>
-                            <p>Submit</p>
-                        </div>
-                    </div>
-                    </>
-                ) : null
+                </div>
+                </> : null
             }
         </div>
     )

@@ -156,7 +156,7 @@ const CourseModuleProps = ({headers, course, LearnerProgress = [], setLearnerPro
                             let content;
                             switch (lesson.lesson_type) {
                             case "text":
-                                content = <Content  course={lesson.lesson_content_as_json}/>;
+                                content = <Content course={lesson.lesson_content_as_json}/>;
                                 break;
                             default:
                                 content = (
@@ -172,6 +172,12 @@ const CourseModuleProps = ({headers, course, LearnerProgress = [], setLearnerPro
                             </Step>
                             );
                         })
+                    }
+
+                    {
+                        <Step stepTitle={"Course Assessment"} stepDesc={"This is the course assessment"} icon={faClipboard} stepID={"assessment"}>
+                            <CourseAssesment course={course} />
+                        </Step>
                     }
                 </Stepper>
             </>
