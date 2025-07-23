@@ -1,4 +1,4 @@
-import { faChevronLeft, faChevronRight, faPause } from "@fortawesome/free-solid-svg-icons"
+import { faChevronLeft, faChevronRight, faCircleChevronLeft, faCircleChevronRight, faPause } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import PortalToolTip from "MBLearn/src/components/ui/portal"
 import { Progress } from "MBLearn/src/components/ui/progress"
@@ -13,7 +13,8 @@ const CourseAssesment = ({course,complete}) => {
     const [hover, setHover] = useState(false);
 
     const [timeleft, setTimeleft] = useState(0)
-    const [progress, setProgress] = useState(0);
+    const [progress, setProgress] = useState([]);
+    const [progressPercent, setProgressPercent] = useState(0)
     const [active, setActive] = useState(0)
     const [quizState, setQuizState] = useState("start")
 
@@ -39,8 +40,14 @@ const CourseAssesment = ({course,complete}) => {
     }
 
     const next = () => {
-        if(active === assessment.assesmentItems.length-1) return
         setActive(prev => prev + 1)
+        if(active === assessment.assesmentItems.length){
+            setQuizState("review")
+        }
+
+        setProgress((prev) => {
+            return prev.includes(assessment.assesmentItems[active].id) ? prev : [...prev, assessment.assesmentItems[active].id]
+        })
     }
 
     const back = () => {
@@ -62,7 +69,7 @@ const CourseAssesment = ({course,complete}) => {
     }
 
     useEffect(()=>{
-       setProgress(Math.round(((active + 1) / assessment.assesmentItems.length) * 100));
+        setProgressPercent(Math.round((progress.length / assessment.assesmentItems.length) * 100))
     },[active])
 
     // Sample Quiz Object
@@ -124,7 +131,7 @@ const CourseAssesment = ({course,complete}) => {
                 ]
             },
             {
-                id: 3,
+                id: 4,
                 questionType: "multipleChoice",
                 question: " Which of the following is NOT a type of direct tax in the Philippines?",
                 answerKey: "true",
@@ -154,12 +161,14 @@ const CourseAssesment = ({course,complete}) => {
         ]
     }
 
-    // useEffect(()=>{
-    //     console.log("state: ", quizState)
-    // },[quizState])
+    useEffect(()=>{
+        console.log("active: ", active)
+        //console.log("question: ", assessment.assesmentItems[active])
+        console.log(progress)
+    },[progress])
 
     return(
-        <div className="flex flex-col items-center justify-center h-[calc(100vh-13rem)]">
+        <div className="flex flex-col items-center justify-center h-[calc(100vh-12.30rem)]">
             {
                 quizState === "start" || quizState === "paused" ? <>
                 <div className="grid grid-rows-3 gap-2 w-full">
@@ -191,10 +200,10 @@ const CourseAssesment = ({course,complete}) => {
                                     size={35} // Diameter of the ring
                                     roundCaps
                                     thickness={4} // Thickness of the progress bar
-                                    sections={[{ value: progress, color: "hsl(218,97%,26%)" }]} // Lighter blue progress
+                                    sections={[{ value: 0, color: "hsl(218,97%,26%)" }]} // Lighter blue progress
                                     rootColor="hsl(210, 14%, 83%)" // Darker blue track
                                     />
-                                    <p className='font-header'>{progress}%</p>
+                                    <p className='font-header'>{0}%</p>
                                 </div>
                                 <p className="font-text text-unactive text-xs">Assessment Progress</p>
                             </div> : null
@@ -227,31 +236,67 @@ const CourseAssesment = ({course,complete}) => {
                                 </PortalToolTip>
                             </div>
                             <div>
-                                <p className="font-header text-lg text-primary">{formatTime(timeleft)} <span className="text-unactive font-text text-xs">minutes Left</span></p>
                                 <p className="font-text text-xs">Time Left:</p>
+                                <p className="font-header text-lg text-primary">{formatTime(timeleft)} <span className="text-unactive font-text text-xs">minutes Left</span></p>
                             </div>
 
                         </div>
                         <div className="flex flex-col justify-center items-center whitespace-nowrap">
-                            <p className='font-header text-lg text-primary'>1 <span className="font-text text-xs text-unactive">out of</span> 4 <span className="font-text text-xs text-unactive">max Attempt</span></p>
                             <p className='font-text text-xs'>Attempt:</p>
+                            <p className='font-header text-lg text-primary'>1 <span className="font-text text-xs text-unactive">out of</span> 4 <span className="font-text text-xs text-unactive">max Attempt</span></p>
 
                         </div>
                         <div className="flex flex-row justify-end gap-2 pr-4 w-full">
                             <div className="flex flex-col items-end justify-end">
-                                <p className='font-header'>{progress}%</p>
                                 <p className='font-text text-xs'>Assessment Progress</p>
+                                <p className='font-header'>{progressPercent}%</p>
                             </div>
                             <RingProgress
                                 size={35} // Diameter of the ring
                                 roundCaps
                                 thickness={4} // Thickness of the progress bar
-                                sections={[{ value: progress, color: "hsl(218,97%,26%)" }]} // Lighter blue progress
+                                sections={[{ value: progressPercent, color: "hsl(218,97%,26%)" }]} // Lighter blue progress
                                 rootColor="hsl(210, 14%, 83%)" // Darker blue track
                             />
                         </div>
                     </div>
+                    <div>
+                        {
+                            assessment.assesmentItems.length === active ? "" :
+                            <CourseAssesmentItem assesmentItem={assessment.assesmentItems[active]} active={active}/>
+                        }
+                    </div>
+                    <div className="flex flex-row items-center justify-between pr-4 py-2">
+                        <div className="w-32 h-10 border-2 border-primary rounded-md flex justify-center items-center font-header text-primary transition-all ease-in-out shadow-md gap-2 hover:bg-primaryhover hover:border-primaryhover hover:text-white hover:cursor-pointer"
+                            onClick={() => {back()}}>
+                            <FontAwesomeIcon icon={faCircleChevronLeft}/>
+                            <p>Previous</p>
+                        </div>
+                        <div className="flex flex-row items-center justify-center gap-x-1">
+                            {
+                                Array.from({length: assessment.assesmentItems.length}).map((i,_)=>{
+                                    const qId = assessment.assesmentItems[_].id
+                                    const isDone = progress.includes(qId);
+
+                                    return <div key={_} className={`w-4 h-4 rounded-full ${isDone ? 'bg-primary':"bg-unactive"}`}/>
+                                })
+                            }
+                        </div>
+                        <div className="w-32 h-10 border-2 border-primary rounded-md flex justify-center items-center font-header text-primary transition-all ease-in-out shadow-md gap-2 hover:bg-primaryhover hover:border-primaryhover hover:text-white hover:cursor-pointer"
+                            onClick={()=>{
+                                // if(assessment.assesmentItems.length-1 === active){
+                                //     completeAssesment()
+                                // }
+                                next()
+                            }}>
+                            <p>Next</p>
+                            <FontAwesomeIcon icon={faCircleChevronRight} />
+                        </div>
+                    </div>
                 </div>
+                </> : quizState === "review" ?
+                <>
+                    hello
                 </> : null
             }
         </div>

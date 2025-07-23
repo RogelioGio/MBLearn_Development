@@ -342,8 +342,8 @@ export const Stepper = forwardRef(
                                 </div>
                             </>
                         }
-
                     </div>
+
                     <div className="col-start-4 pl-4 mr-3 border-l border-divider">
                         <ScrollArea className="h-[calc(100vh-12.30rem)] ">
                             <div className="py-2 flex flex-col gap-y-1 transition-all ease-in-out">
