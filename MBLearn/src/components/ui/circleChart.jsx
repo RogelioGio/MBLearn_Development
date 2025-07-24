@@ -43,7 +43,7 @@ export default function CircleChart({
             {type === "finished" ? (
                         <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
                             <p className="font-header text-4xl text-primary">{value}%</p>
-                            <p className="font-text text-xs text-unactive">Assesment Performance</p>
+                            <p className="font-text text-xs text-unactive">Assesment <br/> Performance</p>
                         </div>
                 ):null}
         </div>

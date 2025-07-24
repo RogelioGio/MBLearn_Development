@@ -14,6 +14,7 @@ const CourseAssesment = ({course,complete}) => {
     const [hover, setHover] = useState(false);
 
     const [timeleft, setTimeleft] = useState(0)
+    const [initialTime, setInitialTime] = useState(0)
     const [progress, setProgress] = useState([]);
     const [progressPercent, setProgressPercent] = useState(0)
     const [active, setActive] = useState(0)
@@ -24,7 +25,7 @@ const CourseAssesment = ({course,complete}) => {
         // if(timeleft <= 0 && quizState === "on-going") {
         //     setQuizState("complete");
         // }
-        if(timeleft <= 0 || quizState === "paused") return
+        if(timeleft <= 0 || quizState === "paused" || quizState === "complete") return
 
         const timer = setInterval(()=>{
             setTimeleft((prev) => prev - 1)
@@ -45,6 +46,7 @@ const CourseAssesment = ({course,complete}) => {
         if(active === assessment.assesmentItems.length-1){
             setQuizState("review")
         } else if(quizState === "review") {
+            setQuizState("complete")
             return
         }
         setActive(prev => prev + 1)
@@ -66,11 +68,13 @@ const CourseAssesment = ({course,complete}) => {
     const startAssesment = () => {
         if(quizState === "start"){
             setTimeleft(300)
+            setInitialTime(300)
             setQuizState("on-going")
         }else if(tobeReviewed){
             setQuizState("review")
             return
-        } else{
+        }
+        else{
             setQuizState("on-going")
         }
 
@@ -182,6 +186,8 @@ const CourseAssesment = ({course,complete}) => {
         //console.log("active: ", active)
         //console.log("question: ", assessment.assesmentItems[active])
     },[progress])
+
+    const elaspedTime = initialTime - timeleft
 
     return(
         <div className="flex flex-col items-center justify-center h-[calc(100vh-12.30rem)]">
@@ -332,6 +338,38 @@ const CourseAssesment = ({course,complete}) => {
                     </div>
                 </div>
                 </> : quizState === "complete" ? <>
+                <div className="flex flex-row items-center justify-center col-start-1 row-start-2 row-span-2 gap-5">
+                    <CircleChart label="Assesment Performance" size={200}  type="finished"/>
+                    <div className="grid grid-cols-3 grid-rows-2">
+                        <div className="col-span-3">
+                            <p className="font-header text-primary text-2xl">Course Assessment Result</p>
+                            <p className="font-text text-xs text-unactive">Assessment attempt result report</p>
+                        </div>
+
+                        <div>
+                            <p>1 out of {assessment.assesmentItems.length}</p>
+                            <p>Total Assessment Score</p>
+                        </div>
+
+                        <div>
+                            <p>1 attempt</p>
+                            <p>Current Attempt</p>
+                        </div>
+
+                        <div>
+                            <p>{
+                                elaspedTime < 60 ?
+                                    elaspedTime !== 1 ?
+                                    elaspedTime + " seconds":
+                                    elaspedTime + " second"
+                                : formatTime(elaspedTime) + "minutes"
+                                }
+                            </p>
+                            <p>Attempt Duration</p>
+                        </div>
+
+                    </div>
+                </div>
                 </> : null
             }
         </div>
