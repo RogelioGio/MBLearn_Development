@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react"
 import CourseAssesmentItem from "./courseAssementItem"
 import CircleChart from "MBLearn/src/components/ui/circleChart"
 import { RingProgress } from "@mantine/core"
+import { ScrollArea } from "MBLearn/src/components/ui/scroll-area"
 
 
 const CourseAssesment = ({course,complete}) => {
@@ -17,6 +18,7 @@ const CourseAssesment = ({course,complete}) => {
     const [progressPercent, setProgressPercent] = useState(0)
     const [active, setActive] = useState(0)
     const [quizState, setQuizState] = useState("start")
+    const [tobeReviewed, setTobeReviewed] = useState(false)
 
     useEffect(()=>{
         // if(timeleft <= 0 && quizState === "on-going") {
@@ -40,10 +42,12 @@ const CourseAssesment = ({course,complete}) => {
     }
 
     const next = () => {
-        setActive(prev => prev + 1)
-        if(active === assessment.assesmentItems.length){
+        if(active === assessment.assesmentItems.length-1){
             setQuizState("review")
+        } else if(quizState === "review") {
+            return
         }
+        setActive(prev => prev + 1)
 
         setProgress((prev) => {
             return prev.includes(assessment.assesmentItems[active].id) ? prev : [...prev, assessment.assesmentItems[active].id]
@@ -52,16 +56,29 @@ const CourseAssesment = ({course,complete}) => {
 
     const back = () => {
         if(active <= 0) return
+        if(quizState === "review") {
+            setQuizState("on-going")
+            setActive(assessment.assesmentItems.length)
+        }
         setActive(prev => prev - 1)
     }
 
     const startAssesment = () => {
-        setQuizState("on-going")
         if(quizState === "start"){
             setTimeleft(300)
+            setQuizState("on-going")
+        }else if(tobeReviewed){
+            setQuizState("review")
+            return
+        } else{
+            setQuizState("on-going")
         }
+
     }
     const pauseAssessment = () => {
+        if(quizState === "review"){
+            setTobeReviewed(true)
+        }
         setQuizState("paused")
     }
     const completeAssesment = () => {
@@ -162,9 +179,8 @@ const CourseAssesment = ({course,complete}) => {
     }
 
     useEffect(()=>{
-        console.log("active: ", active)
+        //console.log("active: ", active)
         //console.log("question: ", assessment.assesmentItems[active])
-        console.log(progress)
     },[progress])
 
     return(
@@ -200,10 +216,10 @@ const CourseAssesment = ({course,complete}) => {
                                     size={35} // Diameter of the ring
                                     roundCaps
                                     thickness={4} // Thickness of the progress bar
-                                    sections={[{ value: 0, color: "hsl(218,97%,26%)" }]} // Lighter blue progress
+                                    sections={[{ value: progressPercent, color: "hsl(218,97%,26%)" }]} // Lighter blue progress
                                     rootColor="hsl(210, 14%, 83%)" // Darker blue track
                                     />
-                                    <p className='font-header'>{0}%</p>
+                                    <p className='font-header'>{progressPercent}%</p>
                                 </div>
                                 <p className="font-text text-unactive text-xs">Assessment Progress</p>
                             </div> : null
@@ -220,7 +236,7 @@ const CourseAssesment = ({course,complete}) => {
                         </div>
                     </div>
                 </div>
-                </> : quizState === "on-going" ? <>
+                </> : quizState === "on-going"  ||  quizState === "review" ? <>
                 <div className="grid grid-rows-[min-content_1fr_min-content] w-full h-full">
                     <div className="flex flex-row items-center justify-between py-2">
                         <div className="flex flex-row items-center gap-2 w-full">
@@ -260,12 +276,31 @@ const CourseAssesment = ({course,complete}) => {
                             />
                         </div>
                     </div>
-                    <div>
-                        {
-                            assessment.assesmentItems.length === active ? "" :
-                            <CourseAssesmentItem assesmentItem={assessment.assesmentItems[active]} active={active}/>
-                        }
-                    </div>
+
+                    {
+                        quizState === "review" ?
+                        <>
+                            <div className="grid grid-cols-1 grid-rows-[min-content_1fr] gap-2 h-full pr-4">
+                                <div className="">
+                                    <p className="font-header text-primary text-lg">Review</p>
+                                    <p className="font-text text-xs text-unactive">Review your answer in the assessment before submitting the given attempt</p>
+                                </div>
+                                <ScrollArea className="h-[calc(100vh-23rem)] bg-white w-full rounded-md shadow-md border border-unactive">
+                                    {
+                                        assessment.assesmentItems.map((item, index) => (
+                                            <div key={index} className="p-5">
+                                                <CourseAssesmentItem assesmentItem={item} active={index} assesmentItems={assessment.assesmentItems.length} usedFor={"review"}/>
+                                            </div>
+                                        ))
+                                    }
+                                </ScrollArea>
+                            </div>
+                        </> :
+                        <div className="p-10 pr-14">
+                            <CourseAssesmentItem assesmentItem={assessment.assesmentItems[active]} active={active} assesmentItems={assessment.assesmentItems.length}/>
+                        </div>
+                    }
+
                     <div className="flex flex-row items-center justify-between pr-4 py-2">
                         <div className="w-32 h-10 border-2 border-primary rounded-md flex justify-center items-center font-header text-primary transition-all ease-in-out shadow-md gap-2 hover:bg-primaryhover hover:border-primaryhover hover:text-white hover:cursor-pointer"
                             onClick={() => {back()}}>
@@ -278,7 +313,7 @@ const CourseAssesment = ({course,complete}) => {
                                     const qId = assessment.assesmentItems[_].id
                                     const isDone = progress.includes(qId);
 
-                                    return <div key={_} className={`w-4 h-4 rounded-full ${isDone ? 'bg-primary':"bg-unactive"}`}/>
+                                    return <div key={_} className={`w-2 h-2 rounded-full ${isDone ? 'bg-primary':"bg-unactive"}`}/>
                                 })
                             }
                         </div>
@@ -289,14 +324,14 @@ const CourseAssesment = ({course,complete}) => {
                                 // }
                                 next()
                             }}>
-                            <p>Next</p>
+                            <p>{
+                                quizState === "on-going" ? "Next" : "Submit"
+                            }</p>
                             <FontAwesomeIcon icon={faCircleChevronRight} />
                         </div>
                     </div>
                 </div>
-                </> : quizState === "review" ?
-                <>
-                    hello
+                </> : quizState === "complete" ? <>
                 </> : null
             }
         </div>
