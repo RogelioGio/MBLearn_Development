@@ -174,11 +174,9 @@ const CourseModuleProps = ({headers, course, LearnerProgress = [], setLearnerPro
                         })
                     }
 
-                    {
                         <Step stepTitle={"Course Assessment"} stepDesc={"This is the course assessment"} icon={faClipboard} stepID={"assessment"}>
                             <CourseAssesment course={course} />
                         </Step>
-                    }
                 </Stepper>
             </>
         }
