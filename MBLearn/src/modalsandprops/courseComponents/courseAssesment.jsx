@@ -13,7 +13,7 @@ import { set } from "date-fns"
     const assessment =
     {
         passing: 75,
-        timeLimit: 1000, // in seconds
+        timeLimit: 300, // in seconds
         maxAttempts: 4,
         assesmentItems: [
             {
@@ -21,6 +21,7 @@ import { set } from "date-fns"
                 questionType: "trueOrfalse",
                 question: "Capital Gains Tax is imposed on profits made from the sale of income-generating properties only",
                 answerKey: "true",
+                points: 1,
                 choices: [
                     {
                         id: 1,
@@ -36,6 +37,7 @@ import { set } from "date-fns"
             },
             {
                 id: 2,
+                points: 1,
                 questionType: "trueOrfalse",
                 question: "Value-Added Tax (VAT) is only applied to goods and not services.",
                 answerKey: "false",
@@ -54,6 +56,7 @@ import { set } from "date-fns"
             },
             {
                 id: 3,
+                points: 1,
                 questionType: "trueOrfalse",
                 question: "Documentary Stamp Tax is required for loan agreements and other financial instruments.",
                 answerKey: "true",
@@ -72,6 +75,7 @@ import { set } from "date-fns"
             },
             {
                 id: 4,
+                points: 5,
                 questionType: "multipleChoice",
                 question: " Which of the following is NOT a type of direct tax in the Philippines?",
                 answerKey: 1,
@@ -119,12 +123,14 @@ const CourseAssesment = ({course,complete}) => {
     const [currentAttempt, setCurrentAttempt] = useState([])
     const [attemptHistory, setAttemptHistory] = useState([])
     const [attemptResult, setAttemptResult] = useState([])
+    const [attemptIndex, setAttemptIndex] = useState(1)
 
 
     useEffect(()=>{
-        // if(timeleft <= 0 && quizState === "on-going") {
-        //     setQuizState("complete");
-        // } else
+        if(timeleft <= 0 && quizState === "on-going") {
+            setQuizState("complete");
+            handleResult()
+        } else
             if(quizState === "on-going" || quizState === "review" && timeleft > 0) {
             const timer = setInterval(()=>{
                         setTimeleft((prev) => prev - 1)
@@ -142,12 +148,17 @@ const CourseAssesment = ({course,complete}) => {
     }
 
     const next = () => {
-        if(active === assessment.assesmentItems.length-1){
-            setQuizState("review")
-        } else if(quizState === "review") {
+        if(quizState === "review") {
             setQuizState("complete")
             return
+        } else if(active === assessment.assesmentItems.length-1){
+            setTobeReviewed(true)
+            setQuizState("review")
+        } else if(active !== assessment.assesmentItems.length-1 && tobeReviewed){
+            setQuizState("review")
+            return
         }
+
         setActive(prev => prev + 1)
 
         setProgress((prev) => {
@@ -170,7 +181,7 @@ const CourseAssesment = ({course,complete}) => {
             setInitialTime(assessment.timeLimit)
             setQuizState("on-going")
 
-            setCurrentAttempt((prev) => ({...prev, attempt: prev.attempt ?  prev.attempt + 1 : 1, assesmentAnswers: []}))
+            setCurrentAttempt((prev) => ({...prev, attempt: attemptHistory.length === 0 ? 1 : attemptHistory.length + 1, assesmentAnswers: []}))
         }else if(tobeReviewed){
             setQuizState("review")
             return
@@ -193,10 +204,14 @@ const CourseAssesment = ({course,complete}) => {
 
     useEffect(()=>{
         console.log("Current Attempt: ", currentAttempt)
-        console.log("attemptHistory: ", attemptHistory)
+        //console.log("attemptHistory: ", attemptHistory)
         console.log("attemptResult: ", attemptResult)
+        console.log("Quiz State: ", quizState)
+        // console.log("ToBeReviewed: ", tobeReviewed)
+        //console.log("attemptIndex", attemptIndex);
+        //console.log("attemptHistory", attemptHistory.find(a => a.attempt === attemptIndex))
         //console.log("question: ", assessment.assesmentItems[active])
-    },[currentAttempt, attemptHistory])
+    },[currentAttempt, attemptHistory,quizState,attemptIndex])
 
     const elaspedTime = initialTime - timeleft
 
@@ -220,24 +235,35 @@ const CourseAssesment = ({course,complete}) => {
     }
 
     const handleResult = () => {
-        const result = currentAttempt.assesmentAnswers.map(({questionId, answer}) => {
-            const question = assesment.assesmentItems.find(q => q.id === questionId);
-            const isCorrect = question?.answerKey === answer
-
-            return {
-                questionId,
-                answer,
-                correctAnswer: question.answerKey,
-                isCorrect
+        const result = assesment.assesmentItems.map(({id,answerKey,points}) => {
+            const answer = currentAttempt.assesmentAnswers.find(a => a.questionId === id);
+            if(answer){
+                const isCorrect = answerKey === answer.answer
+                return {
+                    questionId : id,
+                    answer: answer.answer,
+                    correctAnswer: answerKey,
+                    isCorrect,
+                    points
+                }
+            } else {
+                return {
+                    questionId : id,
+                    answer: "",
+                    correctAnswer: "",
+                    isCorrect:"",
+                    points
+                }
             }
         })
 
-        const correct = result.filter(c => c.isCorrect).length;
-        const totalQuestions = assessment.assesmentItems.length;
+        //const correct = result.filter(c => c.isCorrect).length;
+        const correct = result.filter(c => c.isCorrect).reduce((acc, curr) => acc + curr.points,0);
+        const totalQuestions = assessment.assesmentItems.reduce((acc, curr) => acc + curr.points, 0);
         const percentage = (correct/totalQuestions) * 100
 
         setAttemptResult({attempt: currentAttempt.attempt, result: result, score:correct, percentage:percentage})
-        setAttemptHistory((prev)=> [...prev, {attempt: currentAttempt.attempt, result: result, score:correct, percentage:percentage}])
+        setAttemptHistory((prev)=> [...prev, {attempt: currentAttempt.attempt, duration: elaspedTime ,result: result, score:correct, percentage:percentage}])
     }
 
 
@@ -259,7 +285,7 @@ const CourseAssesment = ({course,complete}) => {
                             </div> : null
                         }
                         <div>
-                            <p className="font-header text-lg text-primary">{currentAttempt.attempt === assesment.maxAttempts ? currentAttempt.attempt : currentAttempt.attempt && quizState === "start" ? currentAttempt.attempt + 1 : quizState === "paused" ? currentAttempt.attempt :  1} attempt</p>
+                            <p className="font-header text-lg text-primary">{attemptHistory.length === 0 ? 1 : attemptHistory.length + 1}{attemptHistory.length === 0 ? "st attempt" : attemptHistory.length + 1 === 2 ? "nd attempt" : attemptHistory.length + 1 === 3 ? "rd attempt" : "th attempt"}</p>
                             <p className="font-text text-unactive text-xs">Current Attempt</p>
                         </div>
                         <div>
@@ -283,7 +309,23 @@ const CourseAssesment = ({course,complete}) => {
                             </div> : null
                         }
                     </div>
-                    <div className="flex flex-col items-center justify-center">
+                    <div className="flex flex-row items-center justify-center gap-2">
+                        {
+                            attemptHistory.length >= 1 && quizState === "start"  ?
+                            <div className={`w-fit py-3 px-5 bg-white rounded-md shadow-md flex flex-col items-center justify-center transition-all ease-in-out text-primary hover:border-primaryhover hover:text-white hover:cursor-pointer hover:bg-primaryhover border-2 border-primary`}
+                            onClick={() => {setQuizState("attemptReview")}}>
+                                <p className="font-header text-sm"> Review {attemptHistory.length === 1 ? "Attempt" : "Attempts"}</p>
+                            </div>
+                            : null
+                        }
+                        <div className={`${quizState === "paused" ? "flex" : "hidden"} w-fit py-3 px-5 bg-white rounded-md shadow-md flex flex-col items-center justify-center transition-all ease-in-out text-primary hover:border-primaryhover hover:text-white hover:cursor-pointer hover:bg-primaryhover border-2 border-primary`}
+                            onClick={()=>{
+                                if(quizState !== "paused") return
+                                setQuizState("start"),
+                                setCurrentAttempt([])
+                            }}>
+                            <p className="font-header text-sm">Quit Assement</p>
+                        </div>
                         <div className={`w-fit py-3 px-5 bg-primary rounded-md shadow-md flex flex-col items-center justify-center transition-all ease-in-out hover:cursor-pointer ${attemptHistory.length >= assesment.maxAttempts ? "opacity-50 cursor-not-allowed":"hover:bg-primaryhover"}`}
                         onClick={()=>{
                             if(attemptHistory.length >= assesment.maxAttempts) return
@@ -352,18 +394,20 @@ const CourseAssesment = ({course,complete}) => {
                                     <p className="font-header text-primary text-lg">Review</p>
                                     <p className="font-text text-xs text-unactive">Review your answer in the assessment before submitting the given attempt</p>
                                 </div>
-                                <ScrollArea className="h-[calc(100vh-23rem)] bg-white w-full rounded-md shadow-md border border-unactive">
-                                    {
-                                        assessment.assesmentItems.map((item, index) => (
-                                            <div key={index} className="p-5">
-                                                <CourseAssesmentItem assesmentItem={item} active={index} assesmentItems={assessment.assesmentItems.length} usedFor={"review"} currentAttempt={currentAttempt}/>
-                                            </div>
-                                        ))
-                                    }
+                                <ScrollArea className="h-[calc(100vh-23rem)] bg-white w-full rounded-md shadow-md border border-divider">
+                                    <div className="py-4 px-5 flex flex-col gap-2">
+                                        {
+                                            assessment.assesmentItems.map((item, index) => (
+                                                <div key={index}>
+                                                    <CourseAssesmentItem assesmentItem={item} active={index} assesmentItems={assessment.assesmentItems.length} usedFor={"review"} currentAttempt={currentAttempt} switchAnswer={()=>{setActive(index),setQuizState("on-going")}}/>
+                                                </div>
+                                            ))
+                                        }
+                                    </div>
                                 </ScrollArea>
                             </div>
                         </> :
-                        <div className="p-10 pr-14">
+                        <div className="p-8 pr-12">
                             <CourseAssesmentItem assesmentItem={assessment.assesmentItems[active]} active={active} assesmentItems={assessment.assesmentItems.length} handleAnswer={handleAnswer} currentAttempt={currentAttempt}/>
                         </div>
                     }
@@ -406,7 +450,9 @@ const CourseAssesment = ({course,complete}) => {
                         <div className="flex flex-col items-center justify-center">
                             <p className={`font-header text-3xl ${attemptResult.percentage >= assesment.passing ? "text-primary":"text-red-700"}`}>
                                 {
-                                    attemptResult.percentage >= assesment.passing ?
+                                    attemptResult.percentage === 100 ?
+                                    "Perfect Score!"
+                                    :attemptResult.percentage >= assesment.passing ?
                                     "Passed!"
                                     : "Failed"
                                 }
@@ -421,12 +467,12 @@ const CourseAssesment = ({course,complete}) => {
                         </div>
 
                         <div className="py-2">
-                            <p className="font-header text-xl text-primary">{attemptResult.score} out of {assessment.assesmentItems.length}</p>
+                            <p className="font-header text-xl text-primary">{attemptResult.score} out of {assessment.assesmentItems.reduce((acc,i) => acc + i.points,0)}</p>
                             <p className="font-text text-unactive text-xs">Total Assessment Score</p>
                         </div>
 
                         <div className="py-2">
-                            <p className="font-header text-xl text-primary">{currentAttempt.attempt} attempt</p>
+                            <p className="font-header text-xl text-primary">{currentAttempt.attempt}{currentAttempt.attempt === 1 ? "st attempt" :  currentAttempt.attempt === 2 ? "nd attempt" : currentAttempt.attempt === 3 ? "rd attempt" : "th attempt"}</p>
                             <p className="font-text text-unactive text-xs">Current Attempt</p>
                         </div>
 
@@ -452,7 +498,8 @@ const CourseAssesment = ({course,complete}) => {
                                     onClick={()=>{
                                                 setQuizState("start"),
                                                 setActive(0),
-                                                setProgress([])
+                                                setProgress([]),
+                                                setTobeReviewed(false)
                                             }}>
                                     <p className="font-header">Try Again</p>
                                 </div>
@@ -471,7 +518,9 @@ const CourseAssesment = ({course,complete}) => {
                     <div className="flex flex-row items-center justify-between py-2 pr-4">
                         <div className="flex flex-row items-center gap-2 ">
                             <div className="overflow-visible relative border-primary border-2 w-10 h-10 bg-white shadow-md rounded-md flex items-center justify-center text-primary hover:text-white hover:bg-primary hover:cursor-pointer transition-all ease-in-out"
-                                onClick={()=>{setQuizState("complete")}}>
+                                onClick={()=>{
+                                    tobeReviewed ? setQuizState("complete") : setQuizState("start");
+                                }}>
                                 <FontAwesomeIcon icon={faArrowLeft}/>
                             </div>
                             <div>
@@ -480,69 +529,113 @@ const CourseAssesment = ({course,complete}) => {
                             </div>
                         </div>
                         <div className="flex flex-row items-center justify-end gap-7">
-                            <div className="flex flex-col items-end">
+                            <div className="flex-col items-end">
                                 <p className="font-text text-unactive text-xs">Attempt Duration</p>
                                 <p className="font-header">{
-                                elaspedTime < 60 ?
-                                    elaspedTime !== 1 ?
-                                    elaspedTime + " seconds":
-                                    elaspedTime + " second"
-                                : formatTime(elaspedTime) + " minutes"
+                                    currentAttempt.attempt ?
+                                    elaspedTime < 60 ?
+                                            elaspedTime !== 1 ?
+                                            elaspedTime + " seconds":
+                                            elaspedTime + " second"
+                                        : formatTime(elaspedTime) + " minutes"
+                                    : attemptHistory.find(a => a.attempt === attemptIndex) ?
+                                        attemptHistory.find(a => a.attempt === attemptIndex).duration < 60 ?
+                                            attemptHistory.find(a => a.attempt === attemptIndex).duration !== 1 ?
+                                            attemptHistory.find(a => a.attempt === attemptIndex).duration + " seconds":
+                                            attemptHistory.find(a => a.attempt === attemptIndex).duration + " second"
+                                        : formatTime(attemptHistory.find(a => a.attempt === attemptIndex).duration) + " minutes"
+                                    : null
                                 }</p>
                             </div>
                             <div className="flex flex-col items-end">
                                 <p className="font-text text-unactive text-xs">Current Attempt</p>
-                                <p className="font-header">{currentAttempt.attempt} attempt</p>
+                                <p className="font-header">{
+                                        tobeReviewed?
+                                            attemptHistory.find(a => a.attempt === currentAttempt.attempt)?.attempt
+                                        : attemptHistory.find(a => a.attempt === attemptIndex).attempt
+                                    }{attemptHistory.find(a => a.attempt === currentAttempt.attempt)?.attempt === 1 || attemptHistory.find(a => a.attempt === attemptIndex).attempt === 1 ? "st attempt"
+                                        : attemptHistory.find(a => a.attempt === currentAttempt.attempt)?.attempt === 1 || attemptHistory.find(a => a.attempt === attemptIndex).attempt === 1 ? "nd attempt"
+                                        : attemptHistory.find(a => a.attempt === currentAttempt.attempt)?.attempt === 1 || attemptHistory.find(a => a.attempt === attemptIndex).attempt === 1 ? "rd attempt"
+                                        : "th attempt"}</p>
                             </div>
                             <div className="flex flex-row items-center justify-center gap-2">
                                 <div className="flex flex-col items-end">
                                     <p className="font-text text-unactive text-xs">Total Assessment Score</p>
-                                    <p className="font-header">1 out of {assessment.assesmentItems.length}</p>
+                                    <p className="font-header">{
+                                        tobeReviewed?
+                                            attemptHistory.find(a => a.attempt === currentAttempt.attempt)?.score
+                                        : attemptHistory.find(a => a.attempt === attemptIndex).score
+                                        } out of {assessment.assesmentItems.reduce((acc,i) => acc + i.points,0)}</p>
                                 </div>
-                                <RingProgress
-                                    size={35} // Diameter of the ring
-                                    roundCaps
-                                    thickness={4} // Thickness of the progress bar
-                                    sections={[{ value: 10, color: "hsl(218,97%,26%)" }]} // Lighter blue progress
-                                    rootColor="hsl(210, 14%, 83%)" // Darker blue track
-                                    />
+                                {
+                                    tobeReviewed?
+                                        <RingProgress
+                                        size={35} // Diameter of the ring
+                                        roundCaps
+                                        thickness={4} // Thickness of the progress bar
+                                        sections={[{ value: attemptHistory.find(a => a.attempt === currentAttempt.attempt)?.percentage, color: "hsl(218,97%,26%)" }]} // Lighter blue progress
+                                        rootColor="hsl(210, 14%, 83%)" // Darker blue track
+                                        /> :
+                                    <RingProgress
+                                        size={35} // Diameter of the ring
+                                        roundCaps
+                                        thickness={4} // Thickness of the progress bar
+                                        sections={[{ value: attemptHistory.find(a => a.attempt === attemptIndex)?.percentage, color: "hsl(218,97%,26%)" }]} // Lighter blue progress
+                                        rootColor="hsl(210, 14%, 83%)" // Darker blue track
+                                        />
+                                }
+
                             </div>
                         </div>
                     </div>
                     <div className="pr-4 py-2">
-                        <ScrollArea className="h-[calc(100vh-20.70rem)] bg-white w-full rounded-md shadow-md border border-unactive">
+                        <ScrollArea className={`bg-white w-full rounded-md shadow-md border border-unactive ${!tobeReviewed ? "h-[calc(100vh-20rem)]" : "h-[calc(100vh-17rem)]"}`}>
+                            <div className="flex flex-col gap-4 p-5">
                             {
-                                assessment.assesmentItems.map((item, index) => (
-                                    <div key={index} className="p-5">
-                                        <CourseAssesmentItem assesmentItem={item} active={index} assesmentItems={assessment.assesmentItems.length} usedFor={"review"} currentAttempt={currentAttempt}/>
-                                    </div>
-                                ))
+                                    tobeReviewed?
+                                        assesment.assesmentItems.map((item, index) => (
+                                            <CourseAssesmentItem assesmentItem={item} active={index} assesmentItems={assessment.assesmentItems.length} usedFor={"attemptReview"} attemptHistory={attemptHistory.find(a => a.attempt === attemptResult.attempt)} isCorrect={attemptHistory.find(a => a.attempt === attemptResult.attempt).result.find(q => q.questionId === item.id).isCorrect}/>
+                                        ))
+                                    : assesment.assesmentItems.map((item, index) => (
+                                        <CourseAssesmentItem assesmentItem={item} active={index} usedFor={"attemptReview"} attemptHistory={attemptHistory.find(a => a.attempt === attemptIndex)} isCorrect={attemptHistory.find(a => a.attempt === attemptIndex).result.find(q => q.questionId === item.id).isCorrect}/>
+                                    ))
                             }
+                            </div>
                         </ScrollArea>
                     </div>
-                    <div className="flex flex-row items-center justify-between pr-4 py-2">
-                        <div className="w-32 h-10 border-2 border-primary rounded-md flex justify-center items-center font-header text-primary transition-all ease-in-out shadow-md gap-2 hover:bg-primaryhover hover:border-primaryhover hover:text-white hover:cursor-pointer">
-                            <FontAwesomeIcon icon={faCircleChevronLeft}/>
-                            <p>Previous</p>
-                        </div>
-                        <div className="flex flex-row items-center justify-center gap-x-1">
-                            {/* {
-                                Array.from({length: assessment.assesmentItems.length}).map((i,_)=>{
-                                    const qId = assessment.assesmentItems[_].id
-                                    const isDone = progress.includes(qId);
+                    {
+                        !tobeReviewed ?
+                        <div className="flex flex-row items-center justify-between pr-4 pb-2">
+                            <div className="w-32 h-10 border-2 border-primary rounded-md flex justify-center items-center font-header text-primary transition-all ease-in-out shadow-md gap-2 hover:bg-primaryhover hover:border-primaryhover hover:text-white hover:cursor-pointer"
+                                onClick={()=>{
+                                    if(attemptIndex <= 1 ) return
+                                    setAttemptIndex(prev => prev - 1)
+                                }}>
+                                <FontAwesomeIcon icon={faCircleChevronLeft}/>
+                                <p>Previous</p>
+                            </div>
+                            <div className="flex flex-row items-center justify-center gap-x-2">
+                                {
+                                    Array.from({length: attemptHistory.length}).map((i,_)=>{
+                                        const current = _+1 === attemptIndex;
 
-                                    return <div key={_} className={`w-2 h-2 rounded-full ${isDone ? 'bg-primary':"bg-unactive"}`}/>
-                                })
-                            } */}
-                        </div>
-                        <div className="w-32 h-10 border-2 border-primary rounded-md flex justify-center items-center font-header text-primary transition-all ease-in-out shadow-md gap-2 hover:bg-primaryhover hover:border-primaryhover hover:text-white hover:cursor-pointer">
-                            {/* <p>{
-                                quizState === "on-going" ? "Next" : "Submit"
-                            }</p> */}
-                            <p>Next</p>
-                            <FontAwesomeIcon icon={faCircleChevronRight} />
-                        </div>
-                    </div>
+                                        return (
+                                            <div className={`w-2 h-2 rounded-md ${current ? "bg-primary":"bg-unactive"}`}/>
+                                        )
+                                    })
+                                }
+                            </div>
+                            <div className="w-32 h-10 border-2 border-primary rounded-md flex justify-center items-center font-header text-primary transition-all ease-in-out shadow-md gap-2 hover:bg-primaryhover hover:border-primaryhover hover:text-white hover:cursor-pointer"
+                                onClick={()=>{
+                                    if(attemptIndex >= attemptHistory.length) return
+                                    setAttemptIndex(prev => prev + 1)
+                                }}>
+                                <p>Next</p>
+                                <FontAwesomeIcon icon={faCircleChevronRight} />
+                            </div>
+                        </div> : null
+                    }
+
                 </div>
                 </>:null
             }
