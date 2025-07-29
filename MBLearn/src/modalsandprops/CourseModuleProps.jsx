@@ -15,6 +15,7 @@ import { Progress } from "../components/ui/progress";
 import Course from "../views/Course";
 import axiosClient from "../axios-client";
 import Loading from "../assets/course_Loading.svg"
+import CourseAssesmentManagement from "./CourseAssesmentManagement";
 
 
 
@@ -118,6 +119,13 @@ const CourseModuleProps = ({headers, course, LearnerProgress = [], setLearnerPro
             <>
                 <Stepper initialStep={0} enableStepClick={true} ref={stepperRef} onStepChange={(index,meta) => setActiveMeta(meta)}>
                     {
+                        course?.description && course?.course_objectives && course?.course_outcomes ? (
+                            <Step stepTitle={"Course Overview"} stepDesc={"Quick Summary of the course"} icon={faBook} stepID={"overview"}>
+                                <CourseOverview course={course}/>
+                            </Step>
+                        ) : (null)
+                    }
+                    {
                         course?.lessons.map((lesson, index) => {
                             let content;
                             switch (lesson.lesson_type) {
@@ -139,6 +147,9 @@ const CourseModuleProps = ({headers, course, LearnerProgress = [], setLearnerPro
                             );
                         })
                     }
+                    <Step stepTitle={"Course Assessment"} stepDesc={"This is the course assessment"} icon={faClipboard} stepID={"assessment"}>
+                        <CourseAssesmentManagement />
+                    </Step>
                 </Stepper>
             </>
             : <>

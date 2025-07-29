@@ -66,64 +66,7 @@ export const Stepper = forwardRef(
 
 
     const content = () => {
-        <div className="w-full grid grid-cols-[1fr_20rem] h-[calc(100vh-12.25rem)] overflow-auto">
-                {/* Step Content */}
-                <ScrollArea className="mr-5 pl-2 overflow-auto">
-                        {isCompleted ? completedStep : steps[active]}
-                </ScrollArea>
 
-                {/* Step Indicators */}
-                <div className="flex flex-col gap-y-1 transition-all ease-in-out pr-3 pl-2 border-l border-divider mb-2">
-                    {steps.map((step, index) => {
-                        const stepID = step.props.stepID;
-                        const isDone = learnerProgress.includes(stepID) || tempProgress.includes(stepID);
-                        const isActive = index === active;
-                        const customIcon = step.props.icon;
-                        const isLastVisited = index === lastVisitedIndex;
-                        const isNext = index === nextIndex;
-                        return (
-                            <div
-                                key={index}
-                                className={`group grid grid-cols-[min-content_1fr] py-3 px-2 hover:cursor-pointer hover:bg-primarybg gap-2 transition-all ease-in-out rounded-md border-2 border-transparent ${isActive ? "border-2 !border-primary":null} ${isNext ? "bg-primarybg" : ""}`}
-                                onClick={()=>{
-                                    const isDone = learnerProgress.includes(stepID) || tempProgress.includes(stepID);
-                                    if(enableStepClick && index !== active && isDone || isNext){
-                                    setActive(index)
-                                }}}
-                            >
-                                {/* Indicator */}
-                                <div
-                                    className={`w-10 aspect-square flex flex-col justify-center items-center rounded-full hover:!border-primary
-                                    ${isDone ? "border-primary bg-primary border-2" :
-                                    isActive ? "border-2 border-primary bg-primary" :
-                                    isNext ? "bg-primary border-primary bnorder-2"  : "border-2 border-unactive group-hover:border-primary"}`}
-                                >
-                                    {isDone ? (
-                                            <FontAwesomeIcon
-                                                icon={faCircleCheckRegular} // ← Use it here
-                                                className="text-white p-2"
-                                            />
-                                        ) : (
-                                            customIcon ? (
-                                                <FontAwesomeIcon
-                                                    icon={customIcon}
-                                                    className={`text-primary font-header text-base ${isNext ? "text-white" : !isDone && !isActive ? "text-unactive group-hover:text-primary" : isActive ? "text-white": null}`}
-                                                />
-                                            ) : (
-                                                <p className={`text-primary font-header text-base ${isNext ? "text-white" : !isDone && !isActive ? "text-unactive group-hover:text-primary" : isActive ? "text-white": null}`}>{index}</p>
-                                            )
-                                        )}
-                                </div>
-                                {/* Step Description */}
-                                <div className={`font-text text-primary`}>
-                                    <h1 className={`font-header text-sm ${isNext ? "text-primary":!isDone && !isActive ? "text-unactive":null} group-hover:text-primary`}>{step.props.stepTitle}</h1>
-                                    <p className={`text-xs group-hover:text-primary ${isNext ? "text-primary" :"text-unactive"}`}>{step.props.stepDesc}</p>
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
-                </div>
     }
 
     return (
@@ -139,8 +82,8 @@ export const Stepper = forwardRef(
                     <div>
                         <p className="font-text text-unactive text-xs py-1">Course Content:</p>
                     </div>
-                    <div className="flex flex-col gap-y-1 transition-all ease-in-out pr-2 mb-2">
-                    {steps.map((step, index) => {
+                    <ScrollArea className="h-[calc(100vh-13.30rem)] pr-5">
+                        {steps.map((step, index) => {
                         const isActive = index === active;
                         const customIcon = step.props.icon;
 
@@ -158,7 +101,14 @@ export const Stepper = forwardRef(
                                     className={`w-10 aspect-square flex flex-col justify-center items-center rounded-full hover:!border-primary
                                     ${isActive ? "border-2 border-primary bg-primary" : "border-2 border-unactive group-hover:border-primary"}`}
                                 >
-                                    <p className={`text-primary font-header text-base ${!isActive ? "text-unactive group-hover:text-primary": isActive ? "text-white" : null}`}>{index + 1}</p>
+                                    {
+                                        customIcon ?
+                                        <FontAwesomeIcon
+                                            icon={customIcon}
+                                            className={`text-primary font-header text-base ${!isActive ? "text-unactive group-hover:text-primary" : isActive ? "text-white": null}`}
+                                        /> :
+                                        <p className={`text-primary font-header text-base ${!isActive ? "text-unactive group-hover:text-primary": isActive ? "text-white" : null}`}>{index}</p>
+                                    }
                                 </div>
                                 {/* Step Description */}
                                 <div className="font-text text-primary ">
@@ -166,13 +116,10 @@ export const Stepper = forwardRef(
                                     <p className="text-xs text-unactive group-hover:text-primary">{step.props.stepDesc}</p>
                                 </div>
 
-                                {/* {index < steps.length - 1 && (
-                                <div className="flex-1 h-1 bg-gray-300 mx-2" />
-                                )} */}
                             </div>
                         );
                     })}
-                </div>
+                    </ScrollArea>
                 </div>
 
                 {/* Step Content */}
@@ -195,10 +142,8 @@ export const Stepper = forwardRef(
                             </div>
                         </div>
                     </div>
-                    <ScrollArea className="h-[calc(100vh-16.5rem)] pr-5">
-                        <div>
+                    <ScrollArea className="h-[calc(100vh-15.35rem)] pr-5">
                             {isCompleted ? completedStep : steps[active]}
-                        </div>
                     </ScrollArea>
                 </div>
 
