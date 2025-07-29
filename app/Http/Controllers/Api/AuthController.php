@@ -80,7 +80,7 @@ class AuthController extends Controller
 
             //Email OTP to user
             $result = $mailComponent->sendOutlook(
-                'talingdan.304273@novaliches.sti.edu.ph',
+                env('MB_EMAIL'),
                 "MBLearn Account Verification-".$user->userInfos->first_name,
                 $htmlBody
             );

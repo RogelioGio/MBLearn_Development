@@ -319,7 +319,7 @@ const CourseAdminDashboard = ({name, user}) => {
                     //assignedCourse.length > 0
                     loading ?
                             Array.from({length: 4}).map((_,i) =>(
-                                <div key={i} className="animate-pulse bg-white w-full xl:h-full h-[8.25rem] rounded-md shadow-md border"/>
+                                <div key={i} className="animate-pulse bg-white w-full xl:h-full h-[8.25rem] rounded-md shadow-md border border-divider"/>
                             ))
                     : assignedCourse.length === 0 ?
                         <div className="py-3 col-span-2 md:py-0 md:col-span-4 flex flex-col items-center justify-center gap-2">
@@ -348,7 +348,7 @@ const CourseAdminDashboard = ({name, user}) => {
                     {
                         loading ?
                         Array.from({length: 3}).map((_, i) => (
-                            <div className="border bg-white rounded-md shadow-md flex items-center justify-between h-20 xl:h-full" key={i}/>
+                            <div className="border bg-white rounded-md shadow-md flex items-center justify-between h-20 xl:h-full border-divider" key={i}/>
                         ))
                         : Array.from({length: 3}).map((_, i) => (
                             <div className="border-primary border bg-white rounded-md shadow-md flex items-center justify-between h-20 xl:h-full" key={i}/>
