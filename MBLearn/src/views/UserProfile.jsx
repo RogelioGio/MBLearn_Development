@@ -65,10 +65,10 @@ export default function UserProfile() {
                     // }
                 )
                 .then(({data}) => {
-                    contentItem(data.data);
+                    setContentItem(data.data);
+                    setFetching(false)
                     //pageChangeState("totalCourses", data.total)
                     //pageChangeState("lastPage", data.lastPage)
-                    setLoading(false)
                 }).catch((err)=> {
                     console.log(err)
                 })
@@ -82,13 +82,20 @@ export default function UserProfile() {
 
     useEffect(() =>{
         if(tab === "content") {
-            fetchCourseContent(courseType);
+            fetchCourseContent("myCourses");
+            console.log("This is running")
         } else if(tab === "journey") {
+            setCourseType("enrolled");
             fetchLearnerJourney();
         }
 
         setSort({name:"none", created_at:"none"});
     },[tab])
+
+    useEffect(()=>{
+        console.log("fethcing ? :", fetching)
+        console.log("CourseType:", courseType)
+    },[courseType])
 
         return (
         <>
@@ -97,7 +104,7 @@ export default function UserProfile() {
             </Helmet>
 
             {/* <div className="grid grid-cols-4 grid-rows-[min-content_1fr_1fr] h-full w-full"> */}
-            <div className="grid px-3 h-full
+            <div className="grid px-3 h-full grid-cols-1
                             lg:grid-cols-4 lg:grid-rows-[min-content_1fr] lg:pl-0">
                 {/* Profile Card */}
                 <div className="lg::col-span-1 lg:row-span-3 bg-white rounded-xl shadow-md lg:my-5 grid grid-rows-[min-content_min-content_1fr_min-content]">
@@ -176,12 +183,13 @@ export default function UserProfile() {
                         Certificates
                     </div>
                 </div>
-                <div className="col-span-3 pl-2">
+                <div className="
+                                lg:col-span-3 lg:pl-2">
                     {
                         tab === "content" ?
                         <CourseManagement type={courseType} setType={setCourseType} sort={sort} setSort={setSort} courses={contentItem} fetching={fetching}/>
                         :tab === "journey" ?
-                        <LearningJourney/>
+                        <LearningJourney type={courseType} setType={setCourseType} sort={sort} setSort={setSort} courses={contentItem} fetching={fetching}/>
                         : null
                     }
                 </div>

@@ -44,7 +44,7 @@ const CourseCard = ({ course, type, click}) => {
     return (
         <HoverCard>
             <HoverCardTrigger>
-                <div className={`group relative bg-white w-full h-full rounded-md shadow-md ${type === "profile_contentManager" ? "hover:cursor-default" : "hover:cursor-pointer"} transition-all ease-in-out grid grid-rows-[1fr_min-content]`} onClick={click}
+                <div className={`group relative bg-white w-full h-full rounded-md shadow-md ${type === "profile_contentManager" || type === 'profile_journey' ? "hover:cursor-default" : "hover:cursor-pointer"} transition-all ease-in-out grid grid-rows-[1fr_min-content]`} onClick={click}
                     onMouseMove={handleMouseMove}
                     ref={cardRef}>
                     <div className={`bg-gradient-to-b from-[hsl(239,94%,19%)] via-[hsl(214,97%,27%)] to-[hsl(201,100%,36%)] md:rounded-t-md rounded-md flex flex-row justify-end gap-2 ${type === 'general' ? '!rounded-md': ''}`}>
@@ -120,7 +120,7 @@ const CourseCard = ({ course, type, click}) => {
                             </div>
                         </div>
                     </div>
-                    <div className={`${type === 'courseAdmin' ? 'p-4' : type === 'courseAdminCourseManager' || type === 'profile_contentManager' ? 'md:px-4 md:py-3' : ''} relative`}>
+                    <div className={`${type === 'courseAdmin' ? 'p-4' : type === 'courseAdminCourseManager' || type === 'profile_contentManager' || type === 'profile_journey' ? 'md:px-4 md:py-3' : ''} relative`}>
                         {
                             type === 'courseAdmin' ? (
                                 <div className="flex flex-row justify-between items-center">
@@ -179,6 +179,21 @@ const CourseCard = ({ course, type, click}) => {
                                             <p>Past-Due</p>
                                         </div>
                                         <p>{course.past_due}</p>
+                                    </div>
+                                </div>
+                            )
+                            : type === 'profile_journey' ? (
+                                <div className="flex flex-row h-full gap-2">
+                                    <RingProgress
+                                                size={35} // Diameter of the ring
+                                                roundCaps
+                                                thickness={4} // Thickness of the progress bar
+                                                sections={[{ value: course.progress, color: "hsl(218,97%,26%)" }]} // Lighter blue progress
+                                                rootColor="hsl(210, 14%, 83%)" // Darker blue track
+                                            />
+                                    <div className="">
+                                        <p className="font-header text-sm">{course.progress}%</p>
+                                        <p className="font-text text-xs text-unactive">Course Progress Rate</p>
                                     </div>
                                 </div>
                             )
