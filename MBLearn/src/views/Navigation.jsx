@@ -266,7 +266,7 @@ export default function Navigation({unread_notfications, size, setLoading}) {
                 </ul>
 
                 <ul className='flex flex-col gap-4 justify-center items-center'>
-                    <li><Icons icon={<FontAwesomeIcon icon={faGear}/>} text={"Account Setting"} to={"/systemadmin/accountsettings"}/></li>
+                    {/* <li><Icons icon={<FontAwesomeIcon icon={faGear}/>} text={"Account Setting"} to={"/systemadmin/accountsettings"}/></li> */}
                     <li onClick={() => setOpenNotification(true)}><Icons icon={<FontAwesomeIcon icon={faBell}/>} text={"Notifications"} notification={true}  unread={unread}/></li>
                     {/* <li className='_icon' onClick={() => setOpenNotification(true)}>
                         <div>

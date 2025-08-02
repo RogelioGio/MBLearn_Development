@@ -298,7 +298,7 @@ export default function Course() {
 
     return(
         <>
-        <div className={`grid ${role === "Course Admin" ? "grid-cols-4 grid-rows-[min-content_min-content_calc(100vh-11.5rem)]" : role === "Learner" ? "grid-cols-4 grid-rows-[min-content_1fr]" : null} h-full`}>
+        <div className={`grid ${role === "Course Admin" ? "grid-cols-4 grid-rows-[min-content_min-content_calc(100vh-11.5rem)]" : role === "Learner" ? "grid-cols-4 grid-rows-[min-content_min-content_ 1fr]" : null} h-full`}>
             <Helmet>
                 {/* Title of the mark-up */}
                 <title>MBLearn | {isLoading ? "Loading..." : course?.name || "No Course Found"}</title>

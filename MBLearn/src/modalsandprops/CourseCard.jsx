@@ -44,11 +44,11 @@ const CourseCard = ({ course, type, click}) => {
     return (
         <HoverCard>
             <HoverCardTrigger>
-                <div className="group relative bg-white w-full h-full rounded-md shadow-md hover:cursor-pointer transition-all ease-in-out grid grid-rows-[1fr_min-content]" onClick={click}
+                <div className={`group relative bg-white w-full h-full rounded-md shadow-md ${type === "profile_contentManager" ? "hover:cursor-default" : "hover:cursor-pointer"} transition-all ease-in-out grid grid-rows-[1fr_min-content]`} onClick={click}
                     onMouseMove={handleMouseMove}
                     ref={cardRef}>
                     <div className={`bg-gradient-to-b from-[hsl(239,94%,19%)] via-[hsl(214,97%,27%)] to-[hsl(201,100%,36%)] md:rounded-t-md rounded-md flex flex-row justify-end gap-2 ${type === 'general' ? '!rounded-md': ''}`}>
-                        <div className={`bg-gradient-to-t from-black via-black/80 to-transparent w-full p-4 flex flex-col justify-between rounded-md md:rounded-none  ${type === 'general' ? 'rounded-md' : ''}`}>
+                        <div className={`bg-gradient-to-t from-black via-black/80 to-transparent w-full p-4 flex flex-col justify-between ${type === 'general' ? 'rounded-md' : 'rounded-md md:rounded-none '}`}>
                             <div className="flex flex-row justify-between items-start">
                                 <div className={`flex flex-row gap-1 pb-2
                                                 xl:flex-col lg:pb-0`}>
@@ -68,7 +68,8 @@ const CourseCard = ({ course, type, click}) => {
                                 <h1 className='font-header text-sm text-white'>{course.name}</h1>
                                 <p className='font-text text-xs text-white'>Course ID: {course.CourseID}</p>
                             </div>
-                            <div className={`absolute md:hidden group-hover:scale-100 scale-0 border border-primary rounded-md font-text p-2 w-fit text-xs transition-all ease-in-out bg-white shadow-md flex flex-col justify-between gap-1 z-10 pointer-events-none ${type === 'courseAdmin' ? "hidden":""}`}
+                            <div className={`absolute md:hidden group-hover:scale-100 scale-0 border border-primary rounded-md font-text p-2 w-fit text-xs transition-all ease-in-out bg-white shadow-md flex flex-col justify-between gap-1 z-10 pointer-events-none
+                                            ${type === 'courseAdmin' ? "hidden" : type === 'learnerCourseManager' ? "hidden" :  type === 'general' ? "hidden" : ""}`}
                                         style={{
                                             left: pos?.x + 15,
                                             top: pos?.y,
@@ -99,7 +100,7 @@ const CourseCard = ({ course, type, click}) => {
                                                 <p>{course.past_due}</p>
                                             </div>
                                         </div>
-                                    </> :
+                                    </> : type === "LearnerCourseManager" ?
                                     <>
                                         <div className="flex flex-row items-center gap-2 whitespace-nowrap">
                                             <RingProgress
@@ -114,12 +115,12 @@ const CourseCard = ({ course, type, click}) => {
                                                 <p className='font-text text-xs'>Completion Progress</p>
                                             </div>
                                         </div>
-                                    </>
+                                    </> : null
                                 }
                             </div>
                         </div>
                     </div>
-                    <div className={`${type === 'courseAdmin' ? 'p-4' : type === 'courseAdminCourseManager' ? 'md:px-4 md:py-3' : ''} relative`}>
+                    <div className={`${type === 'courseAdmin' ? 'p-4' : type === 'courseAdminCourseManager' || type === 'profile_contentManager' ? 'md:px-4 md:py-3' : ''} relative`}>
                         {
                             type === 'courseAdmin' ? (
                                 <div className="flex flex-row justify-between items-center">
@@ -156,8 +157,32 @@ const CourseCard = ({ course, type, click}) => {
                                     <Progress value={course.progress}/>
                                 </div>
 
-                            ) :
-                            null
+                            ) : type === 'profile_contentManager' ? (
+                                <div className="flex flex-col justify-between h-full gap-2">
+                                    <div className="flex flex-row justify-between items-center text-xs font-text">
+                                        <div className="flex gap-3 flex-row items-center">
+                                            <div className="w-3 h-3 bg-primary rounded-sm"/>
+                                            <p>On-going</p>
+                                        </div>
+                                        <p>{course.ongoing}</p>
+                                    </div>
+                                    <div className="flex flex-row justify-between gap-3 items-center text-xs font-text">
+                                        <div className="flex gap-3 flex-row items-center">
+                                            <div className="w-3 h-3 bg-primary rounded-sm"/>
+                                            <p>Due-soon</p>
+                                        </div>
+                                        <p>{course.due_soon}</p>
+                                    </div>
+                                    <div className="flex flex-row justify-between gap-3 items-center text-xs font-text">
+                                        <div className="flex gap-3 flex-row items-center">
+                                            <div className="w-3 h-3 bg-primary rounded-sm"/>
+                                            <p>Past-Due</p>
+                                        </div>
+                                        <p>{course.past_due}</p>
+                                    </div>
+                                </div>
+                            )
+                            : null
                         }
                     </div>
                 </div>

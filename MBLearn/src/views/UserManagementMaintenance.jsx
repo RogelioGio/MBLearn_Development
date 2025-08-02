@@ -383,7 +383,7 @@ export default function UserManagementMaintenance() {
                 <p className='font-text text-unactive
                                 text-xs
                                 xl:text-sm
-                                sm:text-xs'>Effortlessly manage and add users to ensure seamless access and control.</p>
+                                sm:text-xs'>Manage your personal account settings here, update your information, preferences, and credentials with ease.</p>
             </div>
 
 
