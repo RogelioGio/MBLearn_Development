@@ -33,11 +33,11 @@ const CourseManagement = ({type, setType, sort, setSort, courses, fetching}) => 
 
 
     return (
-        <div className="grid grid-cols-4 grid-rows-[min-content_1fr_min-content] w-full h-full">
-            <div className="col-span-2 py-1 flex flex-row items-center justify-between gap-2">
+        <div className="grid grid-cols-4 lg:grid-rows-[min-content_1fr] grid-rows-[min-content_min-content_1fr] w-full h-full">
+            <div className="lg:col-span-2 col-span-4 py-1 flex flex-row items-center justify-between gap-2">
                 {/* Type */}
-                <Select value={type} onValueChange={(value) => {setType(value);}}>
-                    <SelectTrigger className="focus:outline-2 focus:-outline-offset-2 focus:outline-primary border-primary border-2 font-header text-primary w-full h-full bg-white">
+                <Select value={type} onValueChange={(value) => {setType(value);}} disabled={fetching}>
+                    <SelectTrigger className={`focus:outline-2 focus:-outline-offset-2 focus:outline-primary border-primary border-2 font-header text-primary w-full h-full bg-white ${fetching ? "opacity-50 hover:cursor-not-allowed":""}`}>
                         <SelectValue placeholder="Course Type" />
                     </SelectTrigger>
                     <SelectContent className="font-text text-xs text-primary hover:cursor-pointer">
@@ -46,26 +46,31 @@ const CourseManagement = ({type, setType, sort, setSort, courses, fetching}) => 
                     </SelectContent>
                 </Select>
                 {/* Sorter */}
-                {/* ${loading ? "opacity-50 cursor-not-allowed" : "hover:bg-primaryhover hover:border-primaryhover hover:text-white hover:cursor-pointer"} */}
-                <div className={`h-fit flex flex-row items-center justify-between border-2 border-primary py-2 px-4 font-header rounded-md text-primary gap-2 md:w-fit w-full  transition-all ease-in-out shadow-md hover:bg-primaryhover hover:border-primaryhover hover:text-white hover:cursor-pointer ${sort.name === "asc" ? 'bg-primary text-white' : sort.name === "desc" ? 'bg-primary text-white': 'bg-white' }`}
+                <div className={`h-fit flex flex-row items-center justify-between border-2 border-primary py-2 px-4 font-header rounded-md text-primary gap-2 md:w-fit w-full  transition-all ease-in-out shadow-md
+                                ${fetching ? "opacity-50" : "hover:bg-primaryhover hover:border-primaryhover hover:text-white hover:cursor-pointer"}
+                                ${sort.name === "asc" ? 'bg-primary text-white' : sort.name === "desc" ? 'bg-primary text-white': 'bg-white' }`}
                     onClick={() => {
+                        if(fetching) return
                         setOrder("name")
                     }}>
                     <p>Name</p>
                     <FontAwesomeIcon icon={sort.name === "asc" ? faArrowUpAZ : sort.name === "desc" ? faArrowDownAZ : faSort}/>
                 </div>
-                <div className={`h-fit flex flex-row items-center justify-between border-2 border-primary py-2 px-4 font-header rounded-md text-primary gap-2 md:w-fit w-full transition-all ease-in-out shadow-md  hover:bg-primaryhover hover:border-primaryhover hover:text-white hover:cursor-pointer ${sort.created_at === "asc" ? 'bg-primary text-white' : sort.created_at === "desc" ? 'bg-primary text-white': 'bg-white' }`}
+                <div className={`h-fit flex flex-row items-center justify-between border-2 border-primary py-2 px-4 font-header rounded-md text-primary gap-2 md:w-fit w-full transition-all ease-in-out shadow-md
+                                ${fetching ? "opacity-50" : "hover:bg-primaryhover hover:border-primaryhover hover:text-white hover:cursor-pointer"}
+                                ${sort.created_at === "asc" ? 'bg-primary text-white' : sort.created_at === "desc" ? 'bg-primary text-white': 'bg-white' }`}
                     onClick={() => {
+                        if(fetching) return
                         setOrder("created_at")
                     }}>
                     <p>Date</p>
                     <FontAwesomeIcon icon={sort.created_at === "asc" ? faArrowUpWideShort : sort.created_at === "desc" ? faArrowDownShortWide : faSort}/>
                 </div>
             </div>
-            <div className="col-span-2 py-1 flex flex-row items-center justify-end gap-2">
+            <div className="lg:col-span-2 col-span-4 py-1 flex flex-row items-center justify-end gap-2">
                 <div>
                     <Sheet>
-                            <SheetTrigger>
+                            <SheetTrigger disabled={true}>
                                 {/* ${isFiltered ? "bg-primary text-white":"bg-white text-primary"} */}
                                 <div className={`w-11 h-11 flex justify-center items-center border-2 border-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 text-primary bg-white hover:bg-primaryhover hover:border-primaryhover hover:text-white transition-all ease-in-out `}>
                                     <FontAwesomeIcon icon={faFilter}/>
@@ -80,7 +85,7 @@ const CourseManagement = ({type, setType, sort, setSort, courses, fetching}) => 
 
                     </Sheet>
                 </div>
-                <div className="w-72">
+                <div className="lg:w-72 w-full">
                     <div className='inline-flex flex-row place-content-between border-2 border-primary rounded-md font-text shadow-md w-full'>
                         <input type="text" className='focus:outline-none text-sm px-4 w-full rounded-md bg-white' placeholder='Search...'/>
                         <div className='bg-primary py-2 px-4 text-white'>
@@ -90,14 +95,15 @@ const CourseManagement = ({type, setType, sort, setSort, courses, fetching}) => 
                 </div>
             </div>
 
-            <div className="col-span-4 grid-cols-4 grid grid-rows-2 gap-2 py-2">
+            <div className={`col-span-4 grid gap-2 py-2 grid-cols-2 grid-rows-[min-content_min-content_min-content_min-content]
+                            lg:grid-cols-4 lg:grid-rows-2`}>
                 {
                     fetching ?
                     Array.from({length: 8}).map((_, index) => (
-                        <div key={index} className="w-full h-full border border-divider rounded-md bg-white shadow-md animate-pulse flex flex-col items-center justify-center"/>
+                        <div key={index} className="w-full h-full border border-divider rounded-md bg-white shadow-md animate-pulse flex flex-col items-center justify-center min-h-32"/>
                     ))
                     : courses?.length === 0 ?
-                        <div className="col-span-4 row-span-2 flex items-center justify-center font-text flex-col gap-4 text-xs text-unactive">
+                        <div className="lg:col-span-4 lg:row-span-2 lg:py-0 col-span-2 row-span-4 py-5 flex items-center justify-center font-text flex-col gap-4 text-xs text-unactive">
                             <div className="w-24 h-24 bg-primarybg rounded-full flex items-center justify-center">
                                 <FontAwesomeIcon icon={faXmark} className="text-primary text-6xl"/>
                             </div>
@@ -109,9 +115,6 @@ const CourseManagement = ({type, setType, sort, setSort, courses, fetching}) => 
                 }
             </div>
 
-            <div className="py-5">
-
-            </div>
         </div>
     )
 }

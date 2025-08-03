@@ -69,7 +69,7 @@ const CourseCard = ({ course, type, click}) => {
                                 <p className='font-text text-xs text-white'>Course ID: {course.CourseID}</p>
                             </div>
                             <div className={`absolute md:hidden group-hover:scale-100 scale-0 border border-primary rounded-md font-text p-2 w-fit text-xs transition-all ease-in-out bg-white shadow-md flex flex-col justify-between gap-1 z-10 pointer-events-none
-                                            ${type === 'courseAdmin' ? "hidden" : type === 'learnerCourseManager' ? "hidden" :  type === 'general' ? "hidden" : ""}`}
+                                            ${type === 'courseAdmin' ? "hidden" : type === 'learnerCourseManager' ? "hidden" :  type === 'general' || type === 'profile_contentManager' || type === 'profile_journey' ? "hidden" : ""}`}
                                         style={{
                                             left: pos?.x + 15,
                                             top: pos?.y,
@@ -120,7 +120,7 @@ const CourseCard = ({ course, type, click}) => {
                             </div>
                         </div>
                     </div>
-                    <div className={`${type === 'courseAdmin' ? 'p-4' : type === 'courseAdminCourseManager' || type === 'profile_contentManager' || type === 'profile_journey' ? 'md:px-4 md:py-3' : ''} relative`}>
+                    <div className={`${type === 'courseAdmin' ? 'p-4' : type === 'courseAdminCourseManager' ? 'md:px-4 md:py-3' : ''} relative`}>
                         {
                             type === 'courseAdmin' ? (
                                 <div className="flex flex-row justify-between items-center">
@@ -158,7 +158,7 @@ const CourseCard = ({ course, type, click}) => {
                                 </div>
 
                             ) : type === 'profile_contentManager' ? (
-                                <div className="flex flex-col justify-between h-full gap-2">
+                                <div className="flex flex-col justify-between h-full gap-2 px-4 py-3">
                                     <div className="flex flex-row justify-between items-center text-xs font-text">
                                         <div className="flex gap-3 flex-row items-center">
                                             <div className="w-3 h-3 bg-primary rounded-sm"/>
@@ -183,7 +183,7 @@ const CourseCard = ({ course, type, click}) => {
                                 </div>
                             )
                             : type === 'profile_journey' ? (
-                                <div className="flex flex-row h-full gap-2">
+                                <div className="flex flex-row h-full gap-2 px-4 py-3">
                                     <RingProgress
                                                 size={35} // Diameter of the ring
                                                 roundCaps

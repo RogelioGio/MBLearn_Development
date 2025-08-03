@@ -2,7 +2,7 @@ import { Helmet } from "react-helmet"
 import { useStateContext } from "../contexts/ContextProvider"
 import { format, set } from "date-fns"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faCertificate, faGear, faGraduationCap, faSwatchbook } from "@fortawesome/free-solid-svg-icons"
+import { faCertificate, faChevronLeft, faChevronRight, faGear, faGraduationCap, faSpinner, faSwatchbook } from "@fortawesome/free-solid-svg-icons"
 import { useEffect, useState } from "react"
 import LearningJourney from "../modalsandprops/UserProfileComponents.jsx/LearningJourney"
 import AccountSettingModal from "../modalsandprops/AccountSettingModal"
@@ -15,38 +15,80 @@ export default function UserProfile() {
     const [open, setOpen] = useState(false);
     const [fetching, setFetching] = useState(false);
     const [courseType, setCourseType] = useState("myCourses");
+    const [courseDuration, setCourseDuration] = useState("enrolled");
     const [contentItem, setContentItem] = useState([]);
+
+    const [pageState, setPagination] = useState({
+        currentPage: 1,
+        perPage: 8,
+        totalItem: 0,
+        lastPage: 1,
+        startNumber: 0,
+        endNumber: 0,
+        currentPerPage:0
+    });
+
+    const pageChangeState = (key, value) => {
+    setPagination ((prev) => ({
+        ...prev,
+        [key]: value
+    }))
+    }
+    const Pages = [];
+    for(let p = 1; p <= pageState.lastPage; p++){
+        Pages.push(p)
+    }
+
+    const pageChange = (page) => {
+        if(fetchin) return;
+        if(page > 0 && page <= pageState.lastPage){
+            pageChangeState("currentPage", page)
+        }
+    }
+        const back = () => {
+        if (fetchin) return;
+        if (pageState.currentPage > 1){
+            pageChangeState("currentPage", pageState.currentPage - 1)
+            pageChangeState("startNumber", pageState.perPage - 4)
+        }
+    }
+    const next = () => {
+        if (fetchin) return;
+        if (pageState.currentPage < pageState.lastPage){
+            pageChangeState("currentPage", pageState.currentPage + 1)
+        }
+    }
 
     const fetchCourseContent = (type) => {
         setFetching(true);
         if(type === "myCourses") {
             axiosClient.get(`/select-user-added-courses/${user.user_infos?.id}`,{
-                // params: {
-                //     page: pageState.currentPage,
-                //     perPage: pageState.perPage,
-                // }
+                params: {
+                    page: pageState.currentPage,
+                    perPage: pageState.perPage,
+                }
             })
             .then(({data}) => {
                 setFetching(false);
                 setContentItem(data.data);
-                console.log(data.data);
-                // Handle the data received from the API
-                // For example, you can update the state with the courses
-                // setCourses(data.courses);
+                pageChangeState("totalItem", data.total)
+                pageChangeState("lastPage", data.lastPage)
             })
             .catch((err) => {
                 console.log(err);
             })
         } else if(type === "assigned") {
             axiosClient.get(`/select-user-assigned-courses/${user.user_infos?.id}`,{
-                    // params: {
-                    //     page: pageState.currentPage,
-                    //     per_page: pageState.perPage,
-                    // }
+                    params: {
+                        page: pageState.currentPage,
+                        per_page: pageState.perPage,
+                    }
                 })
                 .then(({ data }) => {
                     setFetching(false);
-                    setContentItem(data.courses);
+                    setContentItem(data.data);
+                    pageChangeState("totalItem", data.total)
+                    pageChangeState("lastPage", data.lastPage)
                 })
                 .catch((err) => {
                     console.log(err);
@@ -54,21 +96,21 @@ export default function UserProfile() {
         };
     }
 
-    const fetchLearnerJourney  = () => {
+    const fetchLearnerJourney  = (duration) => {
         setFetching(true);
         axiosClient.get(`/select-user-courses/${user.user_infos?.id}`,
-                    // {
-                    //     params: {
-                    //         page: pageState.currentPage,
-                    //         perPage: pageState.perPage,
-                    //     }
-                    // }
+                    {
+                        params: {
+                            page: pageState.currentPage,
+                            perPage: pageState.perPage,
+                        }
+                    }
                 )
                 .then(({data}) => {
                     setContentItem(data.data);
                     setFetching(false)
-                    //pageChangeState("totalCourses", data.total)
-                    //pageChangeState("lastPage", data.lastPage)
+                    pageChangeState("totalCourses", data.total)
+                    pageChangeState("lastPage", data.lastPage)
                 }).catch((err)=> {
                     console.log(err)
                 })
@@ -80,22 +122,24 @@ export default function UserProfile() {
         created_at : "none",
     });
 
+    useEffect(() => {
+        pageChangeState('startNumber', (pageState.currentPage - 1) * pageState.perPage + 1)
+        pageChangeState('endNumber', Math.min(pageState.currentPage * pageState.perPage, pageState.totalItem))
+    },[pageState.currentPage, pageState.perPage, pageState.totalItems])
+
     useEffect(() =>{
         if(tab === "content") {
-            fetchCourseContent("myCourses");
-            console.log("This is running")
+            fetchCourseContent(courseType);
         } else if(tab === "journey") {
-            setCourseType("enrolled");
-            fetchLearnerJourney();
+            fetchLearnerJourney(courseDuration);
         }
 
         setSort({name:"none", created_at:"none"});
-    },[tab])
+    },[tab,courseType,pageState.currentPage, pageState.perPage])
 
     useEffect(()=>{
-        console.log("fethcing ? :", fetching)
-        console.log("CourseType:", courseType)
-    },[courseType])
+        console.log("CourseType:", contentItem.length)
+    },[contentItem])
 
         return (
         <>
@@ -105,7 +149,7 @@ export default function UserProfile() {
 
             {/* <div className="grid grid-cols-4 grid-rows-[min-content_1fr_1fr] h-full w-full"> */}
             <div className="grid px-3 h-full grid-cols-1
-                            lg:grid-cols-4 lg:grid-rows-[min-content_1fr] lg:pl-0">
+                            lg:grid-cols-4 lg:grid-rows-[min-content_1fr_min-content] lg:pl-0">
                 {/* Profile Card */}
                 <div className="lg::col-span-1 lg:row-span-3 bg-white rounded-xl shadow-md lg:my-5 grid grid-rows-[min-content_min-content_1fr_min-content]">
                     <div className="bg-gradient-to-b from-[hsl(239,94%,19%)] via-[hsl(214,97%,27%)] to-[hsl(201,100%,36%)] rounded-t-xl h-32 p-4 justify-between flex flex-row ">
@@ -159,27 +203,49 @@ export default function UserProfile() {
                 </div>
                 {/* User Detail Tab */}
                 <div className="lg:flex hidden col-span-3 row-span-1 pt-5 pb-2 px-2 flex-row items-center gap-1">
-                    <div className={`border-2 border-primary rounded-md flex flex-row items-center py-2 px-5 gap-2 text-primary font-header hover:bg-primaryhover hover:border-primaryhover hover:text-white hover:cursor-pointer transition-all ease-in-out ${tab === "content" ? "bg-primary text-white" : ""}`} onClick={() => setTab("content")}>
+                    <div className={`border-2 border-primary rounded-md flex flex-row items-center py-2 px-5 gap-2 text-primary font-header transition-all ease-in-out ${fetching ? "opacity-50 cursor-not-allowed" : "hover:bg-primaryhover hover:border-primaryhover hover:text-white hover:cursor-pointer"} ${tab === "content" ? "bg-primary text-white" : ""}`}
+                        onClick={() => {
+                            if(fetching) return
+                                setFetching(true),
+                                setTab("content")}}>
                         <FontAwesomeIcon icon={faSwatchbook} />
                         <p>Course Management</p>
                     </div>
-                    <div className={`border-2 border-primary rounded-md flex flex-row items-center py-2 px-5 gap-2 text-primary font-header hover:bg-primaryhover hover:border-primaryhover hover:text-white hover:cursor-pointer transition-all ease-in-out ${tab === "journey" ? "bg-primary text-white" : ""}`} onClick={() => setTab("journey")}>
+                    <div className={`border-2 border-primary rounded-md flex flex-row items-center py-2 px-5 gap-2 text-primary font-header transition-all ease-in-out ${fetching ? "opacity-50 cursor-not-allowed" : "hover:bg-primaryhover hover:border-primaryhover hover:text-white hover:cursor-pointer"} ${tab === "journey" ? "bg-primary text-white" : ""}`}
+                        onClick={() => {
+                            if(fetching) return
+                            setFetching(true),
+                            setTab("journey")}}>
                         <FontAwesomeIcon icon={faGraduationCap} />
                         <p>Learning Journey</p>
                     </div>
-                    <div className={`border-2 border-primary rounded-md flex flex-row items-center py-2 px-5 gap-2 text-primary font-header hover:bg-primaryhover hover:border-primaryhover  hover:text-white hover:cursor-pointer transition-all ease-in-out ${tab === "certificates" ? "bg-primary text-white" : ""}`} onClick={() => setTab("certificates")}>
+                    <div className={`border-2 border-primary rounded-md flex flex-row items-center py-2 px-5 gap-2 text-primary font-header transition-all ease-in-out ${fetching ? "opacity-50 cursor-not-allowed" : "hover:bg-primaryhover hover:border-primaryhover hover:text-white hover:cursor-pointer"} ${tab === "certificates" ? "bg-primary text-white" : ""}`}
+                        onClick={() => {
+                            if(fetching) return
+                            setFetching(true), setTab("certificates")}}>
                         <FontAwesomeIcon icon={faCertificate} />
                         <p>Certificates</p>
                     </div>
                 </div>
                 <div className="lg:hidden flex flex-row gap-1 border border-primary rounded-md shadow-md bg-white font-text text-primary text-xs justify-between p-1 h-fit my-2">
-                    <div className={`w-full h-fit flex items-center justify-center px-4 py-2 rounded-md hover:cursor-pointer transition-all ease-in-out ${tab === "content" ? "bg-primary text-white" : "text-primary hover:cursor-pointer hover:bg-primarybg"}`} onClick={()=> setTab("content")}>
+                    <div className={`w-full h-fit flex items-center justify-center px-4 py-2 rounded-md hover:cursor-pointer transition-all ease-in-out ${tab === "content" ? "bg-primary text-white" : "text-primary hover:cursor-pointer hover:bg-primarybg"}`} onClick={()=> {
+                        if(fetching) return
+                        setFetching(true),
+                        setTab("content")}}>
                         Course Management
                     </div>
-                    <div className={`w-full h-fit flex items-center justify-center px-4 py-2 rounded-md hover:cursor-pointer transition-all ease-in-out ${tab === "journey" ? "bg-primary text-white" : "text-primary hover:cursor-pointer hover:bg-primarybg"}`} onClick={()=> setTab("journey")}>
+                    <div className={`w-full h-fit flex items-center justify-center px-4 py-2 rounded-md hover:cursor-pointer transition-all ease-in-out ${tab === "journey" ? "bg-primary text-white" : "text-primary hover:cursor-pointer hover:bg-primarybg"}`}
+                        onClick={()=> {
+                            if(fetching) return
+                            setFetching(true),
+                            setTab("journey")}}>
                         Learning Journey
                     </div>
-                    <div className={`w-full h-fit flex items-center justify-center px-4 py-2 rounded-md hover:cursor-pointer transition-all ease-in-out whitespace-nowrap ${tab === "certificates" ? "bg-primary text-white" : "text-primary hover:cursor-pointer hover:bg-primarybg"}`} onClick={()=> setTab("certificates")}>
+                    <div className={`w-full h-fit flex items-center justify-center px-4 py-2 rounded-md hover:cursor-pointer transition-all ease-in-out whitespace-nowrap ${tab === "certificates" ? "bg-primary text-white" : "text-primary hover:cursor-pointer hover:bg-primarybg"}`}
+                        onClick={()=> {
+                            if(fetching) return
+                            setFetching(true),
+                            setTab("certificates")}}>
                         Certificates
                     </div>
                 </div>
@@ -189,22 +255,66 @@ export default function UserProfile() {
                         tab === "content" ?
                         <CourseManagement type={courseType} setType={setCourseType} sort={sort} setSort={setSort} courses={contentItem} fetching={fetching}/>
                         :tab === "journey" ?
-                        <LearningJourney type={courseType} setType={setCourseType} sort={sort} setSort={setSort} courses={contentItem} fetching={fetching}/>
+                        <LearningJourney type={courseDuration} setType={setCourseDuration} sort={sort} setSort={setSort} courses={contentItem} fetching={fetching}/>
                         : null
                     }
                 </div>
-                {/*
-                <div className="col-start-2 row-start-2 col-span-3 row-span-2 pl-2 pr-5 pt-2 pb-5">
-                    {
-                        renderTabContent()
-                    }
-                </div> */}
+
+                <div className="pt-2 pb-5 flex flex-row justify-between lg:col-span-3 lg:pl-2">
+                    <div className={`flex flex-row ${!fetching && contentItem.length === 0 ? "hidden" : ""}`}>
+                        {
+                            fetching ? <>
+                                <FontAwesomeIcon icon={faSpinner} className="animate-spin mr-2 text-unactive"/>
+                                <p className="font-text text-unactive text-xs">Fetching Items....</p>
+                                </>
+                            : <p className='text-sm font-text text-unactive'>
+                                Showing <span className='font-header text-primary'>{pageState.startNumber}</span> to <span className='font-header text-primary'>{pageState.endNumber}</span> of <span className='font-header text-primary'>{pageState.totalItem}</span> <span className='text-primary'>results</span>
+                            </p>
+                        }
+                    </div>
+                    <div className={`${!fetching && contentItem.length === 0 ? "hidden":""}`}>
+                        <nav className='isolate inline-flex -space-x-px round-md shadow-xs'>
+                            {/* Previous */}
+                            <a
+                                onClick={back}
+                                className='relative inline-flex items-center rounded-l-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
+                                <FontAwesomeIcon icon={faChevronLeft}/>
+                            </a>
+
+                            {/* Current Page & Dynamic Paging */}
+                            {
+                                fetching ? (
+                                    <a className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset`}>
+                                    ...</a>
+                                ) : (
+                                    Pages.map((page)=>(
+                                        <a
+                                            key={page}
+                                            className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset
+                                                ${
+                                                    page === pageState.currentPage
+                                                    ? 'bg-primary text-white'
+                                                    : 'bg-secondarybackground text-primary hover:bg-primary hover:text-white'
+                                                } transition-all ease-in-out`}
+                                                onClick={() => pageChange(page)}>
+                                            {page}</a>
+                                    ))
+                                )
+                            }
+                            <a
+                                onClick={next}
+                                className='relative inline-flex items-center rounded-r-md px-3 py-2 text-primary ring-1 ring-divider ring-inset hover:bg-primary hover:text-white transition-all ease-in-out'>
+                                <FontAwesomeIcon icon={faChevronRight}/>
+                            </a>
+                        </nav>
+                    </div>
+                </div>
+
             </div>
             <AccountSettingModal open={open} close={()=>{setOpen(false)}} user={user}/>
         </>
     )
 
 }
-
 
 

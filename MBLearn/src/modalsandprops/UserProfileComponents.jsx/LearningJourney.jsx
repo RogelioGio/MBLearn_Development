@@ -32,8 +32,8 @@ const LearningJourney = ({type, setType, sort, setSort, fetching, courses}) => {
     }
 
     return(
-        <div className="grid grid-cols-4 grid-rows-[min-content_1fr_min-content] w-full h-full">
-            <div className="col-span-2 py-1 flex flex-row items-center justify-between gap-2">
+        <div className="grid grid-cols-4 lg:grid-rows-[min-content_1fr] grid-rows-[min-content_min-content_1fr] w-full h-full">
+            <div className="lg:col-span-2 col-span-4 py-1 flex flex-row items-center justify-between gap-2">
                 {/* Type */}
                 <Select value={type} onValueChange={(value) => {setType(value);}}>
                     <SelectTrigger className="focus:outline-2 focus:-outline-offset-2 focus:outline-primary border-primary border-2 font-header text-primary w-full h-full bg-white">
@@ -63,7 +63,7 @@ const LearningJourney = ({type, setType, sort, setSort, fetching, courses}) => {
                     <FontAwesomeIcon icon={sort.created_at === "asc" ? faArrowUpWideShort : sort.created_at === "desc" ? faArrowDownShortWide : faSort}/>
                 </div>
             </div>
-            <div className="col-span-2 py-1 flex flex-row items-center justify-end gap-2">
+            <div className="lg:col-span-2 col-span-4 py-1 flex flex-row items-center justify-end gap-2">
                 <div>
                     <Sheet>
                             <SheetTrigger>
@@ -80,7 +80,7 @@ const LearningJourney = ({type, setType, sort, setSort, fetching, courses}) => {
                             </SheetContent>
                     </Sheet>
                 </div>
-                <div className="w-72">
+                <div className="lg:w-72 w-full">
                     <div className='inline-flex flex-row place-content-between border-2 border-primary rounded-md font-text shadow-md w-full'>
                         <input type="text" className='focus:outline-none text-sm px-4 w-full rounded-md bg-white' placeholder='Search...'/>
                         <div className='bg-primary py-2 px-4 text-white'>
@@ -90,11 +90,12 @@ const LearningJourney = ({type, setType, sort, setSort, fetching, courses}) => {
                 </div>
             </div>
 
-            <div className="col-span-4 grid-cols-4 grid grid-rows-2 gap-2 py-2">
+            <div className={`col-span-4 grid gap-2 py-2 grid-cols-2 grid-rows-[min-content_min-content_min-content_min-content]
+                            lg:grid-cols-4 lg:grid-rows-2`}>
                 {
                     fetching ?
                     Array.from({length: 8}).map((_,index) => (
-                        <div key={index} className="w-full h-full border border-divider rounded-md bg-white shadow-md animate-pulse flex flex-col items-center justify-center"/>
+                        <div key={index} className="w-full h-full border border-divider rounded-md bg-white shadow-md animate-pulse flex flex-col items-center justify-center min-h-32"/>
                     ))
                     : courses?.length === 0 ?
                     <div className="col-span-4 row-span-2 flex items-center justify-center font-text flex-col gap-4 text-xs text-unactive">
@@ -107,10 +108,6 @@ const LearningJourney = ({type, setType, sort, setSort, fetching, courses}) => {
                         <CourseCard key={course.id} course={course} type={"profile_journey"}/>
                     ))
                 }
-            </div>
-
-            <div className="py-5">
-
             </div>
         </div>
     )
