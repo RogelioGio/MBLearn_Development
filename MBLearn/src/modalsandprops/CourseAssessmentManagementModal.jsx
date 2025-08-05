@@ -5,7 +5,6 @@ import { useFormik } from "formik"
 import { useEffect, useState } from "react";
 import { Switch } from "../components/ui/switch";
 import * as Yup from "yup"
-import InputMask from 'react-input-mask';
 
 
 const CourseAssesmentManagementModal = ({ assessment ,open, close}) => {
