@@ -2,7 +2,7 @@ import { Helmet } from "react-helmet"
 import axiosClient from "../axios-client"
 import { useContext, useEffect, useState } from "react"
 import { FerrisWheel } from "lucide-react"
-import { faArrowDownShortWide, faArrowDownZA, faArrowUpAZ, faArrowUpWideShort, faChevronLeft, faChevronRight, faFilter, faSearch, faSort } from "@fortawesome/free-solid-svg-icons"
+import { faArrowDownShortWide, faArrowDownZA, faArrowUpAZ, faArrowUpWideShort, faChevronLeft, faChevronRight, faFilter, faSearch, faSort, faSpinner, faTriangleExclamation } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useCourseContext } from "../contexts/CourseListProvider"
 import AssignedCourseCatalogCard from "../modalsandprops/AssignedCourseCatalogCard"
@@ -14,7 +14,15 @@ import { useStateContext } from "../contexts/ContextProvider"
 import { format } from "date-fns"
 import SelfEnrollmentSuccessfullyModal from "../modalsandprops/SelfEnrollmentSuccessfullyModal"
 import CourseCard from "../modalsandprops/CourseCard"
-
+import {
+    Sheet,
+    SheetContent,
+    SheetDescription,
+    SheetHeader,
+    SheetOverlay,
+    SheetTitle,
+    SheetTrigger,
+} from "../components/ui/sheet"
 
 
 
@@ -28,6 +36,7 @@ export default function LearnerSelfEnrollment() {
     const [duration, setDuration] = useState(false)
     const [enrolling, setEnrolling] = useState()
     const [enrolled, setEnrolled] = useState(false)
+    const [isFiltered, setIsFiltered] = useState(false)
 
     const [date, setDate] = React.useState({
         from: new Date(),
@@ -149,138 +158,156 @@ export default function LearnerSelfEnrollment() {
 
     return(
     <>
-        <div className='grid grid-cols-4 grid-rows-[6.25rem_min-content_1fr_min-content] h-full w-full'>
+        <div className='grid grid-cols-4 h-full w-full
+                        grid-rows-[6.25rem_min-content_1fr_min-content]
+                        xl:grid-rows-[6.25rem_min-content_1fr_min-content]'>
             <Helmet>
                 {/* Title of the mark-up */}
                 <title>MBLearn | Self-Enrollment</title>
             </Helmet>
 
             {/* Header */}
-            <div className='flex flex-col justify-center col-span-3 row-span-1 border-b ml-5 border-divider'>
-                <h1 className='text-primary text-4xl font-header'>Self Course Enrollment</h1>
-                <p className='font-text text-sm text-unactive'>View shows all available courses learners can freely enroll in to expand their skills at their own pace.</p>
+            <div className='flex flex-col justify-center row-span-1 border-b border-divider
+                            col-start-1 row-start-1 col-span-4 mx-3
+                            xl:col-span-4
+                            sm:col-span-4 sm:ml-4'>
+                <h1 className='text-primary font-header
+                                text-xl
+                                sm:text-2xl
+                                xl:text-4xl'>Self Enrollment</h1>
+                <p className='font-text text-unactive
+                                text-xs
+                                xl:text-sm
+                                sm:text-xs'>Shows all available courses and let the learners can freely enroll in to expand their skills at their own pace.</p>
             </div>
 
-            <div className="flex items-center justify-center mr-5 border-b border-divider">
-                <div className=' inline-flex flex-row place-content-between border-2 border-primary rounded-md font-text shadow-md w-full'>
-                    <input type="text" className='focus:outline-none text-sm px-4 w-full rounded-md bg-white' placeholder='Search...'/>
-                    <div className='bg-primary py-2 px-4 text-white'>
-                        <FontAwesomeIcon icon={faSearch}/>
+            <div className="col-span-4 px-3 py-2 grid grid-rows-2 gap-y-2
+                            md:pl-4 md:pr-3 md:grid grid-cols-2 md:grid-rows-1">
+                <div className="flex flex-row gap-2 col-span-2 md:col-span-1">
+                    {/* Search */}
+                    <div className="md:w-80 w-full">
+                        <div className='inline-flex flex-row place-content-between border-2 border-primary rounded-md font-text shadow-md w-full'>
+                            <input type="text" className='focus:outline-none text-sm px-4 w-full rounded-md bg-white' placeholder='Search...'/>
+                            <div className='bg-primary py-2 px-4 text-white'>
+                                <FontAwesomeIcon icon={faSearch}/>
+                            </div>
+                        </div>
+                    </div>
+                    {/* Filter */}
+                    <div>
+                        <Sheet>
+                            <SheetTrigger>
+                                <div className={`h-11 w-11 flex justify-center items-center bg-primary aspect-square border-2 border-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 hover:bg-primaryhover hover:text-white transition-all ease-in-out ${isFiltered ? "bg-primary text-white":"bg-white text-primary"}`}>
+                                    <FontAwesomeIcon icon={faFilter}/>
+                                </div>
+                            </SheetTrigger>
+                            <SheetOverlay className="bg-gray-500/75 backdrop-blur-sm transition-all" />
+                            <SheetContent className="h-full flex-col flex">
+                            <div>
+                                <h1 className='font-header text-2xl text-primary'>Course Filter</h1>
+                                <p className='text-md font-text text-unactive text-sm'>Categorize courses</p>
+                            </div>
+                            <div className="flex flex-col gap-2 w-full">
+                                <div className="inline-flex flex-col gap-2 row-start-4 col-span-1">
+                                    <label htmlFor="course_type" className="font-header text-xs flex flex-row justify-between">
+                                        <p className="font-text text-xs text-unactive">Course Type</p>
+                                    </label>
+                                    <div class="grid grid-cols-1">
+                                        <select id="course_type" name="course_type" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
+                                            // value={formik2.values.course_type}
+                                            // onChange={formik2.handleChange}
+                                            // onBlur={formik2.handleBlur}
+                                        >
+                                        <option value="">Select a course type</option>
+                                        {coursetypes.map((type) => (
+                                            <option key={type.id} value={type.id}>{type.type_name}</option>
+                                        ))}
+                                        </select>
+                                        <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                        <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                        {/* {formik2.touched.course_type && formik2.errors.course_type ? (<div className="text-red-500 text-xs font-text">{formik2.errors.course_type}</div>):null} */}
+                                </div>
+                                <div className="inline-flex flex-col gap-2 row-start-4 col-span-1">
+                                    <label htmlFor="course_type" className="font-header text-xs flex flex-row justify-between">
+                                        <p className="font-text text-xs text-unactive">Course Category</p>
+                                    </label>
+                                    <div class="grid grid-cols-1">
+                                        <select id="course_type" name="course_type" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
+                                            // value={formik2.values.course_type}
+                                            // onChange={formik2.handleChange}
+                                            // onBlur={formik2.handleBlur}
+                                        >
+                                        <option value="">Select a course category</option>
+                                        {coursecategories.map((category) => (
+                                            <option key={category.id} value={category.id}>{category.category_name}</option>
+                                        ))}
+                                        </select>
+                                        <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                        <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                        {/* {formik2.touched.course_type && formik2.errors.course_type ? (<div className="text-red-500 text-xs font-text">{formik2.errors.course_type}</div>):null} */}
+                                </div>
+                                <div className="inline-flex flex-col gap-2 row-start-4 col-span-1">
+                                    <label htmlFor="course_type" className="font-header text-xs flex flex-row justify-between">
+                                        <p className="font-text text-xs text-unactive">Training Type</p>
+                                    </label>
+                                    <div class="grid grid-cols-1">
+                                        <select id="course_type" name="course_type" class="col-start-1 row-start-1 w-full appearance-none rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary font-text border border-divider"
+                                            // value={formik2.values.course_type}
+                                            // onChange={formik2.handleChange}
+                                            // onBlur={formik2.handleBlur}
+                                        >
+                                        <option value="">Select a Training Type</option>
+                                        <option value="">Mandatory</option>
+                                        <option value="">Non-Mandatory</option>
+                                        {/* {coursetypes.map((type) => (
+                                            <option key={type.id} value={type.id}>{type.type_name}</option>
+                                        ))} */}
+                                        </select>
+                                        <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                        <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                        {/* {formik2.touched.course_type && formik2.errors.course_type ? (<div className="text-red-500 text-xs font-text">{formik2.errors.course_type}</div>):null} */}
+                                </div>
+                                <div className="flex flex-row gap-2 w-full py-2">
+                                    <div className="border-2 border-primary rounded-md w-full py-2 px-4 font-header text-white bg-primary flex justify-center items-center hover:cursor-pointer hover:bg-primaryhover transition-all ease-in-out shadow-md">
+                                        <p>Filter</p>
+                                    </div>
+                                    <div className="border-2 border-primary rounded-md w-full py-2 px-4 font-header text-primary bg-white flex justify-center items-center hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out shadow-md">
+                                        <p>Clear</p>
+                                    </div>
+                                </div>
+                            </div>
+                            </SheetContent>
+                        </Sheet>
                     </div>
                 </div>
+                <div className="flex flex-row gap-2 items-center md:justify-end col-span-2 md:col-span-1">
+                    <div className={`h-fit flex flex-row items-center border-2 border-primary py-2 px-4 font-header bg-secondarybackground rounded-md text-sm lg:text-base text-primary gap-2 w-fit hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md ${sort.dateOrder === "asc" ? '!bg-primary !text-white' : sort.dateOrder === "desc" ? '!bg-primary !text-white': 'bg-white' }`} onClick={() => setOrder("dateOrder")}>
+                        <p>Date</p>
+                        <FontAwesomeIcon icon={sort.dateOrder === "asc" ? faArrowUpWideShort : sort.dateOrder === "desc" ? faArrowDownShortWide : faSort}/>
+                    </div>
+                    <div className={`h-fit flex flex-row items-center border-2 border-primary py-2 px-4 font-header bg-secondarybackground rounded-md text-sm lg:text-base text-primary gap-2 w-fit hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md ${sort.nameOrder === "asc" ? '!bg-primary !text-white' : sort.nameOrder === "desc" ? '!bg-primary !text-white': 'bg-white' }`} onClick={() => setOrder("nameOrder")}>
+                        <p>Name</p>
+                        <FontAwesomeIcon icon={sort.nameOrder === "asc" ? faArrowUpAZ : sort.nameOrder === "desc" ? faArrowDownZA : faSort}/>
+                    </div>
+                </div>
+
             </div>
 
-            {/* Filter */}
-            <div className="col-span-3 py-2 ml-5">
-                <p className="text-xs text-unactive pb-2">Course Filter:</p>
-                <div className="flex flex-row justify-between gap-x-2">
-                    <div className="inline-flex flex-col gap-1 w-full">
-                        <div className="grid grid-cols-1">
-                            <select id="role" name="role" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                                // value={filterformik.values.role}
-                                // onChange={filterformik.handleChange}
-                                // onBlur={filterformik.handleBlur}
-                                >
-                                <option value=''>Select Category</option>
-                                {
-                                    coursecategories.map((c) => (
-                                        <option key={c.id} value={c.id}>{c.category_name}</option>
-                                    ))
-                                }
-                            </select>
-                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                            <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                            </svg>
-                        </div>
-                        <label htmlFor="role" className="font-header text-xs flex flex-row justify-between">
-                            <p className="text-xs font-text text-unactive">Category</p>
-                        </label>
-                    </div>
-                    <div className="inline-flex flex-col gap-1 w-full">
-                        <div className="grid grid-cols-1">
-                            <select id="role" name="role" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                                // value={filterformik.values.role}
-                                // onChange={filterformik.handleChange}
-                                // onBlur={filterformik.handleBlur}
-                                >
-                                <option value=''>Select Type</option>
-                                {
-                                    coursetypes.map((c) => (
-                                        <option key={c.id} value={""}>{c.type_name}</option>
-                                    ))
-                                }
-                            </select>
-                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                            <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                            </svg>
-                        </div>
-                        <label htmlFor="role" className="font-header text-xs flex flex-row justify-between">
-                            <p className="text-xs font-text text-unactive">Type</p>
-                        </label>
-                    </div>
-                    <div className="inline-flex flex-col gap-1 w-full" >
-                        <div className="grid grid-cols-1">
-                            <select id="role" name="role" className="appearance-none font-text col-start-1 row-start-1 border border-divider rounded-md p-2 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-primary"
-                                // value={filterformik.values.role}
-                                // onChange={filterformik.handleChange}
-                                // onBlur={filterformik.handleBlur}
-                                >
-                                <option value=''>Select Training Type</option>
-                                <option value='mandatory'>Mandatory</option>
-                                <option value='unmandatory'>Non-Mandatory</option>
 
-                            </select>
-                            <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                            <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                            </svg>
-                        </div>
-                        <label htmlFor="role" className="font-header text-xs flex flex-row justify-between">
-                            <p className="text-xs font-text text-unactive">Training Type</p>
-                        </label>
-                    </div>
-
-                {/* FilterButton */}
-                    <div className="w-fit h-full">
-                        <div className="w-10 aspect-square bg-white shadow-md border-2 border-primary text-primary rounded-md flex items-center justify-center hover:text-white hover:cursor-pointer hover:bg-primary hover:scale-105 transition-all ease-in-out">
-                            <FontAwesomeIcon icon={faFilter}/>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Sorter */}
-            <div className="flex flex-row gap-2 pr-5 items-center justify-end">
-                {/* Sort by Name */}
-                <div className={`h-fit flex flex-row items-center border-2 border-primary py-2 px-4 font-header bg-secondarybackground rounded-md text-primary gap-2 w-fit hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md ${sort.name === "asc" ? '!bg-primary !text-white' : sort.name === "desc" ? '!bg-primary !text-white': 'bg-secondarybackground' }`} onClick={() => setOrder("name", tab)}>
-                    <p>Name</p>
-                    <FontAwesomeIcon icon={sort.name === "asc" ? faArrowUpAZ : sort.name === "desc" ? faArrowDownZA : faSort}/>
-                </div>
-                {/* Sort By Date-Added */}
-                <div className={`h-fit flex flex-row items-center border-2 border-primary py-2 px-4 font-header bg-secondarybackground rounded-md text-primary gap-2 w-fit hover:bg-primary hover:text-white hover:scale-105 hover:cursor-pointer transition-all ease-in-out shadow-md ${sort.created_at === "asc" ? '!bg-primary !text-white' : sort.created_at === "desc" ? '!bg-primary !text-white': 'bg-secondarybackground' }`} onClick={() => setOrder("created_at", tab)}>
-                    <p>Date</p>
-                    <FontAwesomeIcon icon={sort.created_at === "asc" ? faArrowUpWideShort : sort.created_at === "desc" ? faArrowDownShortWide : faSort}/>
-                </div>
-            </div>
-
-
-            <div className="row-start-3 col-span-4 grid grid-cols-4 grid-rows-2 gap-2 px-5 py-2">
-                {
+            <div className="col-span-4 grid grid-cols-2 grid-rows-4
+                            px-3 pb-2 gap-2
+                            lg:grid-rows-2 lg:grid-cols-4
+                            xl:pl-4 xl:pr-3 xl:pb-2">
+                {/* {
                     !loading ? (
                         course && course.length > 0 ? (
                             course.map((course, index) => (
-                            // <AssignedCourseCatalogCard key={index}
-                            //             id={course.id}
-                            //             name={course.name}
-                            //             courseId={course?.CourseID}
-                            //             courseType={course.types[0]?.type_name}
-                            //             courseCategory={course.categories[0]?.category_name}
-                            //             trainingMode={course.training_modes[0]?.modes_name}
-                            //             trainingType={course.training_type}
-                            //             tab={"allCourses"}
-                            //             adder={course?.adder}
-                            //             role={"learner"}
-                            //             selfEnroll={()=>{setOpenEnroll(true), setSelectedCourse(course)}}/>
-                            //         )
                             <CourseCard index={index} course={course} type='general'/>)
                         )):(
                                 <div className="col-span-4 row-span-2 flex flex-col gap-4 items-center justify-center text-center h-full">
@@ -292,16 +319,37 @@ export default function LearnerSelfEnrollment() {
                             <div key={i} className="animate-pulse bg-white w-full h-full rounded-md shadow-md"/>
                         ))
                     )
+                } */}
+
+                {
+                    loading ?
+                    Array.from({ length: 8 }).map((_, i) => (
+                            <div key={i} className="animate-pulse bg-white w-full h-full rounded-md shadow-md border-divider border min-h-24"/>
+                    ))
+                    : course.length === 0 ?
+                    <div className="w-full h-full flex flex-col items-center justify-center lg:col-span-4 col-span-2 lg:row-span-2 row-span-4 ">
+                        <div className="flex flex-col items-center justify-center gap-2 rounded-full w-20 h-20 text-primary bg-primarybg text-4xl">
+                            <FontAwesomeIcon icon={faTriangleExclamation} />
+                        </div>
+                        <p className="text-unactive font-text text-xs">No Courses Enrolled Yet</p>
+                    </div>
+                    :
+                    course.map((course, index) => (
+                            <CourseCard index={index} course={course} type='general' click={()=>{setOpenEnroll(true),setSelectedCourse(course)}}/>
+                        ))
                 }
-                {/* {} */}
             </div>
 
             {/* Paganation */}
-              <div className="mx-5 col-span-4 row-start-5 row-span-1 flex flex-row justify-between items-center py-3 border-t border-divider">
+            <div className="mx-5 col-span-4 row-start-5 row-span-1 flex flex-row justify-between items-center py-3 border-t border-divider">
                 {/* Total number of entries and only be shown */}
-                <div>
+                <div className="flex flex-row items-center gap-2">
                     {
-                        loading ? <p className='text-sm font-text text-unactive'>Loading courses...</p>
+                        loading ?
+                        <>
+                            <FontAwesomeIcon icon={faSpinner} className='animate-spin text-unactive'/>
+                            <p className='text-sm font-text text-unactive'>Loading courses...</p>
+                        </>
                         :
                         <p className='text-sm font-text text-unactive'>
                             Showing <span className='font-header text-primary'>{pageState.startNumber}</span> to <span className='font-header text-primary'>{pageState.endNumber}</span> of <span className='font-header text-primary'>{pageState.totalCourses}</span> <span className='text-primary'>results</span>

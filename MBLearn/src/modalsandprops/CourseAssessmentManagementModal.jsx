@@ -5,6 +5,8 @@ import { useFormik } from "formik"
 import { useEffect, useState } from "react";
 import { Switch } from "../components/ui/switch";
 import * as Yup from "yup"
+import InputMask from 'react-input-mask';
+import UnsavedEditUserPromptModal from "./UnsaveEditUserPromptModal";
 
 
 const CourseAssesmentManagementModal = ({ assessment ,open, close}) => {
@@ -12,6 +14,8 @@ const CourseAssesmentManagementModal = ({ assessment ,open, close}) => {
     const [timeLimit, setTimeLimit] = useState(assessment.timeLimit > 0);
     const [maxAttempts, setMaxAttempts] = useState(assessment.maxAttempts > 0)
     const [updating, setUpdating] = useState(false)
+    const [unsave, setUnsave] = useState(false)
+    const [unsavePrompt, setUnsavePrompt] = useState(false);
 
     //Helper
     const formatSecondsToMMSS = (totalSeconds) => {
@@ -65,6 +69,20 @@ const CourseAssesmentManagementModal = ({ assessment ,open, close}) => {
         //console.log("review:", formik.values.timeLimit)
     }, [formik.values.timeLimit])
 
+    useEffect(()=>{
+        const newChanges = {}
+        for(const key in formik.values){
+            if(Object.prototype.hasOwnProperty.call(formik.values, key)){
+                newChanges[key] = formik.values[key] !== formik.initialValues[key]
+            }
+        }
+        const isChanged = Object.keys(formik.values).some(
+            (key) => formik.values[key] !== formik.initialValues[key]
+        )
+
+        setUnsave(isChanged)
+    },[formik.values])
+
     return (
         <>
         <Dialog open={open} onClose={()=>{}}>
@@ -91,8 +109,12 @@ const CourseAssesmentManagementModal = ({ assessment ,open, close}) => {
                                                     md:w-8 md:h-8 md:text-base"
                                         onClick={()=>{
                                             if(updating) return
-                                            close()
-                                            setTimeout(()=>{formik.resetForm()},500)
+                                            if(unsave) {
+                                                setUnsavePrompt(true)
+                                            } else {
+                                                close()
+                                                setTimeout(()=>{formik.resetForm()},500)
+                                            }
                                         }}>
                                         <FontAwesomeIcon icon={faXmark}/>
                                     </div>
@@ -226,15 +248,19 @@ const CourseAssesmentManagementModal = ({ assessment ,open, close}) => {
                                 <div className={`border-2 border-primary rounded-md py-3 w-full flex flex-row justify-center shadow-md text-primary transition-all ease-in-out ${updating ? "opacity-50":"hover:cursor-pointer hover:bg-primary hover:text-white"}`}
                                                 onClick={()=>{
                                                     if(updating) return
-                                                    close()
-                                                    setTimeout(()=>{formik.resetForm()},500)
+                                                    if(unsave) {
+                                                        setUnsavePrompt(true)
+                                                    } else {
+                                                        close()
+                                                        setTimeout(()=>{formik.resetForm()},500)
+                                                    }
                                                 }}>
                                                 <p className="font-header">Cancel</p>
                                 </div>
                                 <div className={`border-2 border-primary rounded-md py-3 w-full flex flex-row justify-center items-center shadow-md bg-primary text-white  transition-all ease-in-out
-                                                ${updating ? "opacity-50":"hover:cursor-pointer hover:bg-primaryhover hover:border-primaryhover"}`}
+                                                ${updating || !unsave ? "opacity-50":"hover:cursor-pointer hover:bg-primaryhover hover:border-primaryhover"}`}
                                             onClick={()=>{
-                                                if(updating)return
+                                                if(updating || !unsave)return
                                                 handleUpdate()
                                             }}>
                                     {
@@ -254,6 +280,7 @@ const CourseAssesmentManagementModal = ({ assessment ,open, close}) => {
                 </div>
             </div>
         </Dialog>
+        <UnsavedEditUserPromptModal open={unsavePrompt} close={()=> {setUnsavePrompt(false)}} discardChanges={()=>{formik.resetForm(), setUnsavePrompt(false),close()}} />
         </>
     )
 }
