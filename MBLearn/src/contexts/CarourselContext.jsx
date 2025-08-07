@@ -5,6 +5,9 @@ const CarouselContent = createContext();
 
 export const CarouselContentProvider = ({children}) => {
     const [carousels, setCarousels] = useState([])
+    const _setCarousel = (carousel) => {
+        setCarousels(carousel)
+    }
 
     useEffect(()=>{
         axiosClient.get('/carousels')
@@ -16,7 +19,7 @@ export const CarouselContentProvider = ({children}) => {
     },[])
 
     return(
-        <CarouselContent.Provider value={carousels}>
+        <CarouselContent.Provider value={{carousels, _setCarousel}}>
             {children}
         </CarouselContent.Provider>
     )

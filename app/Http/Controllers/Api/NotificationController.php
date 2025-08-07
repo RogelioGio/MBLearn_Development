@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Events\NotificationsMarkedAsRead;
+use App\Events\TestEvent;
 use App\Http\Controllers\Controller;
 use App\Models\UserCredentials;
 use Illuminate\Http\Request;
@@ -56,7 +57,8 @@ class NotificationController extends Controller
     }
 
     $user->unreadNotifications->markAsRead();
-    event(new NotificationsMarkedAsRead($user->id));
+    $message = "Hello from laravel";
+    broadcast(new NotificationsMarkedAsRead($user->id));
 
     return response()->json(['message' => 'All notifications marked as read',$user]);
     }

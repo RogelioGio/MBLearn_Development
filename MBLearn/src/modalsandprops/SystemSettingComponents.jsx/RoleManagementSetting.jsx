@@ -1,4 +1,4 @@
-import { faBookOpenReader, faFileSignature, faGraduationCap, faSave, faSwatchbook, faUserClock, faUserLock, faUsers, faUserShield, faUsersLine } from "@fortawesome/free-solid-svg-icons"
+import { faBookOpenReader, faFileSignature, faGraduationCap, faSave, faSpinner, faSwatchbook, faUserClock, faUserLock, faUsers, faUserShield, faUsersLine } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useForm } from "@inertiajs/vue3"
 import { useFormik } from "formik"
@@ -121,147 +121,153 @@ const RoleManagementSetting = () => {
 
     return (
         <>
-        <ScrollArea className="col-span-3 row-span-3 max-h-[calc(100vh-6.25rem)] overflow-auto">
-
-        <div className="mx-5 py-5 row-span-2 col-span-3 grid grid-cols-2 grid-rows-[min-content_auto] gap-2">
-                {/* Header */}
-                <div className="row-span-1 col-span-2 flex flex-row justify-between items-center pb-2">
+            {/* Available Role*/}
+            <div className="row-span-1 col-span-2 grid gap-2
+                            grid-cols-2 grid-rows-[min-content_auto]
+                            md:grid-cols-[1fr_1fr_1fr_1fr] md:grid-rows-[min-content_auto]">
+                <div className="col-span-2
+                                md:col-span-4">
+                    <p className="text-unactive font-text text-xs">Avaliable Roles:</p>
+                </div>
+                <div className={`hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out border-2 border-primary rounded-md shadow-md p-4 text-primary flex flex-row justify-center items-center gap-x-2 ${selectedRole === 4 ? "bg-primary text-white":null}`} onClick={()=> changeRoles(4)}>
                     <div>
-                        <h1 className="font-header text-primary text-xl">Role Management</h1>
-                        <p className="font-text text-unactive text-xs">Create and manage roles function and permission in the system</p>
+                        <p className="font-header">SME</p>
+                        <p className="font-text text-xs">Personnels that create courses</p>
                     </div>
+                    <FontAwesomeIcon icon={faSwatchbook} className="text-4xl"/>
+
                 </div>
-                {/* Available Role*/}
-                <div className="row-span-1 col-span-2 grid grid-cols-[1fr_1fr_1fr_1fr] grid-rows-[min-content_auto] gap-2">
-                    <div className="col-span-4">
-                        <p className="text-unactive font-text text-xs">Avaliable Roles:</p>
+                <div className={`hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out border-2 border-primary rounded-md shadow-md p-4 text-primary flex flex-row justify-center items-center gap-x-2 ${selectedRole === 1 ? "!bg-primary text-white":null}`} onClick={()=>changeRoles(1)}>
+                    <div>
+                        <p className="font-header">System Admin</p>
+                        <p className="font-text text-xs">Personnels that mange users</p>
                     </div>
-                    <div className={`hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out border-2 border-primary rounded-md shadow-md p-4 text-primary flex flex-row justify-center items-center gap-x-2 ${selectedRole === 4 ? "bg-primary text-white":null}`} onClick={()=> changeRoles(4)}>
-                        <div>
-                            <p className="font-header">SME</p>
-                            <p className="font-text text-xs">Personnels that create courses</p>
-                        </div>
-                        <FontAwesomeIcon icon={faSwatchbook} className="text-4xl"/>
-
-                    </div>
-                    <div className={`hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out border-2 border-primary rounded-md shadow-md p-4 text-primary flex flex-row justify-center items-center gap-x-2 ${selectedRole === 1 ? "!bg-primary text-white":null}`} onClick={()=>changeRoles(1)}>
-                        <div>
-                            <p className="font-header">System Admin</p>
-                            <p className="font-text text-xs">Personnels that mange users</p>
-                        </div>
-                        <FontAwesomeIcon icon={faUserShield} className="text-4xl"/>
-                    </div>
-                    <div className={`hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out border-2 border-primary rounded-md shadow-md p-4 text-primary flex flex-row justify-center items-center gap-x-2 ${selectedRole === 2 ? "!bg-primary text-white":null}`} onClick={()=>changeRoles(2)}>
-                        <div>
-                            <p className="font-header">Course Admin</p>
-                            <p className="font-text text-xs">Personnels that manage enrollments</p>
-                        </div>
-                        <FontAwesomeIcon icon={faBookOpenReader} className="text-4xl"/>
-                    </div>
-                    <div className={`hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out border-2 border-primary rounded-md shadow-md p-4 text-primary flex flex-row justify-center items-center gap-x-2 ${selectedRole === 3 ? "!bg-primary text-white":null}`} onClick={()=>changeRoles(3)}>
-                        <div>
-                            <p className="font-header">Learners</p>
-                            <p className="font-text text-xs">Personnels that take the courses</p>
-                        </div>
-                        <FontAwesomeIcon icon={faGraduationCap} className="text-4xl"/>
-                    </div>
+                    <FontAwesomeIcon icon={faUserShield} className="text-4xl"/>
                 </div>
-
-                {/* Permision Settings */}
-                <div className="row-span-1 col-span-2 flex flex-col gap-2">
-                    <div className="row-span-1 col-span-2 flex flex-row justify-between items-center py-2">
-                        <div>
-                            <h1 className="font-header text-primary text-base">
-                                {
-                                    selectedRole === 1 ? "System Admin "
-                                    : selectedRole === 2 ? "Course Admin "
-                                    : selectedRole === 3 ? "Learner "
-                                    : selectedRole === 4 ? "Subject Matter Experts "
-                                    : null
-                                }
-                                Default Role Permission</h1>
-                            <p className="font-text text-unactive text-xs">Cutomize the selected role's permission to the system funtionalities</p>
-                        </div>
-                        <div>
-                            {
-                                !saved ? (
-                                    <div className={`flex flex-row justify-center items-center border-2 border-primary py-2 px-8 font-header bg-secondarybackground rounded-md text-primary gap-5 w-full ${saving ? null : "hover:bg-primary hover:text-white hover:scale-105"} hover:cursor-pointer transition-all ease-in-out shadow-md`} onClick={!saving ? saveChanges : null}>
-                                        {
-                                            saving ? (
-                                                <p>Saving Changes...</p>
-                                            ) : (<>
-                                                <FontAwesomeIcon icon={faSave}/>
-                                                <p>Save Changes</p>
-                                            </>)
-                                        }
-
-                                    </div>
-                                ) : (null)
-                            }
-                        </div>
+                <div className={`hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out border-2 border-primary rounded-md shadow-md p-4 text-primary flex flex-row justify-center items-center gap-x-2 ${selectedRole === 2 ? "!bg-primary text-white":null}`} onClick={()=>changeRoles(2)}>
+                    <div>
+                        <p className="font-header">Course Admin</p>
+                        <p className="font-text text-xs">Personnels that manage enrollments</p>
                     </div>
-
-                    {
-                        loading ? (
-                            // Loading
-                            <div className="flex flex-col justify-center items-center h-full p-10">
-                                <img src={CourseLoading} alt="" className="w-80"/>
-                                <p className="text-sm font-text text-primary">Hang tight! 🚀 Loading courses for — great things take a second!</p>
-                            </div>
-                        ) : (
-                            <>
-                            {
-                                (() => {
-                                    switch (selectedRole) {
-                                        case 1:
-                                            return (
-                                                <SystemAdminPermissionProps
-                                                    isChecked={isChecked}
-                                                    permissionswitch={permissionswitch}
-                                                    permissionRef={refPermission}
-                                                />
-                                            );
-                                        case 2:
-                                            return (
-                                                <CourseAdminPermissionProps
-                                                    isChecked={isChecked}
-                                                    permissionswitch={permissionswitch}
-                                                    permissionRef={refPermission}
-                                                />
-                                            );
-                                        case 3:
-                                            return (
-                                                <LearnerPermissionProps
-                                                    isChecked={isChecked}
-                                                    permissionswitch={permissionswitch}
-                                                    permissionRef={refPermission}
-                                                />
-                                            );
-                                        default:
-                                            return (
-                                                <>
-                                                <SystemAdminPermissionProps
-                                                    isChecked={isChecked}
-                                                    permissionswitch={permissionswitch}
-                                                    permissionRef={refPermission}
-                                                    />
-                                                <CourseAdminPermissionProps
-                                                    isChecked={isChecked}
-                                                    permissionswitch={permissionswitch}
-                                                    permissionRef={refPermission}
-                                                    />
-                                                </>
-                                            );
-                                    }
-                                })()
-                            }
-                            </>
-                        )
-                    }
-
+                    <FontAwesomeIcon icon={faBookOpenReader} className="text-4xl"/>
+                </div>
+                <div className={`hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out border-2 border-primary rounded-md shadow-md p-4 text-primary flex flex-row justify-center items-center gap-x-2 ${selectedRole === 3 ? "!bg-primary text-white":null}`} onClick={()=>changeRoles(3)}>
+                    <div>
+                        <p className="font-header">Learners</p>
+                        <p className="font-text text-xs">Personnels that take the courses</p>
+                    </div>
+                    <FontAwesomeIcon icon={faGraduationCap} className="text-4xl"/>
                 </div>
             </div>
-            </ScrollArea>
+
+            {/* Permision Settings */}
+            <div className="row-span-1 col-span-2 flex flex-col">
+                <div className="row-span-1 col-span-2 flex flex-row justify-between items-center pt-5 pb-2">
+                    <div>
+                        <h1 className="font-header text-primary text-base">
+                            {
+                                selectedRole === 1 ? "System Admin "
+                                : selectedRole === 2 ? "Course Admin "
+                                : selectedRole === 3 ? "Learner "
+                                : selectedRole === 4 ? "Subject Matter Experts "
+                                : null
+                            }
+                            Default Role Permission</h1>
+                        <p className="font-text text-unactive text-xs">Cutomize the selected role's permission to the system funtionalities</p>
+                    </div>
+                    <div className="md:block hidden">
+                        {
+                            !saved ? (
+                                <div className={`flex flex-row justify-center items-center border-2 border-primary py-2 px-8 font-header bg-secondarybackground rounded-md text-primary gap-5 w-full ${saving ? null : "hover:bg-primary hover:text-white"} hover:cursor-pointer transition-all ease-in-out shadow-md`} onClick={!saving ? saveChanges : null}>
+                                    {
+                                        saving ? (
+                                            <p>Saving Changes...</p>
+                                        ) : (<>
+                                            <FontAwesomeIcon icon={faSave}/>
+                                            <p>Save Changes</p>
+                                        </>)
+                                    }
+
+                                </div>
+                            ) : (null)
+                        }
+                    </div>
+                    <div className="group md:hidden block relative">
+                        {
+                            !saved ? (
+                                <>
+                                    <div className={`w-10 h-10 flex items-center justify-center border-primary border-2 rounded-md text-xl text-primary hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out shadow-md ${saving ? null : "hover:bg-primary hover:text-white"}`}
+                                        onClick={!saving ? saveChanges : null}>
+                                        <FontAwesomeIcon icon={saving ? faSpinner : faSave} className={`${saving ? "animate-spin":null}`}/>
+                                    </div>
+                                    <div className="absolute top-12 bg-tertiary text-white font-text text-xs p-2 rounded-md shadow-md scale-0 group-hover:scale-100 transition-all ease-in-out">
+                                        Save
+                                    </div>
+                                </>
+                            ) : (null)
+                        }
+                    </div>
+                </div>
+
+                {
+                    loading ? (
+                        // Loading
+                        <div className="flex flex-col justify-center items-center h-full p-10">
+                            <img src={CourseLoading} alt="" className="w-80"/>
+                            <p className="text-sm font-text text-primary">Hang tight! 🚀 Loading courses for — great things take a second!</p>
+                        </div>
+                    ) : (
+                        <>
+                        {
+                            (() => {
+                                switch (selectedRole) {
+                                    case 1:
+                                        return (
+                                            <SystemAdminPermissionProps
+                                                isChecked={isChecked}
+                                                permissionswitch={permissionswitch}
+                                                permissionRef={refPermission}
+                                            />
+                                        );
+                                    case 2:
+                                        return (
+                                            <CourseAdminPermissionProps
+                                                isChecked={isChecked}
+                                                permissionswitch={permissionswitch}
+                                                permissionRef={refPermission}
+                                            />
+                                        );
+                                    case 3:
+                                        return (
+                                            <LearnerPermissionProps
+                                                isChecked={isChecked}
+                                                permissionswitch={permissionswitch}
+                                                permissionRef={refPermission}
+                                            />
+                                        );
+                                    default:
+                                        return (
+                                            <>
+                                            <SystemAdminPermissionProps
+                                                isChecked={isChecked}
+                                                permissionswitch={permissionswitch}
+                                                permissionRef={refPermission}
+                                                />
+                                            <CourseAdminPermissionProps
+                                                isChecked={isChecked}
+                                                permissionswitch={permissionswitch}
+                                                permissionRef={refPermission}
+                                                />
+                                            </>
+                                        );
+                                }
+                            })()
+                        }
+                        </>
+                    )
+                }
+
+                </div>
             {/* UnsavedWarningModal */}
             <UnsavedWarningModal isOpen={warning} close={() => setWarning(false)} onContinue={continueUnsaved}/>
             </>

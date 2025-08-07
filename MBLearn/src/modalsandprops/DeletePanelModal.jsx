@@ -5,7 +5,7 @@ import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import { useEffect, useState } from "react";
 import axiosClient from "../axios-client";
 
-const DeletePanelModal = ({open, close, referesh, refereshPanel, id}) => {
+const DeletePanelModal = ({open, close, refresh, refreshPanel, id}) => {
 
     const [deleting, setDeleting] = useState()
     const [panelId, setPanelId] = useState(id)
@@ -19,14 +19,12 @@ const DeletePanelModal = ({open, close, referesh, refereshPanel, id}) => {
     const handleDelete = () => {
         setDeleting(true)
         axiosClient.delete(`carousels/${panelId}`)
-        .then(
-            refereshPanel(),
+        .then(()=>{
+            refresh()
+            close(),
             setTimeout(() => {
-                close(),
-                setDeleting(false),
-                referesh()
-            }
-            , 500),
+            setDeleting(false)}, 500)
+        }
         ).catch((error) => {
             setDeleting(false)
             console.log("Error:", error)})
@@ -39,20 +37,23 @@ const DeletePanelModal = ({open, close, referesh, refereshPanel, id}) => {
                 <DialogBackdrop transition className="fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in z-40" />
                     <div className='fixed inset-0 z-40 w-screen overflow-y-auto'>
                         <div className='flex min-h-full items-center justify-center p-4 text center'>
-                            <DialogPanel transition className='relative overflow-hidden transform rounded-md bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in z-40'>
-                                <div className='bg-white rounded-md h-full p-5 grid grid-row-4 grid-cols-3 w-[35vw]'>
+                            <DialogPanel transition className='relative overflow-hidden transform rounded-md bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in
+                                                        w-[80vw]
+                                                        md:w-[40vw]'>
+                                <div className='bg-white rounded-md h-full p-5 flex flex-col'>
                                     {/* Header */}
-                                    <div className="flex flex-row gap-4 items-center col-span-3 p-5">
-                                        <div className="bg-primarybg w-16 aspect-square rounded-full flex items-center justify-center text-primary text-xl">
-                                            <FontAwesomeIcon icon={faTrash}/>
-                                        </div>
+                                    <div className="pb-4 border-divider flex flex-row justify-between item-center">
                                         <div>
-                                            <p className="font-header text-2xl text-primary">Delete Panel?</p>
-                                            <p className="font-text text-sm text-unactive">Please confirm to delete the selected panel</p>
+                                            <p className="text-primary font-header
+                                                        text-base
+                                                        md:text-2xl">Delete Panel?</p>
+                                            <p className="text-unactive font-text
+                                                    text-xs
+                                                    md:text-sm">Please confirm to delete the selected panel</p>
                                         </div>
                                     </div>
                                     {/* Action */}
-                                    <div className="px-5 pb-5 grid grid-cols-2 col-span-3 gap-2">
+                                    <div className="grid grid-cols-2 col-span-3 gap-2">
                                         <div className="font-header p-2 text-primary border-2 border-primary rounded-md flex items-center justify-center hover:cursor-pointer hover:bg-primaryhover hover:text-white transition-all ease-in-out"
                                             onClick={close}>
                                             Cancel

@@ -8,7 +8,7 @@ import { use } from 'react';
 import LogoutWarningmModal from '../modalsandprops/LogoutWarningModal';
 import { SelectedUserProvider } from '../contexts/selecteduserContext';
 import { OptionProvider } from '../contexts/AddUserOptionProvider';
-import { faClock, faEye, faEyeSlash, faKey, faSquareCheck, faSquareXmark } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faBell, faBurger, faClock, faEye, faEyeSlash, faKey, faSquareCheck, faSquareXmark } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -16,7 +16,10 @@ import echo from 'MBLearn/echo';
 import { toast } from 'sonner';
 import { set } from 'date-fns';
 import { ScrollArea } from './ui/scroll-area';
-
+import smallLogo from "../assets/Small_Logo.svg";
+import fullLogo from "../assets/Full_Logo.svg";
+import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetClose, SheetOverlay, SheetPortal
+} from './ui/sheet';
 
 
 
@@ -79,28 +82,18 @@ export default function DefaultLayout() {
             echo.private(`App.Models.UserCredentials.${user.id}`)
             .notification((notification) => {
                 // handleNotifiction();
+                console.log("Listening to notifications for user:", user.id);
                 toast(notification.title,{
                     description: notification.body,
                 })
                 setUnreadNotifications(true);
             });
 
-            // echo.private(`notifications.${user.id}`)
-            // .listen('.notifications-read-all', (e) => {
-            //     console.log('Event received:', e);
-            //     //setUnreadNotifications(false);
-            // })
-
-            // return () => {
-            //     echo.private(`notifications.${user.id}`).stopListening('notifications-read-all');
-            // };
             echo.private(`notifications.${user.id}`)
             .listen('.notifications-read-all', (e) => {
-                console.log("📥 Received event:", e);
+                setUnreadNotifications(false);
             })
-            .subscribed(() => {
-                console.log('✅ Subscribed to private-notifications.' + user.id);
-            });
+
         }
 
         //User Management Events (System Admin)
@@ -240,6 +233,7 @@ export default function DefaultLayout() {
             })
             .catch((error) => {
                 console.error('Error checking notifications:', error);
+                navigate('/login');
             })
 
 
@@ -259,19 +253,17 @@ export default function DefaultLayout() {
 
     if(loading){
         return (
-            <div className='h-screen w-screen flex flex-col justify-center items-center bg-background gap-3'>
-                <h1 className='font-header text-3xl xl:text-5xl text-primary'>"Loading your learning journey..."</h1>
-                <p className='font-text text-xs xl:text-base'>Empowering you with the knowledge to achieve your goals</p>
+            <div className='h-screen w-screen flex flex-col justify-center items-center bg-background'>
+                <h1 className='font-header text-2xl sm:text-3xl xl:text-5xl text-primary'>"Loading your learning journey..."</h1>
+                <p className='font-text text-xs sm:text-sm xl:text-base'>Empowering you with the knowledge to achieve your goals</p>
             </div>
         )
     }
 
-    return (
-            <>
-                {
+    {
                     breakpoint === 'xl' ? (
                         <div className='flex flex-row items-center h-screen bg-background overflow-hidden'>
-                            <Navigation unread_notfications={unreadNotifications}/>
+                            <Navigation unread_notfications={unreadNotifications} size={"xl"}/>
                             <SelectedUserProvider>
                                 <OptionProvider>
                                     <Outlet />
@@ -280,22 +272,100 @@ export default function DefaultLayout() {
                             {/* Logout warning */}
                             <LogoutWarningmModal open={warning} close={close}/>
                         </div>
-                    ) : (
+                    ) : breakpoint === 'lg' || breakpoint === 'md' ?
+                    (
                         <div className='flex flex-row items-center h-screen bg-background overflow-hidden'>
-                            <Navigation unread_notfications={unreadNotifications}/>
+                            <Navigation unread_notfications={unreadNotifications} size={"xl"}/>
+                            <div className='w-full'>
+                                <ScrollArea>
+                                    {/* bg-[linear-gradient(to_bottom,_var(--DashboardBackground-Color)_0%,_var(--DashboardBackground-Color)_90%,_transparent_100%)] */}
+                                    <div className='h-screen'>
+                                        <SelectedUserProvider>
+                                            <OptionProvider>
+                                                    <Outlet />
+                                            </OptionProvider>
+                                        </SelectedUserProvider>
+                                    </div>
+                                </ScrollArea>
+                            </div>
+                        </div>
+                    )
+                    :(
+                        <div className='grid h-screen bg-background overflow-hidden grid-cols-1 grid-rows-[min-content_1fr]'>
+                            {/* Header */}
                             <ScrollArea>
+                                {/* bg-[linear-gradient(to_bottom,_var(--DashboardBackground-Color)_0%,_var(--DashboardBackground-Color)_90%,_transparent_100%)] */}
+                                {/* bg-gradient-to-b from-background to-transparent */}
                                 <div className='h-screen'>
+                                    <div className='sticky top-0 z-50 flex items-center justify-between'>
+                                    <Sheet>
+                                        <SheetOverlay className="bg-gray-500/75 backdrop-blur-sm transition-all z-50"/>
+                                        <SheetContent side='left' className='bg-background backdrop-blur-sm h-'>
+                                            <Navigation unread_notfications={unreadNotifications} size={"sm"}/>
+                                        </SheetContent>
+                                    </Sheet>
+                                        <div className='w-8 h-8'>
+                                            <img src={smallLogo} alt="" />
+                                        </div>
+                                        <div className='flex items-center justify-center w-10 h-10 text-unactive'>
+                                            <FontAwesomeIcon icon={faBell} className='text-2xl'/>
+                                        </div>
+                                    </div>
                                     <SelectedUserProvider>
                                         <OptionProvider>
-                                            <Outlet />
+                                                <Outlet />
                                         </OptionProvider>
                                     </SelectedUserProvider>
                                 </div>
                             </ScrollArea>
+
                         </div>
                     )
 
                 }
+
+
+    return (
+            <>
+
+                    <div className='h-screen bg-background grid
+                                    sm:grid-rows-[min-content_1fr] sm:grid-cols-1
+                                    md:grid-cols-[min-content_1fr] md:grid-rows-1
+                                    overflow-hidden
+                                    '
+                        >
+                        {/* Navigation */}
+                        <div className=' hidden flex-row justify-between px-3 py-2 md:p-0 md:flex'>
+                            <Navigation unread_notfications={unreadNotifications} size={breakpoint} setLoading={setLoading}/>
+                        </div>
+                        <ScrollArea className='h-screen'>
+                            <div className='flex flex-col h-screen'>
+                                <div className='flex flex-row justify-between px-3 py-2 z-10
+                                                backdrop-blur-md backdrop-saturate-150 bg-background/70
+                                                top-0 sticky
+                                                md:p-0 md:hidden'>
+                                    <Navigation unread_notfications={unreadNotifications} size={breakpoint} setLoading={setLoading}/>
+                                    <div className='w-8 h-8 block
+                                        md:hidden
+                                        xl:hidden'>
+                                        <img src={smallLogo} alt="" />
+                                    </div>
+                                    <div className='flex items-center justify-center w-10 h-10 text-unactive
+                                                md:hidden
+                                                xl:hidden'>
+                                        <FontAwesomeIcon icon={faBell} className='text-2xl'/>
+                                    </div>
+                                </div>
+                                <SelectedUserProvider>
+                                    <OptionProvider>
+                                        <Outlet />
+                                    </OptionProvider>
+                                </SelectedUserProvider>
+                            </div>
+                        </ScrollArea>
+                        {/* Logout warning */}
+                        <LogoutWarningmModal open={warning} close={close}/>
+                </div>
             </>
     )
 

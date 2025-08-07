@@ -190,7 +190,7 @@ class userCredentials_controller extends Controller
         $query = UserCredentials::whereHas('userInfos', function ($subQuery) {
             $subQuery->where('status', 'Inactive');
         })
-        ->with(['userInfos', 'userInfos.roles'])
+        ->with(['userInfos', 'userInfos.roles', 'userInfos.city', 'userInfos.branch', 'userInfos.department', 'userInfos.section', 'userInfos.division', 'userInfos.title','userInfos.permissions'])
         ->whereNot(function ($query) use ($currentUserId){
             $query->where('id', $currentUserId);
         })
@@ -281,5 +281,54 @@ class userCredentials_controller extends Controller
             'message' => 'User is now set to inactive'
         ]);
     }
+
+    public function updateOnlyPermissions(UserCredentials $userCredentials, Request $request)
+    {
+    $adder = Auth::user()->userInfos->first_name;
+    $affected = $userCredentials->userInfos->first_name;
+
+    // Validate that permissions is an array of integers
+    $validated = $request->validate([
+        'permissions' => 'required|array',
+        'permissions.*' => 'integer|exists:permissions,id'
+    ]);
+
+    $userCredentials->userInfos->permissions()->sync($validated['permissions']);
+
+    // Dispatch event (optional)
+    UserPermissionsChange::dispatch($adder, $affected);
+
+    return response()->json([
+        'message' => 'Permissions successfully updated.',
+        'user' => $userCredentials->load(['userInfos.permissions']),
+    ]);
+    }
+
+    public function updateTest($userCredentialsId, ChangeUserPermissionsRequest $request) {
+        $user = UserCredentials::with('userInfos', 'userInfos.roles','userInfos.permissions')->findOrFail($userCredentialsId)->userInfos;
+        if (!$user) {
+            return response()->json(['message' => 'UserInfo not found for this user.'], 404);
+        }
+
+
+        if($request->has('role')){
+            $user->roles()->sync([$request->input('role')]);
+            $user->load('roles');
+        }
+
+        if($request->has('permissions')){
+            $permissionIds = collect($request->input('permissions'))
+                ->pluck('permissionId')
+                ->toArray();
+            $user->permissions()->sync($permissionIds);
+            $user->load('permissions');
+        }
+
+        return response() -> json([
+            'message' => "The user and role updated",
+            'User' => $user,
+        ]);
+    }
+
 
 }

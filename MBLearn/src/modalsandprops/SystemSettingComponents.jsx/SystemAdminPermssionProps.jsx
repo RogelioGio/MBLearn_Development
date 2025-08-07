@@ -2,6 +2,7 @@ import { Switch } from "MBLearn/src/components/ui/switch"
 import CourseAdminPermissionProps from "./CourseAdminPermissionProps"
 import { useEffect, useState } from "react"
 import LearnerPermissionProps from "./LearnerPermissionProps";
+
 const SystemAdminPermissionProps = ({isChecked,permissionswitch,permissionRef}) => {
 
     const [roleHopping, setRoleHopping] = useState();
@@ -20,9 +21,7 @@ const SystemAdminPermissionProps = ({isChecked,permissionswitch,permissionRef}) 
                         <h1 className="font-header text-primary text-base">Add User</h1>
                         <p className="font-text text-unactive text-sm">The user have the permission to add another user in the system</p>
                     </label>
-                    <Switch id="addUser" checked={isChecked("AddUserInfo")} onCheckedChange={(checked) => {permissionswitch(permissionRef?.find(p => p.permission_name === "AddUserInfo").id,"AddUserInfo",checked)
-                        console.log(permissionRef)
-                    }}/>
+                    <Switch id="addUser" checked={isChecked("AddUserInfo")} onCheckedChange={(checked) => {permissionswitch(permissionRef?.find(p => p.permission_name === "AddUserInfo").id,"AddUserInfo",checked)}}/>
                 </div>
                 <div className="w-full flex flex-row justify-between items-center">
                     <label htmlFor="editUser">

@@ -22,11 +22,10 @@ const AnnouncmentCarousel = () => {
     const {role} = useStateContext()
     const carousels = useCarouselContext()
 
-
     useEffect(() => {
         setIsLoading(true)
         if(carousels) {
-            setCarouselData(carousels)
+            setCarouselData(carousels.carousels)
             setIsLoading(false)
         }
     }, [carousels])
@@ -46,10 +45,7 @@ const AnnouncmentCarousel = () => {
 
     return(
         <>
-        <div className="h-full w-full flex flex-col">
-            <div className="w-full h-full">
-                <Carousel className="w-full h-full grid grid-cols-[auto_1fr_auto] grid-rows-[auto_1fr]"
-                    plugins={[
+        <Carousel plugins={[
                             Autoplay({
                                 delay: 10000,
                             }),
@@ -57,68 +53,39 @@ const AnnouncmentCarousel = () => {
                         opts={{
                             align: "start",
                             loop: true,
-                        }}>
-                    {/* Header */}
-                    <div className="flex-row flex col-span-3 justify-between">
-                        <div className="pb-3 flex flex-row gap-2">
-                            <div>
-                                <h1 className="font-header text-primary text-base">Announcement Panel</h1>
-                                <p className="font-text text-unactive text-xs">Get the latest update about the system and whole Metrobank Group</p>
-                            </div>
-                        </div>
-                        <div className="flex flex-row gap-2 items-center justify-center">
-                            {/* {
-                                role === 'System Admin' &&
-                                <div className='aspect-square flex flex-row justify-center items-center text-primary border-2 border-primary rounded-md shadow-md hover:cursor-pointer hover:scale-105 hover:bg-primary hover:text-white ease-in-out transition-all'
-                                    onClick={() => setOpenAdd(true)}>
-                                    <FontAwesomeIcon icon={faPenToSquare} className='text-sm p-2'/>
-                                </div>
-                            } */}
-                            <CarouselPrevious/>
-                            <CarouselNext/>
-                        </div>
-                    </div>
-                    <div className="flex items-center w-full h-full justify-center row-start-2 col-start-2">
-                        <CarouselContent className="h-full">
-                            {
-                                isLoading ? (
-                                    <CarouselItem w-full h-full>
-                                    <div className="border-2 border-primary h-full rounded-md shadow-sm bg-white flex flex-col items-center justify-center">
-                                        <h1 className='font-header text-xl text-primary'>"Loading your learning journey..."</h1>
-                                        <p className='font-text text-unactive text-xs'>Empowering you with the knowledge to achieve your goals</p>
-                                    </div>
-
-                                    </CarouselItem>
-                                ) : carouselData.length === 0 ? (
-                                    <CarouselItem w-full h-full>
-                                    <div className="border-2 border-primary h-full rounded-md shadow-sm bg-white bg-center bg-cover flex items-center justify-center">
-                                        <p className='font-text text-unactive text-sm'>No panel to display</p>
-                                    </div>
-
-                                    </CarouselItem>
-                                ) : (
-                                    carouselData.slice(0, 5).map((img, index) => (
-                                    <CarouselItem key={index} w-full h-full>
-                                    <div
+                        }} className="flex flex-col gap-2">
+            {/* Header */}
+            <div className="flex flex-row items-center justify-between gap-2">
+                <div>
+                    <h1 className="font-header text-primary text-base">Announcement Panel</h1>
+                    <p className="font-text text-unactive text-xs">Latest update about the system and whole Metrobank Group</p>
+                </div>
+                <div className="flex flex-row items-center gap-2">
+                    <CarouselPrevious/>
+                    <CarouselNext/>
+                </div>
+            </div>
+            <CarouselContent>
+                {
+                    carouselData.length === 0 ? null :
+                    carouselData.slice(0, 5).map((img, index) => (
+                                    <CarouselItem key={index}>
+                                    {/* <div
                                         className="border-2 border-primary h-full rounded-md shadow-sm bg-white bg-center bg-cover"
                                         style={{
                                             backgroundImage: `url(${import.meta.env.VITE_API_BASE_URL}/storage/carouselimages/${img.image_path})`,
                                         }}
                                         >
+                                    </div> */}
+                                    {/* ${import.meta.env.VITE_API_BASE_URL}/storage/carouselimages/${img.image_path} */}
+                                    <div className="border-2 border-primary h-[full] rounded-md aspect-[4/1] shadow-sm bg-white bg-center bg-cover">
+                                        <img src={img.image_path} alt="" />
                                     </div>
                                     </CarouselItem>
-                                ))
-                                )
-
-
-                            }
-                        </CarouselContent>
-                    </div>
-                </Carousel>
-            </div>
-        </div>
-
-        <PhotoforCarouselModal open={openAdd} close={() => setOpenAdd(false)} refresh={fetchPanels}/>
+                    ))
+                }
+            </CarouselContent>
+        </Carousel>
         </>
     )
 }

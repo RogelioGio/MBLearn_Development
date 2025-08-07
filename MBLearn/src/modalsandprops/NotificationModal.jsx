@@ -19,27 +19,32 @@ const NotificationModal = ({open, close}) => {
 
     const loadMore = (pageNumber) => {
         setLoading(true)
-        axiosClient.get('/index-notifications',{
-            params:{
-                page: pageNumber,
-                limit: 10
-            }
-        })
-        .then(({data}) => {
-            setNotifications((prev) =>
-                //...prev, ...data.data
-                {const all = [...prev, ...data.data];
-                const unique = Array.from(new Map(all.map(item => [item.id, item])).values());
-                return unique;}
-            );
-            setPage(data.current_page);
-            setHasMore(data.current_page < data.last_page)
-            setLoading(false)
-        })
-        .catch((e) => {
-            console.log(e)
-        })
+        // axiosClient.get('/index-notifications',{
+        //     params:{
+        //         page: pageNumber,
+        //         limit: 10
+        //     }
+        // })
+        // .then(({data}) => {
+        //     setNotifications((prev) =>
+        //         //...prev, ...data.data
+        //         {const all = [...prev, ...data.data];
+        //         const unique = Array.from(new Map(all.map(item => [item.id, item])).values());
+        //         return unique;}
+        //     );
+        //     setPage(data.current_page);
+        //     setHasMore(data.current_page < data.last_page)
+        //     setLoading(false)
+        // })
+        // .catch((e) => {
+        //     console.log(e)
+        // })
     }
+
+    // useEffect(()=>{
+    //     console.log('loading state:', loading);
+    //     console.log('has more? : ', hasMore)
+    // },[loading])
 
     const readAll = () => {
         axiosClient.post('/mark-as-read')
@@ -50,10 +55,10 @@ const NotificationModal = ({open, close}) => {
     useEffect(() => {
         loadMore(1)
 
-        echo.private(`App.Models.UserCredentials.${user.id}`)
-        .notification((notification) => {
-            loadMore(1)
-        });
+        // echo.private(`App.Models.UserCredentials.${user.id}`)
+        // .notification((notification) => {
+        //     loadMore(1)
+        // });
     },[])
     useEffect(() => {
         if(!open) return
@@ -61,12 +66,13 @@ const NotificationModal = ({open, close}) => {
     },[open])
 
     useEffect(()=>{
-        if(!sentinel.current || !hasMore) return
+        if(!sentinel.current || !hasMore || loading) return
 
         if(observer.current) observer.current.disconnect();
 
         observer.current = new IntersectionObserver(([entry]) => {
-            if(entry.isIntersecting){
+            if(entry.isIntersecting && hasMore && !loading ){
+                console.log("👀 Intersecting — load more triggered");
                 if(loading) return
                 loadMore(page+1)
             }

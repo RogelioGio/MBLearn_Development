@@ -56,16 +56,16 @@ class AuthController extends Controller
         $otp = rand(100000, 999999);
         $expiresAt = date('Y-m-d H:i:s', strtotime('+5 minutes'));
 
-        $htmlBody = view('emails.otp_template', [
-            'otp' => $otp,
-            'user' => $user->userInfos->first_name,
-        ])->render();
-
         if(!$user){
             return response()->json([
                 'message' => 'There is no user with that credentials',
             ], 401);
         }
+
+        $htmlBody = view('emails.otp_template', [
+            'otp' => $otp,
+            'user' => $user->userInfos->first_name,
+        ])->render();
 
         if(!($user->userInfos->status === "Active")){
             return response()->json([
@@ -79,8 +79,8 @@ class AuthController extends Controller
             // $redirect = $this->redirection($user->role);
 
             //Email OTP to user
-            $result = $mailComponent->send(
-                'giotalingdan@gmail.com',
+            $result = $mailComponent->sendOutlook(
+                env('MB_EMAIL'),
                 "MBLearn Account Verification-".$user->userInfos->first_name,
                 $htmlBody
             );
@@ -174,7 +174,7 @@ class AuthController extends Controller
         );
 
         $result = $mailComponent->send(
-                'giotalingdan@gmail.com',
+                'talingdan.304273@novaliches.sti.edu.ph',
                 "MBLearn Account Verification-".$user->userInfos->first_name,
                 $htmlBody
             );
@@ -225,8 +225,8 @@ class AuthController extends Controller
             ], 404);
         }
 
-        $result = $mailComponent->send(
-            'giotalingdan@gmail.com',
+        $result = $mailComponent->sendOutlook(
+            'talingdan.304273@novaliches.sti.edu.ph',
             "MBLearn Reset Password Request-".$fullname."-".$user->MBemail ,
             $htmlBody
         );

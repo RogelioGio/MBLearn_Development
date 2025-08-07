@@ -1,42 +1,31 @@
-const AssignedCourseEnrollmentCard = ({name, id, coursetype, coursecategory, duration, trainingmode, trainingtype, course, selected, onclick,numberOfEnrollees }) => {
-    const enrollees = numberOfEnrollees(id)
+const AssignedCourseEnrollmentCard = ({selected, onclick, AssignedCourse, numberOfEnrollees,learnerLoading}) => {
+    //const enrollees = numberOfEnrollees(id)
     return(
-        <div className={`snap-end group w-full p-3 grid grid-cols-[auto_3.75rem] border border-divider rounded-md font-text shadow-md hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out ${course === name ? 'bg-primary text-white' : 'bg-white text-primary'}`}
+        <div className={`grid gap-1 grid-cols-[1fr_min-content] grid-rows-[min-content_1fr] border border-primary rounded-md py-2 px-4 shadow-md w-full transition-all ease-in-out ${learnerLoading ? "opacity-50 cursor-not-allowed" : "hover:cursor-pointer hover:bg-primaryhover hover:text-white "} ${selected.name === AssignedCourse?.name ? 'bg-primary text-white' : 'bg-white text-primary'}`}
             onClick={onclick}>
-            {/* Badge */}
-            <div className="flex flex-row items-center justify-between pb-2 col-span-2">
-                <div className="flex flex-row gap-2">
-                    {
-                        course === name ? (
-                            <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-blue-700/10 ring-inset">
-                                {trainingtype}
-                            </span>) : (
-                            <span className="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-gray-500/10 ring-inset">
-                                {trainingtype}
-                            </span>
-                        )
-                    }
-                </div>
-
-
-            </div>
-            {/* Course Header */}
-            <div className="col-span-2">
-                <h1 className="text-sm font-header">{name}</h1>
-                <p className="text-xs">{coursetype} - {coursecategory}</p>
-            </div>
-
-            <div className="flex items-center justify-between col-span-2 pt-1">
+            <div className="row-start-1 col-start-2 -span-2 flex items-center justify-center gap-2
+                            md:row-span-2">
                 {
-                    enrollees > 0 && <>
-
-                        <p className={`${course === name ? 'text-white' : 'text-unactive'} text-xs`}>Number of Enrollees: </p>
-                        <div className=" bg-[#1664C0] rounded-full text-white flex items-center justify-center aspect-square">
-                            <p className="text-xs px-3">{enrollees}</p>
-                        </div>
-                    </>
+                    numberOfEnrollees === 0 ? null :
+                    <div className={`min-h-5 min-w-5 h-6 md:h-8 w-6 md:w-8 rounded-full flex items-center justify-center font-text text-xs ${selected.name === AssignedCourse?.name ? 'bg-white text-primary' : 'bg-primary text-white'}`}>
+                        <p>{numberOfEnrollees}</p>
+                    </div>
                 }
+            </div>
+            <div className="flex items-end row-start-1 col-start-1">
+                <div>
+                    <span className="font-text inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-blue-700/10 ring-inset">
+                        {AssignedCourse.training_type }
+                    </span>
                 </div>
+            </div>
+            <div className="row-start-2 col-span-2
+                            md:col-span-1">
+                <div>
+                    <h1 className="font-header text-sm">{AssignedCourse?.name}</h1>
+                    <h1 className="font-text text-xs">Course ID: {AssignedCourse?.CourseID}</h1>
+                </div>
+            </div>
         </div>
     )
 }

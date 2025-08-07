@@ -9,15 +9,11 @@ import LoginBackground2 from '../assets/Login_Background2.png';
 
 //Login Page Layout
 export default function GuestLayout() {
-    const {token, role, user} = useStateContext();
+    const {token, role, user, setToken} = useStateContext();
     const navigate = useNavigate();
-
     useEffect(() => {
         if (token) {
             navigate("/");
-        } else {
-            console.log("The user is not logged in");
-            console.log(token);
         }
     }, [token, navigate]);
 

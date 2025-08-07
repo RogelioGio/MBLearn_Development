@@ -1,6 +1,7 @@
 <?php
 
 
+use App\Events\fAsRead;
 use App\Events\NotificationsMarkedAsRead;
 use App\Http\Controllers\Api\ActivityLogsController;
 use App\Http\Controllers\Api\CarouselImageController;
@@ -10,6 +11,7 @@ use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\OptionController;
 use App\Models\UserCredentials;
 use App\Notifications\TestNotification;
+use App\Services\GmailService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
@@ -149,6 +151,7 @@ Route::middleware('auth:sanctum')->group(function(){
     //Fetching All nessesary call for courselist maintenance
     Route::get('/coursecontext',[CourseContextController::class,'index']);
     Route::get('/coursecontext/{id}/{userInfos}',[CourseContextController::class,'getSelectedCourse']);
+    Route::get('/courseprogress/{id}/{userInfos}', [CourseContextController::class, 'getProgress']);
     Route::get('/coursecontext/{id}',[CourseContextController::class,'adminGetSelectedCourse']);
 
 
@@ -156,6 +159,11 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('/updateRolePermission/{role}', [RoleController::class, 'updateRolePermissions']);
     Route::put('/updateUserPermission/{userCredentials}', [userCredentials_controller::class, 'changeUserPermissions']);
     Route::post('/setCoursePermission/{course}', [CourseController::class, 'setCoursePermissions']);
+    Route::put('/updatetest/{userCredentialsId}',[userCredentials_controller::class, 'updateTest']);
+
+
+
+
 
     //CompE Routes
     Route::get('/compECourses', [CompECourseController::class, 'index']);
@@ -195,12 +203,14 @@ Route::post('/send-notfication', function (){
     } else {
         $message = 'Failed to send notification';
     }
-    return response()->json(['message' => $message, 'user' => $user], 200);
+
+    return response()->json(['message' => $message], 200);
 });
 
 
 Route::apiResource('/carousels', CarouselImageController::class);
-Route::post('/test', [userInfo_controller::class, 'test']);
+Route::get('/test/{id}/{userInfos}', [CourseContextController::class, 'getProgress']);
+
 
 //Category API
 Route::get('category',[FilterCategoryController::class, 'index']);
@@ -216,6 +226,62 @@ Route::get('/aaaa', function(){
     return $user2->permissionsRole;
 
 });
+Route::get('/test-gmail-refresh', function () {
+    try {
+        $gmailService = new GmailService();
+        return 'Gmail service initialized successfully.';
+    } catch (\Exception $e) {
+        return 'Error: ' . $e->getMessage();
+    }
+});
+
+
+// Route::get('/auth/login', function () {
+//     $query = http_build_query([
+//         'client_id' => env('MS_GRAPH_CLIENT_ID'),
+//         'response_type' => 'code',
+//         'redirect_uri' => env('MS_GRAPH_REDIRECT_URI'),
+//         'response_mode' => 'query',
+//         'scope' => env('MS_GRAPH_SCOPE'),
+//     ]);
+
+//     return redirect("https://login.microsoftonline.com/common/oauth2/v2.0/authorize?$query");
+// });
+
+// Route::get('/auth/callback', function (Request $request) {
+//     $code = $request->get('code');
+
+//     $response = Http::asForm()->post('https://login.microsoftonline.com/common/oauth2/v2.0/token', [
+//         'client_id' => env('MS_GRAPH_CLIENT_ID'),
+//         'client_secret' => env('MS_GRAPH_CLIENT_SECRET'),
+//         'grant_type' => 'authorization_code',
+//         'code' => $code,
+//         'redirect_uri' => env('MS_GRAPH_REDIRECT_URI'),
+//         'scope' => env('MS_GRAPH_SCOPE'),
+//     ]);
+
+//     if ($response->failed()) {
+//         return response()->json([
+//             'error' => 'Token exchange failed',
+//             'details' => $response->json()
+//         ]);
+//     }
+
+//     $tokenData = $response->json();
+
+//     file_put_contents(
+//         storage_path('app/msgraph/token.json'),
+//         json_encode([
+//             'access_token' => $tokenData['access_token'],
+//             'refresh_token' => $tokenData['refresh_token'],
+//             'expires_at' => now()->addSeconds($tokenData['expires_in'])->toDateTimeString(),
+//         ], JSON_PRETTY_PRINT)
+//     );
+
+//     return '✅ Microsoft Graph token saved to storage/app/msgraph/token.json';
+// });
+
+
 // Route::get('/reset-user',[userInfo_controller::class, 'resetUser']); //reset user table
 // Route::get('/reset-user-creds',[userCredentials_controller::class, 'resetUsers']); //reset user table
 

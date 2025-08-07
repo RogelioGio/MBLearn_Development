@@ -37,7 +37,6 @@ class NotificationsMarkedAsRead implements ShouldBroadcast
     }
     public function broadcastWith()
 {
-    \Log::info('Broadcast payload', ['userId' => $this->userId]);
     return [
         'userId' => $this->userId,
         'timestamp' => now()

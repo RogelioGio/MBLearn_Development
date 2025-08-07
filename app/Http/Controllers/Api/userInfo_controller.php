@@ -984,19 +984,12 @@ class userInfo_controller extends Controller
         // // $perm->permissions()->sync([1,2]);
         // $userInfo = UserInfos::find(128);
         // PermissionToUser::dispatch($userInfo, $existingatedData['permissions'] ?? []);
-        // $message = "Hello from laravel";
+        $message = "Hello from laravel";
         // broadcast(new TestEvent($message));
         // TestEvent::broadcast($message);
-        // return response()->json([
-        //     'data' => "Done"
-        // ]);
-        $user = UserCredentials::query()->find(113);
-
-        $users = UserInfos::query()->where('status', '=', 'Active')->whereDoesntHave('userCredentials', function(Builder $query)use ($user){
-            $query->where('MBemail', $user->MBemail);
-        })->paginate();
-
-        return response()->json(['users'=> $users]);
+        return response()->json([
+            'message' => $message
+        ]);
 
 
         // {

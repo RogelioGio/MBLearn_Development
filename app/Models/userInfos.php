@@ -16,6 +16,9 @@ use Znck\Eloquent\Relations\BelongsToThrough;
 use Illuminate\Notifications\Notifiable;
 
 #[ObservedBy([UserInfosObserver::class])]
+/**
+ * @property int $id
+ */
 class UserInfos extends Model
 {
     use HasFactory, Searchable;

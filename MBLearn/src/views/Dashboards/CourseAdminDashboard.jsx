@@ -1,4 +1,4 @@
-import { faArrowLeft, faArrowRight, faBook, faBookBookmark, faBookOpenReader, faClock, faGraduationCap, faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faArrowRight, faBook, faBookBookmark, faBookOpenReader, faChevronCircleLeft, faChevronCircleRight, faChevronLeft, faChevronRight, faClock, faGraduationCap, faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Axios } from "axios";
 import axiosClient from "MBLearn/src/axios-client";
@@ -11,41 +11,100 @@ import Calendar from "MBLearn/src/modalsandprops/dashboardComponents/Calendar";
 import { faCalendar } from "@fortawesome/free-regular-svg-icons";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import CourseCard from "MBLearn/src/modalsandprops/CourseCard";
-import { useCourse_Context } from "MBLearn/src/contexts/Course_Context";
+import { useFormik } from "formik";
+import { Select,
+    SelectTrigger,
+    SelectValue,
+    SelectContent,
+    SelectItem, } from "MBLearn/src/components/ui/select";
+import { useCourse } from "MBLearn/src/contexts/Course";
+
+
+const content = () => {
+   <>
+     {/* Header */}
+            <div className="flex flex-row md:justify-between
+                            xl:col-span-2 xl:gap-2
+                            col-span-4 gap-1">
+                    <div className={`flex w-full group flex-row items-center justify-between xl:py-2 xl:px-4 border-2 border-primary rounded-md bg-white shadow-md hover:cursor-pointer hover:bg-primary ease-in-out transition-all ${tab === "myCourses" ? "!bg-primary !text-white":"text-primary"}
+                                        text-sm p-2
+                    `} onClick={()=>setTab("myCourses")}>
+                        <p className="font-header xl:text-base group-hover:text-white"><span><FontAwesomeIcon icon={faBookBookmark}/></span> My Courses</p>
+                    </div>
+                    <div className={`flex w-full group flex-row items-center justify-between xl:py-2 xl:px-4 border-2 border-primary rounded-md bg-white shadow-md hover:cursor-pointer hover:bg-primary ease-in-out transition-all ${tab === "assignedCourses" ? "!bg-primary !text-white":"text-primary"}
+                                        text-sm p-2
+                    `} onClick={()=>setTab("assignedCourses")}>
+                        <p className="font-header xl:text-base group-hover:text-white"><span><FontAwesomeIcon icon={faBook}/></span> Assigned Courses</p>
+                    </div>
+            </div>
+            {/* Content */}
+            <div className="row-start-2 col-span-4 grid gap-2 h-full
+                            grid-cols-1
+                            sm:grid-cols-2
+                            xl:grid-cols-4">
+            {
+                // Array.from({length: pageState.perPage}).map((_, i) => (
+                //             <div className="w-full h-full border border-primary" key={i}>
+
+                //             </div>
+                //         ))
+                    loading ? (
+                        Array.from({length: 4}).map((_,i) =>(
+                            <div key={i} className="animate-pulse bg-white w-full xl:h-full h-[8.25rem] rounded-md shadow-md"/>
+                        ))
+                    ):(
+                        assignedCourse.length > 0 ? (
+                            assignedCourse.map((course)=>(
+                            <CourseCard key={course.id} course={course} type='courseAdmin' click={()=>{navigate(`/courseadmin/course/${course.id}`); setCourse(course)}}/>
+                        ))
+                        ) : (
+                            <div className="w-full flex flex-col justify-center items-center col-span-4">
+                                <p className="font-text text-unactive">No Courses Available</p>
+                            </div>
+                        )
+                    )
+                }
+            </div>
+
+            <div className={`flex flex-row justify-between gap-2 row-start-3 col-span-4 pb-4 ${loading ? "opacity-50": ""}`}>
+                <div className={`flex justify-center items-center border-2 border-primary w-8 h-8 rounded-md shadow-md text-primary text-sm ${loading ? "cursor-auto":"cursor-pointer hover:bg-primary hover:text-white"}`}
+                onClick={() => {
+                        if(loading) return
+                        back()
+                    }}>
+                    <FontAwesomeIcon icon={faArrowLeft} />
+                </div>
+                <div className="flex flex-row justify-center items-center font-text text-unactive text-xs">
+                    #Number of pages
+                </div>
+                <div className={`flex justify-center items-center border-2 border-primary w-8 h-8 rounded-md shadow-md text-primary text-sm ${loading ? "cursor-auto":"cursor-pointer hover:bg-primary hover:text-white"}`}
+                onClick={() => {
+                        if(loading) return
+                        next()
+                    }}>
+                    <FontAwesomeIcon icon={faArrowRight} />
+                </div>
+            </div>
+   </>
+}
 
 
 const CourseAdminDashboard = ({name, user}) => {
     const [tab, setTab] = useState("myCourses")
     const [loading, setLoading] = useState(false)
     const [assignedCourse, setAssignedCourse] = useState([])
-    const {setCourse} = useCourse_Context();
     const navigate = useNavigate()
+    const {setCourse} = useCourse();
 
-    useState(() =>{
-        setCourse(null)
-    },[])
-
-    const [pageState, setPagination] = useState({
-            currentPage: 1,
-            perPage: 4,
-            totalCourses: 0,
-            lastPage:1,
-            startNumber: 0,
-            endNumber: 0,
-            currentPerPage:0
-        });
-
-        const pageChangeState = (key, value) => {
-            setPagination ((prev) => ({
-                ...prev,
-                [key]: value
-            }))
-        }
-
-    const fetchCourses = (typeOfCourse) => {
+    const formik = useFormik({
+        initialValues: {
+            courseType: "myCourses"
+        },
+    })
+    const fetchCourses = (courses) => {
+        setAssignedCourse([])
         setLoading(true)
-        if(typeOfCourse === "myCourses"){
-            setAssignedCourse([])
+        if(courses === "myCourses"){
             axiosClient.get(`/select-user-added-courses/${user.user_infos.id}`,{
                 params: {
                     page: pageState.currentPage,
@@ -61,8 +120,8 @@ const CourseAdminDashboard = ({name, user}) => {
             .catch((err) => {
                 console.log(err);
             })
-        } else if(typeOfCourse ==="assignedCourses"){
-            setAssignedCourse([])
+        }
+        else if (courses === "assigned") {
             axiosClient.get(`/select-user-assigned-courses/${user.user_infos.id}`,{
                     params: {
                         page: 1,
@@ -73,21 +132,36 @@ const CourseAdminDashboard = ({name, user}) => {
                 })
                 .then(({ data }) => {
                     setAssignedCourse(data.data)
-                    // pageChangeState("totalCourses", data.total)
-                    // pageChangeState("lastPage", data.lastPage)
+                    pageChangeState("totalCourses", data.total)
+                    pageChangeState("lastPage", data.lastPage)
                     setLoading(false)
                 })
                 .catch((err) => {
                     console.log(err);
                 })
-        } else {
-            return null
         }
     }
 
-    useEffect(()=>{
-        fetchCourses(tab)
-    },[pageState.currentPage, pageState.perPage, tab])
+    const [pageState, setPagination] = useState({
+            currentPage: 1,
+            perPage: 4,
+            totalCourses: 0,
+            lastPage:1,
+            startNumber: 0,
+            endNumber: 0,
+            currentPerPage:0
+        });
+
+    useEffect(() => {
+        fetchCourses(formik.values.courseType);
+    }, [formik.values.courseType, pageState.currentPage, pageState.perPage]);
+
+    const pageChangeState = (key, value) => {
+        setPagination ((prev) => ({
+            ...prev,
+            [key]: value
+        }))
+    }
 
     const back = () => {
         if (loading) return;
@@ -102,112 +176,186 @@ const CourseAdminDashboard = ({name, user}) => {
             pageChangeState("currentPage", pageState.currentPage + 1)
         }
     }
+
+    const Pages = [];
+    for(let p = 1; p <= pageState.lastPage; p++){
+        Pages.push(p)
+    }
+
     return(
-        <div className="grid grid-cols-4 grid-rows-[6.25rem_1fr_1fr] h-full w-full">
-            <div className="flex flex-col justify-center col-span-3 row-span-1 pr-5 border-b ml-5 border-divider">
-                    <h1 className="text-primary text-4xl font-header">Good Day! {name}</h1>
-                    <p className='font-text text-sm text-unactive'>Course Admin Dashboard, A centralized hub for Course administrators to manage Learners, monitor learners progress.</p>
+        <div className="grid h-screen w-full grid-cols-4
+                        grid-rows-[6.25rem_min-content_1fr_min-content_min-content]
+                        xl:grid-rows-[6.25rem_min-content_1fr]">
+
+        {/* Header */}
+        <div className="flex flex-col justify-center col-span-3 row-span-1  border-b border-divider
+                        ml-3
+                        xl:pr-5
+                        sm:ml-4">
+                <h1 className="text-primary font-header
+                                text-2xl
+                                xl:text-4xl
+                                sm:text-2xl">Good Day! {name}</h1>
+                <p className='font-text text-unactive
+                                text-xs
+                                xl:text-sm
+                                sm:text-xs'>Course Admin Dashboard, A centralized hub for Course administrators to manage Learners, monitor learners progress.</p>
+        </div>
+        <div className='border-b border-divider  flex flex-row justify-end items-center
+                            mr-3
+                            sm:mr-4'>
+            <div className='aspect-square bg-secondaryprimary rounded-full flex justify-center items-center
+                            w-16 h-16
+                            xl:w-20 xl:h-20 xl:mr-5
+                            sm:w-16 sm:h-16'>
+                <FontAwesomeIcon icon={faBookOpenReader} className='text-primary text-xl xl:text-2xl sm:text-xl'/>
             </div>
-            <div className='border-b border-divider mr-5 flex flex-row justify-end items-center'>
-                <div className='p-6 aspect-square bg-secondaryprimary rounded-full flex justify-center items-center'>
-                    <FontAwesomeIcon icon={faBookOpenReader} className='text-primary text-2xl'/>
+        </div>
+
+        {/* Annoucenment */}
+        <div className='row-span-1 py-2
+                            col-span-4 px-3
+                            xl:col-span-3 xl:row-span-1  xl:pr-3 xl:row-start-2'>
+            <AnnouncmentCarousel/>
+        </div>
+
+        {/* Calendar */}
+        <div className='grid grid-cols-1 grid-rows-[min-content_1fr] row-start-5
+                        col-span-4 px-3 pb-5
+                        xl:col-span-1 xl:row-span-1 xl:row-start-2 xl:pr-5 xl:py-2'>
+        <div className='flex flex-row justify-between items-center'>
+                    <div className="pb-3">
+                        <p className="font-text text-unactive text-xs">Current Date:</p>
+                        <p className="font-header text-primary text-base">{format(new Date(), "MMMM d yyy")}</p>
+                    </div>
+                    <div className='flex flex-row gap-2'>
+                        <div>
+                            <div className='w-9 h-9 border-2 rounded-md text-primary border-primary flex justify-center items-center hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out'>
+                                <FontAwesomeIcon icon={faCalendar} className='text-sm'/>
+                            </div>
+                        </div>
+                        <div>
+                            <div className='w-9 h-9 border-2 rounded-md text-primary border-primary flex justify-center items-center hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out'>
+                                <ArrowLeft className="h-4 w-4" />
+                            </div>
+                        </div>
+                        <div>
+                            <div className='w-9 h-9 border-2 rounded-md text-primary border-primary flex justify-center items-center hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out'>
+                            <ArrowRight className="h-4 w-4" />
+                            </div>
+                        </div>
+                    </div>
                 </div>
+                <div className="w-full h-full rounded-md shadow-md border-2 border-primary overflow-hidden">
+                    <Calendar/>
+                </div>
+        </div>
+
+        {/* Courses Carousel */}
+        <div className='grid grid-rows-[min-content_1fr] grid-cols-4 gap-2
+                        row-start-3 col-span-4 px-3 py-2
+                        xl:row-start-3 xl:col-span-3 xl:py-0'>
+            <div className="col-span-2 md:col-span-1">
+                <Select value={formik.values.courseType} onValueChange={(value) => {formik.setFieldValue("courseType", value)}} className="bg-white shadow-sm" disabled={loading}>
+                    <SelectTrigger className="focus:outline-2 focus:-outline-offset-2 focus:outline-primary border-primary border-2 font-header text-primary w-full">
+                        <SelectValue placeholder="Course Type" />
+                    </SelectTrigger>
+                    <SelectContent className="font-text text-xs text-primary hover:cursor-pointer">
+                        <SelectItem value="myCourses">My Courses</SelectItem>
+                        <SelectItem value="assigned">Assigned Courses</SelectItem>
+                    </SelectContent>
+                </Select>
             </div>
-            <div className='col-span-3 row-span-1 px-5 py-2'>
-                <AnnouncmentCarousel/>
-            </div>
-            <div className='col-span-1 row-span-1 pr-5 py-2 grid grid-cols-1 grid-rows-[min-content_1fr]'>
-            <div className='flex flex-row justify-between items-center'>
-                        <div className="pb-3">
-                            <p className="font-text text-unactive text-xs">Current Date:</p>
-                            <p className="font-header text-primary text-base">{format(new Date(), "MMMM d yyy")}</p>
-                        </div>
-                        <div className='flex flex-row gap-2'>
-                            <div>
-                                <div className='w-9 h-9 border-2 rounded-md text-primary border-primary flex justify-center items-center hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out'>
-                                    <FontAwesomeIcon icon={faCalendar} className='text-sm'/>
-                                </div>
-                            </div>
-                            <div>
-                                <div className='w-9 h-9 border-2 rounded-md text-primary border-primary flex justify-center items-center hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out'>
-                                    <ArrowLeft className="h-4 w-4" />
-                                </div>
-                            </div>
-                            <div>
-                                <div className='w-9 h-9 border-2 rounded-md text-primary border-primary flex justify-center items-center hover:cursor-pointer hover:bg-primary hover:text-white transition-all ease-in-out'>
-                                <ArrowRight className="h-4 w-4" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="w-full h-full rounded-md shadow-md border-2 border-primary overflow-hidden">
-                        <Calendar/>
-                    </div>
-            </div>
-        {/* Courses Carosel */}
-        <div className='row-start-3 col-span-3 px-5 pt-2 p-2 grid grid-rows-[min-content_1fr] grid-cols-4 gap-2'>
-            {/* Header */}
-            <div className="col-span-2 flex flex-row justify-between gap-2">
-                    <div className={`w-full group flex flex-row items-center justify-between py-2 px-4 border-2 border-primary rounded-md bg-white shadow-md hover:cursor-pointer hover:bg-primary ease-in-out transition-all ${tab === "myCourses" ? "!bg-primary !text-white":"text-primary"}`} onClick={()=>setTab("myCourses")}>
-                        <p className="font-header text-base group-hover:text-white"><span><FontAwesomeIcon icon={faBookBookmark}/></span> My Courses</p>
-                    </div>
-                    <div className={`w-full group flex flex-row items-center justify-between py-2 px-4 border-2 border-primary rounded-md bg-white shadow-md hover:cursor-pointer hover:bg-primary ease-in-out transition-all ${tab === "assignedCourses" ? "!bg-primary !text-white":"text-primary"}`} onClick={()=>setTab("assignedCourses")}>
-                        <p className="font-header text-base group-hover:text-white"><span><FontAwesomeIcon icon={faBook}/></span> Assigned Courses</p>
-                    </div>
-            </div>
-            {/* Content */}
-            <div className="row-start-2 col-span-4 grid grid-cols-4 gap-2 h-full pb-2">
-            {
-                    loading ? (
-                        Array.from({length: 4}).map((_,i) =>(
-                            <div key={i} className="animate-pulse bg-white w-full h-full rounded-md shadow-md"/>
-                        ))
-                    ):(
-                        assignedCourse.length > 0 ? (
-                            assignedCourse.map((course)=>(
-                            <CourseCard key={course.id} course={course} type='courseAdmin' click={()=>{navigate(`/courseadmin/course/${course.id}`); setCourse(course)}}/>
-                        ))
+
+            {/* Pagination */}
+            <div className="col-start-4 flex flex-row justify-end items-center">
+                <nav className='isolate inline-flex -space-x-px round-md shadow-xs'>
+                    {/* Previous */}
+                    <a
+                        onClick={back}
+                        className={`relative inline-flex items-center rounded-l-md px-3 py-2 text-primary ring-1 ring-divider ring-inset  transition-all ease-in-out ${loading ? "opacity-50 cursor-not-allowed":"hover:bg-primary hover:text-white"}`}>
+                        <FontAwesomeIcon icon={faChevronLeft}/>
+                    </a>
+
+                    {/* Current Page & Dynamic Paging */}
+                    {/* {
+                        isLoading ? (
+                            <a className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset`}>
+                            ...</a>
                         ) : (
-                            <div className="w-full flex flex-col justify-center items-center col-span-4">
-                                <p className="font-text text-unactive">No Courses Available</p>
-                            </div>
+
                         )
-                    )
-                }
+                    } */}
+
+                    {
+                        Pages.map((page)=>(
+                            <a
+                                key={page}
+                                className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-header ring-1 ring-divider ring-inset
+                                    ${
+                                        loading ? "opacity-50 cursor-not-allowed" : "hover:bg-primary hover:text-white hover:cursor-pointer"
+                                    }
+                                    ${
+                                        page === pageState.currentPage
+                                        ? 'bg-primary text-white'
+                                        : 'bg-secondarybackground text-primary hover:bg-primary hover:text-white'
+                                    } transition-all ease-in-out`}
+                                    onClick={() => pageChange(page)}>
+                                {page}</a>
+                        ))
+                    }
+                    <a
+                        onClick={next}
+                        className={`relative inline-flex items-center rounded-r-md px-3 py-2 text-primary ring-1 ring-divider ring-inset  transition-all ease-in-out ${loading ? "opacity-50 cursor-not-allowed":"hover:bg-primary hover:text-white hover:cursor-pointer"}`}>
+                        <FontAwesomeIcon icon={faChevronRight}/>
+                    </a>
+                </nav>
             </div>
-            <div className="col-start-4 row-start-1 flex flex-row gap-2 items-center justify-end">
-                <div className="flex justify-center items-center border-2 border-primary w-10 h-10 rounded-md shadow-md text-primary hover:bg-primary hover:cursor-pointer hover:text-white"
-                onClick={back}>
-                    <FontAwesomeIcon icon={faArrowLeft} />
-                </div>
-                <div className="flex justify-center items-center border-2 border-primary w-10 h-10 rounded-md shadow-md text-primary hover:bg-primary hover:cursor-pointer hover:text-white"
-                onClick={next}>
-                    <FontAwesomeIcon icon={faArrowRight} />
-                </div>
+
+            {/* Courses */}
+            <div className="col-span-4 grid grid-cols-2 gap-2 h-full
+                            lg:grid-cols-4 xl:pb-5">
+                {
+                    //assignedCourse.length > 0
+                    loading ?
+                            Array.from({length: 4}).map((_,i) =>(
+                                <div key={i} className="animate-pulse bg-white w-full xl:h-full h-[8.25rem] rounded-md shadow-md border border-divider"/>
+                            ))
+                    : assignedCourse.length === 0 ?
+                        <div className="py-3 col-span-2 md:py-0 md:col-span-4 flex flex-col items-center justify-center gap-2">
+                            <div className="min-h-10 min-w-10 w-20 h-20 bg-primarybg rounded-full flex items-center justify-center">
+                                <FontAwesomeIcon icon={faTriangleExclamation} className="text-primary text-4xl"/>
+                            </div>
+                            <p className="font-text text-unactive text-xs">You dont have any {formik.values.courseType === "myCourses" ? "inputted courses yet" : "assigned courses yet"} </p>
+                        </div>
+                    : assignedCourse.map((course)=>(
+                        <CourseCard key={course.id} course={course} type='courseAdmin' click={()=>{navigate(`/courseadmin/course/${course.id}`); setCourse(course)}}/>
+                    ))
+                }
             </div>
         </div>
 
         {/* Activities */}
-        <div className='row-start-3 mr-5 pt-2 pb-5'>
-            <div className="flex flex-col w-full h-full gap-2">
-                <div>
+        <div className='row-start-4 px-3 col-span-4 py-2 flex flex-col gap-2
+                        xl:row-start-3 xl:pr-5 xl:py-0'>
+                <div className="">
                     <h1 className="font-header text-primary text-base">Activities</h1>
                     <p className="font-text text-unactive text-xs">Tracks your learners concerns and activities.</p>
                 </div>
 
-                <div className="w-full h-full grid grid-col-1 grid-rows-3 gap-2 ">
+                <div className="grid grid-cols-3 grid-rows-1 gap-1 h-full
+                                xl:grid-cols-1 xl:grid-rows-3 xl:pb-5 ">
                     {
-                        loading ? (
-                            Array.from({length: 3}).map((_, i) => (
-                            <div className="animate-pulse bg-white w-full rounded-md shadow-md flex items-center justify-between" key={i}/>
-                        ))
-                        ) : (
+                        loading ?
                         Array.from({length: 3}).map((_, i) => (
-                            <div className="border-primary border bg-white w-full rounded-md shadow-md flex items-center justify-between" key={i}/>
-                        )))
+                            <div className="border bg-white rounded-md shadow-md flex items-center justify-between h-20 xl:h-full border-divider" key={i}/>
+                        ))
+                        : Array.from({length: 3}).map((_, i) => (
+                            <div className="border-primary border bg-white rounded-md shadow-md flex items-center justify-between h-20 xl:h-full" key={i}/>
+                        ))
                     }
+
                 </div>
-            </div>
         </div>
         </div>
     )

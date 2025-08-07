@@ -9,7 +9,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Broadcast;
 
-class TestNotification extends Notification
+class TestNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -28,7 +28,7 @@ class TestNotification extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['database','broadcast'];
+        return ['database','broadcast','mail'];
     }
 
     /**
@@ -43,6 +43,15 @@ class TestNotification extends Notification
             'body' => 'This is a test notification.',
             'notification_type' => 'general',
         ];
+    }
+
+    public function toMail(object $notifiable): MailMessage
+    {
+        return (new MailMessage)
+            ->subject('Test Notification')
+            ->line('This is a test notification sent via email.')
+            ->action('View Notification', url('/notifications'))
+            ->line('Thank you for using our application!');
     }
 
     public function toBroadcast($notifiable){
