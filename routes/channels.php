@@ -14,3 +14,7 @@ Broadcast::channel('notifications.{userId}', function ($user, $userId) {
 Broadcast::channel('channel-name', function($user){
     return true;
 });
+
+Broadcast::channel('Users', function ($user){
+    return $user->userInfos->roles[0]->role_name === "System Admin";
+});

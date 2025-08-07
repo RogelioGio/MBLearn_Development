@@ -112,4 +112,9 @@ class UserCredentials extends Model implements Authenticatable
     public function otp(){
         return $this->hasOne(UserOtp::class, 'user_credentials_id', 'id');
     }
+
+    public function routeNotificationForMail($notification)
+    {
+        return $this->MBemail;
+    }
 }

@@ -30,7 +30,7 @@ class UserPermissionsChange implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new Channel('Users'),
+            new PrivateChannel('Users'),
         ];
     }
 

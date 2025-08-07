@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 use App\Events\NewNotification;
 use App\Events\TestEvent;
+use App\Events\UserAddedEvent;
+use App\Events\UserArchived;
 use App\Filters\CourseSort;
 use App\Filters\UserInfosFilter;
 use App\helpers\LessonCountHelper;
@@ -13,6 +15,7 @@ use App\Http\Requests\BulkStoreUserRequest;
 use App\Http\Requests\TestArrayRequest;
 use App\Http\Requests\updateUserInfo;
 use App\Http\Requests\UserInfoSearchRequest;
+use App\Http\Resources\UserReportResource;
 use App\Jobs\PermissionToUser;
 use App\Jobs\ResetOptionCache;
 use App\Models\Branch;
@@ -33,6 +36,8 @@ use App\Models\UserInfos;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\UserCredentials;
+use App\Notifications\UserAdded;
+use App\Notifications\UserArchivedDoer;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -116,6 +121,10 @@ class userInfo_controller extends Controller
             if($existingatedData['permissions'] ?? false){
                 PermissionToUser::dispatch($userInfo, $existingatedData['permissions'] ?? []);
             }
+
+            $user = $addUsersRequest->user();
+            UserAddedEvent::broadcast($user->email, 1);
+            $user->notify(new UserAdded(1));
 
             return response()->json([
                 'message' => 'User registered successfully',
@@ -257,6 +266,11 @@ class userInfo_controller extends Controller
         }
         $counts = $count."/".$bulk->count()." Successfully Added Users";
         array_splice($output, 0, 0, $counts);
+
+        $user = $bulkStoreUserRequest->user();
+        UserAddedEvent::broadcast($user->email, $bulk->count());
+        $user->notify(new UserAdded($bulk->count()));
+
         return response()->json([
             'data' => $output
         ]);
@@ -887,12 +901,17 @@ class userInfo_controller extends Controller
     }
 
     //Delete User
-    public function deleteUser(UserInfos $userInfos)
+    public function deleteUser(Request $request, UserInfos $userInfos)
     {
         Gate::authorize('delete', UserInfos::class);
         if($userInfos){
             $userInfos->status = "Inactive";
             $userInfos->save();
+            $user = $request->user();
+            UserArchived::dispatch($user->MBemail, $userInfos);
+            $user->notify(new UserArchivedDoer($userInfos->userCredentials->MBemail));
+            //TODO Notification for mail of affected/deleted user
+
 
             // LogActivityHelper::logActivity('Delete user', 'Deleted a user', "User Full Name: " . $userInfos->first_name . " " . $userInfos->last_name);
             return response()->json(['message' => 'User is now set to inactive'], 200);
@@ -935,6 +954,26 @@ class userInfo_controller extends Controller
         ],200);
     }
 
+    // public function getUserReport(Request $request){
+    //     $page = $request->input('page', 1);//Default page
+    //     $perPage = $request->input('perPage',5); //Number of entry per page
+    //     $user_id = $request->user()->userInfos->id;
+
+    //     $filter = new UserInfosFilter();
+    //     $queryItems = $filter->transform($request);
+
+    //     $users =  UserInfos::query()->where($queryItems)
+    //     ->where('status', '=', 'Active')
+    //     ->whereNot(function (Builder $query) use ($user_id){
+    //         $query->where('id', $user_id);
+    //     })
+    //     ->with('roles','division','section','department','title','branch','city','userCredentials')
+    //     ->orderBy('created_at', 'desc')
+    //     ->paginate($perPage);
+
+    //     return UserReportResource::collection($users);
+    // }
+
     public function test(){
         // $course = Course::query()->find(71);
         // $user = UserInfos::query()->find(109);
@@ -951,14 +990,21 @@ class userInfo_controller extends Controller
         // return response()->json([
         //     'data' => "Done"
         // ]);
+        $user = UserCredentials::query()->find(113);
+
+        $users = UserInfos::query()->where('status', '=', 'Active')->whereDoesntHave('userCredentials', function(Builder $query)use ($user){
+            $query->where('MBemail', $user->MBemail);
+        })->paginate();
+
+        return response()->json(['users'=> $users]);
 
 
-        {
-            $user = UserCredentials::query()->find(1); // Replace with the actual user ID
+        // {
+        //     $user = UserCredentials::query()->find(1); // Replace with the actual user ID
 
-            $user->unreadNotifications->markAsRead();
+        //     $user->unreadNotifications->markAsRead();
 
-            return response()->json(['message' => 'All notifications marked as read']);
-        }
+        //     return response()->json(['message' => 'All notifications marked as read']);
+        // }
     }
 }

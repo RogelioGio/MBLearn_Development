@@ -91,6 +91,7 @@ class userCredentials_controller extends Controller
         });
         $userCredentials->userInfos->permissions()->sync($bulk);
         UserRoleChange::dispatch($adder, $affected, $role_name);
+        UserPermissionsChange::dispatch($adder, $affected);
 
         return response()->json([
             'message' => 'Permissions changed',
